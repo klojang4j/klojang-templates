@@ -1,1 +1,0 @@
-typeSearchIndex = [{"p":"org.klojang.templates","l":"Accessor"},{"l":"All Classes and Interfaces","u":"allclasses-index.html"}];updateSearchResults();

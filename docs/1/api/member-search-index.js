@@ -1,1 +1,0 @@
-memberSearchIndex = [{"p":"org.klojang.templates","c":"Accessor","l":"access(T, String)","u":"access(T,java.lang.String)"},{"p":"org.klojang.templates","c":"Accessor","l":"UNDEFINED"}];updateSearchResults();
