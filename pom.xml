@@ -85,17 +85,17 @@
         <!-- *** Check for updates: mvn versions:display-dependency-updates   *** -->
         <!-- *** Check dependencies: mvn dependency:analyze                   *** -->
         <!-- ==================================================================== -->
-        <klojang-check.version>2.0.0</klojang-check.version>
+        <klojang-check.version>2.1.0</klojang-check.version>
         <klojang-util.version>1.1.0</klojang-util.version>
-        <klojang-collections.version>1.1.0</klojang-collections.version>
+        <klojang-collections.version>1.2.3</klojang-collections.version>
         <klojang-convert.version>1.0.0</klojang-convert.version>
         <klojang-invoke.version>1.0.0</klojang-invoke.version>
 
         <commons-text.version>1.10.0</commons-text.version>
-        <apache-httpclient.version>4.5.13</apache-httpclient.version>
-        <slf4j.version>1.7.31</slf4j.version>
-        <junit.version>5.7.0</junit.version>
-        <h2.version>1.4.200</h2.version>
+        <apache-httpclient.version>4.5.14</apache-httpclient.version>
+        <slf4j.version>2.0.6</slf4j.version>
+        <junit.version>5.9.1</junit.version>
+        <h2.version>2.1.214</h2.version>
 
 
     </properties>
@@ -367,7 +367,7 @@
                 <artifactId>dependency-check-maven</artifactId>
                 <version>${owasp-plugin.version}</version>
                 <configuration>
-                    <failBuildOnCVSS>1</failBuildOnCVSS>
+                    <failBuildOnCVSS>8</failBuildOnCVSS>
                 </configuration>
                 <executions>
                     <execution>
