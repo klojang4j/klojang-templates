@@ -1,7 +1,9 @@
 package org.klojang.templates;
 
 import org.klojang.check.Check;
+import org.klojang.templates.x.ModulePrivate;
 import org.klojang.templates.x.TemplateId;
+import org.klojang.templates.x.parse.*;
 import org.klojang.util.collection.IntArrayList;
 import org.klojang.util.collection.IntList;
 import org.slf4j.Logger;
@@ -139,8 +141,11 @@ public class Template {
 
   Template parent;
 
-  Template(String name, TemplateId id, List<Part> parts) {
-    parts.forEach(p -> ((AbstractPart) p).setParentTemplate(this));
+  /**
+   * For internal use only.
+   */
+  public Template(String name, TemplateId id, List<Part> parts) {
+    parts.forEach(p -> p.setParentTemplate(this));
     this.name = name;
     this.id = id.sourceType() == STRING ? null : id;
     this.parts = parts;
@@ -168,6 +173,13 @@ public class Template {
    */
   public Template getParent() {
     return parent;
+  }
+
+  /**
+   * For internal use only.
+   */
+  public void setParent(ModulePrivate<Template> parent) {
+    this.parent = parent.get();
   }
 
   public Template getRootTemplate() {

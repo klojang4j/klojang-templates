@@ -1,6 +1,8 @@
-package org.klojang.templates;
+package org.klojang.templates.x.parse;
 
 import org.klojang.check.Check;
+import org.klojang.templates.ParseException;
+import org.klojang.templates.Template;
 import org.klojang.templates.x.TemplateId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,7 +14,7 @@ import static org.klojang.templates.SysProp.*;
 import static org.klojang.check.CommonChecks.gte;
 import static org.klojang.templates.Template.ROOT_TEMPLATE_NAME;
 
-class TemplateCache {
+public class TemplateCache {
 
   private static final Logger LOG = LoggerFactory.getLogger(TemplateCache.class);
 
@@ -39,15 +41,15 @@ class TemplateCache {
     }
   }
 
-  Template get(Class<?> clazz, String path) throws ParseException {
+  public Template get(Class<?> clazz, String path) throws ParseException {
     return get(ROOT_TEMPLATE_NAME, clazz, path);
   }
 
-  Template get(String name, Class<?> clazz, String path) throws ParseException {
+  public Template get(String name, Class<?> clazz, String path) throws ParseException {
     return get(name, new TemplateId(clazz, path));
   }
 
-  Template get(String name, TemplateId id) throws ParseException {
+  public Template get(String name, TemplateId id) throws ParseException {
     Check.notNull(name, "name");
     Check.notNull(id, "id");
     if (maxSize == 0 || id.path() == null) { // caching disabled

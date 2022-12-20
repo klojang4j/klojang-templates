@@ -1,6 +1,7 @@
 package org.klojang.templates;
 
 import org.klojang.check.Check;
+import org.klojang.templates.x.ModulePrivate;
 
 import java.util.HashMap;
 
@@ -21,12 +22,11 @@ import static org.klojang.templates.x.Messages.ERR_NO_SUCH_VARGROUP;
  * {@link RenderSession#set(String, Object, VarGroup) programmatically}.
  *
  * <p>Note that variable groups are assigned at the variable <i>occurrence</i>
- * level.
- * For example, you may have a variable named "firstName" occuring multiple times in
- * one and the same template. For the occurrences inside a &lt;script&gt; you might
- * want to use the "js" prefix, for the others the "html" prefix (or no prefix at
- * all). Therefore stringifiers associated with a variable group take the highest
- * precedence when deciding which stringifier to use, even higher (perhaps
+ * level. For example, you may have a variable named "firstName" occuring multiple
+ * times in one and the same template. For the occurrences inside a &lt;script&gt;
+ * you might want to use the "js" prefix, for the others the "html" prefix (or no
+ * prefix at all). Therefore stringifiers associated with a variable group take the
+ * highest precedence when deciding which stringifier to use, even higher (perhaps
  * paradoxically) than stringifiers associated with a variable!
  *
  * @author Ayco Holleman
@@ -101,16 +101,19 @@ public class VarGroup {
    * @return The {@code VarGroup} instance corresponding to the specified name
    */
   public static VarGroup forName(String name) {
-    VarGroup vg = Check.notNull(name).ok(VarGroup::get);
+    VarGroup vg = Check.notNull(name).ok(VAR_GROUPS::get);
     return Check.that(vg).is(notNull(), ERR_NO_SUCH_VARGROUP, name).ok();
   }
 
-  static VarGroup withName(String name) {
-    return VAR_GROUPS.computeIfAbsent(name, VarGroup::new);
+  /**
+   * For internal use only.
+   */
+  public static VarGroup createPrivileged(ModulePrivate<String> name) {
+    return withName(name.get());
   }
 
-  static VarGroup get(String name) {
-    return VAR_GROUPS.get(name);
+  private static VarGroup withName(String name) {
+    return VAR_GROUPS.computeIfAbsent(name, VarGroup::new);
   }
 
   private final String name;

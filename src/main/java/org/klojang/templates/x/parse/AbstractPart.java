@@ -1,6 +1,9 @@
-package org.klojang.templates;
+package org.klojang.templates.x.parse;
 
-abstract class AbstractPart implements Part {
+import org.klojang.templates.Template;
+
+public abstract sealed class AbstractPart implements Part permits
+    NestedTemplatePart, TextPart, UnparsedPart, VariablePart {
 
   private final int start;
 
@@ -20,7 +23,8 @@ abstract class AbstractPart implements Part {
     return parent;
   }
 
-  void setParentTemplate(Template parent) {
+  @Override
+  public void setParentTemplate(Template parent) {
     this.parent = parent;
   }
 

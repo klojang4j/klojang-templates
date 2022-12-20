@@ -2,6 +2,8 @@ package org.klojang.templates;
 
 import org.klojang.check.Check;
 import org.klojang.templates.x.Messages;
+import org.klojang.templates.x.parse.Part;
+import org.klojang.templates.x.parse.VariablePart;
 import org.klojang.util.LaxTuple2;
 
 import java.io.PrintStream;

@@ -1,8 +1,10 @@
-package org.klojang.templates;
+package org.klojang.templates.x.parse;
 
 import org.klojang.check.Check;
 import org.klojang.check.IntCheck;
 import org.klojang.check.ObjectCheck;
+import org.klojang.templates.ParseException;
+import org.klojang.templates.Template;
 import org.klojang.util.StringMethods;
 
 import java.util.function.Function;

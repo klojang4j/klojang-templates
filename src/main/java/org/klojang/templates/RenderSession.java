@@ -1,6 +1,7 @@
 package org.klojang.templates;
 
 import org.klojang.check.Check;
+import org.klojang.templates.x.parse.VariablePart;
 import org.klojang.util.CollectionMethods;
 import org.klojang.util.LaxTuple2;
 import org.klojang.util.collection.IntList;

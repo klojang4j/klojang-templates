@@ -1,4 +1,6 @@
-package org.klojang.templates;
+package org.klojang.templates.x.parse;
+
+import org.klojang.templates.Template;
 
 import static org.klojang.templates.x.Regex.TMPL_START;
 import static org.klojang.templates.x.Regex.VAR_END;
@@ -10,7 +12,7 @@ import static org.klojang.util.StringMethods.substringBefore;
  *
  * @author Ayco Holleman
  */
-class IncludedTemplatePart extends NestedTemplatePart {
+final class IncludedTemplatePart extends NestedTemplatePart {
 
   static String basename(String path) {
     return substringBefore(substrAfter(path, "/", -1), ".", -1);

@@ -1,6 +1,10 @@
-package org.klojang.templates;
+package org.klojang.templates.x.parse;
 
-abstract class NestedTemplatePart extends AbstractPart implements NamedPart {
+import org.klojang.templates.Template;
+import org.klojang.templates.x.ModulePrivate;
+
+public abstract sealed class NestedTemplatePart extends AbstractPart implements
+    NamedPart permits IncludedTemplatePart, InlineTemplatePart {
 
   final Template template;
 
@@ -14,7 +18,7 @@ abstract class NestedTemplatePart extends AbstractPart implements NamedPart {
     return template.getName();
   }
 
-  Template getTemplate() {
+  public Template getTemplate() {
     return template;
   }
 
@@ -26,6 +30,7 @@ abstract class NestedTemplatePart extends AbstractPart implements NamedPart {
   @Override
   public void setParentTemplate(Template parent) {
     super.setParentTemplate(parent);
-    template.parent = parent;
+    template.setParent(ModulePrivate.hide(parent));
   }
+
 }

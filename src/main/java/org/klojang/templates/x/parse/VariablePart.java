@@ -1,4 +1,7 @@
-package org.klojang.templates;
+package org.klojang.templates.x.parse;
+
+import org.klojang.templates.VarGroup;
+import org.klojang.templates.x.ModulePrivate;
 
 import java.util.Optional;
 
@@ -10,25 +13,30 @@ import static org.klojang.templates.x.Regex.*;
  *
  * @author Ayco Holleman
  */
-final class VariablePart extends AbstractPart implements NamedPart {
+public final class VariablePart extends AbstractPart implements NamedPart {
 
   private final VarGroup group;
   private final String name;
 
   VariablePart(String prefix, String name, int start) {
     super(start);
-    this.group = ifNotNull(prefix, VarGroup::withName);
+    if (prefix == null) {
+      group = null;
+    } else {
+      group = VarGroup.createPrivileged(ModulePrivate.hide(prefix));
+    }
     this.name = name;
   }
 
   /**
-   * Returns an {@code Optional} containing the group name prefix, or an empty {@code Optional} if
-   * the variable was declared without a group name prefix. For example for {@code
-   * ~%html:firstName%} this method would return the {@link VarGroup#HTML} variable group.
+   * Returns an {@code Optional} containing the group name prefix, or an empty
+   * {@code Optional} if the variable was declared without a group name prefix. For
+   * example for {@code ~%html:firstName%} this method would return the
+   * {@link VarGroup#HTML} variable group.
    *
    * @return An {@code Optional} containing the group name prefix
    */
-  Optional<VarGroup> getVarGroup() {
+  public Optional<VarGroup> getVarGroup() {
     return Optional.ofNullable(group);
   }
 
@@ -46,4 +54,5 @@ final class VariablePart extends AbstractPart implements NamedPart {
   public String toString() {
     return VAR_START + name + VAR_END;
   }
+
 }

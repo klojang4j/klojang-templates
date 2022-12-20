@@ -2,7 +2,9 @@ package org.klojang.templates;
 
 import org.klojang.check.Check;
 import org.klojang.collections.TypeMap;
+import org.klojang.templates.x.ModulePrivate;
 import org.klojang.templates.x.StandardStringifiers;
+import org.klojang.templates.x.parse.VariablePart;
 import org.klojang.util.Tuple2;
 
 import java.util.ArrayList;
@@ -27,7 +29,7 @@ import static org.klojang.util.StringMethods.*;
  * variables with the same data type will often should be stringified identically.
  * For example, you may want to format all {@code int} values according to your
  * country's locale. These type-based stringifiers can be configured using
- * {@link Builder#registerByType(Stringifier, Class[])} registerByType}. Only if a
+ * {@link Builder#registerByType(Stringifier, Class[]) registerByType}. Only if a
  * template variable has very specific stringification requirements would you
  * {@link Builder#register(Stringifier, Template, String...) register} a
  * variable-specific stringifier for it.
@@ -255,7 +257,7 @@ public final class StringifierRegistry {
       Check.that(groupNames, "groupNames").isNot(empty());
       for (String name : groupNames) {
         Check.that(name, "group name").isNot(empty());
-        VarGroup vg = VarGroup.withName(name);
+        VarGroup vg = VarGroup.createPrivileged(ModulePrivate.hide(name));
         StringifierId id = new StringifierId(vg);
         Check.that(id)
             .isNot(keyIn(), stringifiers, ERR_GROUP_ASSIGNED)

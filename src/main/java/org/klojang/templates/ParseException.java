@@ -1,5 +1,7 @@
 package org.klojang.templates;
 
+import org.klojang.templates.x.parse.ErrorType;
+
 /**
  * Thrown if the template source could not be parsed into a {@link Template}.
  *

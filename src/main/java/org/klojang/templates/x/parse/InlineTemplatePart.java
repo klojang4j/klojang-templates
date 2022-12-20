@@ -1,9 +1,11 @@
-package org.klojang.templates;
+package org.klojang.templates.x.parse;
+
+import org.klojang.templates.Template;
 
 import static org.klojang.templates.x.Regex.TMPL_START;
 import static org.klojang.templates.x.Regex.VAR_END;
 
-class InlineTemplatePart extends NestedTemplatePart {
+final class InlineTemplatePart extends NestedTemplatePart {
 
   InlineTemplatePart(Template template, int start) {
     super(template, start);
