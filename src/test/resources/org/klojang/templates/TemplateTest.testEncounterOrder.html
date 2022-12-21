@@ -1,0 +1,13 @@
+<!-- test template for making sure encounter of variables is preserved -->
+<tr align="left">
+	<td><a href="javascript:openPopup('~%topdeskId%')">~%id%</a></td>
+	<td><b><a href="/topdesk/?id=~%topdeskId%" target="_blank">~%topdeskId% </a></b></td>
+	<td>~%department%</td>
+	<td>~%instituteCode%</td>
+	<td>~%collectionCode%</td>
+	<td align="center">~%firstNumber%</td>
+	<td align="center">~%lastNumber%</td>
+	<td onclick="check('~%instituteCode%','~%collectionCode%','~%firstNumber%');" align="center">~%amount%</td>
+	<td onclick="show('~%id%');">~%issueDate%</td>
+</tr>
+<!-- topdeskId, id, department, instituteCode, collectionCode, firstNumber, lastNumber, amount, issueDate -->

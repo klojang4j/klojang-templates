@@ -1,0 +1,26 @@
+<html>
+<body>
+	<table>
+		<thead>
+			<tr>
+				<th>Company Name</th>
+				<th>PO Box</th>
+				<th>Established</th>
+				<th>Director</th>
+				<th>Department</th>
+			</tr>
+		</thead>
+		<tbody>
+		~%%begin:company%
+			<tr onclick="showPopup('~%js:name%');">
+				<td>~%name%</td>
+				<td>~%poBox%</td>
+				<td>~%established%</td>
+				<td>~%director%</td>
+				<td>~%%include:departments:include.departments.html%</td>
+			</tr>	
+		~%%end:company%
+		</tbody>
+	</table>
+</body>
+</html>
