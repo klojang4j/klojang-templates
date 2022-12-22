@@ -2,8 +2,8 @@ package org.klojang.templates.x.parse;
 
 import org.klojang.templates.Template;
 
-import static org.klojang.templates.x.Regex.TMPL_START;
-import static org.klojang.templates.x.Regex.VAR_END;
+import static org.klojang.templates.x.parse.Regex.TMPL_START;
+import static org.klojang.templates.x.parse.Regex.VAR_END;
 import static org.klojang.util.StringMethods.substrAfter;
 import static org.klojang.util.StringMethods.substringBefore;
 

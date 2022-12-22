@@ -1,8 +1,10 @@
 package org.klojang.templates.x.parse;
 
 import org.klojang.check.fallible.FallibleBiFunction;
-import org.klojang.templates.*;
-import org.klojang.templates.x.Regex;
+import org.klojang.templates.ParseException;
+import org.klojang.templates.PathResolutionException;
+import org.klojang.templates.PathResolver;
+import org.klojang.templates.Template;
 import org.klojang.templates.x.TemplateId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,9 +15,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static org.klojang.check.CommonChecks.*;
-import static org.klojang.templates.x.parse.ErrorType.*;
 import static org.klojang.templates.Template.ROOT_TEMPLATE_NAME;
 import static org.klojang.templates.x.TemplateSourceType.STRING;
+import static org.klojang.templates.x.parse.ErrorType.*;
 import static org.klojang.util.StringMethods.EMPTY_STRING;
 
 public class Parser {
@@ -40,6 +42,11 @@ public class Parser {
   }
 
   public Template parse() throws ParseException {
+    return new Template(tmplName, id, List.copyOf(getParts()));
+  }
+
+  // visible for testing
+  List<Part> getParts() throws ParseException {
     logParsing(tmplName, id);
     // Accumulates template names for duplicate checks:
     Set<String> names = new HashSet<>();
@@ -52,7 +59,7 @@ public class Parser {
     parts = parse(parts, names, (x, y) -> parseVars(x, y, true));
     parts = parse(parts, names, (x, y) -> parseVars(x, y, false));
     parts = collectTextParts(parts);
-    return new Template(tmplName, id, List.copyOf(parts));
+    return parts;
   }
 
   private static List<Part> parse(List<Part> in,

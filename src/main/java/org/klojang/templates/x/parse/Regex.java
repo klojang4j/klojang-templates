@@ -1,4 +1,4 @@
-package org.klojang.templates.x;
+package org.klojang.templates.x.parse;
 
 import org.klojang.check.Check;
 import org.klojang.check.ObjectCheck;
@@ -13,7 +13,7 @@ import static java.util.stream.Collectors.toSet;
 import static org.klojang.check.CommonChecks.EQ;
 import static org.klojang.check.CommonChecks.blank;
 
-public class Regex {
+public final class Regex {
 
   private static final String ERR_ILLEGAL_VAL = "Illegal value for system property %s: \"%s\"";
   private static final String ERR_IDENTICAL = "varStart and tmplStart must be different";
@@ -23,29 +23,28 @@ public class Regex {
   public static final String TMPL_START = SysProp.TMPL_START.get();
   public static final String TMPL_END = SysProp.TMPL_END.get();
 
-  // By itself used only for error reporting
   public static final String PLACEHOLDER_TAG = "<!--%-->";
 
   private static Regex instance;
 
-  public static Regex of() throws ParseException {
+  static Regex of() throws ParseException {
     if (instance == null) {
       return instance = new Regex();
     }
     return instance;
   }
 
-  public final Pattern variable;
-  public final Pattern cmtVariable;
-  public final Pattern beginTag; // error reporting only
-  public final Pattern endTag; // error reporting only
-  public final Pattern inlineTemplate;
-  public final Pattern cmtInlineTemplate;
-  public final Pattern includedTemplate;
-  public final Pattern cmtIncludedTemplate;
-  public final Pattern ditchTag; // error reporting only
-  public final Pattern ditchBlock;
-  public final Pattern placeholder;
+  final Pattern variable;
+  final Pattern cmtVariable;
+  final Pattern beginTag;
+  final Pattern endTag;
+  final Pattern inlineTemplate;
+  final Pattern cmtInlineTemplate;
+  final Pattern includedTemplate;
+  final Pattern cmtIncludedTemplate;
+  final Pattern ditchTag;
+  final Pattern ditchBlock;
+  final Pattern placeholder;
 
   private Regex() throws ParseException {
 

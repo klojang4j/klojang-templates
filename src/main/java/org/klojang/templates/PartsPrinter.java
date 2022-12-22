@@ -1,6 +1,6 @@
 package org.klojang.templates;
 
-import org.klojang.templates.x.Regex;
+import org.klojang.templates.x.parse.Regex;
 import org.klojang.templates.x.parse.NestedTemplatePart;
 import org.klojang.templates.x.parse.Part;
 import org.klojang.templates.x.parse.TextPart;
@@ -10,7 +10,7 @@ import java.io.PrintStream;
 
 import static org.klojang.util.StringMethods.rpad;
 
-class PartsPrinter {
+final class PartsPrinter {
 
   private static final String HDR_TEMPLATE = "TEMPLATE";
   private static final String HDR_PART_TYPE = "PART TYPE";
@@ -97,10 +97,9 @@ class PartsPrinter {
   private static int getMaxTmplName(Template t) {
     int i = Math.max(HDR_TEMPLATE.length(), t.getName().length());
     for (Part p : t.getParts()) {
-      if (p instanceof NestedTemplatePart) {
-        NestedTemplatePart tp = (NestedTemplatePart) p;
-        i = Math.max(i, tp.getTemplate().getName().length());
-        i = Math.max(i, getMaxTmplName(tp.getTemplate()));
+      if (p instanceof NestedTemplatePart ntp) {
+        i = Math.max(i, ntp.getTemplate().getName().length());
+        i = Math.max(i, getMaxTmplName(ntp.getTemplate()));
       }
     }
     return i;
@@ -109,11 +108,10 @@ class PartsPrinter {
   private static int getMaxVarName(Template t) {
     int i = HDR_PART_NAME.length();
     for (Part p : t.getParts()) {
-      if (p instanceof VariablePart) {
-        i = Math.max(i, ((VariablePart) p).getName().length());
-      } else if (p instanceof NestedTemplatePart) {
-        NestedTemplatePart tp = (NestedTemplatePart) p;
-        i = Math.max(i, getMaxVarName(tp.getTemplate()));
+      if (p instanceof VariablePart vp) {
+        i = Math.max(i, vp.getName().length());
+      } else if (p instanceof NestedTemplatePart ntp) {
+        i = Math.max(i, getMaxVarName(ntp.getTemplate()));
       }
     }
     return i;

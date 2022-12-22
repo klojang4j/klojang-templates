@@ -6,7 +6,7 @@ import org.klojang.templates.x.ModulePrivate;
 import java.util.Optional;
 
 import static org.klojang.util.ObjectMethods.ifNotNull;
-import static org.klojang.templates.x.Regex.*;
+import static org.klojang.templates.x.parse.Regex.*;
 
 /**
  * A {@link Part} implementation for representing template variables.
