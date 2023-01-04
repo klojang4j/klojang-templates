@@ -86,7 +86,7 @@
         <!-- *** Check dependencies: mvn dependency:analyze                   *** -->
         <!-- ==================================================================== -->
         <klojang-check.version>2.1.0</klojang-check.version>
-        <klojang-util.version>1.1.0</klojang-util.version>
+        <klojang-util.version>1.1.1</klojang-util.version>
         <klojang-collections.version>1.2.3</klojang-collections.version>
         <klojang-convert.version>1.0.0</klojang-convert.version>
         <klojang-invoke.version>1.0.0</klojang-invoke.version>

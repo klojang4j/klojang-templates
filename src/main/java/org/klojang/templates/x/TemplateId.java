@@ -1,6 +1,7 @@
 package org.klojang.templates.x;
 
 import org.klojang.check.Check;
+import org.klojang.check.Tag;
 import org.klojang.templates.PathResolutionException;
 import org.klojang.templates.PathResolver;
 import org.klojang.util.ExceptionMethods;
@@ -14,7 +15,7 @@ import static org.klojang.check.CommonExceptions.STATE;
 import static org.klojang.templates.x.TemplateSourceType.*;
 import static org.klojang.util.StringMethods.concat;
 
-public class TemplateId {
+public final class TemplateId {
 
   private static final String ERR_NO_PATH = "Cannot load source for %s";
 
@@ -38,18 +39,19 @@ public class TemplateId {
   }
 
   public TemplateId(String path) {
-    this(new File(Check.notNull(path, "path").ok()));
+    this(new File(Check.notNull(path, Tag.PATH).ok()));
   }
 
   public TemplateId(File file) {
-    this.path = Check.notNull(file, "file").ok().getAbsolutePath();
+    Check.notNull(file, Tag.FILE);
+    this.path = file.getAbsolutePath();
     this.sourceType = FILE_SYSTEM;
     this.pathResolver = null;
     this.clazz = null;
   }
 
   public TemplateId(Class<?> clazz) {
-    Check.notNull(clazz, "clazz");
+    Check.notNull(clazz, Tag.CLASS);
     this.sourceType = STRING;
     this.pathResolver = null;
     this.clazz = clazz;
@@ -57,15 +59,19 @@ public class TemplateId {
   }
 
   public TemplateId(Class<?> clazz, String path) {
-    this.clazz = Check.notNull(clazz, "clazz").ok();
-    this.path = Check.notNull(path, "path").ok();
+    Check.notNull(clazz, Tag.CLASS);
+    Check.notNull(path, Tag.PATH);
+    this.clazz = clazz;
+    this.path = path;
     this.sourceType = RESOURCE;
     this.pathResolver = null;
   }
 
   public TemplateId(PathResolver pathResolver, String path) {
-    this.pathResolver = Check.notNull(pathResolver, "pathResolver").ok();
-    this.path = Check.notNull(path, "path").ok();
+    Check.notNull(pathResolver, "pathResolver");
+    Check.notNull(path, Tag.PATH);
+    this.pathResolver = pathResolver;
+    this.path = path;
     this.sourceType = RESOLVER;
     this.clazz = null;
   }
@@ -161,6 +167,13 @@ public class TemplateId {
       return concat("TemplateId[sourceType=", sourceType, ";path=", path, "]");
     }
     return concat(
-        "TemplateId[sourceType=", sourceType, ";path=", path, ";resolver=", pathResolver, "]");
+        "TemplateId[sourceType=",
+        sourceType,
+        ";path=",
+        path,
+        ";resolver=",
+        pathResolver,
+        "]");
   }
+
 }

@@ -3,7 +3,6 @@ package org.klojang.templates.x.parse;
 import org.junit.jupiter.api.Test;
 import org.klojang.templates.*;
 import org.klojang.templates.x.TemplateId;
-import org.klojang.util.IOMethods;
 
 import java.util.List;
 

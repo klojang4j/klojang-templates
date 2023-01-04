@@ -4,7 +4,7 @@ import org.klojang.check.Check;
 import org.klojang.templates.x.Messages;
 import org.klojang.templates.x.parse.Part;
 import org.klojang.templates.x.parse.VariablePart;
-import org.klojang.util.LaxTuple2;
+import org.klojang.util.AnyTuple2;
 
 import java.io.PrintStream;
 import java.util.ArrayList;
@@ -204,16 +204,16 @@ public class TemplateUtils {
    * @return All variable names in this {@code Template} and the templates nested
    *     inside it
    */
-  public static List<LaxTuple2<Template, String>> getVarsPerTemplate(Template template) {
+  public static List<AnyTuple2<Template, String>> getVarsPerTemplate(Template template) {
     Check.notNull(template, "template");
-    ArrayList<LaxTuple2<Template, String>> tuples = new ArrayList<>(25);
+    ArrayList<AnyTuple2<Template, String>> tuples = new ArrayList<>(25);
     collectVarsPerTemplate(template, tuples);
     return tuples;
   }
 
   private static void collectVarsPerTemplate(
-      Template t0, ArrayList<LaxTuple2<Template, String>> tuples) {
-    t0.getVariables().stream().map(s -> LaxTuple2.of(t0, s)).forEach(tuples::add);
+      Template t0, ArrayList<AnyTuple2<Template, String>> tuples) {
+    t0.getVariables().stream().map(s -> AnyTuple2.of(t0, s)).forEach(tuples::add);
     t0.getNestedTemplates().forEach(t -> collectVarsPerTemplate(t, tuples));
   }
 

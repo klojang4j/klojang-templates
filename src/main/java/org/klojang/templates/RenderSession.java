@@ -3,7 +3,7 @@ package org.klojang.templates;
 import org.klojang.check.Check;
 import org.klojang.templates.x.parse.VariablePart;
 import org.klojang.util.CollectionMethods;
-import org.klojang.util.LaxTuple2;
+import org.klojang.util.AnyTuple2;
 import org.klojang.util.collection.IntList;
 
 import java.io.ByteArrayOutputStream;
@@ -583,7 +583,7 @@ public class RenderSession {
    * @throws RenderException
    */
   public <T, U> RenderSession populateWithTuple(String nestedTemplateName,
-      List<LaxTuple2<T, U>> tuples) throws RenderException {
+      List<AnyTuple2<T, U>> tuples) throws RenderException {
     return populateWithTuple(nestedTemplateName, tuples, null);
   }
 
@@ -601,7 +601,7 @@ public class RenderSession {
    * @throws RenderException
    */
   public <T, U> RenderSession populateWithTuple(String nestedTemplateName,
-      List<LaxTuple2<T, U>> tuples,
+      List<AnyTuple2<T, U>> tuples,
       VarGroup defaultGroup) throws RenderException {
     Check.on(frozenSession(), state.isFrozen()).is(no());
     Check.on(illegalValue("tuples", tuples), tuples).is(deepNotNull());
