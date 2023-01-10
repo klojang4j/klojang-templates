@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SnakeCaseToWordCase.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Klojang Templates</a> &gt; <a href="index.source.html" class="el_package">org.klojang.templates.name</a> &gt; <span class="el_source">SnakeCaseToWordCase.java</span></div><h1>SnakeCaseToWordCase.java</h1><pre class="source lang-java linenums">package org.klojang.templates.name;
+
+import org.klojang.check.Check;
+import org.klojang.check.Tag;
+import org.klojang.templates.NameMapper;
+
+import static java.lang.Character.toLowerCase;
+import static java.lang.Character.toUpperCase;
+import static org.klojang.check.CommonChecks.emptyString;
+
+/**
+ * Converts snake case identifiers to word case identifiers. For example
+ * {@code my_bloody_valentine} becomes {@code MyBloodyValentine}. Note that it
+ * doesn't matter whether the snake case identifier consists of lowercase letters,
+ * uppercase letters or both. {@code MY_BLOODY_VALENTINE} and
+ * {@code My_Bloody_Valentine} would also become {@code MyBloodyValentine}.
+ *
+ * @author Ayco Holleman
+ */
+<span class="nc" id="L20">public class SnakeCaseToWordCase implements NameMapper {</span>
+
+  /**
+   * Returns an instance of {@code SnakeCaseToWordCase}.
+   *
+   * @return An instance of {@code SnakeCaseToWordCase}
+   */
+  public static SnakeCaseToWordCase snakeCaseToWordCase() {
+<span class="nc" id="L28">    return new SnakeCaseToWordCase();</span>
+  }
+
+  @Override
+  public String map(String name) {
+<span class="nc" id="L33">    Check.that(name, Tag.NAME).isNot(emptyString());</span>
+<span class="nc" id="L34">    char[] out = new char[name.length()];</span>
+<span class="nc" id="L35">    out[0] = toUpperCase(name.charAt(0));</span>
+<span class="nc" id="L36">    boolean nextWord = false;</span>
+<span class="nc" id="L37">    int j = 1;</span>
+<span class="nc bnc" id="L38" title="All 2 branches missed.">    for (int i = 1; i &lt; name.length(); ++i) {</span>
+<span class="nc" id="L39">      char c = name.charAt(i);</span>
+<span class="nc bnc" id="L40" title="All 2 branches missed.">      if (c == '_') {</span>
+<span class="nc" id="L41">        nextWord = true;</span>
+      } else {
+<span class="nc bnc" id="L43" title="All 2 branches missed.">        out[j++] = nextWord ? toUpperCase(c) : toLowerCase(c);</span>
+<span class="nc" id="L44">        nextWord = false;</span>
+      }
+    }
+<span class="nc" id="L47">    return new String(out, 0, j);</span>
+  }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

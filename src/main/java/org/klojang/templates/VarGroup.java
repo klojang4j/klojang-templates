@@ -1,7 +1,7 @@
 package org.klojang.templates;
 
 import org.klojang.check.Check;
-import org.klojang.templates.x.ModulePrivate;
+import org.klojang.templates.x.Private;
 
 import java.util.HashMap;
 
@@ -108,7 +108,7 @@ public class VarGroup {
   /**
    * For internal use only.
    */
-  public static VarGroup createPrivileged(ModulePrivate<String> name) {
+  public static VarGroup createPrivileged(Private<String> name) {
     return withName(name.get());
   }
 

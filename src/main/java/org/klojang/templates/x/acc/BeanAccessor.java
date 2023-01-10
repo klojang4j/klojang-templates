@@ -15,10 +15,15 @@ public final class BeanAccessor<T> implements Accessor<T> {
     this.nm = nm;
   }
 
+  public BeanAccessor(BeanReader<T> beanReader, NameMapper nm) {
+    this.br = beanReader;
+    this.nm = nm;
+  }
+
   @Override
   public Object access(T data, String name) throws RenderException {
     String prop = nm == null ? name : nm.map(name);
-    if (br.getReadableProperties().contains(prop)) {
+    if (br.canRead(prop)) {
       return br.read(data, prop);
     }
     return UNDEFINED;

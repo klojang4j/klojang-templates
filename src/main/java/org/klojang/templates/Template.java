@@ -1,9 +1,10 @@
 package org.klojang.templates;
 
 import org.klojang.check.Check;
-import org.klojang.templates.x.ModulePrivate;
+import org.klojang.templates.x.Private;
 import org.klojang.templates.x.TemplateId;
 import org.klojang.templates.x.parse.*;
+import org.klojang.util.ModulePrivate;
 import org.klojang.util.collection.IntArrayList;
 import org.klojang.util.collection.IntList;
 import org.slf4j.Logger;
@@ -25,7 +26,7 @@ import static org.klojang.templates.x.TemplateSourceType.*;
  * classes of the Klojang library. {@code Template} instances are unmodifiable,
  * expensive-to-create and heavy-weight objects. Generally though you should not
  * cache them as this is already done by Klojang. You can disable template caching by
- * means of a system property. See {@link SysProp#TMPL_CACHE_SIZE}. This is useful
+ * means of a system property. See {@link Setting#TMPL_CACHE_SIZE}. This is useful
  * during development, when you want the template to be re-loaded and re-parsed with
  * every refresh of the browser.
  *
@@ -53,7 +54,7 @@ public class Template {
    *
    * @param source The source code for the {@code Template}
    * @return a new {@code Template} instance
-   * @throws ParseException
+   * @throws ParseException if the template source contains a syntax error
    */
   public static Template fromString(String source) throws ParseException {
     Check.notNull(source, "source");
@@ -70,7 +71,7 @@ public class Template {
    *     tempate files by calling {@code getResourceAsStream} on it
    * @param source The source code for the {@code Template}
    * @return a {@code Template} instance
-   * @throws ParseException
+   * @throws ParseException if the template source contains a syntax error
    */
   public static Template fromString(Class<?> clazz, String source)
       throws ParseException {
@@ -92,7 +93,7 @@ public class Template {
    *     file by calling {@code getResourceAsStream} on it
    * @param path The location of the template file
    * @return a {@code Template} instance
-   * @throws ParseException
+   * @throws ParseException if the template source contains a syntax error
    */
   public static Template fromResource(Class<?> clazz, String path)
       throws ParseException {
@@ -113,13 +114,22 @@ public class Template {
    *
    * @param path The path of the file to be parsed
    * @return a {@code Template} instance
-   * @throws ParseException
+   * @throws ParseException if the template source contains a syntax error
    */
   public static Template fromFile(String path) throws ParseException {
     Check.notNull(path, "path");
     return TemplateCache.INSTANCE.get(ROOT_TEMPLATE_NAME, new TemplateId(path));
   }
 
+  /**
+   * Creates a {@code Template} from the source provided by the specified
+   * {@link PathResolver}.
+   *
+   * @param pathResolver the {@code PathResolver}
+   * @param path the path to be resolved by the {@code PathResolver}
+   * @return a {@code Template} instance
+   * @throws ParseException if the template source contains a syntax error
+   */
   public static Template fromResolver(PathResolver pathResolver, String path)
       throws ParseException {
     Check.notNull(pathResolver, "pathResolver");
@@ -134,9 +144,7 @@ public class Template {
   private final Map<String, IntList> varIndices;
   private final IntList textIndices;
   private final Map<String, Integer> tmplIndices;
-  /**
-   * All variable names and nested template together
-   */
+  // All variable names and nested template together
   private final List<String> names;
 
   Template parent;
@@ -144,9 +152,10 @@ public class Template {
   /**
    * For internal use only.
    */
-  public Template(String name, TemplateId id, List<Part> parts) {
+  @ModulePrivate
+  public Template(Private<String> name, TemplateId id, List<Part> parts) {
     parts.forEach(p -> p.setParentTemplate(this));
-    this.name = name;
+    this.name = name.get();
     this.id = id.sourceType() == STRING ? null : id;
     this.parts = parts;
     this.varIndices = getVarIndices(parts);
@@ -178,7 +187,8 @@ public class Template {
   /**
    * For internal use only.
    */
-  public void setParent(ModulePrivate<Template> parent) {
+  @ModulePrivate
+  public void setParent(Private<Template> parent) {
     this.parent = parent.get();
   }
 

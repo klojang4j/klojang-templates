@@ -1,39 +1,51 @@
 package org.klojang.templates;
 
 /**
- * Interface for objects implementing a mechanism to access source data for templates. See {@link
- * AccessorRegistry} for more information.
+ * Defines a very general contract for name-based extraction of values from objects.
+ * The extraction takes places based on the name of template variable. Just as
+ * {@link Template} and {@link RenderSession} are the two central classes of Klojang
+ * Templates, so are {@link Accessor} and {@link Stringifier} the two central
+ * interfaces of Klojang Templates. See {@link AccessorRegistry} for more
+ * information.
  *
+ * @param <T> the type of the source data object
  * @author Ayco Holleman
  */
 @FunctionalInterface
 public interface Accessor<T> {
 
   /**
-   * The value that <i>must</i> be returned if a name used in a template does not identify a value
-   * in a source data object. The {@code Accessor} should not (accidentally) throw an exception and
-   * it should not return {@code null} in this case. {@code null} is considered to be a legitimate,
-   * "insertable" value. If a {@link RenderSession} requests the {@code Accessor} to provide a value
-   * for some template variable and it receives a {@code null} value, it will simply insert it (or
-   * rather its {@link StringifierRegistry stringification}) into the template. The variable can no
-   * longer be set after that, since cannot overwrite variable values within one and the same {@code
-   * RenderSession}. If, on the other hand, the {@code RenderSession} receives {@code UNDEFINED}, it
-   * will skip setting that variable, leaving you the option to {@link RenderSession#insert(Object,
-   * String...) insert} another source data object into the template that <i>does</i> have a value
-   * for the variable.
+   * The value that <b>should</b> be returned by the
+   * {@link #access(Object, String) access()} method if a template variable cannot be
+   * mapped to an identifier in the source data. For example, if the template is
+   * populated from a {@code HashMap}, then the template variable must correspond to
+   * a map key (possibly indirectly, via a {@link NameMapper}). If the
+   * {@code HashMap} does not contain that key, the {@code access()} must return
+   * {@code UNDEFINED}. {@code Accessor} implementations <b>should not</b> throw an
+   * exception and they <b>should not</b> return {@code null}. {@code null} is a
+   * legitimate, "insertable" value (usually converted to an empty string). If an
+   * {@code Accessor} returns {@code UNDEFINED} for a particular template variable,
+   * the {@link RenderSession} will skip setting that variable. This allows you to
+   * {@link RenderSession#insert(Object, String...) insert} another source data
+   * object into the template that <i>does</i> have a value for the variable. (Note
+   * that <i>once a template variable has been set, it cannot be set again</i> within
+   * the same {@code RenderSession}.)
    */
-  public static final Object UNDEFINED = new Object();
+  Object UNDEFINED = new Object();
 
   /**
-   * Returns the value of the specified property within the specified model object. The term
-   * "property" is somewhat misleading here, because the {@code data} argument can be anything a
-   * specific {@code Accessor} implementation decides to take care of. It could, for example, also
-   * be a {@code Map} and {@code property} would then (most likely) specify a map key.
+   * Returns the value of the specified property within the specified model object.
+   * The term "property" is somewhat misleading here, because the {@code data}
+   * argument can be anything a specific {@code Accessor} implementation decides to
+   * take care of. It could, for example, also be a {@code Map} and {@code property}
+   * would then (most likely) specify a map key.
    *
-   * @param data The data to be accessed
-   * @param property The name by which to retrieve the desired value from the data
-   * @return The value
-   * @throws RenderException
+   * @param data the data to be accessed
+   * @param property the name by which to retrieve the desired value from the
+   *     data
+   * @return the value
+   * @throws RenderException if an error occurs while extracting the value
    */
   Object access(T data, String property) throws RenderException;
+
 }

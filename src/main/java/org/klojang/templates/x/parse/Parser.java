@@ -5,6 +5,7 @@ import org.klojang.templates.ParseException;
 import org.klojang.templates.PathResolutionException;
 import org.klojang.templates.PathResolver;
 import org.klojang.templates.Template;
+import org.klojang.templates.x.Private;
 import org.klojang.templates.x.TemplateId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,34 +21,34 @@ import static org.klojang.templates.x.TemplateSourceType.STRING;
 import static org.klojang.templates.x.parse.ErrorType.*;
 import static org.klojang.util.StringMethods.EMPTY_STRING;
 
-public class Parser {
+public final class Parser {
 
   private static final Logger LOG = LoggerFactory.getLogger(Parser.class);
 
-  private static interface PartialParser extends
+  private interface PartialParser extends
       FallibleBiFunction<UnparsedPart, Set<String>, List<Part>, ParseException> {}
 
-  private final String tmplName;
+  private final String name; // template name
   private final TemplateId id;
   private final String src;
 
-  public Parser(String tmplName, TemplateId id) throws PathResolutionException {
-    this(tmplName, id, id.getSource());
+  public Parser(String name, TemplateId id) throws PathResolutionException {
+    this(name, id, id.getSource());
   }
 
-  public Parser(String tmplName, TemplateId id, String src) {
-    this.tmplName = tmplName;
+  public Parser(String name, TemplateId id, String src) {
+    this.name = name;
     this.id = id;
     this.src = src;
   }
 
   public Template parse() throws ParseException {
-    return new Template(tmplName, id, List.copyOf(getParts()));
+    return new Template(Private.of(name), id, List.copyOf(getParts()));
   }
 
   // visible for testing
   List<Part> getParts() throws ParseException {
-    logParsing(tmplName, id);
+    logParsing(name, id);
     // Accumulates template names for duplicate checks:
     Set<String> names = new HashSet<>();
     List<Part> parts = List.of(new UnparsedPart(src, 0));
@@ -114,9 +115,11 @@ public class Parser {
 
   private List<Part> parseInlineTemplates(UnparsedPart unparsed,
       Set<String> names,
-      boolean hidden)
+      boolean inComments)
       throws ParseException {
-    Pattern p = hidden ? Regex.of().cmtInlineTemplate : Regex.of().inlineTemplate;
+    Pattern p = inComments
+        ? Regex.of().cmtInlineTemplate
+        : Regex.of().inlineTemplate;
     Matcher m = match(p, unparsed);
     if (!m.find()) {
       return Collections.singletonList(unparsed);
@@ -147,9 +150,9 @@ public class Parser {
 
   private List<Part> parseIncludedTemplates(UnparsedPart unparsed,
       Set<String> names,
-      boolean hidden)
+      boolean inComments)
       throws ParseException {
-    Pattern p = hidden
+    Pattern p = inComments
         ? Regex.of().cmtIncludedTemplate
         : Regex.of().includedTemplate;
     Matcher m = match(p, unparsed);
@@ -181,7 +184,7 @@ public class Parser {
         newId = new TemplateId(id.clazz(), path);
       } else if (id.pathResolver() != null) { // Load using path resolver
         PathResolver pr = id.pathResolver();
-        if (!pr.isValidPath(path).isEmpty() && !pr.isValidPath(path).get()) {
+        if (pr.isValidPath(path).isPresent() && !pr.isValidPath(path).get()) {
           throw INVALID_INCLUDE_PATH.asException(src, offset + m.start(3), path);
         }
         newId = new TemplateId(id.pathResolver(), path);
@@ -220,8 +223,8 @@ public class Parser {
       String prefix = m.group(2);
       String name = m.group(3);
       EMPTY_VAR_NAME.check(name, src, offset + m.start(3)).isNot(blank());
-      VAR_NAME_WITH_TMPL_NAME.check(name, src, offset + m.start(3), name).isNot(in(),
-          names);
+      VAR_NAME_WITH_TMPL_NAME
+          .check(name, src, offset + m.start(3), name).isNot(in(), names);
       parts.add(new VariablePart(prefix, name, offset + m.start()));
       end = m.end();
     } while (m.find());
@@ -231,7 +234,10 @@ public class Parser {
     return parts;
   }
 
-  /* Text parts are all unparsed parts that remain after everything else has been parsed out */
+  /*
+   * Text parts are all unparsed parts that remain after everything else has been
+   * parsed out
+   */
   private List<Part> collectTextParts(List<Part> in) throws ParseException {
     List<Part> out = new ArrayList<>(in.size());
     for (Part p : in) {

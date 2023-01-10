@@ -1,0 +1,507 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Template.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Klojang Templates</a> &gt; <a href="index.source.html" class="el_package">org.klojang.templates</a> &gt; <span class="el_source">Template.java</span></div><h1>Template.java</h1><pre class="source lang-java linenums">package org.klojang.templates;
+
+import org.klojang.check.Check;
+import org.klojang.templates.x.Private;
+import org.klojang.templates.x.TemplateId;
+import org.klojang.templates.x.parse.*;
+import org.klojang.util.ModulePrivate;
+import org.klojang.util.collection.IntArrayList;
+import org.klojang.util.collection.IntList;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.*;
+
+import static java.util.stream.Collectors.toUnmodifiableList;
+import static org.klojang.check.CommonChecks.*;
+import static org.klojang.templates.TemplateUtils.getFQName;
+import static org.klojang.util.CollectionMethods.implode;
+import static org.klojang.util.ObjectMethods.ifNotNull;
+import static org.klojang.templates.x.TemplateSourceType.*;
+
+/**
+ * The {@code Template} class is responsible for loading and parsing templates and
+ * functions as a factory for {@link RenderSession} objects that let you render them.
+ * The {@code Template} class and the {@code RenderSession} class are the two central
+ * classes of the Klojang library. {@code Template} instances are unmodifiable,
+ * expensive-to-create and heavy-weight objects. Generally though you should not
+ * cache them as this is already done by Klojang. You can disable template caching by
+ * means of a system property. See {@link Setting#TMPL_CACHE_SIZE}. This is useful
+ * during development, when you want the template to be re-loaded and re-parsed with
+ * every refresh of the browser.
+ *
+ * @author Ayco Holleman
+ */
+public class Template {
+
+  @SuppressWarnings(&quot;unused&quot;)
+<span class="fc" id="L38">  private static final Logger LOG = LoggerFactory.getLogger(Template.class);</span>
+
+  /**
+   * The name given to the root template: &quot;{root}&quot;. Any {@code Template} that is
+   * explicitly instantiated by calling one of the {@code parse} methods gets this
+   * name. Templates nested inside this template get their name from the source code
+   * (for example: {@code ~%%begin:foo%} or {@code ~%%include:/views/foo.html%} or
+   * {@code ~%%include:foo:/views/bar.html%}).
+   */
+  public static final String ROOT_TEMPLATE_NAME = &quot;{root}&quot;;
+
+  /**
+   * Parses the specified string into a {@code Template} instance. If the string
+   * contains any {@code include} declarations (e.g.
+   * {@code ~%%include:/path/to/template%}) the path will be interpreted as a file
+   * system resource. Templates created from a string are never cached.
+   *
+   * @param source The source code for the {@code Template}
+   * @return a new {@code Template} instance
+   * @throws ParseException if the template source contains a syntax error
+   */
+  public static Template fromString(String source) throws ParseException {
+<span class="nc" id="L60">    Check.notNull(source, &quot;source&quot;);</span>
+<span class="nc" id="L61">    return new Parser(ROOT_TEMPLATE_NAME, new TemplateId(), source).parse();</span>
+  }
+
+  /**
+   * Parses the specified string into a {@code Template} instance. The specified
+   * class will be used to include other templates using
+   * {@code clazz.getResourceAsStream(&quot;/path/to/template&quot;)}. Templates created from a
+   * string are never cached.
+   *
+   * @param clazz Any {@code Class} object that provides access to the included
+   *     tempate files by calling {@code getResourceAsStream} on it
+   * @param source The source code for the {@code Template}
+   * @return a {@code Template} instance
+   * @throws ParseException if the template source contains a syntax error
+   */
+  public static Template fromString(Class&lt;?&gt; clazz, String source)
+      throws ParseException {
+<span class="nc" id="L78">    Check.notNull(clazz, &quot;clazz&quot;);</span>
+<span class="nc" id="L79">    Check.notNull(source, &quot;source&quot;);</span>
+<span class="nc" id="L80">    return new Parser(ROOT_TEMPLATE_NAME, new TemplateId(clazz), source).parse();</span>
+  }
+
+  /**
+   * Parses the specified resource into a {@code Template} instance. The resource is
+   * read using {@code clazz.getResourceAsStream(path)}. Any included templates will
+   * be loaded this way as well. Templates created from a classpath resource are
+   * always cached. Thus, calling this method multiple times with the same
+   * {@code clazz} and {@code path} arguments will always return the same
+   * {@code Template} instance. (More precizely: the cache key is the combination of
+   * {@code clazz.getPackage()} and {@code path}.)
+   *
+   * @param clazz Any {@code Class} object that provides access to the tempate
+   *     file by calling {@code getResourceAsStream} on it
+   * @param path The location of the template file
+   * @return a {@code Template} instance
+   * @throws ParseException if the template source contains a syntax error
+   */
+  public static Template fromResource(Class&lt;?&gt; clazz, String path)
+      throws ParseException {
+<span class="nc" id="L100">    Check.notNull(clazz, &quot;clazz&quot;);</span>
+<span class="nc" id="L101">    Check.notNull(path, &quot;path&quot;).has(clazz::getResource,</span>
+<span class="nc" id="L102">        notNull(),</span>
+        &quot;Resource not found: %s&quot;,
+        path);
+<span class="nc" id="L105">    return TemplateCache.INSTANCE.get(ROOT_TEMPLATE_NAME,</span>
+        new TemplateId(clazz, path));
+  }
+
+  /**
+   * Parses the specified file into a {@code Template} instance. Templates created
+   * from file are always cached. Thus, calling this method multiple times with the
+   * same {@code path} argument will always return the same {@code Template}
+   * instance.
+   *
+   * @param path The path of the file to be parsed
+   * @return a {@code Template} instance
+   * @throws ParseException if the template source contains a syntax error
+   */
+  public static Template fromFile(String path) throws ParseException {
+<span class="nc" id="L120">    Check.notNull(path, &quot;path&quot;);</span>
+<span class="nc" id="L121">    return TemplateCache.INSTANCE.get(ROOT_TEMPLATE_NAME, new TemplateId(path));</span>
+  }
+
+  /**
+   * Creates a {@code Template} from the source provided by the specified
+   * {@link PathResolver}.
+   *
+   * @param pathResolver the {@code PathResolver}
+   * @param path the path to be resolved by the {@code PathResolver}
+   * @return a {@code Template} instance
+   * @throws ParseException if the template source contains a syntax error
+   */
+  public static Template fromResolver(PathResolver pathResolver, String path)
+      throws ParseException {
+<span class="nc" id="L135">    Check.notNull(pathResolver, &quot;pathResolver&quot;);</span>
+<span class="nc" id="L136">    Check.notNull(path, &quot;path&quot;);</span>
+<span class="nc" id="L137">    return TemplateCache.INSTANCE.get(ROOT_TEMPLATE_NAME,</span>
+        new TemplateId(pathResolver, path));
+  }
+
+  private final String name;
+  private final TemplateId id;
+  private final List&lt;Part&gt; parts;
+  private final Map&lt;String, IntList&gt; varIndices;
+  private final IntList textIndices;
+  private final Map&lt;String, Integer&gt; tmplIndices;
+  // All variable names and nested template together
+  private final List&lt;String&gt; names;
+
+  Template parent;
+
+  /**
+   * For internal use only.
+   */
+  @ModulePrivate
+<span class="fc" id="L156">  public Template(Private&lt;String&gt; name, TemplateId id, List&lt;Part&gt; parts) {</span>
+<span class="fc" id="L157">    parts.forEach(p -&gt; p.setParentTemplate(this));</span>
+<span class="fc" id="L158">    this.name = name.get();</span>
+<span class="fc bfc" id="L159" title="All 2 branches covered.">    this.id = id.sourceType() == STRING ? null : id;</span>
+<span class="fc" id="L160">    this.parts = parts;</span>
+<span class="fc" id="L161">    this.varIndices = getVarIndices(parts);</span>
+<span class="fc" id="L162">    this.tmplIndices = getTmplIndices(parts);</span>
+<span class="fc" id="L163">    this.names = getNames(parts);</span>
+<span class="fc" id="L164">    this.textIndices = getTextIndices(parts);</span>
+<span class="fc" id="L165">  }</span>
+
+  /**
+   * Returns the name of this {@code Template}.
+   *
+   * @return The name of this {@code Template}
+   */
+  public String getName() {
+<span class="fc" id="L173">    return name;</span>
+  }
+
+  /**
+   * Returns the template inside which this {@code Template} is nested. If this is a
+   * root template (it was &lt;i&gt;created from&lt;/i&gt; source code rather than &lt;i&gt;defined
+   * in&lt;/i&gt; source code), this method returns {@code null}.
+   *
+   * @return The template inside which this {@code Template} is nested
+   */
+  public Template getParent() {
+<span class="nc" id="L184">    return parent;</span>
+  }
+
+  /**
+   * For internal use only.
+   */
+  @ModulePrivate
+  public void setParent(Private&lt;Template&gt; parent) {
+<span class="nc" id="L192">    this.parent = parent.get();</span>
+<span class="nc" id="L193">  }</span>
+
+  public Template getRootTemplate() {
+<span class="nc bnc" id="L196" title="All 2 branches missed.">    if (parent == null) {</span>
+<span class="nc" id="L197">      return this;</span>
+    }
+<span class="nc" id="L199">    Template t = parent;</span>
+<span class="nc bnc" id="L200" title="All 2 branches missed.">    while (t.getParent() != null) {</span>
+<span class="nc" id="L201">      t = t.getParent();</span>
+    }
+<span class="nc" id="L203">    return t;</span>
+  }
+
+  /**
+   * If the template was created from a file or classpath resource, this method
+   * returns its path, else null. In other words, for {@code included} templates this
+   * method (by definition) returns a non-null value. For inline templates this
+   * method (by definition) returns null. For &lt;i&gt;this&lt;/i&gt; {@code Template} the return
+   * value depends on which of the static factory methods was used to instantiate the
+   * template.
+   *
+   * @return The file location (if any) of the source code for this {@code Template}
+   */
+  public String getPath() {
+<span class="nc" id="L217">    return ifNotNull(id, TemplateId::path);</span>
+  }
+
+  /**
+   * Returns the names of all variables in this {@code Template} (non-recursive), in
+   * order of their first appearance in the template. The returned {@code Set} is
+   * unmodifiable.
+   *
+   * @return The names of all variables in this {@code Template}
+   */
+  public Set&lt;String&gt; getVariables() {
+<span class="nc" id="L228">    return varIndices.keySet();</span>
+  }
+
+  /**
+   * Returns whether or not this {@code Template} contains a variable with the
+   * specified name.
+   *
+   * @param name The name of the variable
+   * @return Whether or not this {@code Template} contains a variable with the
+   *     specified name
+   */
+  public boolean containsVariable(String name) {
+<span class="nc" id="L240">    return Check.notNull(name).ok(varIndices::containsKey);</span>
+  }
+
+  /**
+   * Returns the total number of variables in this {@code Template}. Note that this
+   * method does not count the number of &lt;i&gt;unique&lt;/i&gt; variable names (which would be
+   * {@link #getVariables() getVars().size()}).
+   *
+   * @return The total number of variables in this {@code Template}
+   */
+  public int countVariables() {
+<span class="nc" id="L251">    return (int) parts.stream().filter(VariablePart.class::isInstance).count();</span>
+  }
+
+  private List&lt;Template&gt; nestedTemplates;
+
+  /**
+   * Returns all templates nested inside this {@code Template} (non-recursive). The
+   * returned {@code List} is unmodifiable.
+   *
+   * @return All templates nested inside this {@code Template}
+   */
+  public List&lt;Template&gt; getNestedTemplates() {
+<span class="nc bnc" id="L263" title="All 2 branches missed.">    if (nestedTemplates == null) {</span>
+<span class="nc" id="L264">      return nestedTemplates = tmplIndices.values()</span>
+<span class="nc" id="L265">          .stream()</span>
+<span class="nc" id="L266">          .map(parts::get)</span>
+<span class="nc" id="L267">          .map(NestedTemplatePart.class::cast)</span>
+<span class="nc" id="L268">          .map(NestedTemplatePart::getTemplate)</span>
+<span class="nc" id="L269">          .collect(toUnmodifiableList());</span>
+    }
+<span class="nc" id="L271">    return nestedTemplates;</span>
+  }
+
+  /**
+   * Returns the names of all templates nested inside this {@code Template}
+   * (non-recursive). The returned {@code Set} is unmodifiable.
+   *
+   * @return The names of all nested templates
+   */
+  public Set&lt;String&gt; getNestedTemplateNames() {
+<span class="nc" id="L281">    return tmplIndices.keySet();</span>
+  }
+
+  /**
+   * Returns whether or not this {@code Template} contains a nested template with the
+   * specified name.
+   *
+   * @param name The name of the nested template
+   * @return Whether or not this {@code Template} contains a nested template with the
+   *     specified name
+   */
+  public boolean containsNestedTemplate(String name) {
+<span class="nc" id="L293">    return Check.notNull(name).ok(varIndices::containsKey);</span>
+  }
+
+  /**
+   * Returns the number of templates nested inside this {@code Template}
+   * (non-recursive).
+   *
+   * @return The number of nested templates
+   */
+  public int countNestedTemplates() {
+<span class="nc" id="L303">    return tmplIndices.size();</span>
+  }
+
+  /**
+   * Returns the nested template identified by the specified name. This method throws
+   * an {@link IllegalArgumentException} if no nested template has the specified
+   * name.
+   *
+   * @param name The name of a nested template
+   * @return The {@code Template} with the specified name
+   */
+  public Template getNestedTemplate(String name) {
+<span class="nc" id="L315">    Check.notNull(name).is(keyIn(), tmplIndices, &quot;No such template: \&quot;%s\&quot;&quot;, name);</span>
+<span class="nc" id="L316">    int partIndex = tmplIndices.get(name);</span>
+<span class="nc" id="L317">    return ((NestedTemplatePart) parts.get(partIndex)).getTemplate();</span>
+  }
+
+  /**
+   * Returns the names of all variables and nested templates within this
+   * {@code Template} (non-recursive). The returned {@code List} is unmodifiable.
+   *
+   * @return The names of all variables and nested templates in this {@code Template}
+   */
+  public List&lt;String&gt; getNames() {
+<span class="fc" id="L327">    return names;</span>
+  }
+
+  /**
+   * Returns whether or not this is a text-only template. In other words, whether
+   * this is a template without any variables or nested templates.
+   *
+   * @return Whether or not this is a text-only template
+   */
+  public boolean isTextOnly() {
+<span class="nc" id="L337">    return names.isEmpty();</span>
+  }
+
+  /**
+   * Returns a {@code RenderSession} with which populate and render this
+   * {@code Template}. The {@code RenderSession} use the
+   * {@link AccessorRegistry#STANDARD_ACCESSORS predefined accessors} to extract
+   * values from source data objects, and the
+   * {@link StringifierRegistry predefined stringifiers} to stringify those values.
+   *
+   * @return A {@code RenderSession}
+   */
+  public RenderSession newRenderSession() {
+<span class="nc" id="L350">    return new SessionConfig(this).newRenderSession();</span>
+  }
+
+  /**
+   * Returns a {@code RenderSession} with which populate and render this
+   * {@code Template}. The {@code RenderSession} will use the
+   * {@link AccessorRegistry#STANDARD_ACCESSORS predefined accessors} to extract
+   * values from source data objects, and the specified {@code StringifierRegistry}
+   * to stringify those values.
+   *
+   * @param stringifiers The {@code StringifierRegistry} used to supply the
+   *     {@code RenderSession} with {@link Stringifier stringifiers}
+   * @return A new {@code RenderSession}
+   */
+  public RenderSession newRenderSession(StringifierRegistry stringifiers) {
+<span class="nc" id="L365">    Check.notNull(stringifiers, &quot;stringifiers&quot;);</span>
+<span class="nc" id="L366">    return new SessionConfig(this, stringifiers).newRenderSession();</span>
+  }
+
+  /**
+   * Returns a {@code RenderSession} with which populate and render this
+   * {@code Template}. The {@code RenderSession} that will use the specified
+   * {@code AccessorRegistry} to extract values from source data, and the
+   * {@link StringifierRegistry predefined stringifiers} to stringify those values.
+   *
+   * @param accessors The {@code AccessorRegistry} used to supply the
+   *     {@code RenderSession} with {@link Accessor accessors}
+   * @return A new {@code RenderSession}
+   */
+  public RenderSession newRenderSession(AccessorRegistry accessors) {
+<span class="nc" id="L380">    Check.notNull(accessors, &quot;accessors&quot;);</span>
+<span class="nc" id="L381">    return new SessionConfig(this, accessors).newRenderSession();</span>
+  }
+
+  /**
+   * Returns a {@code RenderSession} with which populate and render this
+   * {@code Template}. The {@code RenderSession} that will use the specified
+   * {@code AccessorRegistry} to extract values from source data, and the specified
+   * {@code StringifierRegistry} to stringify those values.
+   *
+   * @param accessors The {@code AccessorRegistry} used to supply the
+   *     {@code RenderSession} with {@link Accessor accessors}
+   * @param stringifiers The {@code StringifierRegistry} used to supply the
+   *     {@code RenderSession} with {@link Stringifier stringifiers}
+   * @return A new {@code RenderSession}
+   */
+  public RenderSession newRenderSession(AccessorRegistry accessors,
+      StringifierRegistry stringifiers) {
+<span class="nc" id="L398">    Check.notNull(accessors, &quot;accessors&quot;);</span>
+<span class="nc" id="L399">    Check.notNull(stringifiers, &quot;stringifiers&quot;);</span>
+<span class="nc" id="L400">    return new SessionConfig(this, accessors, stringifiers).newRenderSession();</span>
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+<span class="nc bnc" id="L405" title="All 2 branches missed.">    if (this == obj) {</span>
+<span class="nc" id="L406">      return true;</span>
+<span class="nc bnc" id="L407" title="All 4 branches missed.">    } else if (obj == null || getClass() != obj.getClass()) {</span>
+<span class="nc" id="L408">      return false;</span>
+    }
+<span class="nc" id="L410">    Template other = (Template) obj;</span>
+<span class="nc bnc" id="L411" title="All 2 branches missed.">    if (id != null) {</span>
+<span class="nc" id="L412">      return id.equals(other.id);</span>
+    }
+<span class="nc bnc" id="L414" title="All 2 branches missed.">    if (parent != null) {</span>
+<span class="nc" id="L415">      Template r0 = getRootTemplate();</span>
+<span class="nc bnc" id="L416" title="All 4 branches missed.">      return r0.id != null</span>
+          &amp;&amp; other.parent != null
+<span class="nc bnc" id="L418" title="All 2 branches missed.">          &amp;&amp; r0.id.equals(other.getRootTemplate().id)</span>
+<span class="nc bnc" id="L419" title="All 2 branches missed.">          &amp;&amp; getFQName(this).equals(getFQName(other));</span>
+    }
+<span class="nc" id="L421">    return false;</span>
+  }
+
+  @Override
+  public int hashCode() {
+<span class="nc bnc" id="L426" title="All 2 branches missed.">    return id == null ? 0 : id.hashCode();</span>
+  }
+
+  /**
+   * More or less re-assembles to source code from the constituent parts of the
+   * {@code Template}. Note, however, that ditch block are ditched early on in the
+   * parsing process and there is no trace of them left in the resulting
+   * {@code Template} instance.
+   */
+  @Override
+  public String toString() {
+<span class="nc" id="L437">    return implode(parts, &quot;&quot;);</span>
+  }
+
+  /* +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
+  /* ++++++++++++++++++++++ END OF PUBLIC INTERFACE ++++++++++++++++++++++ */
+  /* +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
+
+  List&lt;Part&gt; getParts() {
+<span class="nc" id="L445">    return parts;</span>
+  }
+
+  @SuppressWarnings(&quot;unchecked&quot;)
+  &lt;T extends Part&gt; T getPart(int index) {
+<span class="nc" id="L450">    return (T) Check.that(index).is(indexOf(), parts).mapToObj(parts::get);</span>
+  }
+
+  Map&lt;String, IntList&gt; getVarPartIndices() {
+<span class="nc" id="L454">    return varIndices;</span>
+  }
+
+  Map&lt;String, Integer&gt; getTemplatePartIndices() {
+<span class="nc" id="L458">    return tmplIndices;</span>
+  }
+
+  IntList getTextPartIndices() {
+<span class="nc" id="L462">    return textIndices;</span>
+  }
+
+  private static Map&lt;String, IntList&gt; getVarIndices(List&lt;Part&gt; parts) {
+<span class="fc" id="L466">    Map&lt;String, IntList&gt; indices = new LinkedHashMap&lt;&gt;();</span>
+<span class="fc bfc" id="L467" title="All 2 branches covered.">    for (int i = 0; i &lt; parts.size(); ++i) {</span>
+<span class="fc bfc" id="L468" title="All 2 branches covered.">      if (parts.get(i).getClass() == VariablePart.class) {</span>
+<span class="fc" id="L469">        String name = ((VariablePart) parts.get(i)).getName();</span>
+<span class="fc" id="L470">        indices.computeIfAbsent(name, k -&gt; new IntArrayList()).add(i);</span>
+      }
+    }
+<span class="fc" id="L473">    indices.entrySet().forEach(e -&gt; e.setValue(IntList.copyOf(e.getValue())));</span>
+<span class="fc" id="L474">    return Collections.unmodifiableMap(indices);</span>
+  }
+
+  private static Map&lt;String, Integer&gt; getTmplIndices(List&lt;Part&gt; parts) {
+<span class="fc" id="L478">    Map&lt;String, Integer&gt; indices = new LinkedHashMap&lt;&gt;();</span>
+<span class="fc bfc" id="L479" title="All 2 branches covered.">    for (int i = 0; i &lt; parts.size(); ++i) {</span>
+<span class="pc bpc" id="L480" title="1 of 2 branches missed.">      if (parts.get(i) instanceof NestedTemplatePart) {</span>
+<span class="nc" id="L481">        String name = ((NestedTemplatePart) parts.get(i)).getName();</span>
+<span class="nc" id="L482">        indices.put(name, i);</span>
+      }
+    }
+<span class="fc" id="L485">    return Collections.unmodifiableMap(indices);</span>
+  }
+
+  private static List&lt;String&gt; getNames(List&lt;Part&gt; parts) {
+<span class="fc" id="L489">    return parts.stream()</span>
+<span class="fc" id="L490">        .filter(NamedPart.class::isInstance)</span>
+<span class="fc" id="L491">        .map(NamedPart.class::cast)</span>
+<span class="fc" id="L492">        .map(NamedPart::getName)</span>
+<span class="fc" id="L493">        .collect(toUnmodifiableList());</span>
+  }
+
+  private static IntList getTextIndices(List&lt;Part&gt; parts) {
+<span class="fc" id="L497">    IntArrayList indices = new IntArrayList();</span>
+<span class="fc bfc" id="L498" title="All 2 branches covered.">    for (int i = 0; i &lt; parts.size(); ++i) {</span>
+<span class="fc bfc" id="L499" title="All 2 branches covered.">      if (parts.get(i).getClass() == TextPart.class) {</span>
+<span class="fc" id="L500">        indices.add(i);</span>
+      }
+    }
+<span class="fc" id="L503">    return IntList.copyOf(indices);</span>
+  }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

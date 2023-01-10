@@ -10,11 +10,11 @@ import org.slf4j.LoggerFactory;
 import java.util.HashMap;
 import java.util.LinkedList;
 
-import static org.klojang.templates.SysProp.*;
+import static org.klojang.templates.Setting.*;
 import static org.klojang.check.CommonChecks.gte;
 import static org.klojang.templates.Template.ROOT_TEMPLATE_NAME;
 
-public class TemplateCache {
+public final class TemplateCache {
 
   private static final Logger LOG = LoggerFactory.getLogger(TemplateCache.class);
 
@@ -26,7 +26,9 @@ public class TemplateCache {
 
   private TemplateCache() {
     maxSize = TMPL_CACHE_SIZE.getInt();
-    String s = maxSize == 0 ? " (caching disabled)" : maxSize == -1 ? " (unlimited)" : "";
+    String s = maxSize == 0
+        ? " (caching disabled)"
+        : maxSize == -1 ? " (unlimited)" : "";
     LOG.trace("Template cache size: {}{}", maxSize, s);
     Check.that(maxSize, TMPL_CACHE_SIZE.property()).is(gte(), -1);
     if (maxSize == 0) {
@@ -45,7 +47,8 @@ public class TemplateCache {
     return get(ROOT_TEMPLATE_NAME, clazz, path);
   }
 
-  public Template get(String name, Class<?> clazz, String path) throws ParseException {
+  public Template get(String name, Class<?> clazz, String path)
+      throws ParseException {
     return get(name, new TemplateId(clazz, path));
   }
 
@@ -100,4 +103,5 @@ public class TemplateCache {
       }
     }
   }
+
 }

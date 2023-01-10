@@ -1,7 +1,7 @@
 package org.klojang.templates.x.parse;
 
 import org.klojang.templates.VarGroup;
-import org.klojang.templates.x.ModulePrivate;
+import org.klojang.templates.x.Private;
 
 import java.util.Optional;
 
@@ -23,7 +23,7 @@ public final class VariablePart extends AbstractPart implements NamedPart {
     if (prefix == null) {
       group = null;
     } else {
-      group = VarGroup.createPrivileged(ModulePrivate.hide(prefix));
+      group = VarGroup.createPrivileged(Private.of(prefix));
     }
     this.name = name;
   }

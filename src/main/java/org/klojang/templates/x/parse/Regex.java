@@ -3,7 +3,7 @@ package org.klojang.templates.x.parse;
 import org.klojang.check.Check;
 import org.klojang.check.ObjectCheck;
 import org.klojang.templates.ParseException;
-import org.klojang.templates.SysProp;
+import org.klojang.templates.Setting;
 
 import java.util.Set;
 import java.util.regex.Pattern;
@@ -18,10 +18,12 @@ public final class Regex {
   private static final String ERR_ILLEGAL_VAL = "Illegal value for system property %s: \"%s\"";
   private static final String ERR_IDENTICAL = "varStart and tmplStart must be different";
 
-  public static final String VAR_START = SysProp.VAR_START.get();
-  public static final String VAR_END = SysProp.VAR_END.get();
-  public static final String TMPL_START = SysProp.TMPL_START.get();
-  public static final String TMPL_END = SysProp.TMPL_END.get();
+  public static final String VAR_START = Setting.VAR_START.get();
+
+  public static final String VAR_END = Setting.VAR_END.get();
+
+  public static final String TMPL_START = Setting.TMPL_START.get();
+  public static final String TMPL_END = Setting.TMPL_END.get();
 
   public static final String PLACEHOLDER_TAG = "<!--%-->";
 
@@ -135,11 +137,8 @@ public final class Regex {
 
   private static String quote(String token) {
     String special = "\\^$.|?*+()[]{}";
-    Set<Integer> specialChars = special.codePoints()
-        .mapToObj(Integer::valueOf)
-        .collect(toSet());
-    Set<Integer> tokenChars = token.codePoints().mapToObj(Integer::valueOf).collect(
-        toSet());
+    Set<Integer> specialChars = special.codePoints().boxed().collect(toSet());
+    Set<Integer> tokenChars = token.codePoints().boxed().collect(toSet());
     return tokenChars.stream().anyMatch(specialChars::contains)
         ? Pattern.quote(token)
         : token;

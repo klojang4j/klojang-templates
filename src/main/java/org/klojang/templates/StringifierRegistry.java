@@ -2,7 +2,7 @@ package org.klojang.templates;
 
 import org.klojang.check.Check;
 import org.klojang.collections.TypeMap;
-import org.klojang.templates.x.ModulePrivate;
+import org.klojang.templates.x.Private;
 import org.klojang.templates.x.StandardStringifiers;
 import org.klojang.templates.x.parse.VariablePart;
 import org.klojang.util.Tuple2;
@@ -257,7 +257,7 @@ public final class StringifierRegistry {
       Check.that(groupNames, "groupNames").isNot(empty());
       for (String name : groupNames) {
         Check.that(name, "group name").isNot(empty());
-        VarGroup vg = VarGroup.createPrivileged(ModulePrivate.hide(name));
+        VarGroup vg = VarGroup.createPrivileged(Private.of(name));
         StringifierId id = new StringifierId(vg);
         Check.that(id)
             .isNot(keyIn(), stringifiers, ERR_GROUP_ASSIGNED)
