@@ -48,7 +48,6 @@ public class ParserTest {
 
   @Test
   public void parseVariables02() throws ParseException {
-    String src1 = "<tr>\n<td>~%html:foo%</td>\n<!-- some comment -->\n<td>~%text:bar%</td>\n</tr>";
     String src = """
         <tr>
           <td>~%html:foo%</td>
@@ -118,9 +117,35 @@ public class ParserTest {
 
   @Test
   public void parseNestedTemplates01() throws ParseException {
-    String path = "ParserTest.parseNestedTemplates01.html";
-    Parser parser = new Parser(ROOT_TEMPLATE_NAME,
-        new TemplateLocation(getClass(), path));
+    String src = """
+        <html>
+        <head>
+        <script type="text/javascript">
+        <!--
+        ~%%begin:jsVars%
+          var selectedName = "~%js:selectedName%";
+          var selectedAge = ~%selectedAge%;
+        ~%%end:jsVars%
+        -->
+        </script>
+        </head>
+        <body>
+          <table>
+            <thead>
+              <tr><th>Name</th><th>Age</th>
+            </thead>
+            <tbody>
+            <!--
+            ~%%begin:tableRow%
+              <tr><td>~%html:name%</td><td>~%text:age%</td></tr>
+            ~%%end:tableRow%
+            -->
+            </tbody>
+          </table>
+        </body>
+        </html>
+        """;
+    Parser parser = new Parser(ROOT_TEMPLATE_NAME, TemplateLocation.NONE, src);
     List<Part> parts = parser.getParts();
     assertTrue(parts.get(1) instanceof NestedTemplatePart);
     Template t = ((NestedTemplatePart) parts.get(1)).getTemplate();
@@ -136,9 +161,28 @@ public class ParserTest {
 
   @Test
   public void parseIncludedTemplates00() throws ParseException {
-    String path = "ParserTest.parseIncludedTemplates00.html";
+    String src = """
+        <html>
+        <head>
+        <script type="text/javascript">
+        ~%%include:jsVars.js%
+        </script>
+        </head>
+        <body>
+          <table>
+            <thead>
+              <tr><th>Name</th><th>Age</th>
+            </thead>
+            <tbody>
+              ~%%include:tableRow.html%
+            </tbody>
+          </table>
+        </body>
+        </html>
+        """;
     Parser parser = new Parser(ROOT_TEMPLATE_NAME,
-        new TemplateLocation(getClass(), path));
+        new TemplateLocation(getClass()),
+        src);
     List<Part> parts = parser.getParts();
     assertTrue(parts.get(1) instanceof NestedTemplatePart);
     NestedTemplatePart tp = (NestedTemplatePart) parts.get(1);
@@ -158,9 +202,28 @@ public class ParserTest {
 
   @Test
   public void parseIncludedTemplates01() throws ParseException {
-    String path = "ParserTest.parseIncludedTemplates01.html";
+    String src = """
+        <html>
+        <head>
+        <script type="text/javascript">
+        <!-- ~%%include:jsVars.js% -->
+        </script>
+        </head>
+        <body>
+          <table>
+            <thead>
+              <tr><th>Name</th><th>Age</th>
+            </thead>
+            <tbody>
+              <!-- ~%%include:tableRow.html% -->
+            </tbody>
+          </table>
+        </body>
+        </html>
+        """;
     Parser parser = new Parser(ROOT_TEMPLATE_NAME,
-        new TemplateLocation(getClass(), path));
+        new TemplateLocation(getClass()),
+        src);
     List<Part> parts = parser.getParts();
     assertTrue(parts.get(1) instanceof NestedTemplatePart);
     NestedTemplatePart tp = (NestedTemplatePart) parts.get(1);

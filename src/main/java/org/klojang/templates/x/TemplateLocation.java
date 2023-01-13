@@ -1,10 +1,8 @@
 package org.klojang.templates.x;
 
 import org.klojang.check.Check;
-import org.klojang.check.Tag;
 import org.klojang.templates.PathResolutionException;
 import org.klojang.templates.PathResolver;
-import org.klojang.util.ExceptionMethods;
 import org.klojang.util.IOMethods;
 
 import java.io.*;
@@ -26,10 +24,10 @@ public final class TemplateLocation {
   private final Class<?> clazz;
   private final String path;
 
-  public TemplateLocation(TemplateLocation parentLocation) {
+  public TemplateLocation(TemplateLocation parent) {
     this.type = STRING;
-    this.pathResolver = parentLocation.pathResolver;
-    this.clazz = parentLocation.clazz;
+    this.pathResolver = parent.pathResolver;
+    this.clazz = parent.clazz;
     this.path = null;
   }
 
