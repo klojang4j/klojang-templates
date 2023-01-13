@@ -7,7 +7,7 @@ import static org.klojang.templates.RenderException.repetitionMismatch;
 import static org.klojang.templates.TemplateUtils.getFQName;
 import static org.klojang.util.ObjectMethods.ifNotNull;
 
-class RenderState {
+final class RenderState {
 
   private static final RenderSession[] ZERO_SESSIONS = new RenderSession[0];
   private static final RenderSession[] ONE_SESSION = new RenderSession[1];
@@ -35,7 +35,8 @@ class RenderState {
     return getOrCreateChildSessions(t, 1)[0];
   }
 
-  RenderSession[] getOrCreateChildSessions(Template t, int repeats) throws RenderException {
+  RenderSession[] getOrCreateChildSessions(Template t, int repeats)
+      throws RenderException {
     RenderSession[] children = sessions.get(t);
     if (children == null) {
       if (repeats == 0) {
@@ -53,7 +54,8 @@ class RenderState {
     return children;
   }
 
-  RenderSession[] getOrCreateTextOnlyChildSessions(Template t, int repeats) throws RenderException {
+  RenderSession[] getOrCreateTextOnlyChildSessions(Template t, int repeats)
+      throws RenderException {
     // The RenderSession[] array will never contain any actual RenderSession
     // instances for a text-only template. Only its length matters to the
     // Renderer as it determines how often the template is to be repeated.
@@ -126,7 +128,7 @@ class RenderState {
         .forEach(RenderState::deepFreeze);
   }
 
-  List<String> getUnsetCars() {
+  List<String> getUnsetVars() {
     ArrayList<String> names = new ArrayList<>();
     collectUnsetVars(this, names);
     return names;
@@ -171,4 +173,5 @@ class RenderState {
         return new RenderSession[repeats];
     }
   }
+
 }

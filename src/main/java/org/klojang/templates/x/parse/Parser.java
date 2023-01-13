@@ -6,7 +6,7 @@ import org.klojang.templates.PathResolutionException;
 import org.klojang.templates.PathResolver;
 import org.klojang.templates.Template;
 import org.klojang.templates.x.Private;
-import org.klojang.templates.x.TemplateId;
+import org.klojang.templates.x.TemplateLocation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,7 +17,7 @@ import java.util.regex.Pattern;
 
 import static org.klojang.check.CommonChecks.*;
 import static org.klojang.templates.Template.ROOT_TEMPLATE_NAME;
-import static org.klojang.templates.x.TemplateSourceType.STRING;
+import static org.klojang.templates.x.TemplateLocationType.STRING;
 import static org.klojang.templates.x.parse.ErrorType.*;
 import static org.klojang.util.StringMethods.EMPTY_STRING;
 
@@ -29,26 +29,27 @@ public final class Parser {
       FallibleBiFunction<UnparsedPart, Set<String>, List<Part>, ParseException> {}
 
   private final String name; // template name
-  private final TemplateId id;
+  private final TemplateLocation location;
   private final String src;
 
-  public Parser(String name, TemplateId id) throws PathResolutionException {
-    this(name, id, id.getSource());
+  public Parser(String name, TemplateLocation location)
+      throws PathResolutionException {
+    this(name, location, location.getSource());
   }
 
-  public Parser(String name, TemplateId id, String src) {
+  public Parser(String name, TemplateLocation location, String src) {
     this.name = name;
-    this.id = id;
+    this.location = location;
     this.src = src;
   }
 
   public Template parse() throws ParseException {
-    return new Template(Private.of(name), id, List.copyOf(getParts()));
+    return new Template(Private.of(name), location, List.copyOf(getParts()));
   }
 
   // visible for testing
   List<Part> getParts() throws ParseException {
-    logParsing(name, id);
+    logParsing(name, location);
     // Accumulates template names for duplicate checks:
     Set<String> names = new HashSet<>();
     List<Part> parts = List.of(new UnparsedPart(src, 0));
@@ -138,7 +139,7 @@ public final class Parser {
           .isNot(in(), names)
           .isNot(EQ(), ROOT_TEMPLATE_NAME);
       names.add(name);
-      Parser parser = new Parser(name, new TemplateId(id), mySrc);
+      Parser parser = new Parser(name, new TemplateLocation(location), mySrc);
       parts.add(new InlineTemplatePart(parser.parse(), offset + m.start()));
       end = m.end();
     } while (m.find());
@@ -176,23 +177,23 @@ public final class Parser {
           .check(name, src, offset + m.start(2), name)
           .isNot(in(), names)
           .isNot(EQ(), ROOT_TEMPLATE_NAME);
-      TemplateId newId;
-      if (id.clazz() != null) { // Load as resource
-        if (id.clazz().getResource(path) == null) {
+      TemplateLocation newId;
+      if (location.clazz() != null) { // Load as resource
+        if (location.clazz().getResource(path) == null) {
           throw INVALID_INCLUDE_PATH.asException(src, offset + m.start(3), path);
         }
-        newId = new TemplateId(id.clazz(), path);
-      } else if (id.pathResolver() != null) { // Load using path resolver
-        PathResolver pr = id.pathResolver();
+        newId = new TemplateLocation(location.clazz(), path);
+      } else if (location.pathResolver() != null) { // Load using path resolver
+        PathResolver pr = location.pathResolver();
         if (pr.isValidPath(path).isPresent() && !pr.isValidPath(path).get()) {
           throw INVALID_INCLUDE_PATH.asException(src, offset + m.start(3), path);
         }
-        newId = new TemplateId(id.pathResolver(), path);
+        newId = new TemplateLocation(location.pathResolver(), path);
       } else { // Load from file system
         if (!new File(path).isFile()) {
           throw INVALID_INCLUDE_PATH.asException(src, offset + m.start(3), path);
         }
-        newId = new TemplateId(path);
+        newId = new TemplateLocation(path);
       }
       names.add(name);
       Template nested = TemplateCache.INSTANCE.get(name, newId);
@@ -292,11 +293,11 @@ public final class Parser {
     return new UnparsedPart(s, from + p.start());
   }
 
-  private static void logParsing(String name, TemplateId id) {
+  private static void logParsing(String name, TemplateLocation location) {
     if (LOG.isTraceEnabled()) {
       if (name == ROOT_TEMPLATE_NAME) {
         LOG.trace("Parsing root template");
-      } else if (id.sourceType() == STRING) {
+      } else if (location.type() == STRING) {
         LOG.trace("Parsing inline template \"{}\"", name);
       } else {
         LOG.trace("Parsing included template \"{}\"", name);

@@ -2,7 +2,7 @@ package org.klojang.templates;
 
 import org.klojang.check.Check;
 import org.klojang.templates.x.Private;
-import org.klojang.templates.x.TemplateId;
+import org.klojang.templates.x.TemplateLocation;
 import org.klojang.templates.x.parse.*;
 import org.klojang.util.ModulePrivate;
 import org.klojang.util.collection.IntArrayList;
@@ -17,7 +17,7 @@ import static org.klojang.check.CommonChecks.*;
 import static org.klojang.templates.TemplateUtils.getFQName;
 import static org.klojang.util.CollectionMethods.implode;
 import static org.klojang.util.ObjectMethods.ifNotNull;
-import static org.klojang.templates.x.TemplateSourceType.*;
+import static org.klojang.templates.x.TemplateLocationType.*;
 
 /**
  * The {@code Template} class is responsible for loading and parsing templates and
@@ -58,7 +58,7 @@ public class Template {
    */
   public static Template fromString(String source) throws ParseException {
     Check.notNull(source, "source");
-    return new Parser(ROOT_TEMPLATE_NAME, new TemplateId(), source).parse();
+    return new Parser(ROOT_TEMPLATE_NAME, TemplateLocation.NONE, source).parse();
   }
 
   /**
@@ -77,7 +77,9 @@ public class Template {
       throws ParseException {
     Check.notNull(clazz, "clazz");
     Check.notNull(source, "source");
-    return new Parser(ROOT_TEMPLATE_NAME, new TemplateId(clazz), source).parse();
+    return new Parser(ROOT_TEMPLATE_NAME,
+        new TemplateLocation(clazz),
+        source).parse();
   }
 
   /**
@@ -103,7 +105,7 @@ public class Template {
         "Resource not found: %s",
         path);
     return TemplateCache.INSTANCE.get(ROOT_TEMPLATE_NAME,
-        new TemplateId(clazz, path));
+        new TemplateLocation(clazz, path));
   }
 
   /**
@@ -118,7 +120,8 @@ public class Template {
    */
   public static Template fromFile(String path) throws ParseException {
     Check.notNull(path, "path");
-    return TemplateCache.INSTANCE.get(ROOT_TEMPLATE_NAME, new TemplateId(path));
+    return TemplateCache.INSTANCE.get(ROOT_TEMPLATE_NAME,
+        new TemplateLocation(path));
   }
 
   /**
@@ -135,11 +138,11 @@ public class Template {
     Check.notNull(pathResolver, "pathResolver");
     Check.notNull(path, "path");
     return TemplateCache.INSTANCE.get(ROOT_TEMPLATE_NAME,
-        new TemplateId(pathResolver, path));
+        new TemplateLocation(pathResolver, path));
   }
 
   private final String name;
-  private final TemplateId id;
+  private final TemplateLocation location;
   private final List<Part> parts;
   private final Map<String, IntList> varIndices;
   private final IntList textIndices;
@@ -153,10 +156,12 @@ public class Template {
    * For internal use only.
    */
   @ModulePrivate
-  public Template(Private<String> name, TemplateId id, List<Part> parts) {
+  public Template(Private<String> name,
+      TemplateLocation location,
+      List<Part> parts) {
     parts.forEach(p -> p.setParentTemplate(this));
     this.name = name.get();
-    this.id = id.sourceType() == STRING ? null : id;
+    this.location = location.type() == STRING ? null : location;
     this.parts = parts;
     this.varIndices = getVarIndices(parts);
     this.tmplIndices = getTmplIndices(parts);
@@ -192,6 +197,16 @@ public class Template {
     this.parent = parent.get();
   }
 
+  /**
+   * Returns the ultimate ancestor of this {@code Template}. In other words, the
+   * {@code Template} that was explicitly created by a call to one of the
+   * {@code fromXXX()} methods - for example
+   * {@link #fromResource(Class, String) Template.fromResource()}. If this
+   * {@code Template} <i>is</i> the root template, then this method return
+   * {@code this}.
+   *
+   * @return the ultimate ancestor of this {@code Template}
+   */
   public Template getRootTemplate() {
     if (parent == null) {
       return this;
@@ -214,7 +229,7 @@ public class Template {
    * @return The file location (if any) of the source code for this {@code Template}
    */
   public String getPath() {
-    return ifNotNull(id, TemplateId::path);
+    return ifNotNull(location, TemplateLocation::path);
   }
 
   /**
@@ -408,14 +423,14 @@ public class Template {
       return false;
     }
     Template other = (Template) obj;
-    if (id != null) {
-      return id.equals(other.id);
+    if (location != null) {
+      return location.equals(other.location);
     }
     if (parent != null) {
       Template r0 = getRootTemplate();
-      return r0.id != null
+      return r0.location != null
           && other.parent != null
-          && r0.id.equals(other.getRootTemplate().id)
+          && r0.location.equals(other.getRootTemplate().location)
           && getFQName(this).equals(getFQName(other));
     }
     return false;
@@ -423,7 +438,7 @@ public class Template {
 
   @Override
   public int hashCode() {
-    return id == null ? 0 : id.hashCode();
+    return location == null ? 0 : location.hashCode();
   }
 
   /**

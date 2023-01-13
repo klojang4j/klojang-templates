@@ -1,6 +1,6 @@
 module org.klojang.templates {
   exports org.klojang.templates;
-  exports org.klojang.templates.x.parse;
+  exports org.klojang.templates.name;
 
   requires org.apache.commons.text;
   requires org.apache.commons.lang3;

@@ -3,7 +3,7 @@ package org.klojang.templates.x;
 /**
  * Symbolic constants for the origin of a Template instance
  */
-public enum TemplateSourceType {
+public enum TemplateLocationType {
   /**
    * The template source code was provided as a string.
    */
@@ -16,7 +16,7 @@ public enum TemplateSourceType {
   /**
    * The template source code was provided via a {@code File} object.
    */
-  FILE_SYSTEM,
+  FILE,
   /**
    * The template source code was provided via a {@code PathResolver} object.
    */
