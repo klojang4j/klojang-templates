@@ -108,7 +108,7 @@ public class AccessorRegistry {
    * assumes that the names you use in your templates can be mapped as-is to your
    * model objects.
    */
-<span class="nc" id="L111">  public static final AccessorRegistry STANDARD_ACCESSORS = configure().freeze();</span>
+<span class="fc" id="L111">  public static final AccessorRegistry STANDARD_ACCESSORS = configure().freeze();</span>
 
   /**
    * Returns an {@code AccessorRegistry} that should be sufficient for most use
@@ -132,11 +132,11 @@ public class AccessorRegistry {
    */
   public static class Builder {
 
-<span class="nc" id="L135">    private NameMapper defMapper = NameMapper.AS_IS;</span>
-<span class="nc" id="L136">    private final Map&lt;Class&lt;?&gt;, Map&lt;Template, Accessor&lt;?&gt;&gt;&gt; accs = new HashMap&lt;&gt;();</span>
-<span class="nc" id="L137">    private final Map&lt;Template, NameMapper&gt; mappers = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L135">    private NameMapper defMapper = NameMapper.AS_IS;</span>
+<span class="fc" id="L136">    private final Map&lt;Class&lt;?&gt;, Map&lt;Template, Accessor&lt;?&gt;&gt;&gt; accs = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L137">    private final Map&lt;Template, NameMapper&gt; mappers = new HashMap&lt;&gt;();</span>
 
-<span class="nc" id="L139">    private Builder() {}</span>
+<span class="fc" id="L139">    private Builder() {}</span>
 
     /**
      * Sets the default {@code NameMapper} used to map template variable names to
@@ -242,7 +242,7 @@ public class AccessorRegistry {
      * @return
      */
     public AccessorRegistry freeze() {
-<span class="nc" id="L245">      return new AccessorRegistry(accs, defMapper, mappers);</span>
+<span class="fc" id="L245">      return new AccessorRegistry(accs, defMapper, mappers);</span>
     }
 
   }
@@ -250,10 +250,10 @@ public class AccessorRegistry {
   /* +++++++++++++++++++++[ END BUILDER CLASS ]++++++++++++++++++ */
 
   public static Builder configure() {
-<span class="nc" id="L253">    return new Builder();</span>
+<span class="fc" id="L253">    return new Builder();</span>
   }
 
-<span class="nc" id="L256">  private final boolean useBeanAccessor = Setting.USE_BEAN_ACCESSOR.getBoolean();</span>
+<span class="fc" id="L256">  private final boolean useBeanAccessor = Setting.USE_BEAN_ACCESSOR.getBoolean();</span>
 
   private final Map&lt;Class&lt;?&gt;, Map&lt;Template, Accessor&lt;?&gt;&gt;&gt; accs;
   private final NameMapper defMapper;
@@ -261,11 +261,11 @@ public class AccessorRegistry {
 
   private AccessorRegistry(Map&lt;Class&lt;?&gt;, Map&lt;Template, Accessor&lt;?&gt;&gt;&gt; accs,
       NameMapper defMapper,
-<span class="nc" id="L264">      Map&lt;Template, NameMapper&gt; mappers) {</span>
-<span class="nc bnc" id="L265" title="All 2 branches missed.">    this.accs = accs.isEmpty() ? emptyMap() : TypeMap.fixedTypeMap(accs);</span>
-<span class="nc" id="L266">    this.defMapper = defMapper;</span>
-<span class="nc" id="L267">    this.mappers = Map.copyOf(mappers);</span>
-<span class="nc" id="L268">  }</span>
+<span class="fc" id="L264">      Map&lt;Template, NameMapper&gt; mappers) {</span>
+<span class="pc bpc" id="L265" title="1 of 2 branches missed.">    this.accs = accs.isEmpty() ? emptyMap() : TypeMap.fixedTypeMap(accs);</span>
+<span class="fc" id="L266">    this.defMapper = defMapper;</span>
+<span class="fc" id="L267">    this.mappers = Map.copyOf(mappers);</span>
+<span class="fc" id="L268">  }</span>
 
   Accessor&lt;?&gt; getAccessor(Object obj, Template template) {
 <span class="nc" id="L271">    Class&lt;?&gt; type = obj.getClass();</span>

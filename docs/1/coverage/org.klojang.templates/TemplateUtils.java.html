@@ -72,25 +72,25 @@ public class TemplateUtils {
    * @return
    */
   public static String getFQName(Template template, String name) {
-<span class="nc" id="L75">    Check.notNull(template, &quot;template&quot;);</span>
-<span class="nc" id="L76">    Check.notNull(name, &quot;name&quot;);</span>
-<span class="nc" id="L77">    int sz = name.length();</span>
-<span class="nc" id="L78">    ArrayList&lt;String&gt; chunks = new ArrayList&lt;&gt;(5);</span>
-<span class="nc" id="L79">    chunks.add(name);</span>
-<span class="nc" id="L80">    for (Template t = template;</span>
-<span class="nc bnc" id="L81" title="All 4 branches missed.">        t != null &amp;&amp; t.getParent() != null;</span>
+<span class="fc" id="L75">    Check.notNull(template, &quot;template&quot;);</span>
+<span class="fc" id="L76">    Check.notNull(name, &quot;name&quot;);</span>
+<span class="fc" id="L77">    int sz = name.length();</span>
+<span class="fc" id="L78">    ArrayList&lt;String&gt; chunks = new ArrayList&lt;&gt;(5);</span>
+<span class="fc" id="L79">    chunks.add(name);</span>
+<span class="fc" id="L80">    for (Template t = template;</span>
+<span class="pc bpc" id="L81" title="2 of 4 branches missed.">        t != null &amp;&amp; t.getParent() != null;</span>
 <span class="nc" id="L82">        t = t.getParent()) {</span>
 <span class="nc" id="L83">      chunks.add(t.getName());</span>
 <span class="nc" id="L84">      sz += t.getName().length() + 1;</span>
     }
-<span class="nc" id="L86">    StringBuilder sb = new StringBuilder(sz);</span>
-<span class="nc bnc" id="L87" title="All 2 branches missed.">    for (int i = chunks.size() - 1; i &gt;= 0; --i) {</span>
-<span class="nc bnc" id="L88" title="All 2 branches missed.">      if (sb.length() != 0) {</span>
+<span class="fc" id="L86">    StringBuilder sb = new StringBuilder(sz);</span>
+<span class="fc bfc" id="L87" title="All 2 branches covered.">    for (int i = chunks.size() - 1; i &gt;= 0; --i) {</span>
+<span class="pc bpc" id="L88" title="1 of 2 branches missed.">      if (sb.length() != 0) {</span>
 <span class="nc" id="L89">        sb.append('.');</span>
       }
-<span class="nc" id="L91">      sb.append(chunks.get(i));</span>
+<span class="fc" id="L91">      sb.append(chunks.get(i));</span>
     }
-<span class="nc" id="L93">    return sb.toString();</span>
+<span class="fc" id="L93">    return sb.toString();</span>
   }
 
   /**

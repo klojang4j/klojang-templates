@@ -19,13 +19,11 @@ public final class Regex {
   private static final String ERR_IDENTICAL = "varStart and tmplStart must be different";
 
   public static final String VAR_START = Setting.VAR_START.get();
-
   public static final String VAR_END = Setting.VAR_END.get();
-
   public static final String TMPL_START = Setting.TMPL_START.get();
   public static final String TMPL_END = Setting.TMPL_END.get();
 
-  public static final String PLACEHOLDER_TAG = "<!--%-->";
+  static final String PLACEHOLDER_START_END = "<!--%-->";
 
   private static Regex instance;
 
@@ -89,11 +87,11 @@ public final class Regex {
 
     String ptnCmtIncludedTmpl = cmtStart + ptnIncludedTmpl + cmtEnd;
 
-    String ptnDitchTag = "<!--%%.*?-->";
+    String ptnDitchTag = "<!--%%(.*?)-->";
 
-    String ptnDitchBlock = ptnDitchTag + ".*?" + ptnDitchTag;
+    String ptnDitchBlock = ptnDitchTag + "(.*?)" + ptnDitchTag;
 
-    String ptnPlaceholder = PLACEHOLDER_TAG + ".*?" + PLACEHOLDER_TAG;
+    String ptnPlaceholder = PLACEHOLDER_START_END + "(.*?)" + PLACEHOLDER_START_END;
 
     // Equivalent to prefixing the regular expression with "(?ms)"
     int msModifiers = Pattern.MULTILINE | Pattern.DOTALL;

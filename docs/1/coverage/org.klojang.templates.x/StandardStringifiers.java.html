@@ -19,27 +19,27 @@ import static org.klojang.util.StringMethods.EMPTY_STRING;
 <span class="nc" id="L19">public class StandardStringifiers {</span>
 
   // Copied from StringEscapeUtils and added the 4th LookupTranslator
-<span class="nc" id="L22">  private static final CharSequenceTranslator HTML_ATTR_TRANSLATOR =</span>
+<span class="fc" id="L22">  private static final CharSequenceTranslator HTML_ATTR_TRANSLATOR =</span>
       new AggregateTranslator(
           new LookupTranslator(EntityArrays.BASIC_ESCAPE),
           new LookupTranslator(EntityArrays.ISO8859_1_ESCAPE),
           new LookupTranslator(EntityArrays.HTML40_EXTENDED_ESCAPE),
-<span class="nc" id="L27">          new LookupTranslator(Map.of(&quot;'&quot;, &quot;&amp;#39;&quot;, &quot;\&quot;&quot;, &quot;&amp;#34;&quot;)));</span>
+<span class="fc" id="L27">          new LookupTranslator(Map.of(&quot;'&quot;, &quot;&amp;#39;&quot;, &quot;\&quot;&quot;, &quot;&amp;#34;&quot;)));</span>
 
-<span class="nc" id="L29">  public static final Stringifier ESCAPE_HTML = wrap(StringEscapeUtils::escapeHtml4);</span>
+<span class="fc" id="L29">  public static final Stringifier ESCAPE_HTML = wrap(StringEscapeUtils::escapeHtml4);</span>
 
-<span class="nc" id="L31">  public static final Stringifier ESCAPE_JS = wrap(StringEscapeUtils::escapeEcmaScript);</span>
+<span class="fc" id="L31">  public static final Stringifier ESCAPE_JS = wrap(StringEscapeUtils::escapeEcmaScript);</span>
 
-<span class="nc" id="L33">  public static final Stringifier ESCAPE_ATTR = wrap(HTML_ATTR_TRANSLATOR::translate);</span>
+<span class="fc" id="L33">  public static final Stringifier ESCAPE_ATTR = wrap(HTML_ATTR_TRANSLATOR::translate);</span>
 
-<span class="nc" id="L35">  public static final Stringifier ESCAPE_JS_ATTR = wrap(StandardStringifiers::escapeJsAttr);</span>
+<span class="fc" id="L35">  public static final Stringifier ESCAPE_JS_ATTR = wrap(StandardStringifiers::escapeJsAttr);</span>
 
-<span class="nc" id="L37">  public static final Stringifier ESCAPE_QUERY_PARAM = wrap(StandardStringifiers::escapeParam);</span>
+<span class="fc" id="L37">  public static final Stringifier ESCAPE_QUERY_PARAM = wrap(StandardStringifiers::escapeParam);</span>
 
-<span class="nc" id="L39">  public static final Stringifier ESCAPE_PATH = wrap(StandardStringifiers::escapePath);</span>
+<span class="fc" id="L39">  public static final Stringifier ESCAPE_PATH = wrap(StandardStringifiers::escapePath);</span>
 
   public static Map&lt;VarGroup, Stringifier&gt; get() {
-<span class="nc" id="L42">    return Map.of(</span>
+<span class="fc" id="L42">    return Map.of(</span>
         TEXT, Stringifier.DEFAULT,
         HTML, ESCAPE_HTML,
         JS, ESCAPE_JS,
@@ -62,7 +62,7 @@ import static org.klojang.util.StringMethods.EMPTY_STRING;
   }
 
   private static Stringifier wrap(UnaryOperator&lt;String&gt; stringifier) {
-<span class="nc bnc" id="L65" title="All 2 branches missed.">    return x -&gt; x == null ? EMPTY_STRING : stringifier.apply(x.toString());</span>
+<span class="pc bnc" id="L65" title="All 2 branches missed.">    return x -&gt; x == null ? EMPTY_STRING : stringifier.apply(x.toString());</span>
   }
 
 }

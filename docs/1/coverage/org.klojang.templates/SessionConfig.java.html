@@ -10,29 +10,29 @@ class SessionConfig {
   private final StringifierRegistry stringifiers;
 
   SessionConfig(Template template) {
-<span class="nc" id="L13">    this(template, STANDARD_ACCESSORS, STANDARD_STRINGIFIERS);</span>
-<span class="nc" id="L14">  }</span>
+<span class="fc" id="L13">    this(template, STANDARD_ACCESSORS, STANDARD_STRINGIFIERS);</span>
+<span class="fc" id="L14">  }</span>
 
   SessionConfig(Template template, StringifierRegistry stringifiers) {
-<span class="nc" id="L17">    this(template, STANDARD_ACCESSORS, stringifiers);</span>
-<span class="nc" id="L18">  }</span>
+<span class="fc" id="L17">    this(template, STANDARD_ACCESSORS, stringifiers);</span>
+<span class="fc" id="L18">  }</span>
 
   SessionConfig(Template template, AccessorRegistry accessors) {
 <span class="nc" id="L21">    this(template, accessors, STANDARD_STRINGIFIERS);</span>
 <span class="nc" id="L22">  }</span>
 
-<span class="nc" id="L24">  SessionConfig(Template template, AccessorRegistry accessors, StringifierRegistry stringifiers) {</span>
-<span class="nc" id="L25">    this.template = template;</span>
-<span class="nc" id="L26">    this.accessors = accessors;</span>
-<span class="nc" id="L27">    this.stringifiers = stringifiers;</span>
-<span class="nc" id="L28">  }</span>
+<span class="fc" id="L24">  SessionConfig(Template template, AccessorRegistry accessors, StringifierRegistry stringifiers) {</span>
+<span class="fc" id="L25">    this.template = template;</span>
+<span class="fc" id="L26">    this.accessors = accessors;</span>
+<span class="fc" id="L27">    this.stringifiers = stringifiers;</span>
+<span class="fc" id="L28">  }</span>
 
   RenderSession newRenderSession() {
-<span class="nc" id="L31">    return new RenderSession(this);</span>
+<span class="fc" id="L31">    return new RenderSession(this);</span>
   }
 
   Template getTemplate() {
-<span class="nc" id="L35">    return template;</span>
+<span class="fc" id="L35">    return template;</span>
   }
 
   AccessorRegistry getAccessors() {
@@ -40,7 +40,7 @@ class SessionConfig {
   }
 
   StringifierRegistry getStringifiers() {
-<span class="nc" id="L43">    return stringifiers;</span>
+<span class="fc" id="L43">    return stringifiers;</span>
   }
 
   Accessor&lt;?&gt; getAccessor(Object sourceData) {

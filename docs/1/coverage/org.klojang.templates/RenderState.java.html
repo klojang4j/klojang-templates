@@ -9,8 +9,8 @@ import static org.klojang.util.ObjectMethods.ifNotNull;
 
 final class RenderState {
 
-<span class="nc" id="L12">  private static final RenderSession[] ZERO_SESSIONS = new RenderSession[0];</span>
-<span class="nc" id="L13">  private static final RenderSession[] ONE_SESSION = new RenderSession[1];</span>
+<span class="fc" id="L12">  private static final RenderSession[] ZERO_SESSIONS = new RenderSession[0];</span>
+<span class="fc" id="L13">  private static final RenderSession[] ONE_SESSION = new RenderSession[1];</span>
 
   private final SessionConfig config;
   private final Set&lt;String&gt; todo; // variables that have not been set yet
@@ -19,16 +19,16 @@ final class RenderState {
 
   private boolean frozen;
 
-<span class="nc" id="L22">  RenderState(SessionConfig config) {</span>
-<span class="nc" id="L23">    this.config = config;</span>
-<span class="nc" id="L24">    int sz = config.getTemplate().countNestedTemplates();</span>
-<span class="nc" id="L25">    this.sessions = new IdentityHashMap&lt;&gt;(sz);</span>
-<span class="nc" id="L26">    this.varValues = new HashMap&lt;&gt;(sz);</span>
-<span class="nc" id="L27">    this.todo = new HashSet&lt;&gt;(config.getTemplate().getVariables());</span>
-<span class="nc" id="L28">  }</span>
+<span class="fc" id="L22">  RenderState(SessionConfig config) {</span>
+<span class="fc" id="L23">    this.config = config;</span>
+<span class="fc" id="L24">    int sz = config.getTemplate().countNestedTemplates();</span>
+<span class="fc" id="L25">    this.sessions = new IdentityHashMap&lt;&gt;(sz);</span>
+<span class="fc" id="L26">    this.varValues = new HashMap&lt;&gt;(sz);</span>
+<span class="fc" id="L27">    this.todo = new HashSet&lt;&gt;(config.getTemplate().getVariables());</span>
+<span class="fc" id="L28">  }</span>
 
   SessionConfig getSessionConfig() {
-<span class="nc" id="L31">    return config;</span>
+<span class="fc" id="L31">    return config;</span>
   }
 
   RenderSession getOrCreateChildSession(Template t) throws RenderException {
@@ -89,44 +89,44 @@ final class RenderState {
   }
 
   Object getVar(int partIndex) {
-<span class="nc" id="L92">    return varValues.get(partIndex);</span>
+<span class="fc" id="L92">    return varValues.get(partIndex);</span>
   }
 
   void setVar(int partIndex, String[] value) {
-<span class="nc" id="L96">    varValues.put(partIndex, value);</span>
-<span class="nc" id="L97">  }</span>
+<span class="fc" id="L96">    varValues.put(partIndex, value);</span>
+<span class="fc" id="L97">  }</span>
 
   void setVar(int partIndex, Renderable value) {
 <span class="nc" id="L100">    varValues.put(partIndex, value);</span>
 <span class="nc" id="L101">  }</span>
 
   boolean isSet(String var) {
-<span class="nc bnc" id="L104" title="All 2 branches missed.">    return !todo.contains(var);</span>
+<span class="pc bpc" id="L104" title="1 of 2 branches missed.">    return !todo.contains(var);</span>
   }
 
   void done(String var) {
-<span class="nc" id="L108">    todo.remove(var);</span>
-<span class="nc" id="L109">  }</span>
+<span class="fc" id="L108">    todo.remove(var);</span>
+<span class="fc" id="L109">  }</span>
 
   boolean isFrozen() {
-<span class="nc" id="L112">    return frozen;</span>
+<span class="fc" id="L112">    return frozen;</span>
   }
 
   void freeze() {
-<span class="nc" id="L116">    deepFreeze(this);</span>
-<span class="nc" id="L117">  }</span>
+<span class="fc" id="L116">    deepFreeze(this);</span>
+<span class="fc" id="L117">  }</span>
 
   private static void deepFreeze(RenderState state0) {
-<span class="nc" id="L120">    state0.frozen = true;</span>
-<span class="nc" id="L121">    state0</span>
+<span class="fc" id="L120">    state0.frozen = true;</span>
+<span class="fc" id="L121">    state0</span>
         .sessions
-<span class="nc" id="L123">        .values()</span>
-<span class="nc" id="L124">        .stream()</span>
-<span class="nc" id="L125">        .flatMap(Arrays::stream)</span>
-<span class="nc" id="L126">        .filter(notNull()) // text-only null sessions - don't need freezing anyhow</span>
-<span class="nc" id="L127">        .map(RenderSession::getState)</span>
-<span class="nc" id="L128">        .forEach(RenderState::deepFreeze);</span>
-<span class="nc" id="L129">  }</span>
+<span class="fc" id="L123">        .values()</span>
+<span class="fc" id="L124">        .stream()</span>
+<span class="fc" id="L125">        .flatMap(Arrays::stream)</span>
+<span class="fc" id="L126">        .filter(notNull()) // text-only null sessions - don't need freezing anyhow</span>
+<span class="fc" id="L127">        .map(RenderSession::getState)</span>
+<span class="fc" id="L128">        .forEach(RenderState::deepFreeze);</span>
+<span class="fc" id="L129">  }</span>
 
   List&lt;String&gt; getUnsetVars() {
 <span class="nc" id="L132">    ArrayList&lt;String&gt; names = new ArrayList&lt;&gt;();</span>

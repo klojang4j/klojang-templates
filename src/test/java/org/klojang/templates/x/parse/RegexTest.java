@@ -2,6 +2,9 @@ package org.klojang.templates.x.parse;
 
 import org.junit.jupiter.api.Test;
 import org.klojang.templates.ParseException;
+import org.klojang.templates.RenderException;
+import org.klojang.templates.RenderSession;
+import org.klojang.templates.Template;
 import org.klojang.util.IOMethods;
 
 import java.io.IOException;
@@ -18,7 +21,7 @@ public class RegexTest {
   }
 
   @Test
-  public void test00() throws ParseException {
+  public void variable00() throws ParseException {
     assertTrue(Regex.of().variable.matcher("~%person%").find());
     assertTrue(Regex.of().variable.matcher("foo~%person%").find());
     assertTrue(Regex.of().variable.matcher("foo ~%person%").find());
@@ -29,20 +32,20 @@ public class RegexTest {
   }
 
   @Test
-  public void test01() throws ParseException {
+  public void variable01() throws ParseException {
     assertTrue(Regex.of().variable.matcher("~%person.address%").find());
     assertTrue(Regex.of().variable.matcher("~%person.address.street%").find());
   }
 
   @Test
-  public void test02() throws ParseException {
+  public void variable02() throws ParseException {
     assertTrue(Regex.of().variable.matcher("~%html:person.address%").find());
     assertTrue(Regex.of().variable.matcher("~%js:person.address%").find());
     assertTrue(Regex.of().variable.matcher("~%text:person.address%").find());
   }
 
   @Test
-  public void test03() throws ParseException {
+  public void variable03() throws ParseException {
     assertTrue(Regex.of().cmtVariable.matcher("<!--~%person%-->").find());
     assertTrue(Regex.of().cmtVariable.matcher("<!-- ~%person% -->").find());
     assertTrue(Regex.of().cmtVariable.matcher("<!--\t~%person%\t-->").find());
@@ -189,42 +192,48 @@ public class RegexTest {
 
   @Test
   public void ditch01() throws ParseException {
-    Matcher m = Regex.of().ditchTag.matcher(
-        "<!--%%--><!-- Single-line ditch block --><!--%%-->");
-    assertTrue(m.find());
-    assertTrue(m.find());
+    String src = "<!--%% this is a comment -->foo==bar<!--%%-->";
+    Template tmpl = Template.fromString(src);
+    RenderSession rs = tmpl.newRenderSession();
+    String out = rs.render();
+    assertEquals("", out);
   }
 
   @Test
   public void ditch02() throws ParseException {
-    Matcher m = Regex.of().ditchTag.matcher(
-        "Foo\n<!--%%-->Multi-line ditch block\n<!--%%-->BAR");
-    assertTrue(m.find());
-    assertTrue(m.find());
+    String src = "<td><!--%% this is a comment -->foo==bar<!--%%--></td>";
+    Template tmpl = Template.fromString(src);
+    RenderSession rs = tmpl.newRenderSession();
+    String out = rs.render();
+    assertEquals("<td></td>", out);
   }
 
   @Test
-  public void ditch03() throws ParseException, IOException {
-    try (InputStream is = getClass().getResourceAsStream("RegexTest.ditch03.html")) {
-      String s = IOMethods.getContents(is);
-      Matcher m = Regex.of().ditchBlock.matcher(s);
-      assertTrue(m.find());
-      assertTrue(m.find());
-      assertTrue(m.find());
-      assertFalse(m.find());
-    }
+  public void ditch03() throws ParseException, RenderException {
+    String src = "<td>~%foo%<!--%% this is a comment -->foo==bar<!--%%-->~%bar%</td>";
+    Template tmpl = Template.fromString(src);
+    RenderSession rs = tmpl.newRenderSession();
+    String out = rs.set("foo", 'A').set("bar", 'B').render();
+    assertEquals("<td>AB</td>", out);
   }
 
   @Test
-  public void ditch04() throws ParseException, IOException {
-    try (InputStream is = getClass().getResourceAsStream("RegexTest.ditch04.html")) {
-      String s = IOMethods.getContents(is);
-      Matcher m = Regex.of().ditchBlock.matcher(s);
-      assertTrue(m.find());
-      assertTrue(m.find());
-      assertTrue(m.find());
-      assertFalse(m.find());
-    }
+  public void ditch04() throws ParseException, RenderException {
+    String src = """
+        <td>
+          ~%foo%
+          <!--%% ~%ignoreMe% -->
+          foo==bar
+          ~%ignoreMe%
+          <!--%%-->
+          ~%bar%
+        </td>
+        """;
+    Template tmpl = Template.fromString(src);
+    RenderSession rs = tmpl.newRenderSession();
+    String out = rs.set("foo", 'A').set("bar", 'B').render();
+    out=out.replaceAll("\\s","");
+    assertEquals("<td>AB</td>", out);
   }
 
   @Test

@@ -241,40 +241,4 @@ public class ParserTest {
     assertTrue(t.getNames().contains("age"));
   }
 
-  //  @Test
-  //  public void testDitchBlock00() throws ParseException {
-  //    String path = "ParserTest.parseDitchBlock00.html";
-  //    Template template = Template.fromResource(getClass(), path);
-  //    String expected = IOMethods.getContents(getClass(),
-  //        "ParserTest.parseDitchBlock00.expected.html");
-  //    String actual = template.newRenderSession().render();
-  //    assertEquals(expected, actual);
-  //  }
-  //
-  //  @Test
-  //  public void testDitchBlock01() throws ParseException, RenderException {
-  //    String path = "ParserTest.parseDitchBlock01.html";
-  //    Template template = Template.fromResource(getClass(), path);
-  //    String expected = IOMethods.getContents(getClass(),
-  //        "ParserTest.parseDitchBlock01.expected.html");
-  //    String actual = template.newRenderSession().set("foo", "bar").render();
-  //    assertEquals(expected, actual);
-  //  }
-  //
-  //  public void testDitchBlock02() {
-  //    String path = "ParserTest.parseDitchBlock02.html";
-  //    assertThrows(
-  //        ParseException.class, // Ditch block not terminated
-  //        () -> {
-  //          Template.fromResource(getClass(), path);
-  //        });
-  //  }
-  //
-  //  @Test
-  //  public void allTogetherNow00() throws ParseException {
-  //    String path = "ParserTest.allTogetherNow00.html";
-  //    Template template = Template.fromResource(getClass(), path);
-  //    TemplateUtils.printParts(template, System.out);
-  //  }
-
 }

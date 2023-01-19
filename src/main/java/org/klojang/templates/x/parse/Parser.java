@@ -82,6 +82,9 @@ public final class Parser {
   private static List<Part> purgeDitchBlocks(List<Part> parts)
       throws ParseException {
     List<Part> out = new ArrayList<>();
+    // There will always be just 1 part, and it will always be
+    // an UnparsedPart. Nevertheless, let's act as if we don't
+    // know this
     for (Part p : parts) {
       if (p instanceof UnparsedPart) {
         out.addAll(purgeDitchBlocksInPart((UnparsedPart) p));
@@ -246,10 +249,12 @@ public final class Parser {
         UnparsedPart unparsed = (UnparsedPart) p;
         if (unparsed.text().length() != 0) {
           checkGarbage(unparsed);
-          String text = Regex.of().placeholder.matcher(unparsed.text()).replaceAll(
-              EMPTY_STRING);
-          if (text.contains(Regex.PLACEHOLDER_TAG)) {
-            int idx = p.start() + unparsed.text().indexOf(Regex.PLACEHOLDER_TAG);
+          String text = Regex.of().placeholder
+              .matcher(unparsed.text())
+              .replaceAll(EMPTY_STRING);
+          if (text.contains(Regex.PLACEHOLDER_START_END)) {
+            int idx = p.start()
+                + unparsed.text().indexOf(Regex.PLACEHOLDER_START_END);
             throw PLACEHOLDER_NOT_CLOSED.asException(text, idx);
           }
           out.add(new TextPart(text, p.start()));

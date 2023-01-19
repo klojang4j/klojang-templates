@@ -57,8 +57,8 @@ public class Template {
    * @throws ParseException if the template source contains a syntax error
    */
   public static Template fromString(String source) throws ParseException {
-<span class="nc" id="L60">    Check.notNull(source, &quot;source&quot;);</span>
-<span class="nc" id="L61">    return new Parser(ROOT_TEMPLATE_NAME, TemplateLocation.NONE, source).parse();</span>
+<span class="fc" id="L60">    Check.notNull(source, &quot;source&quot;);</span>
+<span class="fc" id="L61">    return new Parser(ROOT_TEMPLATE_NAME, TemplateLocation.NONE, source).parse();</span>
   }
 
   /**
@@ -186,7 +186,7 @@ public class Template {
    * @return The template inside which this {@code Template} is nested
    */
   public Template getParent() {
-<span class="nc" id="L189">    return parent;</span>
+<span class="fc" id="L189">    return parent;</span>
   }
 
   /**
@@ -240,7 +240,7 @@ public class Template {
    * @return The names of all variables in this {@code Template}
    */
   public Set&lt;String&gt; getVariables() {
-<span class="nc" id="L243">    return varIndices.keySet();</span>
+<span class="fc" id="L243">    return varIndices.keySet();</span>
   }
 
   /**
@@ -315,7 +315,7 @@ public class Template {
    * @return The number of nested templates
    */
   public int countNestedTemplates() {
-<span class="nc" id="L318">    return tmplIndices.size();</span>
+<span class="fc" id="L318">    return tmplIndices.size();</span>
   }
 
   /**
@@ -362,7 +362,7 @@ public class Template {
    * @return A {@code RenderSession}
    */
   public RenderSession newRenderSession() {
-<span class="nc" id="L365">    return new SessionConfig(this).newRenderSession();</span>
+<span class="fc" id="L365">    return new SessionConfig(this).newRenderSession();</span>
   }
 
   /**
@@ -377,8 +377,8 @@ public class Template {
    * @return A new {@code RenderSession}
    */
   public RenderSession newRenderSession(StringifierRegistry stringifiers) {
-<span class="nc" id="L380">    Check.notNull(stringifiers, &quot;stringifiers&quot;);</span>
-<span class="nc" id="L381">    return new SessionConfig(this, stringifiers).newRenderSession();</span>
+<span class="fc" id="L380">    Check.notNull(stringifiers, &quot;stringifiers&quot;);</span>
+<span class="fc" id="L381">    return new SessionConfig(this, stringifiers).newRenderSession();</span>
   }
 
   /**
@@ -417,10 +417,10 @@ public class Template {
 
   @Override
   public boolean equals(Object obj) {
-<span class="nc bnc" id="L420" title="All 2 branches missed.">    if (this == obj) {</span>
+<span class="pc bpc" id="L420" title="1 of 2 branches missed.">    if (this == obj) {</span>
 <span class="nc" id="L421">      return true;</span>
-<span class="nc bnc" id="L422" title="All 4 branches missed.">    } else if (obj == null || getClass() != obj.getClass()) {</span>
-<span class="nc" id="L423">      return false;</span>
+<span class="pc bpc" id="L422" title="3 of 4 branches missed.">    } else if (obj == null || getClass() != obj.getClass()) {</span>
+<span class="fc" id="L423">      return false;</span>
     }
 <span class="nc" id="L425">    Template other = (Template) obj;</span>
 <span class="nc bnc" id="L426" title="All 2 branches missed.">    if (location != null) {</span>
@@ -438,7 +438,7 @@ public class Template {
 
   @Override
   public int hashCode() {
-<span class="nc bnc" id="L441" title="All 2 branches missed.">    return location == null ? 0 : location.hashCode();</span>
+<span class="pc bpc" id="L441" title="1 of 2 branches missed.">    return location == null ? 0 : location.hashCode();</span>
   }
 
   /**
@@ -457,16 +457,16 @@ public class Template {
   /* +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
 
   List&lt;Part&gt; getParts() {
-<span class="nc" id="L460">    return parts;</span>
+<span class="fc" id="L460">    return parts;</span>
   }
 
   @SuppressWarnings(&quot;unchecked&quot;)
   &lt;T extends Part&gt; T getPart(int index) {
-<span class="nc" id="L465">    return (T) Check.that(index).is(indexOf(), parts).mapToObj(parts::get);</span>
+<span class="fc" id="L465">    return (T) Check.that(index).is(indexOf(), parts).mapToObj(parts::get);</span>
   }
 
   Map&lt;String, IntList&gt; getVarPartIndices() {
-<span class="nc" id="L469">    return varIndices;</span>
+<span class="fc" id="L469">    return varIndices;</span>
   }
 
   Map&lt;String, Integer&gt; getTemplatePartIndices() {

@@ -10,41 +10,41 @@ class StringifierId {
   private final int hash;
 
   StringifierId(VarGroup varGroup) {
-<span class="nc" id="L13">    this(varGroup, null, null);</span>
-<span class="nc" id="L14">  }</span>
+<span class="fc" id="L13">    this(varGroup, null, null);</span>
+<span class="fc" id="L14">  }</span>
 
   StringifierId(Template template, String varName) {
-<span class="nc" id="L17">    this(null, template, varName);</span>
-<span class="nc" id="L18">  }</span>
+<span class="fc" id="L17">    this(null, template, varName);</span>
+<span class="fc" id="L18">  }</span>
 
   StringifierId(String varName) {
 <span class="nc" id="L21">    this(null, null, varName);</span>
 <span class="nc" id="L22">  }</span>
 
-<span class="nc" id="L24">  StringifierId(VarGroup varGroup, Template template, String varName) {</span>
-<span class="nc" id="L25">    this.varGroup = varGroup;</span>
-<span class="nc" id="L26">    this.template = template;</span>
-<span class="nc" id="L27">    this.varName = varName;</span>
-<span class="nc" id="L28">    this.hash = Objects.hash(template, varGroup, varName);</span>
-<span class="nc" id="L29">  }</span>
+<span class="fc" id="L24">  StringifierId(VarGroup varGroup, Template template, String varName) {</span>
+<span class="fc" id="L25">    this.varGroup = varGroup;</span>
+<span class="fc" id="L26">    this.template = template;</span>
+<span class="fc" id="L27">    this.varName = varName;</span>
+<span class="fc" id="L28">    this.hash = Objects.hash(template, varGroup, varName);</span>
+<span class="fc" id="L29">  }</span>
 
   @Override
   public int hashCode() {
-<span class="nc" id="L33">    return hash;</span>
+<span class="fc" id="L33">    return hash;</span>
   }
 
   @Override
   public boolean equals(Object obj) {
-<span class="nc bnc" id="L38" title="All 2 branches missed.">    if (this == obj) {</span>
+<span class="pc bpc" id="L38" title="1 of 2 branches missed.">    if (this == obj) {</span>
 <span class="nc" id="L39">      return true;</span>
     }
-<span class="nc bnc" id="L41" title="All 4 branches missed.">    if (obj == null || getClass() != obj.getClass()) {</span>
+<span class="pc bpc" id="L41" title="2 of 4 branches missed.">    if (obj == null || getClass() != obj.getClass()) {</span>
 <span class="nc" id="L42">      return false;</span>
     }
-<span class="nc" id="L44">    StringifierId other = (StringifierId) obj;</span>
-<span class="nc bnc" id="L45" title="All 4 branches missed.">    return Objects.equals(template, other.template)</span>
+<span class="fc" id="L44">    StringifierId other = (StringifierId) obj;</span>
+<span class="fc bfc" id="L45" title="All 4 branches covered.">    return Objects.equals(template, other.template)</span>
         &amp;&amp; varGroup == other.varGroup
-<span class="nc bnc" id="L47" title="All 2 branches missed.">        &amp;&amp; Objects.equals(varName, other.varName);</span>
+<span class="pc bpc" id="L47" title="1 of 2 branches missed.">        &amp;&amp; Objects.equals(varName, other.varName);</span>
   }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

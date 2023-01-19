@@ -257,11 +257,10 @@ public final class StringifierRegistry {
       Check.that(groupNames, "groupNames").isNot(empty());
       for (String name : groupNames) {
         Check.that(name, "group name").isNot(empty());
-        VarGroup vg = VarGroup.createPrivileged(Private.of(name));
-        StringifierId id = new StringifierId(vg);
-        Check.that(id)
+        VarGroup varGroup = VarGroup.createPrivileged(Private.of(name));
+        Check.that(new StringifierId(varGroup))
             .isNot(keyIn(), stringifiers, ERR_GROUP_ASSIGNED)
-            .then(x -> stringifiers.put(x, stringifier));
+            .then(id -> stringifiers.put(id, stringifier));
       }
       return this;
     }

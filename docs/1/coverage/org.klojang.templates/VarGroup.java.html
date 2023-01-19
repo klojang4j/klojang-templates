@@ -101,8 +101,8 @@ public class VarGroup {
    * @return The {@code VarGroup} instance corresponding to the specified name
    */
   public static VarGroup forName(String name) {
-<span class="nc" id="L104">    VarGroup vg = Check.notNull(name).ok(VAR_GROUPS::get);</span>
-<span class="nc" id="L105">    return Check.that(vg).is(notNull(), ERR_NO_SUCH_VARGROUP, name).ok();</span>
+<span class="fc" id="L104">    VarGroup vg = Check.notNull(name).ok(VAR_GROUPS::get);</span>
+<span class="fc" id="L105">    return Check.that(vg).is(notNull(), ERR_NO_SUCH_VARGROUP, name).ok();</span>
   }
 
   /**

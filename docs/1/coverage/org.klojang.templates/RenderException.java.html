@@ -33,8 +33,8 @@ public class RenderException extends KlojangException {
    * Thrown when specifying a non-existent variable name.
    */
   public static Supplier&lt;RenderException&gt; noSuchVariable(Template t, String var) {
-<span class="nc" id="L36">    String fqn = TemplateUtils.getFQName(t, var);</span>
-<span class="nc" id="L37">    return () -&gt; new RenderException(format(ERR_NO_SUCH_VARIABLE, fqn));</span>
+<span class="fc" id="L36">    String fqn = TemplateUtils.getFQName(t, var);</span>
+<span class="pc" id="L37">    return () -&gt; new RenderException(format(ERR_NO_SUCH_VARIABLE, fqn));</span>
   }
 
   /**
@@ -51,9 +51,9 @@ public class RenderException extends KlojangException {
    */
   public static Function&lt;String, RenderException&gt; alreadySet(Template t,
       String var) {
-<span class="nc" id="L54">    String fqn = TemplateUtils.getFQName(t, var);</span>
-<span class="nc" id="L55">    String fmt = &quot;Variable already set: \&quot;%s\&quot;&quot;;</span>
-<span class="nc" id="L56">    return s -&gt; new RenderException(format(fmt, fqn));</span>
+<span class="fc" id="L54">    String fqn = TemplateUtils.getFQName(t, var);</span>
+<span class="fc" id="L55">    String fmt = &quot;Variable already set: \&quot;%s\&quot;&quot;;</span>
+<span class="pc" id="L56">    return s -&gt; new RenderException(format(fmt, fqn));</span>
   }
 
   /**
@@ -78,7 +78,7 @@ public class RenderException extends KlojangException {
    * Thrown when attempting to populate a template after it has been rendered.
    */
   public static Function&lt;String, RenderException&gt; frozenSession() {
-<span class="nc" id="L81">    return s -&gt; new RenderException(&quot;Session frozen after rendering&quot;);</span>
+<span class="pc" id="L81">    return s -&gt; new RenderException(&quot;Session frozen after rendering&quot;);</span>
   }
 
   /**

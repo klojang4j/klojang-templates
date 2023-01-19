@@ -70,6 +70,7 @@ public class RenderSession {
    * @param varName The name of the variable to set
    * @param value The value of the variable
    * @throws RenderException
+   * @return this {@code RenderSession}
    */
   public RenderSession set(String varName, Object value) throws RenderException {
     return set(varName, value, (VarGroup) null);
@@ -320,10 +321,11 @@ public class RenderSession {
   /* METHODS FOR POPULATING A SINGLE NESTED TEMPLATE */
 
   /**
-   * Populates a <i>nested</i> template. The template is populated with values
-   * retrieved from the specified source data. Only variables and (doubly) nested
-   * templates whose name is present in the {@code names} argument will be populated.
-   * No escaping will be applied to the values retrieved from the data object.
+   * Populates a template nested within the template being rendered by this
+   * {@code RenderSession}. The template is populated with values retrieved from the
+   * specified source data. Only variables and doubly-nested templates whose name is
+   * present in the {@code names} argument will be populated. No escaping will be
+   * applied to the values retrieved from the data object.
    *
    * @param nestedTemplateName The name of the nested template
    * @param sourceData An object that provides data for all or some of the nested
