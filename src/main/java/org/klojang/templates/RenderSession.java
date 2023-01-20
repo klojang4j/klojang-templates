@@ -2,8 +2,8 @@ package org.klojang.templates;
 
 import org.klojang.check.Check;
 import org.klojang.templates.x.parse.VariablePart;
-import org.klojang.util.CollectionMethods;
 import org.klojang.util.AnyTuple2;
+import org.klojang.util.CollectionMethods;
 import org.klojang.util.collection.IntList;
 
 import java.io.ByteArrayOutputStream;
@@ -69,8 +69,8 @@ public class RenderSession {
    *
    * @param varName The name of the variable to set
    * @param value The value of the variable
-   * @throws RenderException
    * @return this {@code RenderSession}
+   * @throws RenderException
    */
   public RenderSession set(String varName, Object value) throws RenderException {
     return set(varName, value, (VarGroup) null);
@@ -81,8 +81,8 @@ public class RenderSession {
    * {@link Stringifier stringifier} associated with the specified
    * {@link VarGroup variable group} to stringify the value. If the variable has an
    * inline group name prefix (e.g. ~%<b>html</b>:fullName%), the group specified
-   * through the prefix will prevail. The {@code defaultGroup} argument is allowed to
-   * be {@code null}. In that case, if the variable also doesn't have an inline group
+   * through the prefix will prevail. The {@code varGroup} argument is allowed to be
+   * {@code null}. In that case, if the variable also doesn't have an inline group
    * name prefix, the {@code RenderSession} will attempt to find a suitable
    * stringifier by other means; for example, based on the
    * {@link StringifierRegistry.Builder#registerByType(Stringifier, Class...) data
@@ -91,13 +91,13 @@ public class RenderSession {
    *
    * @param varName The name of the variable to set
    * @param value The value of the variable
-   * @param defaultGroup The variable group to assign the variable to if the
-   *     variable has no group name prefix. May be {@code null}.
+   * @param varGroup The variable group to assign the variable to if the variable
+   *     has no group name prefix. May be {@code null}.
    * @return This {@code RenderSession}
    * @throws RenderException
    * @see StringifierRegistry.Builder#registerByGroup(Stringifier, String...)
    */
-  public RenderSession set(String varName, Object value, VarGroup defaultGroup)
+  public RenderSession set(String varName, Object value, VarGroup varGroup)
       throws RenderException {
     Check.on(frozenSession(), state.isFrozen()).is(no());
     Check.notNull(varName, "varName");
@@ -116,7 +116,7 @@ public class RenderSession {
     for (int i = 0; i < indices.size(); ++i) {
       int partIndex = indices.get(i);
       VariablePart part = t.getPart(partIndex);
-      Stringifier stringifier = sf.getStringifier(part, defaultGroup, value);
+      Stringifier stringifier = sf.getStringifier(part, varGroup, value);
       String stringified = stringify(stringifier, varName, value);
       state.setVar(partIndex, new String[] {stringified});
     }
@@ -151,16 +151,16 @@ public class RenderSession {
    *
    * @param varName The name of the variable to set
    * @param values The string values to concatenate
-   * @param defaultGroup The variable group to assign the variable to if the
-   *     variable has no group name prefix
+   * @param varGroup The variable group to assign the variable to if the variable
+   *     has no group name prefix
    * @return This {@code RenderSession}
    * @throws RenderException
    */
-  public RenderSession set(String varName, List<?> values, VarGroup defaultGroup)
+  public RenderSession set(String varName, List<?> values, VarGroup varGroup)
       throws RenderException {
     return set(varName,
         values,
-        defaultGroup,
+        varGroup,
         (String) null,
         (String) null,
         (String) null);
@@ -193,8 +193,8 @@ public class RenderSession {
    *
    * @param varName The name of the variable to set
    * @param values The string values to concatenate
-   * @param defaultGroup The variable group to assign the variable to if the
-   *     variable has no group name prefix. May be {@code null}.
+   * @param varGroup The variable group to assign the variable to if the variable
+   *     has no group name prefix. May be {@code null}.
    * @param separator The suffix to use for each string
    * @return This {@code RenderSession}
    * @throws RenderException
@@ -202,40 +202,44 @@ public class RenderSession {
    */
   public RenderSession set(String varName,
       List<?> values,
-      VarGroup defaultGroup,
+      VarGroup varGroup,
       String separator) throws RenderException {
-    return set(varName, values, defaultGroup, null, separator, null);
+    return set(varName, values, varGroup, null, separator, null);
   }
 
   /**
    * Sets the specified variable to the concatenation of the values within the
-   * specified {@code List}. Each value will be prefixed with the specified prefix,
-   * suffixed with the specified suffix, and separated from the previous one by the
-   * specified separator. The values in the {@code List} are <i>first</i>
-   * stringified, <i>then</i> enriched with prefix, suffix and separator, and
-   * <i>then</i> concatenated. Thus, prefix, suffix and separator will <i>not</i> be
-   * put through the stringifier. This allows you, for example, to use "&lt;br&gt;"
-   * as a separator without worrying that it might get HTML-escaped into
-   * "&amp;lt;br;&amp;gt;".
+   * specified {@code List}. The prefix, suffix and separator will not be escaped in
+   * any way. For example:
    *
-   * <p>If the {@code List} is empty, the variable will not be rendered at all.
+   * <blockquote><pre>{@code
+   * renderSession.set("myVar", List.of("<", "foo", ">"), VarGroup.HTML, "<tr><td>", "</td><td>", "</td></tr>");
+   * }</pre></blockquote>
    *
-   * @param varName The name of the variable to set
-   * @param values The string values to concatenate
-   * @param defaultGroup The variable group to assign the variable to if the
-   *     variable has no group name prefix. May be {@code null}.
-   * @param prefix The prefix to use for each string
-   * @param separator The suffix to use for each string
-   * @param suffix The separator to use between the stringd
+   * <p>will be rendered as:
+   *
+   * <blockquote><pre>{@code
+   * <tr><td>&lt;</td><td>foo</td><td>&gt;</td></tr>
+   * }</pre></blockquote>
+   *
+   * <p>If the {@code List} is empty, the variable, prefix, suffix and separator
+   * will not be rendered at all.
+   *
+   * @param varName the name of the variable to set
+   * @param values the values to concatenate
+   * @param varGroup the variable group to assign the variable to if the variable
+   *     has no group name prefix. May be {@code null}.
+   * @param prefix the prefix to the first value
+   * @param separator the separator between the values
+   * @param suffix the suffix to the last value
    * @return This {@code RenderSession}
-   * @throws RenderException
    */
   public RenderSession set(String varName,
       List<?> values,
-      VarGroup defaultGroup,
+      VarGroup varGroup,
       String prefix,
       String separator,
-      String suffix) throws RenderException {
+      String suffix) {
     Check.on(frozenSession(), state.isFrozen()).is(no());
     Check.notNull(varName, "varName");
     Check.notNull(values, "values");
@@ -250,7 +254,7 @@ public class RenderSession {
     } else {
       indices.forEachThrowing(i -> setVar(i,
           values,
-          defaultGroup,
+          varGroup,
           prefix,
           separator,
           suffix));
@@ -270,23 +274,30 @@ public class RenderSession {
     prefix = n2e(prefix);
     separator = n2e(separator);
     suffix = n2e(suffix);
-    boolean enrich = !prefix.isEmpty() || !separator.isEmpty() || !suffix.isEmpty();
+    boolean plain = prefix.isEmpty() && separator.isEmpty() && suffix.isEmpty();
     StringifierRegistry sf = config.getStringifiers();
     // Find first non-null value to increase the chance that we find a suitable
     // stringifier:
     Object any = values.stream().filter(notNull()).findFirst().orElse(null);
     Stringifier stringifier = sf.getStringifier(part, varGroup, any);
     String[] stringified = new String[values.size()];
-    for (int i = 0; i < values.size(); ++i) {
-      String s = stringify(stringifier, part.getName(), values.get(i));
-      if (enrich) {
-        if (i == 0) {
-          s = prefix + s + suffix;
-        } else {
-          s = separator + prefix + s + suffix;
-        }
+    if (plain) {
+      for (int i = 0; i < values.size(); ++i) {
+        stringified[i] = stringify(stringifier, part.getName(), values.get(i));
       }
-      stringified[i] = s;
+    } else {
+      for (int i = 0; i < values.size(); ++i) {
+        String s = stringify(stringifier, part.getName(), values.get(i));
+        if (i == 0) {
+          s = prefix + s;
+        }
+        if (i == values.size() - 1) {
+          s = s + suffix;
+        } else {
+          s = s + separator;
+        }
+        stringified[i] = s;
+      }
     }
     state.setVar(partIndex, stringified);
   }
@@ -365,8 +376,8 @@ public class RenderSession {
    * @param nestedTemplateName The name of the nested template
    * @param sourceData An object that provides data for all or some of the nested
    *     template's variables and nested templates
-   * @param defaultGroup The variable group to assign the variables to if they
-   *     have no group name prefix. May be {@code null}.
+   * @param varGroup The variable group to assign the variables to if they have
+   *     no group name prefix. May be {@code null}.
    * @param names The names of the variables and doubly-nested templates that you
    *     want to be populated using the specified data object
    * @return This {@code RenderSession}
@@ -374,7 +385,7 @@ public class RenderSession {
    */
   public RenderSession populate(String nestedTemplateName,
       Object sourceData,
-      VarGroup defaultGroup,
+      VarGroup varGroup,
       String... names) throws RenderException {
     Check.on(frozenSession(), state.isFrozen()).is(no());
     if (sourceData == UNDEFINED) {
@@ -386,7 +397,7 @@ public class RenderSession {
       return show(data.size(), t);
     }
     Check.on(missingSourceData(t), data).is(deepNotNull());
-    return repeat(t, data, defaultGroup, names);
+    return repeat(t, data, varGroup, names);
   }
 
   private RenderSession repeat(Template t,
@@ -550,14 +561,14 @@ public class RenderSession {
    * @param nestedTemplateName The name of the nested template. <i>Must</i>
    *     contain exactly one variable
    * @param value The value to set the template's one and only variable to
-   * @param defaultGroup The variable group to assign the variable to if the
-   *     variable has no group name prefix. May be {@code null}.
+   * @param varGroup The variable group to assign the variable to if the variable
+   *     has no group name prefix. May be {@code null}.
    * @return This {@code RenderSession}
    * @throws RenderException
    */
   public RenderSession populateWithValue(String nestedTemplateName,
       Object value,
-      VarGroup defaultGroup) throws RenderException {
+      VarGroup varGroup) throws RenderException {
     Check.on(frozenSession(), state.isFrozen()).is(no());
     Template t = getNestedTemplate(nestedTemplateName);
     Check.on(notMonoTemplate(t), t)
@@ -570,7 +581,7 @@ public class RenderSession {
         .collect(toList());
     RenderSession[] sessions = state.getOrCreateChildSessions(t, values.size());
     for (int i = 0; i < sessions.length; ++i) {
-      sessions[i].insert(values.get(i), defaultGroup);
+      sessions[i].insert(values.get(i), varGroup);
     }
     return this;
   }
@@ -597,14 +608,14 @@ public class RenderSession {
    *
    * @param nestedTemplateName The name of the nested template
    * @param tuples A list of value pairs
-   * @param defaultGroup The variable group to assign the variables to if they
-   *     have no group name prefix
+   * @param varGroup The variable group to assign the variables to if they have
+   *     no group name prefix
    * @return This {@code RenderSession}
    * @throws RenderException
    */
   public <T, U> RenderSession populateWithTuple(String nestedTemplateName,
       List<AnyTuple2<T, U>> tuples,
-      VarGroup defaultGroup) throws RenderException {
+      VarGroup varGroup) throws RenderException {
     Check.on(frozenSession(), state.isFrozen()).is(no());
     Check.on(illegalValue("tuples", tuples), tuples).is(deepNotNull());
     Template t = getNestedTemplate(nestedTemplateName);
@@ -617,7 +628,7 @@ public class RenderSession {
         .collect(toList());
     RenderSession[] sessions = state.getOrCreateChildSessions(t, data.size());
     for (int i = 0; i < sessions.length; ++i) {
-      sessions[i].insert(data.get(i), defaultGroup);
+      sessions[i].insert(data.get(i), varGroup);
     }
     return this;
   }
@@ -651,8 +662,8 @@ public class RenderSession {
    *
    * @param sourceData An object that provides data for all or some of the
    *     template variables and nested templates
-   * @param defaultGroup The variable group to assign the variables to if they
-   *     have no group name prefix. May be {@code null}.
+   * @param varGroup The variable group to assign the variables to if they have
+   *     no group name prefix. May be {@code null}.
    * @param names The names of the variables nested templates names that must be
    *     populated. Not specifying any name (or {@code null}) indicates that you want
    *     all variables and nested templates to be populated.
@@ -660,7 +671,7 @@ public class RenderSession {
    * @throws RenderException
    */
   public RenderSession insert(Object sourceData,
-      VarGroup defaultGroup,
+      VarGroup varGroup,
       String... names) throws RenderException {
     Check.on(frozenSession(), state.isFrozen()).is(no());
     if (sourceData == UNDEFINED) {
@@ -673,8 +684,8 @@ public class RenderSession {
       // but no reason not to support it.
       return this;
     }
-    processVars(sourceData, defaultGroup, names);
-    processTmpls(sourceData, defaultGroup, names);
+    processVars(sourceData, varGroup, names);
+    processTmpls(sourceData, varGroup, names);
     return this;
   }
 
@@ -705,7 +716,7 @@ public class RenderSession {
   }
 
   @SuppressWarnings("unchecked")
-  private <T> void processTmpls(T data, VarGroup defaultGroup, String[] names)
+  private <T> void processTmpls(T data, VarGroup varGroup, String[] names)
       throws RenderException {
     Set<String> tmplNames;
     if (isEmpty(names)) {
@@ -718,7 +729,7 @@ public class RenderSession {
     for (String name : tmplNames) {
       Object nestedData = acc.access(data, name);
       if (nestedData != UNDEFINED) {
-        populate(name, nestedData, defaultGroup, names);
+        populate(name, nestedData, varGroup, names);
       }
     }
   }

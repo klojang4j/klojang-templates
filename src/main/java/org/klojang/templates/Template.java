@@ -1,6 +1,7 @@
 package org.klojang.templates;
 
 import org.klojang.check.Check;
+import org.klojang.check.Tag;
 import org.klojang.templates.x.Private;
 import org.klojang.templates.x.TemplateLocation;
 import org.klojang.templates.x.parse.*;
@@ -15,9 +16,9 @@ import java.util.*;
 import static java.util.stream.Collectors.toUnmodifiableList;
 import static org.klojang.check.CommonChecks.*;
 import static org.klojang.templates.TemplateUtils.getFQName;
+import static org.klojang.templates.x.TemplateLocationType.STRING;
 import static org.klojang.util.CollectionMethods.implode;
 import static org.klojang.util.ObjectMethods.ifNotNull;
-import static org.klojang.templates.x.TemplateLocationType.*;
 
 /**
  * The {@code Template} class is responsible for loading and parsing templates and
@@ -32,7 +33,7 @@ import static org.klojang.templates.x.TemplateLocationType.*;
  *
  * @author Ayco Holleman
  */
-public class Template {
+public final class Template {
 
   @SuppressWarnings("unused")
   private static final Logger LOG = LoggerFactory.getLogger(Template.class);
@@ -75,7 +76,7 @@ public class Template {
    */
   public static Template fromString(Class<?> clazz, String source)
       throws ParseException {
-    Check.notNull(clazz, "clazz");
+    Check.notNull(clazz, Tag.CLASS);
     Check.notNull(source, "source");
     return new Parser(ROOT_TEMPLATE_NAME,
         new TemplateLocation(clazz),
@@ -99,11 +100,9 @@ public class Template {
    */
   public static Template fromResource(Class<?> clazz, String path)
       throws ParseException {
-    Check.notNull(clazz, "clazz");
-    Check.notNull(path, "path").has(clazz::getResource,
-        notNull(),
-        "Resource not found: %s",
-        path);
+    Check.notNull(clazz, Tag.CLASS);
+    Check.notNull(path, Tag.PATH)
+        .has(clazz::getResource, notNull(), "No such resource: \"%s\"", path);
     return TemplateCache.INSTANCE.get(ROOT_TEMPLATE_NAME,
         new TemplateLocation(clazz, path));
   }
@@ -119,7 +118,7 @@ public class Template {
    * @throws ParseException if the template source contains a syntax error
    */
   public static Template fromFile(String path) throws ParseException {
-    Check.notNull(path, "path");
+    Check.notNull(path, Tag.PATH);
     return TemplateCache.INSTANCE.get(ROOT_TEMPLATE_NAME,
         new TemplateLocation(path));
   }
@@ -136,7 +135,7 @@ public class Template {
   public static Template fromResolver(PathResolver pathResolver, String path)
       throws ParseException {
     Check.notNull(pathResolver, "pathResolver");
-    Check.notNull(path, "path");
+    Check.notNull(path, Tag.PATH);
     return TemplateCache.INSTANCE.get(ROOT_TEMPLATE_NAME,
         new TemplateLocation(pathResolver, path));
   }
@@ -172,18 +171,18 @@ public class Template {
   /**
    * Returns the name of this {@code Template}.
    *
-   * @return The name of this {@code Template}
+   * @return the name of this {@code Template}
    */
   public String getName() {
     return name;
   }
 
   /**
-   * Returns the template inside which this {@code Template} is nested. If this is a
-   * root template (it was <i>created from</i> source code rather than <i>defined
-   * in</i> source code), this method returns {@code null}.
+   * Returns the template inside which this {@code Template} is nested. If this is
+   * the root template (the template that was explicitly created by a call to one of
+   * the {@code fromXXX()} methods), this method returns {@code null}.
    *
-   * @return The template inside which this {@code Template} is nested
+   * @return the template inside which this {@code Template} is nested
    */
   public Template getParent() {
     return parent;
@@ -200,10 +199,8 @@ public class Template {
   /**
    * Returns the ultimate ancestor of this {@code Template}. In other words, the
    * {@code Template} that was explicitly created by a call to one of the
-   * {@code fromXXX()} methods - for example
-   * {@link #fromResource(Class, String) Template.fromResource()}. If this
-   * {@code Template} <i>is</i> the root template, then this method return
-   * {@code this}.
+   * {@code fromXXX()} methods of this class. If this {@code Template} <i>is</i> the
+   * root template, then this method return {@code this}.
    *
    * @return the ultimate ancestor of this {@code Template}
    */
@@ -219,14 +216,13 @@ public class Template {
   }
 
   /**
-   * If the template was created from a file or classpath resource, this method
-   * returns its path, else null. In other words, for {@code included} templates this
-   * method (by definition) returns a non-null value. For inline templates this
-   * method (by definition) returns null. For <i>this</i> {@code Template} the return
-   * value depends on which of the static factory methods was used to instantiate the
-   * template.
+   * If this {@code Template} was created from a file or classpath resource, this
+   * method returns its path, else {@code null}. In other words, for {@code included}
+   * templates this method (by definition) returns a non-null value. For inline
+   * templates this method (by definition) returns {@code null}. For <i>this</i>
+   * {@code Template} the return value depends how you got hold of the instance.
    *
-   * @return The file location (if any) of the source code for this {@code Template}
+   * @return the file location (if any) of the source code for this {@code Template}
    */
   public String getPath() {
     return ifNotNull(location, TemplateLocation::path);
@@ -237,18 +233,18 @@ public class Template {
    * order of their first appearance in the template. The returned {@code Set} is
    * unmodifiable.
    *
-   * @return The names of all variables in this {@code Template}
+   * @return the names of all variables in this {@code Template}
    */
   public Set<String> getVariables() {
     return varIndices.keySet();
   }
 
   /**
-   * Returns whether or not this {@code Template} contains a variable with the
+   * Returns {@code true} if this {@code Template} contains a variable with the
    * specified name.
    *
-   * @param name The name of the variable
-   * @return Whether or not this {@code Template} contains a variable with the
+   * @param name the name of the variable
+   * @return {@code true} if  this {@code Template} contains a variable with the
    *     specified name
    */
   public boolean containsVariable(String name) {
@@ -256,11 +252,12 @@ public class Template {
   }
 
   /**
-   * Returns the total number of variables in this {@code Template}. Note that this
-   * method does not count the number of <i>unique</i> variable names (which would be
+   * Returns the total number of variables in this {@code Template}. Note that one
+   * variable name may occur multiple times within the same template. This method
+   * does not count the number of <i>unique</i> variable names (which would be
    * {@link #getVariables() getVars().size()}).
    *
-   * @return The total number of variables in this {@code Template}
+   * @return the total number of variables in this {@code Template}
    */
   public int countVariables() {
     return (int) parts.stream().filter(VariablePart.class::isInstance).count();
@@ -290,19 +287,19 @@ public class Template {
    * Returns the names of all templates nested inside this {@code Template}
    * (non-recursive). The returned {@code Set} is unmodifiable.
    *
-   * @return The names of all nested templates
+   * @return the names of all nested templates
    */
   public Set<String> getNestedTemplateNames() {
     return tmplIndices.keySet();
   }
 
   /**
-   * Returns whether or not this {@code Template} contains a nested template with the
-   * specified name.
+   * Returns {@code true} if this {@code Template} contains a nested template with
+   * the specified name.
    *
-   * @param name The name of the nested template
-   * @return Whether or not this {@code Template} contains a nested template with the
-   *     specified name
+   * @param name the name of the nested template
+   * @return {@code true} if this {@code Template} contains a nested template with
+   *     the specified name
    */
   public boolean containsNestedTemplate(String name) {
     return Check.notNull(name).ok(varIndices::containsKey);
@@ -312,7 +309,7 @@ public class Template {
    * Returns the number of templates nested inside this {@code Template}
    * (non-recursive).
    *
-   * @return The number of nested templates
+   * @return the number of nested templates
    */
   public int countNestedTemplates() {
     return tmplIndices.size();
@@ -323,8 +320,8 @@ public class Template {
    * an {@link IllegalArgumentException} if no nested template has the specified
    * name.
    *
-   * @param name The name of a nested template
-   * @return The {@code Template} with the specified name
+   * @param name the name of a nested template
+   * @return the {@code Template} with the specified name
    */
   public Template getNestedTemplate(String name) {
     Check.notNull(name).is(keyIn(), tmplIndices, "No such template: \"%s\"", name);
@@ -336,30 +333,33 @@ public class Template {
    * Returns the names of all variables and nested templates within this
    * {@code Template} (non-recursive). The returned {@code List} is unmodifiable.
    *
-   * @return The names of all variables and nested templates in this {@code Template}
+   * @return the names of all variables and nested templates in this {@code Template}
    */
   public List<String> getNames() {
     return names;
   }
 
   /**
-   * Returns whether or not this is a text-only template. In other words, whether
-   * this is a template without any variables or nested templates.
+   * Returns {@code true} if this is a text-only template. In other words, if this is
+   * a template without any variables or nested templates.
    *
-   * @return Whether or not this is a text-only template
+   * @return Whether this is a text-only template
    */
   public boolean isTextOnly() {
     return names.isEmpty();
   }
 
   /**
-   * Returns a {@code RenderSession} with which populate and render this
-   * {@code Template}. The {@code RenderSession} use the
+   * Returns a {@code RenderSession} that can be used to populate and render this
+   * {@code Template}. The {@code RenderSession} uses the
    * {@link AccessorRegistry#STANDARD_ACCESSORS predefined accessors} to extract
    * values from source data objects, and the
-   * {@link StringifierRegistry predefined stringifiers} to stringify those values.
+   * {@link StringifierRegistry#STANDARD_STRINGIFIERS predefined stringifiers} to
+   * stringify those values.
    *
    * @return A {@code RenderSession}
+   * @see AccessorRegistry#STANDARD_ACCESSORS
+   * @see StringifierRegistry#STANDARD_STRINGIFIERS
    */
   public RenderSession newRenderSession() {
     return new SessionConfig(this).newRenderSession();

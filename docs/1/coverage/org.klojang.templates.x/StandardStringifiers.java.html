@@ -62,7 +62,7 @@ import static org.klojang.util.StringMethods.EMPTY_STRING;
   }
 
   private static Stringifier wrap(UnaryOperator&lt;String&gt; stringifier) {
-<span class="pc bnc" id="L65" title="All 2 branches missed.">    return x -&gt; x == null ? EMPTY_STRING : stringifier.apply(x.toString());</span>
+<span class="pc bpc" id="L65" title="1 of 2 branches missed.">    return x -&gt; x == null ? EMPTY_STRING : stringifier.apply(x.toString());</span>
   }
 
 }

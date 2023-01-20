@@ -84,4 +84,55 @@ public class RenderSessionTest {
     assertEquals("<td>a|b|c</td>", out);
   }
 
+  @Test
+  public void set06() throws ParseException, RenderException {
+    String src = "~%foo%";
+    Template tmpl = Template.fromString(src);
+    RenderSession rs = tmpl.newRenderSession();
+    rs.set("foo", List.of('a', 'b', 'c'), VarGroup.TEXT, "[", "|", "]");
+    String out = rs.render();
+    assertEquals("[a|b|c]", out);
+  }
+
+  @Test
+  public void set07() throws ParseException, RenderException {
+    String src = "~%foo%";
+    Template tmpl = Template.fromString(src);
+    RenderSession rs = tmpl.newRenderSession();
+    rs.set("foo", List.of('a'), VarGroup.TEXT, "[", "|", "]");
+    String out = rs.render();
+    assertEquals("[a]", out);
+  }
+
+  @Test
+  public void set08() throws ParseException, RenderException {
+    String src = "~%foo%";
+    Template tmpl = Template.fromString(src);
+    RenderSession rs = tmpl.newRenderSession();
+    rs.set("foo", List.of(), VarGroup.TEXT, "[", "|", "]");
+    String out = rs.render();
+    assertEquals("", out);
+  }
+
+  @Test
+  public void set09() throws ParseException, RenderException {
+    String src = "~%foo%";
+    Template tmpl = Template.fromString(src);
+    RenderSession rs = tmpl.newRenderSession();
+    rs.set("foo", List.of('<', '>'), VarGroup.HTML, "<td>", "</td><td>", "</td>");
+    String out = rs.render();
+    assertEquals("<td>&lt;</td><td>&gt;</td>", out);
+  }
+
+  @Test
+  public void set10() throws ParseException, RenderException {
+    String src = "~%foo%";
+    Template tmpl = Template.fromString(src);
+    RenderSession rs = tmpl.newRenderSession();
+    rs.set("foo", List.of('<', '>', '<'), VarGroup.HTML, "<td>", "</td><td>", "</td>");
+    String out = rs.render();
+    assertEquals("<td>&lt;</td><td>&gt;</td><td>&lt;</td>", out);
+  }
+
+
 }

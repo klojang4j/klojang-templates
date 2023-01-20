@@ -447,7 +447,7 @@ public final class StringifierRegistry {
     this.defStringifier = defStringifier;
   }
 
-  Stringifier getStringifier(VariablePart part, VarGroup defaultGroup, Object value)
+  Stringifier getStringifier(VariablePart part, VarGroup varGroup, Object value)
       throws RenderException {
     StringifierId id;
     Stringifier sf;
@@ -457,12 +457,12 @@ public final class StringifierRegistry {
       if (null != (sf = stringifiers.get(id))) {
         return sf;
       }
-    } else if (defaultGroup != null) {
-      id = new StringifierId(defaultGroup);
+    } else if (varGroup != null) {
+      id = new StringifierId(varGroup);
       if (null != (sf = stringifiers.get(id))) {
         return sf;
       }
-      throw RenderException.noStringifierForGroup(defaultGroup);
+      throw RenderException.noStringifierForGroup(part, varGroup);
     }
     Template tmpl = part.getParentTemplate();
     String var = part.getName();

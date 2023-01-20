@@ -9,7 +9,7 @@ import static org.klojang.templates.TemplateUtils.getFQName;
  *
  * @author Ayco Holleman
  */
-public class BadStringifierException extends RenderException {
+public final class BadStringifierException extends RenderException {
 
   /**
    * Thrown if a {@link Stringifier} implementation illegally returned {@code null}.

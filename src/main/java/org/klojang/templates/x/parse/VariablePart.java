@@ -5,8 +5,8 @@ import org.klojang.templates.x.Private;
 
 import java.util.Optional;
 
-import static org.klojang.util.ObjectMethods.ifNotNull;
-import static org.klojang.templates.x.parse.Regex.*;
+import static org.klojang.templates.x.parse.Regex.VAR_END;
+import static org.klojang.templates.x.parse.Regex.VAR_START;
 
 /**
  * A {@link Part} implementation for representing template variables.
