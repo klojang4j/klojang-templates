@@ -57,6 +57,10 @@ public sealed class RenderException extends RuntimeException permits BadStringif
     return s -> new RenderException("Session frozen after rendering");
   }
 
+  static Supplier<RenderException> frozen() {
+    return () -> new RenderException("Session frozen after rendering");
+  }
+
   public static RenderException multiPassNotAllowed(Template t) {
     String fqn = TemplateUtils.getFQName(t);
     String fmt =

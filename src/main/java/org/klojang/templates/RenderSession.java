@@ -8,12 +8,15 @@ import org.klojang.util.collection.IntList;
 
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Collections.singletonMap;
-import static java.util.stream.Collectors.toList;
 import static org.klojang.check.CommonChecks.*;
 import static org.klojang.templates.Accessor.UNDEFINED;
 import static org.klojang.templates.RenderException.*;
@@ -67,13 +70,12 @@ public class RenderSession {
    * Sets the specified variable to the specified value. Equivalent to
    * {@link #set(String, Object, VarGroup) set(varName, value, null)}.
    *
-   * @param varName The name of the variable to set
-   * @param value The value of the variable
+   * @param varName the name of the variable to set
+   * @param value the value of the variable
    * @return this {@code RenderSession}
-   * @throws RenderException
    */
-  public RenderSession set(String varName, Object value) throws RenderException {
-    return set(varName, value, (VarGroup) null);
+  public RenderSession set(String varName, Object value) {
+    return set(varName, value, null);
   }
 
   /**
@@ -89,16 +91,14 @@ public class RenderSession {
    * type} of the variable. If that fails, the {@code RenderSession} will default to
    * using the {@link Stringifier#DEFAULT default stringifier}.
    *
-   * @param varName The name of the variable to set
-   * @param value The value of the variable
-   * @param varGroup The variable group to assign the variable to if the variable
+   * @param varName the name of the variable to set
+   * @param value the value of the variable
+   * @param varGroup the variable group to assign the variable to if the variable
    *     has no group name prefix. May be {@code null}.
-   * @return This {@code RenderSession}
-   * @throws RenderException
+   * @return this {@code RenderSession}
    * @see StringifierRegistry.Builder#registerByGroup(Stringifier, String...)
    */
-  public RenderSession set(String varName, Object value, VarGroup varGroup)
-      throws RenderException {
+  public RenderSession set(String varName, Object value, VarGroup varGroup) {
     Check.on(frozenSession(), state.isFrozen()).is(no());
     Check.notNull(varName, "varName");
     Template t = config.getTemplate();
@@ -133,12 +133,11 @@ public class RenderSession {
    * variable will not be rendered at all (that is, an empty string will be inserted
    * at the location of the variable within the template).
    *
-   * @param varName The name of the variable to set
-   * @param values The string values to concatenate
-   * @return This {@code RenderSession}
-   * @throws RenderException
+   * @param varName the name of the template variable
+   * @param values the string values to concatenate
+   * @return this {@code RenderSession}
    */
-  public RenderSession set(String varName, List<?> values) throws RenderException {
+  public RenderSession set(String varName, List<?> values) {
     return set(varName, values, (VarGroup) null);
   }
 
@@ -149,68 +148,57 @@ public class RenderSession {
    * rendered at all (that is, an empty string will be inserted at the location of
    * the variable within the template).
    *
-   * @param varName The name of the variable to set
-   * @param values The string values to concatenate
-   * @param varGroup The variable group to assign the variable to if the variable
+   * @param varName the name of the template variable
+   * @param values the string values to concatenate
+   * @param varGroup the variable group to assign the variable to if the variable
    *     has no group name prefix
-   * @return This {@code RenderSession}
-   * @throws RenderException
+   * @return this {@code RenderSession}
    */
-  public RenderSession set(String varName, List<?> values, VarGroup varGroup)
-      throws RenderException {
-    return set(varName,
-        values,
-        varGroup,
-        (String) null,
-        (String) null,
-        (String) null);
+  public RenderSession set(String varName, List<?> values, VarGroup varGroup) {
+    return set(varName, values, varGroup, null, null, null);
   }
 
   /**
    * Sets the specified variable to the concatenation of the values within the
    * specified {@code List}, separating them using the specified separator string.
    *
-   * @param varName The name of the variable to set
-   * @param values The string values to concatenate
-   * @param separator The suffix to use for each string
-   * @return This {@code RenderSession}
-   * @throws RenderException
+   * @param varName the name of the template variable
+   * @param values the string values to concatenate
+   * @param separator the suffix to use for each string
+   * @return this {@code RenderSession}
    * @see #set(String, List, VarGroup, String, String, String)
    */
-  public RenderSession set(String varName, List<?> values, String separator)
-      throws RenderException {
+  public RenderSession set(String varName, List<?> values, String separator) {
     return set(varName,
         values,
-        (VarGroup) null,
-        (String) null,
+        null,
+        null,
         separator,
-        (String) null);
+        null);
   }
 
   /**
    * Sets the specified variable to the concatenation of the values within the
    * specified {@code List}, separating them using the specified separator string.
    *
-   * @param varName The name of the variable to set
-   * @param values The string values to concatenate
-   * @param varGroup The variable group to assign the variable to if the variable
+   * @param varName the name of the template variable
+   * @param values the string values to concatenate
+   * @param varGroup the variable group to assign the variable to if the variable
    *     has no group name prefix. May be {@code null}.
-   * @param separator The suffix to use for each string
-   * @return This {@code RenderSession}
-   * @throws RenderException
+   * @param separator the suffix to use for each string
+   * @return this {@code RenderSession}
    * @see #set(String, List, VarGroup, String, String, String)
    */
   public RenderSession set(String varName,
       List<?> values,
       VarGroup varGroup,
-      String separator) throws RenderException {
+      String separator) {
     return set(varName, values, varGroup, null, separator, null);
   }
 
   /**
    * Sets the specified variable to the concatenation of the values within the
-   * specified {@code List}. The prefix, suffix and separator will not be escaped in
-   * any way. For example:
+   * specified {@code List}. For example:
    *
    * <blockquote><pre>{@code
    * renderSession.set("myVar", List.of("<", "foo", ">"), VarGroup.HTML, "<tr><td>", "</td><td>", "</td></tr>");
@@ -222,17 +210,18 @@ public class RenderSession {
    * <tr><td>&lt;</td><td>foo</td><td>&gt;</td></tr>
    * }</pre></blockquote>
    *
-   * <p>If the {@code List} is empty, the variable, prefix, suffix and separator
-   * will not be rendered at all.
+   * <p>The prefix, suffix and separator will not be escaped in any way. If the
+   * {@code List} is empty, the variable, prefix, suffix and separator will not be
+   * rendered at all.
    *
-   * @param varName the name of the variable to set
+   * @param varName the name of the template variable
    * @param values the values to concatenate
    * @param varGroup the variable group to assign the variable to if the variable
-   *     has no group name prefix. May be {@code null}.
+   *     has no group name prefix. May be {@code null}
    * @param prefix the prefix to the first value
    * @param separator the separator between the values
    * @param suffix the suffix to the last value
-   * @return This {@code RenderSession}
+   * @return this {@code RenderSession}
    */
   public RenderSession set(String varName,
       List<?> values,
@@ -268,7 +257,7 @@ public class RenderSession {
       VarGroup defGroup,
       String prefix,
       String separator,
-      String suffix) throws RenderException {
+      String suffix) {
     VariablePart part = config.getTemplate().getPart(partIndex);
     VarGroup varGroup = part.getVarGroup().orElse(defGroup);
     prefix = n2e(prefix);
@@ -309,13 +298,11 @@ public class RenderSession {
    * template) "paste" its output into the current template. See
    * {@link #createRenderable()}.
    *
-   * @param varName The template variable to set
-   * @param renderable The {@code Renderable}
-   * @return This {@code RenderSession}
-   * @throws RenderException
+   * @param varName the template variable to set
+   * @param renderable the {@code Renderable}
+   * @return this {@code RenderSession}
    */
-  public RenderSession paste(String varName, Renderable renderable)
-      throws RenderException {
+  public RenderSession paste(String varName, Renderable renderable) {
     Check.on(frozenSession(), state.isFrozen()).is(no());
     Check.on(illegalValue("varName", varName), varName).is(notNull());
     Check.on(illegalValue("renderable", renderable), renderable).is(notNull());
@@ -338,15 +325,16 @@ public class RenderSession {
    * present in the {@code names} argument will be populated. No escaping will be
    * applied to the values retrieved from the data object.
    *
-   * @param nestedTemplateName The name of the nested template
-   * @param sourceData An object that provides data for all or some of the nested
+   * @param nestedTemplateName the name of the nested template
+   * @param sourceData an object that provides data for all or some of the nested
    *     template's variables and nested templates
-   * @param names The names of the variables and doubly-nested templates that you
+   * @param names the names of the variables and doubly-nested templates that you
    *     want to be populated using the specified data object
+   * @return this {@code RenderSession}
    */
   public RenderSession populate(String nestedTemplateName,
       Object sourceData,
-      String... names) throws RenderException {
+      String... names) {
     return populate(nestedTemplateName, sourceData, null, names);
   }
 
@@ -373,20 +361,19 @@ public class RenderSession {
    * method for that template as by default neither template variables nor nested
    * templates are rendered.
    *
-   * @param nestedTemplateName The name of the nested template
-   * @param sourceData An object that provides data for all or some of the nested
+   * @param nestedTemplateName the name of the nested template
+   * @param sourceData an object that provides data for all or some of the nested
    *     template's variables and nested templates
-   * @param varGroup The variable group to assign the variables to if they have
+   * @param varGroup the variable group to assign the variables to if they have
    *     no group name prefix. May be {@code null}.
-   * @param names The names of the variables and doubly-nested templates that you
+   * @param names the names of the variables and doubly-nested templates that you
    *     want to be populated using the specified data object
-   * @return This {@code RenderSession}
-   * @throws RenderException
+   * @return this {@code RenderSession}
    */
   public RenderSession populate(String nestedTemplateName,
       Object sourceData,
       VarGroup varGroup,
-      String... names) throws RenderException {
+      String... names) {
     Check.on(frozenSession(), state.isFrozen()).is(no());
     if (sourceData == UNDEFINED) {
       return this;
@@ -403,7 +390,7 @@ public class RenderSession {
   private RenderSession repeat(Template t,
       List<?> data,
       VarGroup defGroup,
-      String... names) throws RenderException {
+      String... names) {
     RenderSession[] sessions = state.getOrCreateChildSessions(t, data.size());
     for (int i = 0; i < sessions.length; ++i) {
       sessions[i].insert(data.get(i), defGroup, names);
@@ -412,57 +399,46 @@ public class RenderSession {
   }
 
   /**
-   * Enables or disables the rendering of the specified templates. The specified
+   * Enables or disables the rendering of nested text-only templates. The specified
    * templates must all be text-only templates, otherwise a {@link RenderException}
    * is thrown. Equivalent to
    * {@link #show(int, String...) show(1, nestedTemplateNames)}.
    *
-   * @param nestedTemplateNames The names of the nested templates to be
+   * @param nestedTemplateNames the names of the nested templates to be
    *     rendered.
-   * @return This {@code RenderSession}
-   * @throws RenderException
+   * @return this {@code RenderSession}
    */
-  public RenderSession show(String... nestedTemplateNames) throws RenderException {
+  public RenderSession show(String... nestedTemplateNames) {
     return show(1, nestedTemplateNames);
   }
 
   /**
-   * Enabled or disables the rendering of the specified templates. Each of the
-   * specified templates will be repeated the specified number of times. The
-   * specified templates must all be text-only templates, otherwise a
-   * {@link RenderException} is thrown. A text-only template is a template that does
-   * not contain any variables or nested templates. Some reasons you might want to
-   * have such a template are:
+   * Enables or disables the rendering of nested text-only templates. A text-only
+   * template is a template that does not contain any variables or nested templates.
    *
-   * <p>
+   * <p>To <i>disable</i> rendering of a text-only template, specify 0 (zero) for
+   * the {@code repeats} argument. Note, however, that by default template variables
+   * and nested templates are not rendered in the first place, so you could also just
+   * not call this method for the template in question.
    *
-   * <ul>
-   *   <li>You want to conditionally render the (static) HTML inside it
-   *   <li>You want to include it in multiple parent templates
-   *   <li>You want to reduce clutter in your main template
-   * </ul>
-   *
-   * <p>To <i>disable</i> rendering of a text-only template, specify 0 (zero) for the {@code
-   * repeats} argument. Note, however, that by default template variables and nested templates are
-   * not rendered in the first place, so you could also just not call this method for the template
-   * in question.
-   *
-   * <p>Specify an empty {@code String} array to enable <i>all</i> text-only templates that have not
-   * been explicitly enabled or disabled yet. In that case it <i>does</i> make sense to first
+   * <p>Specify an empty {@code String} array ({@code new String[0]}) to enable
+   * <i>all</i> text-only templates that have not been explicitly enabled or
+   * disabled yet. In that case, of course, it <i>does</i> make sense to first
    * explicitly disable the text-only templates that should not be rendered.
    *
-   * <p>You could achieve the same by calling {@code populate(nestedTemplateName, null} or {@code
-   * populate(nestedTemplateName, new Object[6]} (repeat six times) or {@code
-   * populate(nestedTemplateName, new Object[0]} (disable the template). However, the {@code show}
-   * method bypasses some code that is irrelevant to text-only templates.
+   * <p>You could achieve the same by calling
+   * {@code populate(nestedTemplateName, null} or
+   * {@code populate(nestedTemplateName, new Object[6]} (repeat six times) or
+   * {@code populate(nestedTemplateName, new Object[0]} (disable the template).
+   * However, the {@code show} method bypasses some code that is irrelevant to
+   * text-only templates.
    *
-   * @param nestedTemplateNames The names of the nested text-only templates you
+   * @param repeats the number of times the nested template must be repeated
+   * @param nestedTemplateNames the names of the nested text-only templates you
    *     want to be rendered
-   * @return This {@code RenderSession}
-   * @throws RenderException
+   * @return this {@code RenderSession}
    */
-  public RenderSession show(int repeats, String... nestedTemplateNames)
-      throws RenderException {
+  public RenderSession show(int repeats, String... nestedTemplateNames) {
     Check.on(frozenSession(), state.isFrozen()).is(no());
     Check.that(repeats, "repeats").is(gte(), 0);
     Check.notNull(nestedTemplateNames, "nestedTemplateNames");
@@ -483,24 +459,22 @@ public class RenderSession {
     return this;
   }
 
-  private RenderSession show(int repeats, Template nested) throws RenderException {
+  private RenderSession show(int repeats, Template nested) {
     state.getOrCreateTextOnlyChildSessions(nested, repeats);
     return this;
   }
 
   /**
-   * Enables all nested text-only templates that have not been explicitly disabled.
-   * The nested templates may in fact contain nested templates themselves, but they
-   * must not contain variables at any nesting level beneath them. A
+   * Enables all nested text-only templates that have not been explicitly disabled
+   * yet. The nested templates may in fact contain nested templates themselves, but
+   * they must not contain variables at any nesting level beneath them. A
    * {@code RenderException} if they do.
    *
-   * @param nestedTemplateNames The names of the nested text-only templates you
+   * @param nestedTemplateNames the names of the nested text-only templates you
    *     want to be rendered
-   * @return This {@code RenderSession}
-   * @throws RenderException
+   * @return this {@code RenderSession}
    */
-  public RenderSession showRecursive(String... nestedTemplateNames)
-      throws RenderException {
+  public RenderSession showRecursive(String... nestedTemplateNames) {
     Check.on(frozenSession(), state.isFrozen()).is(no());
     Check.notNull(nestedTemplateNames, "nestedTemplateNames");
     if (nestedTemplateNames.length == 0) {
@@ -523,8 +497,7 @@ public class RenderSession {
     return this;
   }
 
-  private static void showRecursive(RenderSession s0, Template t0)
-      throws RenderException {
+  private static void showRecursive(RenderSession s0, Template t0) {
     s0.show(1, t0);
     if (!t0.getNestedTemplates().isEmpty()) {
       RenderSession s = s0.state.getOrCreateChildSession(t0);
@@ -535,50 +508,45 @@ public class RenderSession {
   }
 
   /**
-   * Convenience method for populating a nested template that contains exactly one
+   * Convenience method for populating a nested template that contains just one
    * variable and zero (doubly) nested templates. The variable may still occur
    * multiple times within the template. If the specified value is an array or a
    * {@code Collection}, the template is going to be repeated for each value within
    * the array or {@code Collection}.
    *
-   * @param nestedTemplateName The name of the nested template. <i>Must</i>
+   * @param nestedTemplateName the name of the nested template. <i>Must</i>
    *     contain exactly one variable
-   * @return This {@code RenderSession}
-   * @throws RenderException
+   * @param value the value to populate the nested template with
+   * @return this {@code RenderSession}
    */
-  public RenderSession populateWithValue(String nestedTemplateName, Object value)
-      throws RenderException {
+  public RenderSession populateWithValue(String nestedTemplateName, Object value) {
     return populateWithValue(nestedTemplateName, value, null);
   }
 
   /**
-   * Convenience method for populating a nested template that contains exactly one
+   * Convenience method for populating a nested template that contains just one
    * variable and zero (doubly) nested templates. The variable may still occur
    * multiple times within the template. If the specified value is an array or a
    * {@code Collection}, the template is going to be repeated for each value within
    * the array or {@code Collection}.
    *
-   * @param nestedTemplateName The name of the nested template. <i>Must</i>
+   * @param nestedTemplateName the name of the nested template. <i>Must</i>
    *     contain exactly one variable
-   * @param value The value to set the template's one and only variable to
-   * @param varGroup The variable group to assign the variable to if the variable
+   * @param value the value to set the template's one and only variable to
+   * @param varGroup the variable group to assign the variable to if the variable
    *     has no group name prefix. May be {@code null}.
-   * @return This {@code RenderSession}
-   * @throws RenderException
+   * @return this {@code RenderSession}
    */
   public RenderSession populateWithValue(String nestedTemplateName,
       Object value,
-      VarGroup varGroup) throws RenderException {
+      VarGroup varGroup) {
     Check.on(frozenSession(), state.isFrozen()).is(no());
     Template t = getNestedTemplate(nestedTemplateName);
     Check.on(notMonoTemplate(t), t)
         .has(tmpl -> tmpl.getVariables().size(), eq(), 1)
-        .has(tmpl -> tmpl.countNestedTemplates(), eq(), 0);
+        .has(Template::countNestedTemplates, eq(), 0);
     String var = t.getVariables().iterator().next();
-    List<?> values = Arrays.asList(value)
-        .stream()
-        .map(v -> singletonMap(var, v))
-        .collect(toList());
+    List<?> values = Stream.of(value).map(v -> singletonMap(var, v)).toList();
     RenderSession[] sessions = state.getOrCreateChildSessions(t, values.size());
     for (int i = 0; i < sessions.length; ++i) {
       sessions[i].insert(values.get(i), varGroup);
@@ -587,45 +555,47 @@ public class RenderSession {
   }
 
   /**
-   * Convenience method for populating a nested template that contains exactly two
+   * Convenience method for populating a nested template that contains just two
    * variables and zero (doubly) nested templates.
    *
-   * @param nestedTemplateName The name of the nested template.
-   * @param tuples A list of value pairs
-   * @return This {@code RenderSession}
-   * @throws RenderException
+   * @param nestedTemplateName the name of the nested template.
+   * @param tuples a list of value pairs
+   * @param <T> the type of the first input value
+   * @param <U> the type of the second input value
+   * @return this {@code RenderSession}
    */
   public <T, U> RenderSession populateWithTuple(String nestedTemplateName,
-      List<AnyTuple2<T, U>> tuples) throws RenderException {
+      List<AnyTuple2<T, U>> tuples) {
     return populateWithTuple(nestedTemplateName, tuples, null);
   }
 
   /**
-   * Convenience method for populating a nested template that contains exactly two
+   * Convenience method for populating a nested template that contains just two
    * variables and zero (doubly) nested templates. The variables may still occur
    * multiple times within the template. The size of the list of tuples determines
    * how often the template is going to be repeated.
    *
-   * @param nestedTemplateName The name of the nested template
-   * @param tuples A list of value pairs
-   * @param varGroup The variable group to assign the variables to if they have
+   * @param nestedTemplateName the name of the nested template
+   * @param tuples a list of value pairs
+   * @param varGroup the variable group to assign the variables to if they have
    *     no group name prefix
-   * @return This {@code RenderSession}
-   * @throws RenderException
+   * @param <T> the type of the first input value
+   * @param <U> the type of the second input value
+   * @return this {@code RenderSession}
    */
   public <T, U> RenderSession populateWithTuple(String nestedTemplateName,
       List<AnyTuple2<T, U>> tuples,
-      VarGroup varGroup) throws RenderException {
+      VarGroup varGroup) {
     Check.on(frozenSession(), state.isFrozen()).is(no());
     Check.on(illegalValue("tuples", tuples), tuples).is(deepNotNull());
     Template t = getNestedTemplate(nestedTemplateName);
     Check.on(notTupleTemplate(t), t)
         .has(tmpl -> tmpl.getVariables().size(), eq(), 2)
-        .has(tmpl -> tmpl.countNestedTemplates(), eq(), 0);
+        .has(Template::countNestedTemplates, eq(), 0);
     String[] vars = t.getVariables().toArray(new String[2]);
     List<Map<String, Object>> data = tuples.stream()
         .map(tuple -> Map.of(vars[0], tuple.first(), vars[1], tuple.second()))
-        .collect(toList());
+        .toList();
     RenderSession[] sessions = state.getOrCreateChildSessions(t, data.size());
     for (int i = 0; i < sessions.length; ++i) {
       sessions[i].insert(data.get(i), varGroup);
@@ -640,16 +610,14 @@ public class RenderSession {
    * {@code RenderSession} was created). No escaping will be applied to the values
    * extracted from the source data.
    *
-   * @param sourceData An object that provides data for all or some of the
+   * @param sourceData an object that provides data for all or some of the
    *     template variables and nested templates
-   * @param names The names of the variables nested templates names that must be
+   * @param names the names of the variables nested templates names that must be
    *     populated. Not specifying any name (or {@code null}) indicates that you want
    *     all variables and nested templates to be populated.
-   * @return This {@code RenderSession}
-   * @throws RenderException
+   * @return this {@code RenderSession}
    */
-  public RenderSession insert(Object sourceData, String... names)
-      throws RenderException {
+  public RenderSession insert(Object sourceData, String... names) {
     return insert(sourceData, null, names);
   }
 
@@ -660,19 +628,18 @@ public class RenderSession {
    * You can call this and similar methods multiple times until you are satisfied and
    * ready to {@link #render(OutputStream) render} the template.
    *
-   * @param sourceData An object that provides data for all or some of the
+   * @param sourceData an object that provides data for all or some of the
    *     template variables and nested templates
-   * @param varGroup The variable group to assign the variables to if they have
+   * @param varGroup the variable group to assign the variables to if they have
    *     no group name prefix. May be {@code null}.
-   * @param names The names of the variables nested templates names that must be
+   * @param names the names of the variables nested templates names that must be
    *     populated. Not specifying any name (or {@code null}) indicates that you want
    *     all variables and nested templates to be populated.
-   * @return This {@code RenderSession}
-   * @throws RenderException
+   * @return this {@code RenderSession}
    */
   public RenderSession insert(Object sourceData,
       VarGroup varGroup,
-      String... names) throws RenderException {
+      String... names) {
     Check.on(frozenSession(), state.isFrozen()).is(no());
     if (sourceData == UNDEFINED) {
       return this;
@@ -680,8 +647,8 @@ public class RenderSession {
       Template t = config.getTemplate();
       Check.on(notTextOnly(t), t.isTextOnly()).is(yes());
       // If we get past this check, the entire template is in fact
-      // static HTML. Pretty expensive way to render static HTML,
-      // but no reason not to support it.
+      // static HTML. Expensive way to render static HTML, but no
+      // reason not to support it.
       return this;
     }
     processVars(sourceData, varGroup, names);
@@ -690,8 +657,7 @@ public class RenderSession {
   }
 
   @SuppressWarnings("unchecked")
-  private <T> void processVars(T data, VarGroup defGroup, String[] names)
-      throws RenderException {
+  private <T> void processVars(T data, VarGroup defGroup, String[] names) {
     Set<String> varNames;
     if (isEmpty(names)) {
       varNames = config.getTemplate().getVariables();
@@ -716,8 +682,7 @@ public class RenderSession {
   }
 
   @SuppressWarnings("unchecked")
-  private <T> void processTmpls(T data, VarGroup varGroup, String[] names)
-      throws RenderException {
+  private <T> void processTmpls(T data, VarGroup varGroup, String[] names) {
     Set<String> tmplNames;
     if (isEmpty(names)) {
       tmplNames = config.getTemplate().getNestedTemplateNames();
@@ -743,25 +708,20 @@ public class RenderSession {
    * <i>this</i> {@code RenderSession}). If this is the first time the nested
    * template is processed, a single child session will be created for it. This can
    * be used as illustrated in the following example (assuming the presence of a
-   * nested template named {@code employees}:
+   * nested template named {@code employees}):
    *
-   * <blockquote>
-   *
-   * <code>{@code
+   * <blockquote><pre>{@code
    * session.in("employees").set("firstName", "john").set("lastName", "Smith");
-   * }</code>
-   *
-   * </blockquote>
+   * }</pre></blockquote>
    *
    * <p>Note that just calling the {@code in} method already has the effect of the
    * template becoming visible.
    *
-   * @param nestedTemplateName The nested template for which to create the child
+   * @param nestedTemplateName the nested template for which to create the child
    *     session
    * @return A child session that you can (and should) populate yourself
-   * @throws RenderException
    */
-  public RenderSession in(String nestedTemplateName) throws RenderException {
+  public RenderSession in(String nestedTemplateName) {
     Check.on(frozenSession(), state.isFrozen()).is(no());
     Template t = getNestedTemplate(nestedTemplateName);
     return state.getOrCreateChildSession(t);
@@ -772,12 +732,10 @@ public class RenderSession {
    * template. This method throws a {@code RenderException} if no child sessions have
    * been created yet for the specified nested template.
    *
-   * @param nestedTemplateName The nested template
+   * @param nestedTemplateName the nested template
    * @return A {@code List} of child sessions
-   * @throws RenderException
    */
-  public List<RenderSession> getChildSessions(String nestedTemplateName)
-      throws RenderException {
+  public List<RenderSession> getChildSessions(String nestedTemplateName) {
     Check.on(frozenSession(), state.isFrozen()).is(no());
     Template t = getNestedTemplate(nestedTemplateName);
     RenderSession[] sessions = state.getChildSessions(t);
@@ -788,11 +746,11 @@ public class RenderSession {
   /* RENDER METHODS */
 
   /**
-   * Returns whether or not the template is fully populated. That is, all variables
-   * have been set and all nested templates have been populated. Note that you may
-   * not <i>want</i> the template to be fully populated.
+   * Returns {@code true} if the template is fully populated. That is, all template
+   * variables (nested or not) have been. Note that you may not <i>want</i> the
+   * template to be fully populated.
    *
-   * @return Whether or not the template is fully populated
+   * @return {@code true} if the template is fully populated
    */
   public boolean isFullyPopulated() {
     return state.isFullyPopulated();
@@ -813,8 +771,7 @@ public class RenderSession {
    * Writes the render result to the specified {@code OutputStream}. Shortcut for
    * {@code createRenderable().render(out)}.
    *
-   * @param out The output stream to which to write the render result
-   * @throws RenderException
+   * @param out the output stream to which to write the render result
    */
   public void render(OutputStream out) {
     createRenderable().render(out);
@@ -824,8 +781,7 @@ public class RenderSession {
    * Appends the render result to the specified {@code StringBuilder}. Shortcut for
    * {@code createRenderable().render(sb)}.
    *
-   * @param sb The {@code StringBuilder} to which to append the render result
-   * @throws RenderException
+   * @param sb the {@code StringBuilder} to which to append the render result
    */
   public void render(StringBuilder sb) {
     createRenderable().render(sb);
@@ -834,7 +790,7 @@ public class RenderSession {
   /**
    * Returns the render result as a UTF-8 encoded {@code String}.
    *
-   * @return The render result
+   * @return the render result
    */
   public String render() {
     ByteArrayOutputStream out = new ByteArrayOutputStream(1024);
@@ -858,7 +814,7 @@ public class RenderSession {
     return state;
   }
 
-  private Template getNestedTemplate(String name) throws RenderException {
+  private Template getNestedTemplate(String name) {
     Check.notNull(name, "nestedTemplateName");
     Check.on(noSuchTemplate(config.getTemplate(), name), name)
         .is(validTemplateName());
@@ -869,8 +825,7 @@ public class RenderSession {
     return s -> config.getTemplate().getNestedTemplateNames().contains(s);
   }
 
-  private String stringify(Stringifier stringifier, String varName, Object value)
-      throws RenderException {
+  private String stringify(Stringifier stringifier, String varName, Object value) {
     try {
       String s = stringifier.toString(value);
       if (s == null) {
