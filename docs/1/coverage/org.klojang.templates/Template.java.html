@@ -193,8 +193,8 @@ public final class Template {
    */
   @ModulePrivate
   public void setParent(Private&lt;Template&gt; parent) {
-<span class="nc" id="L196">    this.parent = parent.get();</span>
-<span class="nc" id="L197">  }</span>
+<span class="fc" id="L196">    this.parent = parent.get();</span>
+<span class="fc" id="L197">  }</span>
 
   /**
    * Returns the ultimate ancestor of this {@code Template}. In other words, the
@@ -290,7 +290,7 @@ public final class Template {
    * @return the names of all nested templates
    */
   public Set&lt;String&gt; getNestedTemplateNames() {
-<span class="nc" id="L293">    return tmplIndices.keySet();</span>
+<span class="fc" id="L293">    return tmplIndices.keySet();</span>
   }
 
   /**
@@ -324,9 +324,9 @@ public final class Template {
    * @return the {@code Template} with the specified name
    */
   public Template getNestedTemplate(String name) {
-<span class="nc" id="L327">    Check.notNull(name).is(keyIn(), tmplIndices, &quot;No such template: \&quot;%s\&quot;&quot;, name);</span>
-<span class="nc" id="L328">    int partIndex = tmplIndices.get(name);</span>
-<span class="nc" id="L329">    return ((NestedTemplatePart) parts.get(partIndex)).getTemplate();</span>
+<span class="fc" id="L327">    Check.notNull(name).is(keyIn(), tmplIndices, &quot;No such template: \&quot;%s\&quot;&quot;, name);</span>
+<span class="fc" id="L328">    int partIndex = tmplIndices.get(name);</span>
+<span class="fc" id="L329">    return ((NestedTemplatePart) parts.get(partIndex)).getTemplate();</span>
   }
 
   /**
@@ -346,7 +346,7 @@ public final class Template {
    * @return Whether this is a text-only template
    */
   public boolean isTextOnly() {
-<span class="nc" id="L349">    return names.isEmpty();</span>
+<span class="fc" id="L349">    return names.isEmpty();</span>
   }
 
   /**
@@ -417,10 +417,10 @@ public final class Template {
 
   @Override
   public boolean equals(Object obj) {
-<span class="nc bnc" id="L420" title="All 2 branches missed.">    if (this == obj) {</span>
+<span class="pc bpc" id="L420" title="1 of 2 branches missed.">    if (this == obj) {</span>
 <span class="nc" id="L421">      return true;</span>
-<span class="nc bnc" id="L422" title="All 4 branches missed.">    } else if (obj == null || getClass() != obj.getClass()) {</span>
-<span class="nc" id="L423">      return false;</span>
+<span class="pc bpc" id="L422" title="3 of 4 branches missed.">    } else if (obj == null || getClass() != obj.getClass()) {</span>
+<span class="fc" id="L423">      return false;</span>
     }
 <span class="nc" id="L425">    Template other = (Template) obj;</span>
 <span class="nc bnc" id="L426" title="All 2 branches missed.">    if (location != null) {</span>
@@ -492,9 +492,9 @@ public final class Template {
   private static Map&lt;String, Integer&gt; getTmplIndices(List&lt;Part&gt; parts) {
 <span class="fc" id="L493">    Map&lt;String, Integer&gt; indices = new LinkedHashMap&lt;&gt;();</span>
 <span class="fc bfc" id="L494" title="All 2 branches covered.">    for (int i = 0; i &lt; parts.size(); ++i) {</span>
-<span class="pc bpc" id="L495" title="1 of 2 branches missed.">      if (parts.get(i) instanceof NestedTemplatePart) {</span>
-<span class="nc" id="L496">        String name = ((NestedTemplatePart) parts.get(i)).getName();</span>
-<span class="nc" id="L497">        indices.put(name, i);</span>
+<span class="fc bfc" id="L495" title="All 2 branches covered.">      if (parts.get(i) instanceof NestedTemplatePart) {</span>
+<span class="fc" id="L496">        String name = ((NestedTemplatePart) parts.get(i)).getName();</span>
+<span class="fc" id="L497">        indices.put(name, i);</span>
       }
     }
 <span class="fc" id="L500">    return Collections.unmodifiableMap(indices);</span>

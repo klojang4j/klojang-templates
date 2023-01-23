@@ -44,12 +44,12 @@ class SessionConfig {
   }
 
   Accessor&lt;?&gt; getAccessor(Object sourceData) {
-<span class="nc" id="L47">    return accessors.getAccessor(sourceData, template);</span>
+<span class="fc" id="L47">    return accessors.getAccessor(sourceData, template);</span>
   }
 
   RenderSession newChildSession(Template nested) {
-<span class="nc" id="L51">    SessionConfig config = new SessionConfig(nested, accessors, stringifiers);</span>
-<span class="nc" id="L52">    return config.newRenderSession();</span>
+<span class="fc" id="L51">    SessionConfig config = new SessionConfig(nested, accessors, stringifiers);</span>
+<span class="fc" id="L52">    return config.newRenderSession();</span>
   }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

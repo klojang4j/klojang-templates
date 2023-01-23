@@ -38,26 +38,26 @@ public class TemplateUtils {
    * @return
    */
   public static String getFQName(Template template) {
-<span class="nc" id="L41">    Check.notNull(template);</span>
-<span class="nc bnc" id="L42" title="All 2 branches missed.">    if (template.getParent() == null) {</span>
+<span class="fc" id="L41">    Check.notNull(template);</span>
+<span class="pc bpc" id="L42" title="1 of 2 branches missed.">    if (template.getParent() == null) {</span>
 <span class="nc" id="L43">      return template.getName();</span>
     }
-<span class="nc" id="L45">    int sz = 0;</span>
-<span class="nc" id="L46">    ArrayList&lt;String&gt; chunks = new ArrayList&lt;&gt;(5);</span>
-<span class="nc" id="L47">    for (Template t = template;</span>
-<span class="nc bnc" id="L48" title="All 4 branches missed.">        t != null &amp;&amp; t.getParent() != null;</span>
-<span class="nc" id="L49">        t = t.getParent()) {</span>
-<span class="nc" id="L50">      chunks.add(t.getName());</span>
-<span class="nc" id="L51">      sz += t.getName().length() + 1;</span>
+<span class="fc" id="L45">    int sz = 0;</span>
+<span class="fc" id="L46">    ArrayList&lt;String&gt; chunks = new ArrayList&lt;&gt;(5);</span>
+<span class="fc" id="L47">    for (Template t = template;</span>
+<span class="pc bpc" id="L48" title="1 of 4 branches missed.">        t != null &amp;&amp; t.getParent() != null;</span>
+<span class="fc" id="L49">        t = t.getParent()) {</span>
+<span class="fc" id="L50">      chunks.add(t.getName());</span>
+<span class="fc" id="L51">      sz += t.getName().length() + 1;</span>
     }
-<span class="nc" id="L53">    StringBuilder sb = new StringBuilder(sz);</span>
-<span class="nc bnc" id="L54" title="All 2 branches missed.">    for (int i = chunks.size() - 1; i &gt;= 0; --i) {</span>
-<span class="nc bnc" id="L55" title="All 2 branches missed.">      if (sb.length() != 0) {</span>
-<span class="nc" id="L56">        sb.append('.');</span>
+<span class="fc" id="L53">    StringBuilder sb = new StringBuilder(sz);</span>
+<span class="fc bfc" id="L54" title="All 2 branches covered.">    for (int i = chunks.size() - 1; i &gt;= 0; --i) {</span>
+<span class="fc bfc" id="L55" title="All 2 branches covered.">      if (sb.length() != 0) {</span>
+<span class="fc" id="L56">        sb.append('.');</span>
       }
-<span class="nc" id="L58">      sb.append(chunks.get(i));</span>
+<span class="fc" id="L58">      sb.append(chunks.get(i));</span>
     }
-<span class="nc" id="L60">    return sb.toString();</span>
+<span class="fc" id="L60">    return sb.toString();</span>
   }
 
   /**
@@ -78,15 +78,15 @@ public class TemplateUtils {
 <span class="fc" id="L78">    ArrayList&lt;String&gt; chunks = new ArrayList&lt;&gt;(5);</span>
 <span class="fc" id="L79">    chunks.add(name);</span>
 <span class="fc" id="L80">    for (Template t = template;</span>
-<span class="pc bpc" id="L81" title="2 of 4 branches missed.">        t != null &amp;&amp; t.getParent() != null;</span>
-<span class="nc" id="L82">        t = t.getParent()) {</span>
-<span class="nc" id="L83">      chunks.add(t.getName());</span>
-<span class="nc" id="L84">      sz += t.getName().length() + 1;</span>
+<span class="pc bpc" id="L81" title="1 of 4 branches missed.">        t != null &amp;&amp; t.getParent() != null;</span>
+<span class="fc" id="L82">        t = t.getParent()) {</span>
+<span class="fc" id="L83">      chunks.add(t.getName());</span>
+<span class="fc" id="L84">      sz += t.getName().length() + 1;</span>
     }
 <span class="fc" id="L86">    StringBuilder sb = new StringBuilder(sz);</span>
 <span class="fc bfc" id="L87" title="All 2 branches covered.">    for (int i = chunks.size() - 1; i &gt;= 0; --i) {</span>
-<span class="pc bpc" id="L88" title="1 of 2 branches missed.">      if (sb.length() != 0) {</span>
-<span class="nc" id="L89">        sb.append('.');</span>
+<span class="fc bfc" id="L88" title="All 2 branches covered.">      if (sb.length() != 0) {</span>
+<span class="fc" id="L89">        sb.append('.');</span>
       }
 <span class="fc" id="L91">      sb.append(chunks.get(i));</span>
     }

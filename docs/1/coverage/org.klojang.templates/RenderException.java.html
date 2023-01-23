@@ -32,8 +32,8 @@ public sealed class RenderException extends RuntimeException permits BadStringif
 
   static Function&lt;String, RenderException&gt; noSuchTemplate(Template t,
       String name) {
-<span class="nc" id="L35">    String fqn = TemplateUtils.getFQName(t, name);</span>
-<span class="nc" id="L36">    return s -&gt; new RenderException(format(ERR_NO_SUCH_TEMPLATE, fqn));</span>
+<span class="fc" id="L35">    String fqn = TemplateUtils.getFQName(t, name);</span>
+<span class="pc" id="L36">    return s -&gt; new RenderException(format(ERR_NO_SUCH_TEMPLATE, fqn));</span>
   }
 
   static Function&lt;String, RenderException&gt; alreadySet(Template t,
@@ -87,9 +87,9 @@ public sealed class RenderException extends RuntimeException permits BadStringif
   }
 
   static Function&lt;String, RenderException&gt; missingSourceData(Template t) {
-<span class="nc" id="L90">    String fqn = TemplateUtils.getFQName(t);</span>
-<span class="nc" id="L91">    String fmt = &quot;Source data must not be null for template %s&quot;;</span>
-<span class="nc" id="L92">    return s -&gt; new RenderException(format(fmt, fqn));</span>
+<span class="fc" id="L90">    String fqn = TemplateUtils.getFQName(t);</span>
+<span class="fc" id="L91">    String fmt = &quot;Source data must not be null for template %s&quot;;</span>
+<span class="pc" id="L92">    return s -&gt; new RenderException(format(fmt, fqn));</span>
   }
 
   static RenderException accessException(

@@ -332,7 +332,7 @@ public final class RenderSession {
   public RenderSession populate(String nestedTemplateName,
       Object sourceData,
       String... names) {
-<span class="nc" id="L335">    return populate(nestedTemplateName, sourceData, null, names);</span>
+<span class="fc" id="L335">    return populate(nestedTemplateName, sourceData, null, names);</span>
   }
 
   /**
@@ -371,28 +371,28 @@ public final class RenderSession {
       Object sourceData,
       VarGroup varGroup,
       String... names) {
-<span class="nc" id="L374">    Check.on(frozenSession(), state.isFrozen()).is(no());</span>
-<span class="nc bnc" id="L375" title="All 2 branches missed.">    if (sourceData == UNDEFINED) {</span>
+<span class="fc" id="L374">    Check.on(frozenSession(), state.isFrozen()).is(no());</span>
+<span class="pc bpc" id="L375" title="1 of 2 branches missed.">    if (sourceData == UNDEFINED) {</span>
 <span class="nc" id="L376">      return this;</span>
     }
-<span class="nc" id="L378">    Template t = getNestedTemplate(nestedTemplateName);</span>
-<span class="nc" id="L379">    List&lt;?&gt; data = CollectionMethods.listify(sourceData);</span>
-<span class="nc bnc" id="L380" title="All 2 branches missed.">    if (t.isTextOnly()) {</span>
+<span class="fc" id="L378">    Template t = getNestedTemplate(nestedTemplateName);</span>
+<span class="fc" id="L379">    List&lt;?&gt; data = CollectionMethods.listify(sourceData);</span>
+<span class="pc bpc" id="L380" title="1 of 2 branches missed.">    if (t.isTextOnly()) {</span>
 <span class="nc" id="L381">      return show(data.size(), t);</span>
     }
-<span class="nc" id="L383">    Check.on(missingSourceData(t), data).is(deepNotNull());</span>
-<span class="nc" id="L384">    return repeat(t, data, varGroup, names);</span>
+<span class="fc" id="L383">    Check.on(missingSourceData(t), data).is(deepNotNull());</span>
+<span class="fc" id="L384">    return repeat(t, data, varGroup, names);</span>
   }
 
   private RenderSession repeat(Template t,
       List&lt;?&gt; data,
       VarGroup defGroup,
       String... names) {
-<span class="nc" id="L391">    RenderSession[] sessions = state.getOrCreateChildSessions(t, data.size());</span>
-<span class="nc bnc" id="L392" title="All 2 branches missed.">    for (int i = 0; i &lt; sessions.length; ++i) {</span>
-<span class="nc" id="L393">      sessions[i].insert(data.get(i), defGroup, names);</span>
+<span class="fc" id="L391">    RenderSession[] sessions = state.getOrCreateChildSessions(t, data.size());</span>
+<span class="fc bfc" id="L392" title="All 2 branches covered.">    for (int i = 0; i &lt; sessions.length; ++i) {</span>
+<span class="fc" id="L393">      sessions[i].insert(data.get(i), defGroup, names);</span>
     }
-<span class="nc" id="L395">    return this;</span>
+<span class="fc" id="L395">    return this;</span>
   }
 
   /**
@@ -637,10 +637,10 @@ public final class RenderSession {
   public RenderSession insert(Object sourceData,
       VarGroup varGroup,
       String... names) {
-<span class="nc" id="L640">    Check.on(frozenSession(), state.isFrozen()).is(no());</span>
-<span class="nc bnc" id="L641" title="All 2 branches missed.">    if (sourceData == UNDEFINED) {</span>
+<span class="fc" id="L640">    Check.on(frozenSession(), state.isFrozen()).is(no());</span>
+<span class="pc bpc" id="L641" title="1 of 2 branches missed.">    if (sourceData == UNDEFINED) {</span>
 <span class="nc" id="L642">      return this;</span>
-<span class="nc bnc" id="L643" title="All 2 branches missed.">    } else if (sourceData == null) {</span>
+<span class="pc bpc" id="L643" title="1 of 2 branches missed.">    } else if (sourceData == null) {</span>
 <span class="nc" id="L644">      Template t = config.getTemplate();</span>
 <span class="nc" id="L645">      Check.on(notTextOnly(t), t.isTextOnly()).is(yes());</span>
       // If we get past this check, the entire template is in fact
@@ -648,53 +648,53 @@ public final class RenderSession {
       // reason not to support it.
 <span class="nc" id="L649">      return this;</span>
     }
-<span class="nc" id="L651">    processVars(sourceData, varGroup, names);</span>
-<span class="nc" id="L652">    processTmpls(sourceData, varGroup, names);</span>
-<span class="nc" id="L653">    return this;</span>
+<span class="fc" id="L651">    processVars(sourceData, varGroup, names);</span>
+<span class="fc" id="L652">    processTmpls(sourceData, varGroup, names);</span>
+<span class="fc" id="L653">    return this;</span>
   }
 
   @SuppressWarnings(&quot;unchecked&quot;)
   private &lt;T&gt; void processVars(T data, VarGroup defGroup, String[] names) {
     Set&lt;String&gt; varNames;
-<span class="nc bnc" id="L659" title="All 2 branches missed.">    if (isEmpty(names)) {</span>
-<span class="nc" id="L660">      varNames = config.getTemplate().getVariables();</span>
+<span class="pc bpc" id="L659" title="1 of 2 branches missed.">    if (isEmpty(names)) {</span>
+<span class="fc" id="L660">      varNames = config.getTemplate().getVariables();</span>
     } else {
 <span class="nc" id="L662">      varNames = new HashSet&lt;&gt;(config.getTemplate().getVariables());</span>
 <span class="nc" id="L663">      varNames.retainAll(List.of(names));</span>
     }
-<span class="nc" id="L665">    Accessor&lt;T&gt; acc = (Accessor&lt;T&gt;) config.getAccessor(data);</span>
-<span class="nc bnc" id="L666" title="All 2 branches missed.">    for (String varName : varNames) {</span>
-<span class="nc bnc" id="L667" title="All 2 branches missed.">      if (!state.isSet(varName)) {</span>
+<span class="fc" id="L665">    Accessor&lt;T&gt; acc = (Accessor&lt;T&gt;) config.getAccessor(data);</span>
+<span class="fc bfc" id="L666" title="All 2 branches covered.">    for (String varName : varNames) {</span>
+<span class="pc bpc" id="L667" title="1 of 2 branches missed.">      if (!state.isSet(varName)) {</span>
         Object value;
         try {
-<span class="nc" id="L670">          value = acc.access(data, varName);</span>
+<span class="fc" id="L670">          value = acc.access(data, varName);</span>
 <span class="nc" id="L671">        } catch (RuntimeException e) {</span>
 <span class="nc" id="L672">          throw accessException(config.getTemplate(), varName, e, data, acc);</span>
-<span class="nc" id="L673">        }</span>
-<span class="nc bnc" id="L674" title="All 2 branches missed.">        if (value != UNDEFINED) {</span>
-<span class="nc" id="L675">          set(varName, value, defGroup);</span>
+<span class="fc" id="L673">        }</span>
+<span class="pc bpc" id="L674" title="1 of 2 branches missed.">        if (value != UNDEFINED) {</span>
+<span class="fc" id="L675">          set(varName, value, defGroup);</span>
         }
       }
-<span class="nc" id="L678">    }</span>
-<span class="nc" id="L679">  }</span>
+<span class="fc" id="L678">    }</span>
+<span class="fc" id="L679">  }</span>
 
   @SuppressWarnings(&quot;unchecked&quot;)
   private &lt;T&gt; void processTmpls(T data, VarGroup varGroup, String[] names) {
     Set&lt;String&gt; tmplNames;
-<span class="nc bnc" id="L684" title="All 2 branches missed.">    if (isEmpty(names)) {</span>
-<span class="nc" id="L685">      tmplNames = config.getTemplate().getNestedTemplateNames();</span>
+<span class="pc bpc" id="L684" title="1 of 2 branches missed.">    if (isEmpty(names)) {</span>
+<span class="fc" id="L685">      tmplNames = config.getTemplate().getNestedTemplateNames();</span>
     } else {
 <span class="nc" id="L687">      tmplNames = new HashSet&lt;&gt;(config.getTemplate().getNestedTemplateNames());</span>
 <span class="nc" id="L688">      tmplNames.retainAll(List.of(names));</span>
     }
-<span class="nc" id="L690">    Accessor&lt;T&gt; acc = (Accessor&lt;T&gt;) config.getAccessor(data);</span>
-<span class="nc bnc" id="L691" title="All 2 branches missed.">    for (String name : tmplNames) {</span>
-<span class="nc" id="L692">      Object nestedData = acc.access(data, name);</span>
-<span class="nc bnc" id="L693" title="All 2 branches missed.">      if (nestedData != UNDEFINED) {</span>
-<span class="nc" id="L694">        populate(name, nestedData, varGroup, names);</span>
+<span class="fc" id="L690">    Accessor&lt;T&gt; acc = (Accessor&lt;T&gt;) config.getAccessor(data);</span>
+<span class="fc bfc" id="L691" title="All 2 branches covered.">    for (String name : tmplNames) {</span>
+<span class="fc" id="L692">      Object nestedData = acc.access(data, name);</span>
+<span class="pc bpc" id="L693" title="1 of 2 branches missed.">      if (nestedData != UNDEFINED) {</span>
+<span class="fc" id="L694">        populate(name, nestedData, varGroup, names);</span>
       }
-<span class="nc" id="L696">    }</span>
-<span class="nc" id="L697">  }</span>
+<span class="fc" id="L696">    }</span>
+<span class="fc" id="L697">  }</span>
 
   /* MISCELLANEOUS METHODS */
 
@@ -808,18 +808,18 @@ public final class RenderSession {
   }
 
   RenderState getState() {
-<span class="nc" id="L811">    return state;</span>
+<span class="fc" id="L811">    return state;</span>
   }
 
   private Template getNestedTemplate(String name) {
-<span class="nc" id="L815">    Check.notNull(name, &quot;nestedTemplateName&quot;);</span>
-<span class="nc" id="L816">    Check.on(noSuchTemplate(config.getTemplate(), name), name)</span>
-<span class="nc" id="L817">        .is(validTemplateName());</span>
-<span class="nc" id="L818">    return config.getTemplate().getNestedTemplate(name);</span>
+<span class="fc" id="L815">    Check.notNull(name, &quot;nestedTemplateName&quot;);</span>
+<span class="fc" id="L816">    Check.on(noSuchTemplate(config.getTemplate(), name), name)</span>
+<span class="fc" id="L817">        .is(validTemplateName());</span>
+<span class="fc" id="L818">    return config.getTemplate().getNestedTemplate(name);</span>
   }
 
   private Predicate&lt;String&gt; validTemplateName() {
-<span class="nc" id="L822">    return s -&gt; config.getTemplate().getNestedTemplateNames().contains(s);</span>
+<span class="fc" id="L822">    return s -&gt; config.getTemplate().getNestedTemplateNames().contains(s);</span>
   }
 
   private String stringify(Stringifier stringifier, String varName, Object value) {

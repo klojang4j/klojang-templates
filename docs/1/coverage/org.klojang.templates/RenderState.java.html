@@ -37,21 +37,21 @@ final class RenderState {
 
   RenderSession[] getOrCreateChildSessions(Template t, int repeats)
       throws RenderException {
-<span class="nc" id="L40">    RenderSession[] children = sessions.get(t);</span>
-<span class="nc bnc" id="L41" title="All 2 branches missed.">    if (children == null) {</span>
-<span class="nc bnc" id="L42" title="All 2 branches missed.">      if (repeats == 0) {</span>
+<span class="fc" id="L40">    RenderSession[] children = sessions.get(t);</span>
+<span class="pc bpc" id="L41" title="1 of 2 branches missed.">    if (children == null) {</span>
+<span class="pc bpc" id="L42" title="1 of 2 branches missed.">      if (repeats == 0) {</span>
 <span class="nc" id="L43">        children = ZERO_SESSIONS;</span>
       } else {
-<span class="nc" id="L45">        children = new RenderSession[repeats];</span>
-<span class="nc bnc" id="L46" title="All 2 branches missed.">        for (int i = 0; i &lt; repeats; ++i) {</span>
-<span class="nc" id="L47">          children[i] = config.newChildSession(t);</span>
+<span class="fc" id="L45">        children = new RenderSession[repeats];</span>
+<span class="fc bfc" id="L46" title="All 2 branches covered.">        for (int i = 0; i &lt; repeats; ++i) {</span>
+<span class="fc" id="L47">          children[i] = config.newChildSession(t);</span>
         }
       }
-<span class="nc" id="L50">      sessions.put(t, children);</span>
+<span class="fc" id="L50">      sessions.put(t, children);</span>
 <span class="nc bnc" id="L51" title="All 2 branches missed.">    } else if (children.length != repeats) {</span>
 <span class="nc" id="L52">      throw repetitionMismatch(config.getTemplate(), children, repeats);</span>
     }
-<span class="nc" id="L54">    return children;</span>
+<span class="fc" id="L54">    return children;</span>
   }
 
   RenderSession[] getOrCreateTextOnlyChildSessions(Template t, int repeats)
@@ -85,7 +85,7 @@ final class RenderState {
   }
 
   RenderSession[] getChildSessions(Template template) {
-<span class="nc" id="L88">    return sessions.get(template);</span>
+<span class="fc" id="L88">    return sessions.get(template);</span>
   }
 
   Object getVar(int partIndex) {

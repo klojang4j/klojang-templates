@@ -14,15 +14,15 @@ public final class MapAccessor implements Accessor&lt;Map&lt;String, Object&gt;&
 <span class="nc" id="L14">    this(null);</span>
 <span class="nc" id="L15">  }</span>
 
-<span class="nc" id="L17">  public MapAccessor(NameMapper nm) {</span>
-<span class="nc" id="L18">    this.nm = nm;</span>
-<span class="nc" id="L19">  }</span>
+<span class="fc" id="L17">  public MapAccessor(NameMapper nm) {</span>
+<span class="fc" id="L18">    this.nm = nm;</span>
+<span class="fc" id="L19">  }</span>
 
   @Override
   public Object access(Map&lt;String, Object&gt; data, String name)
       throws RenderException {
-<span class="nc bnc" id="L24" title="All 2 branches missed.">    String key = nm == null ? name : nm.map(name);</span>
-<span class="nc" id="L25">    return data.getOrDefault(key, UNDEFINED);</span>
+<span class="pc bpc" id="L24" title="1 of 2 branches missed.">    String key = nm == null ? name : nm.map(name);</span>
+<span class="fc" id="L25">    return data.getOrDefault(key, UNDEFINED);</span>
   }
 
 }

@@ -268,21 +268,21 @@ public class AccessorRegistry {
 <span class="fc" id="L268">  }</span>
 
   Accessor&lt;?&gt; getAccessor(Object obj, Template template) {
-<span class="nc" id="L271">    Class&lt;?&gt; type = obj.getClass();</span>
-<span class="nc" id="L272">    Map&lt;Template, Accessor&lt;?&gt;&gt; m = accs.get(type);</span>
-<span class="nc" id="L273">    Accessor&lt;?&gt; acc = null;</span>
-<span class="nc bnc" id="L274" title="All 2 branches missed.">    if (m != null) {</span>
+<span class="fc" id="L271">    Class&lt;?&gt; type = obj.getClass();</span>
+<span class="fc" id="L272">    Map&lt;Template, Accessor&lt;?&gt;&gt; m = accs.get(type);</span>
+<span class="fc" id="L273">    Accessor&lt;?&gt; acc = null;</span>
+<span class="pc bpc" id="L274" title="1 of 2 branches missed.">    if (m != null) {</span>
 <span class="nc" id="L275">      acc = m.get(template);</span>
 <span class="nc bnc" id="L276" title="All 2 branches missed.">      if (acc == null) {</span>
 <span class="nc" id="L277">        acc = m.get(null);</span>
       }
     }
-<span class="nc bnc" id="L280" title="All 2 branches missed.">    if (acc == null) {</span>
-<span class="nc" id="L281">      NameMapper nm = mappers.getOrDefault(template, defMapper);</span>
-<span class="nc bnc" id="L282" title="All 2 branches missed.">      if (type == Optional.class) {</span>
+<span class="pc bpc" id="L280" title="1 of 2 branches missed.">    if (acc == null) {</span>
+<span class="fc" id="L281">      NameMapper nm = mappers.getOrDefault(template, defMapper);</span>
+<span class="pc bpc" id="L282" title="1 of 2 branches missed.">      if (type == Optional.class) {</span>
 <span class="nc" id="L283">        return new OptionalAccessor&lt;&gt;(this, template);</span>
-<span class="nc bnc" id="L284" title="All 2 branches missed.">      } else if (ClassMethods.isSubtype(type, Map.class)) {</span>
-<span class="nc" id="L285">        acc = new MapAccessor(nm);</span>
+<span class="pc bpc" id="L284" title="1 of 2 branches missed.">      } else if (ClassMethods.isSubtype(type, Map.class)) {</span>
+<span class="fc" id="L285">        acc = new MapAccessor(nm);</span>
 <span class="nc bnc" id="L286" title="All 2 branches missed.">      } else if (ClassMethods.isSubtype(type, Object[].class)) {</span>
 <span class="nc" id="L287">        acc = ArrayAccessor.getInstance(template);</span>
 <span class="nc bnc" id="L288" title="All 2 branches missed.">      } else if (useBeanAccessor) {</span>
@@ -291,7 +291,7 @@ public class AccessorRegistry {
 <span class="nc" id="L291">        acc = new PathAccessor(nm);</span>
       }
     }
-<span class="nc" id="L294">    return acc;</span>
+<span class="fc" id="L294">    return acc;</span>
   }
 
 }
