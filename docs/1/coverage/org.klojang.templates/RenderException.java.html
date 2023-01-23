@@ -128,8 +128,8 @@ public sealed class RenderException extends RuntimeException permits BadStringif
 
   static Function&lt;String, RenderException&gt; illegalValue(String name,
       Object value) {
-<span class="nc" id="L131">    String fmt = &quot;Illegal value for \&quot;%s\&quot;: %s&quot;;</span>
-<span class="nc" id="L132">    return s -&gt; new RenderException(format(fmt, name, value));</span>
+<span class="fc" id="L131">    String fmt = &quot;Illegal value for \&quot;%s\&quot;: %s&quot;;</span>
+<span class="pc" id="L132">    return s -&gt; new RenderException(format(fmt, name, value));</span>
   }
 
   public RenderException(String message) {

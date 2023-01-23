@@ -9,7 +9,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class RenderSessionTest {
 
   @Test
-  public void set00() throws ParseException, RenderException {
+  public void set00() throws ParseException {
     String src = "~%foo%";
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
@@ -19,7 +19,7 @@ public class RenderSessionTest {
   }
 
   @Test
-  public void set01() throws ParseException, RenderException {
+  public void set01() throws ParseException {
     Stringifier stringifier = obj -> String.valueOf(obj).toUpperCase();
     StringifierRegistry registry = StringifierRegistry.configure()
         .registerByGroup(stringifier, "upper")
@@ -33,7 +33,7 @@ public class RenderSessionTest {
   }
 
   @Test
-  public void set02() throws ParseException, RenderException {
+  public void set02() throws ParseException {
     Stringifier stringifier = obj -> String.valueOf(obj).toUpperCase();
     StringifierRegistry registry = StringifierRegistry.configure()
         .registerByGroup(stringifier, "upper")
@@ -47,7 +47,7 @@ public class RenderSessionTest {
   }
 
   @Test
-  public void set03() throws ParseException, RenderException {
+  public void set03() throws ParseException {
     Stringifier stringifier = obj -> String.valueOf(obj).toUpperCase();
     StringifierRegistry registry = StringifierRegistry.configure()
         .registerByGroup(stringifier, "upper")
@@ -61,7 +61,7 @@ public class RenderSessionTest {
   }
 
   @Test
-  public void set04() throws ParseException, RenderException {
+  public void set04() throws ParseException {
     Stringifier stringifier = obj -> String.valueOf(obj).toUpperCase();
     StringifierRegistry registry = StringifierRegistry.configure()
         .registerByGroup(stringifier, "upper")
@@ -75,7 +75,7 @@ public class RenderSessionTest {
   }
 
   @Test
-  public void set05() throws ParseException, RenderException {
+  public void set05() throws ParseException {
     String src = "<td>~%foo%</td>";
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
@@ -85,7 +85,7 @@ public class RenderSessionTest {
   }
 
   @Test
-  public void set06() throws ParseException, RenderException {
+  public void set06() throws ParseException {
     String src = "~%foo%";
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
@@ -95,7 +95,7 @@ public class RenderSessionTest {
   }
 
   @Test
-  public void set07() throws ParseException, RenderException {
+  public void set07() throws ParseException {
     String src = "~%foo%";
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
@@ -105,7 +105,7 @@ public class RenderSessionTest {
   }
 
   @Test
-  public void set08() throws ParseException, RenderException {
+  public void set08() throws ParseException {
     String src = "~%foo%";
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
@@ -115,7 +115,7 @@ public class RenderSessionTest {
   }
 
   @Test
-  public void set09() throws ParseException, RenderException {
+  public void set09() throws ParseException {
     String src = "~%foo%";
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
@@ -125,14 +125,32 @@ public class RenderSessionTest {
   }
 
   @Test
-  public void set10() throws ParseException, RenderException {
+  public void set10() throws ParseException {
     String src = "~%foo%";
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
-    rs.set("foo", List.of('<', '>', '<'), VarGroup.HTML, "<td>", "</td><td>", "</td>");
+    rs.set("foo",
+        List.of('<', '>', '<'),
+        VarGroup.HTML,
+        "<td>",
+        "</td><td>",
+        "</td>");
     String out = rs.render();
     assertEquals("<td>&lt;</td><td>&gt;</td><td>&lt;</td>", out);
   }
 
+  @Test
+  public void paste() throws ParseException {
+    Renderable renderable = Template.fromString("<td>~%foo%</td><td>~%bar%</td>")
+        .newRenderSession()
+        .set("foo", "foo")
+        .set("bar", "bar")
+        .createRenderable();
+    String out = Template.fromString("<tr>~%foo%</tr>")
+        .newRenderSession()
+        .paste("foo", renderable)
+        .render();
+    assertEquals("<tr><td>foo</td><td>bar</td></tr>", out);
+  }
 
 }

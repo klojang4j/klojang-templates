@@ -27,34 +27,31 @@ import static org.klojang.util.ObjectMethods.*;
 import static org.klojang.util.StringMethods.concat;
 
 /**
- * A {@code RenderSession} lets you populate a template and then render it. By
- * default template variables and nested templates are not rendered. That is, unless
- * you provide them with values, they will just disappear from the template upon
- * rendering. As soon as you render the template (by calling any of the
- * {@link #render()} methods), the {@code RenderSession} effectively becomes
- * immutable. You can render the template again using that {@code RenderSession}, as
- * often as you like, but it won't allow you to set or changes template variables any
- * longer.
+ * A {@code RenderSession} lets you populate a template and then render it. You
+ * obtain a {@code RenderSession} for a template by calling
+ * {@link Template#newRenderSession()}. By default template variables and nested
+ * templates are not rendered. If you do not provide values for them, they will
+ * simply disappear from the template upon rendering. As soon as you call
+ * {@linkplain #render()} on the {@code RenderSession}, it "freezes"; you will not be
+ * allowed to set or changes template variables from that point onwards.
  *
  * <p>Render sessions are throw-away objects that should go out of scope as quickly
  * as possible. They are cheap to instantiate, but can gain a lot of state as the
  * template gets populated. Therefore, when used within a JEE(-like) framework, make
- * sure they don't survive the request method. A possible exception could be
- * templates that render static but expensive-to-create content. However, in that
- * case it is better to {@link #createRenderable() obtain} a {@link Renderable}
- * object from the {@code RenderSession} and cache that, rather than the
- * {@code RenderSession} itself.
+ * sure they don't survive the request method.
  *
  * <h2>Thead Safety</h2>
- * <p>
- * A {@code RenderSession} carries a lot of state across its methods and is therefore
- * in principle not thread-safe. However, as long as different threads populate
- * different parts of the template (e.g. one thread populates the main table and
- * another thread does the rest), they cannot get in each other's way.
+ *
+ * <p>The {@code RenderSession} class is not thread-safe. However, if different
+ * threads populate different parts of the template, they cannot get in each other's
+ * way. When using multiple threads to populate a template, the moment at which to
+ * call {@code render()} on the shared {@code RenderSession} instance needs to be
+ * carefully synchronized.
  *
  * @author Ayco Holleman
+ * @see Template#newRenderSession()
  */
-public class RenderSession {
+public final class RenderSession {
 
   private final SessionConfig config;
   private final RenderState state;

@@ -26,8 +26,8 @@ final class RenderableImpl implements Renderable {
   @Override
   public void render(OutputStream out) {
 <span class="fc" id="L28">    Check.notNull(out);</span>
-<span class="pc bpc" id="L29" title="1 of 2 branches missed.">    PrintStream ps = out instanceof PrintStream</span>
-<span class="nc" id="L30">        ? (PrintStream) out</span>
+<span class="fc bfc" id="L29" title="All 2 branches covered.">    PrintStream ps = out instanceof PrintStream</span>
+<span class="fc" id="L30">        ? (PrintStream) out</span>
 <span class="fc" id="L31">        : new PrintStream(out);</span>
 <span class="fc" id="L32">    render(state, ps);</span>
 <span class="fc" id="L33">  }</span>
@@ -57,10 +57,10 @@ final class RenderableImpl implements Renderable {
 <span class="pc bpc" id="L57" title="1 of 2 branches missed.">      } else if (part.getClass() == VariablePart.class) {</span>
 <span class="pc bpc" id="L58" title="1 of 2 branches missed.">        if (state0.getVar(i) != null) {</span>
 <span class="fc" id="L59">          Object val = state0.getVar(i);</span>
-<span class="pc bpc" id="L60" title="1 of 2 branches missed.">          if (val.getClass() == String[].class) {</span>
+<span class="fc bfc" id="L60" title="All 2 branches covered.">          if (val.getClass() == String[].class) {</span>
 <span class="fc" id="L61">            Arrays.stream((String[]) state0.getVar(i)).forEach(ps::append);</span>
           } else { // Renderable.class
-<span class="nc" id="L63">            ((Renderable) val).render(ps);</span>
+<span class="fc" id="L63">            ((Renderable) val).render(ps);</span>
           }
 <span class="fc" id="L65">        }</span>
       } else /* TemplatePart */ {
