@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>RenderableImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Klojang Templates</a> &gt; <a href="index.source.html" class="el_package">org.klojang.templates</a> &gt; <span class="el_source">RenderableImpl.java</span></div><h1>RenderableImpl.java</h1><pre class="source lang-java linenums">package org.klojang.templates;
+
+import org.klojang.check.Check;
+import org.klojang.templates.x.parse.NestedTemplatePart;
+import org.klojang.templates.x.parse.Part;
+import org.klojang.templates.x.parse.TextPart;
+import org.klojang.templates.x.parse.VariablePart;
+
+import java.io.OutputStream;
+import java.io.PrintStream;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.IntStream;
+
+import static java.util.Arrays.stream;
+import static org.klojang.util.StringMethods.concat;
+
+final class RenderableImpl implements Renderable {
+
+  private final RenderState state;
+
+<span class="fc" id="L22">  RenderableImpl(RenderState state) {</span>
+<span class="fc" id="L23">    this.state = state;</span>
+<span class="fc" id="L24">  }</span>
+
+  @Override
+  public void render(OutputStream out) {
+<span class="fc" id="L28">    Check.notNull(out);</span>
+<span class="pc bpc" id="L29" title="1 of 2 branches missed.">    PrintStream ps = out instanceof PrintStream</span>
+<span class="nc" id="L30">        ? (PrintStream) out</span>
+<span class="fc" id="L31">        : new PrintStream(out);</span>
+<span class="fc" id="L32">    render(state, ps);</span>
+<span class="fc" id="L33">  }</span>
+
+  @Override
+  public void render(StringBuilder sb) {
+<span class="nc" id="L37">    Check.notNull(sb);</span>
+<span class="nc" id="L38">    render(state, sb);</span>
+<span class="nc" id="L39">  }</span>
+
+  @Override
+  public String toString() {
+<span class="nc" id="L43">    Template t = state.getSessionConfig().getTemplate();</span>
+<span class="nc bnc" id="L44" title="All 2 branches missed.">    if (t.getPath() == null) {</span>
+<span class="nc" id="L45">      return concat(Renderable.class.getName(), &quot;[template=&quot;, t.getName(), &quot;]&quot;);</span>
+    }
+<span class="nc" id="L47">    return concat(Renderable.class.getName(), &quot;[source=&quot;, t.getPath(), &quot;]&quot;);</span>
+  }
+
+  private void render(RenderState state0, PrintStream ps) {
+<span class="fc" id="L51">    List&lt;Part&gt; parts = state0.getSessionConfig().getTemplate().getParts();</span>
+<span class="fc bfc" id="L52" title="All 2 branches covered.">    for (int i = 0; i &lt; parts.size(); ++i) {</span>
+<span class="fc" id="L53">      Part part = parts.get(i);</span>
+<span class="fc bfc" id="L54" title="All 2 branches covered.">      if (part.getClass() == TextPart.class) {</span>
+<span class="fc" id="L55">        TextPart tp = (TextPart) part;</span>
+<span class="fc" id="L56">        ps.append(tp.getText());</span>
+<span class="pc bpc" id="L57" title="1 of 2 branches missed.">      } else if (part.getClass() == VariablePart.class) {</span>
+<span class="pc bpc" id="L58" title="1 of 2 branches missed.">        if (state0.getVar(i) != null) {</span>
+<span class="fc" id="L59">          Object val = state0.getVar(i);</span>
+<span class="pc bpc" id="L60" title="1 of 2 branches missed.">          if (val.getClass() == String[].class) {</span>
+<span class="fc" id="L61">            Arrays.stream((String[]) state0.getVar(i)).forEach(ps::append);</span>
+          } else { // Renderable.class
+<span class="nc" id="L63">            ((Renderable) val).render(ps);</span>
+          }
+<span class="fc" id="L65">        }</span>
+      } else /* TemplatePart */ {
+<span class="nc" id="L67">        NestedTemplatePart ntp = (NestedTemplatePart) part;</span>
+<span class="nc" id="L68">        RenderSession[] sessions = state0.getChildSessions(ntp.getTemplate());</span>
+<span class="nc bnc" id="L69" title="All 2 branches missed.">        if (sessions != null) {</span>
+<span class="nc" id="L70">          Template t = ntp.getTemplate();</span>
+<span class="nc bnc" id="L71" title="All 2 branches missed.">          if (t.isTextOnly()) {</span>
+            // The RenderSession[] array will contain only null values
+            // and we just want to know its length to determine the
+            // number of repetitions
+<span class="nc" id="L75">            String text = ((TextPart) t.getParts().get(0)).getText();</span>
+<span class="nc" id="L76">            IntStream.range(0, sessions.length).forEach(x -&gt; ps.append(text));</span>
+<span class="nc" id="L77">          } else {</span>
+<span class="nc" id="L78">            stream(sessions)</span>
+<span class="nc" id="L79">                .map(RenderSession::getState)</span>
+<span class="nc" id="L80">                .forEach(s -&gt; render(s, ps));</span>
+          }
+        }
+      }
+    }
+<span class="fc" id="L85">  }</span>
+
+  private void render(RenderState state0, StringBuilder sb) {
+<span class="nc" id="L88">    List&lt;Part&gt; parts = state0.getSessionConfig().getTemplate().getParts();</span>
+<span class="nc bnc" id="L89" title="All 2 branches missed.">    for (int i = 0; i &lt; parts.size(); ++i) {</span>
+<span class="nc" id="L90">      Part part = parts.get(i);</span>
+<span class="nc bnc" id="L91" title="All 2 branches missed.">      if (part.getClass() == TextPart.class) {</span>
+<span class="nc" id="L92">        TextPart tp = (TextPart) part;</span>
+<span class="nc" id="L93">        sb.append(tp.getText());</span>
+<span class="nc bnc" id="L94" title="All 2 branches missed.">      } else if (part.getClass() == VariablePart.class) {</span>
+<span class="nc bnc" id="L95" title="All 2 branches missed.">        if (state0.getVar(i) != null) {</span>
+<span class="nc" id="L96">          Object val = state0.getVar(i);</span>
+<span class="nc bnc" id="L97" title="All 2 branches missed.">          if (val.getClass() == String[].class) {</span>
+<span class="nc" id="L98">            Arrays.stream((String[]) state0.getVar(i)).forEach(sb::append);</span>
+          } else { // Renderable.class
+<span class="nc" id="L100">            ((Renderable) val).render(sb);</span>
+          }
+<span class="nc" id="L102">        }</span>
+      } else /* TemplatePart */ {
+<span class="nc" id="L104">        NestedTemplatePart ntp = (NestedTemplatePart) part;</span>
+<span class="nc" id="L105">        RenderSession[] sessions = state0.getChildSessions(ntp.getTemplate());</span>
+<span class="nc bnc" id="L106" title="All 2 branches missed.">        if (sessions != null) {</span>
+<span class="nc" id="L107">          Template t = ntp.getTemplate();</span>
+<span class="nc bnc" id="L108" title="All 2 branches missed.">          if (t.isTextOnly()) {</span>
+<span class="nc" id="L109">            String text = ((TextPart) t.getParts().get(0)).getText();</span>
+<span class="nc" id="L110">            IntStream.range(0, sessions.length).forEach(x -&gt; sb.append(text));</span>
+<span class="nc" id="L111">          } else {</span>
+<span class="nc" id="L112">            stream(sessions)</span>
+<span class="nc" id="L113">                .map(RenderSession::getState)</span>
+<span class="nc" id="L114">                .forEach(s -&gt; render(s, sb));</span>
+          }
+        }
+      }
+    }
+<span class="nc" id="L119">  }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

@@ -50,5 +50,5 @@ Klojang Templates,org.klojang.templates,StringifierId,10,78,5,7,4,16,6,6,1,5
 Klojang Templates,org.klojang.templates,RenderState,221,89,22,1,50,28,30,10,18,10
 Klojang Templates,org.klojang.templates,StringifierRegistry,63,158,19,13,14,37,15,6,1,4
 Klojang Templates,org.klojang.templates,KlojangException,13,0,0,0,6,0,3,0,3,0
-Klojang Templates,org.klojang.templates,Renderer,233,84,24,8,40,20,21,5,7,3
+Klojang Templates,org.klojang.templates,RenderableImpl,233,84,24,8,45,21,21,5,7,3
 Klojang Templates,org.klojang.templates,Template,322,237,26,14,61,46,34,27,20,21

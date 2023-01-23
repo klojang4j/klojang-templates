@@ -15,18 +15,20 @@ import java.util.stream.IntStream;
 import static java.util.Arrays.stream;
 import static org.klojang.util.StringMethods.concat;
 
-class Renderer implements Renderable {
+final class RenderableImpl implements Renderable {
 
   private final RenderState state;
 
-  Renderer(RenderState state) {
+  RenderableImpl(RenderState state) {
     this.state = state;
   }
 
   @Override
   public void render(OutputStream out) {
     Check.notNull(out);
-    PrintStream ps = out instanceof PrintStream ? (PrintStream) out : new PrintStream(out);
+    PrintStream ps = out instanceof PrintStream
+        ? (PrintStream) out
+        : new PrintStream(out);
     render(state, ps);
   }
 
@@ -73,7 +75,9 @@ class Renderer implements Renderable {
             String text = ((TextPart) t.getParts().get(0)).getText();
             IntStream.range(0, sessions.length).forEach(x -> ps.append(text));
           } else {
-            stream(sessions).map(RenderSession::getState).forEach(s -> render(s, ps));
+            stream(sessions)
+                .map(RenderSession::getState)
+                .forEach(s -> render(s, ps));
           }
         }
       }
@@ -105,10 +109,13 @@ class Renderer implements Renderable {
             String text = ((TextPart) t.getParts().get(0)).getText();
             IntStream.range(0, sessions.length).forEach(x -> sb.append(text));
           } else {
-            stream(sessions).map(RenderSession::getState).forEach(s -> render(s, sb));
+            stream(sessions)
+                .map(RenderSession::getState)
+                .forEach(s -> render(s, sb));
           }
         }
       }
     }
   }
+
 }

@@ -764,7 +764,7 @@ public class RenderSession {
    */
   public Renderable createRenderable() {
 <span class="fc" id="L766">    state.freeze();</span>
-<span class="fc" id="L767">    return new Renderer(state);</span>
+<span class="fc" id="L767">    return new RenderableImpl(state);</span>
   }
 
   /**

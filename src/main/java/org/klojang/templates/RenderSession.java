@@ -764,7 +764,7 @@ public class RenderSession {
    */
   public Renderable createRenderable() {
     state.freeze();
-    return new Renderer(state);
+    return new RenderableImpl(state);
   }
 
   /**
