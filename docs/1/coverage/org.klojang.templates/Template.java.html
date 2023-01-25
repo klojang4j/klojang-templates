@@ -247,8 +247,8 @@ public final class Template {
    * @return {@code true} if  this {@code Template} contains a variable with the
    *     specified name
    */
-  public boolean containsVariable(String name) {
-<span class="nc" id="L251">    return Check.notNull(name).ok(varIndices::containsKey);</span>
+  public boolean hasVariable(String name) {
+<span class="fc" id="L251">    return Check.notNull(name).ok(varIndices::containsKey);</span>
   }
 
   /**
@@ -272,15 +272,15 @@ public final class Template {
    * @return All templates nested inside this {@code Template}
    */
   public List&lt;Template&gt; getNestedTemplates() {
-<span class="nc bnc" id="L275" title="All 2 branches missed.">    if (nestedTemplates == null) {</span>
-<span class="nc" id="L276">      return nestedTemplates = tmplIndices.values()</span>
-<span class="nc" id="L277">          .stream()</span>
-<span class="nc" id="L278">          .map(parts::get)</span>
-<span class="nc" id="L279">          .map(NestedTemplatePart.class::cast)</span>
-<span class="nc" id="L280">          .map(NestedTemplatePart::getTemplate)</span>
-<span class="nc" id="L281">          .collect(toUnmodifiableList());</span>
+<span class="fc bfc" id="L275" title="All 2 branches covered.">    if (nestedTemplates == null) {</span>
+<span class="fc" id="L276">      return nestedTemplates = tmplIndices.values()</span>
+<span class="fc" id="L277">          .stream()</span>
+<span class="fc" id="L278">          .map(parts::get)</span>
+<span class="fc" id="L279">          .map(NestedTemplatePart.class::cast)</span>
+<span class="fc" id="L280">          .map(NestedTemplatePart::getTemplate)</span>
+<span class="fc" id="L281">          .collect(toUnmodifiableList());</span>
     }
-<span class="nc" id="L283">    return nestedTemplates;</span>
+<span class="fc" id="L283">    return nestedTemplates;</span>
   }
 
   /**
@@ -301,7 +301,7 @@ public final class Template {
    * @return {@code true} if this {@code Template} contains a nested template with
    *     the specified name
    */
-  public boolean containsNestedTemplate(String name) {
+  public boolean hasNestedTemplate(String name) {
 <span class="nc" id="L305">    return Check.notNull(name).ok(varIndices::containsKey);</span>
   }
 

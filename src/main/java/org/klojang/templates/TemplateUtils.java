@@ -4,7 +4,7 @@ import org.klojang.check.Check;
 import org.klojang.templates.x.Messages;
 import org.klojang.templates.x.parse.Part;
 import org.klojang.templates.x.parse.VariablePart;
-import org.klojang.util.AnyTuple2;
+import org.klojang.util.Tuple2;
 
 import java.io.PrintStream;
 import java.util.ArrayList;
@@ -23,9 +23,11 @@ import static org.klojang.util.StringMethods.substringBefore;
  *
  * @author Ayco Holleman
  */
-public class TemplateUtils {
+public final class TemplateUtils {
 
-  private TemplateUtils() {}
+  private TemplateUtils() {
+    throw new UnsupportedOperationException();
+  }
 
   /**
    * Returns the fully-qualified name of the specified template, relative to the root
@@ -34,8 +36,8 @@ public class TemplateUtils {
    * dot-separated concatenation of template names, with each subsequent name
    * representing a template at the next nesting level.
    *
-   * @param template
-   * @return
+   * @param template the template for which to retrieve the fully-qualified name
+   * @return the fully-qualified name of the template
    */
   public static String getFQName(Template template) {
     Check.notNull(template);
@@ -98,7 +100,7 @@ public class TemplateUtils {
    * template and all templates descending from it. The returned {@code Set} is
    * created on demand and modifiable.
    *
-   * @param template The {@code Template} to extract the names from
+   * @param template the {@code Template} to extract the names from
    * @return The names of all variables and nested templates within the specified
    *     template and all templates descending from it
    */
@@ -122,7 +124,7 @@ public class TemplateUtils {
    * element of the {@code List}. The {@code List} is created on demand and
    * modifiable.
    *
-   * @return A {@code List} containing the {@code Template} and all templates
+   * @return a {@code List} containing the {@code Template} and all templates
    *     descending from it
    */
   public static List<Template> getTemplateHierarchy(Template template) {
@@ -147,8 +149,8 @@ public class TemplateUtils {
    * fully-qualified name must be relative to the specified template and must not
    * start with the specified template's name itself.
    *
-   * @param template The template containing the (deeply) nested template
-   * @param fqName The fully qualified name of the nested template
+   * @param template the template containing the (deeply) nested template
+   * @param fqName the fully qualified name of the nested template
    * @return The (possibly deeply) nested template corresponding to the specified
    *     fully-qualified name
    */
@@ -176,9 +178,9 @@ public class TemplateUtils {
    * Returns the template containing the variable or nested template denoted by the
    * specified fully-qualified name, relative to the specified template.
    *
-   * @param template The template relative to which the fully-qualified name
+   * @param template the template relative to which the fully-qualified name
    *     should be taken
-   * @param fqName The fully-qualified name
+   * @param fqName the fully-qualified name
    * @return The template containing the variable or nested template denoted by the
    *     specified fully-qualified name
    */
@@ -201,19 +203,19 @@ public class TemplateUtils {
    * {@code Template} instance and a variable name. The returned {@code List} is
    * created on demand and modifiable.
    *
-   * @return All variable names in this {@code Template} and the templates nested
+   * @return all variable names in this {@code Template} and the templates nested
    *     inside it
    */
-  public static List<AnyTuple2<Template, String>> getVarsPerTemplate(Template template) {
+  public static List<Tuple2<Template, String>> getVarsPerTemplate(Template template) {
     Check.notNull(template, "template");
-    ArrayList<AnyTuple2<Template, String>> tuples = new ArrayList<>(25);
+    ArrayList<Tuple2<Template, String>> tuples = new ArrayList<>(25);
     collectVarsPerTemplate(template, tuples);
     return tuples;
   }
 
-  private static void collectVarsPerTemplate(
-      Template t0, ArrayList<AnyTuple2<Template, String>> tuples) {
-    t0.getVariables().stream().map(s -> AnyTuple2.of(t0, s)).forEach(tuples::add);
+  private static void collectVarsPerTemplate(Template t0,
+      ArrayList<Tuple2<Template, String>> tuples) {
+    t0.getVariables().stream().map(s -> Tuple2.of(t0, s)).forEach(tuples::add);
     t0.getNestedTemplates().forEach(t -> collectVarsPerTemplate(t, tuples));
   }
 
@@ -221,9 +223,9 @@ public class TemplateUtils {
    * Returns all instances of variables within the specified template and with the
    * specified prefix.
    *
-   * @param template The {@code Template} in which to search
-   * @param prefix The variable prefix (a.k.a. the variable group)
-   * @return All instances of variables with the specified name and prefix
+   * @param template the {@code Template} in which to search
+   * @param prefix the variable prefix (a.k.a. the variable group)
+   * @return all instances of variables with the specified name and prefix
    */
   public static List<VariablePart> getVariableInstances(Template template,
       String prefix) {
@@ -246,10 +248,10 @@ public class TemplateUtils {
    * Returns all instances of variables within the specified template, with the
    * specified name, and with the specified prefix.
    *
-   * @param template The {@code Template} in which to search
-   * @param prefix The variable prefix (a.k.a. the variable group)
-   * @param varName The variableName
-   * @return All instances of variables with the specified name and prefix
+   * @param template the {@code Template} in which to search
+   * @param prefix the variable prefix (a.k.a. the variable group)
+   * @param varName the variableName
+   * @return all instances of variables with the specified name and prefix
    */
   public static List<VariablePart> getVariableInstances(
       Template template, String prefix, String varName) {
@@ -277,8 +279,8 @@ public class TemplateUtils {
    * Prints out the constituent parts of the specified {@code Template}. Can be used
    * for debugging purposes.
    *
-   * @param template The {@code Template} whose parts to print
-   * @param out The {@code PrintStream} to which to print
+   * @param template the {@code Template} whose parts to print
+   * @param out the {@code PrintStream} to which to print
    */
   public static void printParts(Template template, PrintStream out) {
     new PartsPrinter(template).printParts(out);

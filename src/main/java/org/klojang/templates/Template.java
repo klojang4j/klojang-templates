@@ -247,7 +247,7 @@ public final class Template {
    * @return {@code true} if  this {@code Template} contains a variable with the
    *     specified name
    */
-  public boolean containsVariable(String name) {
+  public boolean hasVariable(String name) {
     return Check.notNull(name).ok(varIndices::containsKey);
   }
 
@@ -301,7 +301,7 @@ public final class Template {
    * @return {@code true} if this {@code Template} contains a nested template with
    *     the specified name
    */
-  public boolean containsNestedTemplate(String name) {
+  public boolean hasNestedTemplate(String name) {
     return Check.notNull(name).ok(varIndices::containsKey);
   }
 

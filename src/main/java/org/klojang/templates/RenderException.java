@@ -16,7 +16,8 @@ import static org.klojang.util.ArrayMethods.implode;
  *
  * @author Ayco Holleman
  */
-public sealed class RenderException extends RuntimeException permits BadStringifierException {
+public sealed class RenderException extends RuntimeException permits
+    BadStringifierException {
 
   static RenderException noStringifierForGroup(VariablePart part, VarGroup group) {
     String msg = "Cannot render variable %s at line %d, column %d. The specified "
@@ -30,17 +31,15 @@ public sealed class RenderException extends RuntimeException permits BadStringif
     return () -> new RenderException(format(ERR_NO_SUCH_VARIABLE, fqn));
   }
 
-  static Function<String, RenderException> noSuchTemplate(Template t,
-      String name) {
-    String fqn = TemplateUtils.getFQName(t, name);
-    return s -> new RenderException(format(ERR_NO_SUCH_TEMPLATE, fqn));
+  static Supplier<RenderException> noSuchTemplate(Template t, String name) {
+    return () -> new RenderException(
+        format("no such template: \"%s\"", TemplateUtils.getFQName(t, name)));
   }
 
-  static Function<String, RenderException> alreadySet(Template t,
-      String var) {
+  static Supplier<RenderException> alreadySet(Template t, String var) {
     String fqn = TemplateUtils.getFQName(t, var);
     String fmt = "Variable already set: \"%s\"";
-    return s -> new RenderException(format(fmt, fqn));
+    return () -> new RenderException(format(fmt, fqn));
   }
 
   static RenderException repetitionMismatch(
@@ -68,10 +67,16 @@ public sealed class RenderException extends RuntimeException permits BadStringif
     return new RenderException(format(fmt, fqn));
   }
 
-  static Function<String, RenderException> notTextOnly(Template t) {
+  static Function<String, RenderException> textOnly(Template t) {
     String fqn = TemplateUtils.getFQName(t);
     String fmt = "Not a text-only template: %s";
     return s -> new RenderException(format(fmt, fqn));
+  }
+
+  static Supplier<RenderException> notTextOnly(Template t) {
+    String fqn = TemplateUtils.getFQName(t);
+    String fmt = "Not a text-only template: %s";
+    return () -> new RenderException(format(fmt, fqn));
   }
 
   static Function<String, RenderException> notMonoTemplate(Template t) {

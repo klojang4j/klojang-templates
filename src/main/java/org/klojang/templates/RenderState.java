@@ -31,12 +31,11 @@ final class RenderState {
     return config;
   }
 
-  RenderSession getOrCreateChildSession(Template t) throws RenderException {
+  RenderSession getOrCreateChildSession(Template t) {
     return getOrCreateChildSessions(t, 1)[0];
   }
 
-  RenderSession[] getOrCreateChildSessions(Template t, int repeats)
-      throws RenderException {
+  RenderSession[] getOrCreateChildSessions(Template t, int repeats) {
     RenderSession[] children = sessions.get(t);
     if (children == null) {
       if (repeats == 0) {
@@ -54,23 +53,6 @@ final class RenderState {
     return children;
   }
 
-  RenderSession[] getOrCreateTextOnlyChildSessions(Template t, int repeats)
-      throws RenderException {
-    // The RenderSession[] array will never contain any actual RenderSession
-    // instances for a text-only template. Only its length matters to the
-    // Renderer as it determines how often the template is to be repeated.
-    RenderSession[] children = sessions.get(t);
-    if (children == null) {
-      children = createTextOnlySessions(repeats);
-      sessions.put(t, children);
-      return children;
-    }
-    throw RenderException.multiPassNotAllowed(t);
-  }
-
-  Map<Template, RenderSession[]> getChildSessions() {
-    return sessions;
-  }
 
   boolean isProcessed(Template template) {
     return sessions.get(template) != null;

@@ -142,6 +142,27 @@ public class RenderSessionTest {
   }
 
   @Test
+  public void set11() throws ParseException {
+    String src = "~%foo%";
+    Template tmpl = Template.fromString(src);
+    RenderSession rs = tmpl.newRenderSession();
+    rs.set("foo", List.of(1, 2, 3));
+    String out = rs.render();
+    assertEquals("123", out);
+  }
+
+  @Test
+  public void set12() throws ParseException {
+    String src = "[~%foo%]";
+    Template tmpl = Template.fromString(src);
+    RenderSession rs = tmpl.newRenderSession();
+    rs.set("foo", Accessor.UNDEFINED);
+    String out = rs.render();
+    // System.out.println(out);
+    assertEquals("[]", out);
+  }
+
+  @Test
   public void paste() throws ParseException {
     Renderable renderable = Template.fromString("<td>~%foo%</td><td>~%bar%</td>")
         .newRenderSession()
@@ -156,9 +177,9 @@ public class RenderSessionTest {
   }
 
   @Test
-  public void populate() throws ParseException {
+  public void populate01() throws ParseException {
     String src = """
-        <html></body>
+        <html><body>
           <table>
             ~%%begin:companies%
             <tr>
@@ -187,68 +208,68 @@ public class RenderSessionTest {
         """;
     //@formatter:off
     List<Map<String,Object>> companies = List.of(
-    new MapBuilder()
-        .set("name", "Shell")
-        .set("profits", 5_029_872.80)
-        .set("departments", List.of(
-            new MapBuilder()
-                .set("name", "ICT")
-                .set("boss", "John")
-                .set("employees", List.of(
-                    new MapBuilder()
-                        .set("name", "Pete")
-                        .set("age", 27)
-                        .createMap(),
-                    new MapBuilder()
-                        .set("name", "Jake")
-                        .set("age", 52)
-                        .createMap()))
-                .createMap(),
-            new MapBuilder()
-                .set("name", "HR")
-                .set("boss", "Joanna")
-                .set("employees", List.of(
-                    new MapBuilder()
-                        .set("name", "Mary")
-                        .set("age", 27)
-                        .createMap(),
-                    new MapBuilder()
-                        .set("name", "John")
-                        .set("age", 52)
-                        .createMap()))
-                .createMap()))
-        .createMap(),
-    new MapBuilder()
-        .set("name", "Goggle")
-        .set("profits", 386_325_345.78)
-        .set("departments", List.of(
-            new MapBuilder()
-                .set("name", "ICT")
-                .set("boss", "Jane")
-                .set("employees", List.of(
-                    new MapBuilder()
-                        .set("name", "Capote")
-                        .set("age", 66)
-                        .createMap(),
-                    new MapBuilder()
-                        .set("name", "Joan")
-                        .set("age", 51)
-                        .createMap()))
-                .createMap(),
-            new MapBuilder()
-                .set("name", "HR")
-                .set("boss", "Eric")
-                .set("employees", List.of(
-                    new MapBuilder()
-                        .set("name", "Mary")
-                        .set("age", 54)
-                        .createMap(),
-                    new MapBuilder()
-                        .set("name", "John")
-                        .set("age", 46)
-                        .createMap()))
-                .createMap()))
-        .createMap()
+        new MapBuilder()
+            .set("name", "Shell")
+            .set("profits", 5_029_872.80)
+            .set("departments", List.of(
+                new MapBuilder()
+                    .set("name", "ICT")
+                    .set("boss", "John")
+                    .set("employees", List.of(
+                        new MapBuilder()
+                            .set("name", "Pete")
+                            .set("age", 27)
+                            .createMap(),
+                        new MapBuilder()
+                            .set("name", "Jake")
+                            .set("age", 52)
+                            .createMap()))
+                    .createMap(),
+                new MapBuilder()
+                    .set("name", "HR")
+                    .set("boss", "Joanna")
+                    .set("employees", List.of(
+                        new MapBuilder()
+                            .set("name", "Mary")
+                            .set("age", 27)
+                            .createMap(),
+                        new MapBuilder()
+                            .set("name", "John")
+                            .set("age", 52)
+                            .createMap()))
+                    .createMap()))
+            .createMap(),
+        new MapBuilder()
+            .set("name", "Goggle")
+            .set("profits", 386_325_345.78)
+            .set("departments", List.of(
+                new MapBuilder()
+                    .set("name", "ICT")
+                    .set("boss", "Jane")
+                    .set("employees", List.of(
+                        new MapBuilder()
+                            .set("name", "Capote")
+                            .set("age", 66)
+                            .createMap(),
+                        new MapBuilder()
+                            .set("name", "Joan")
+                            .set("age", 51)
+                            .createMap()))
+                    .createMap(),
+                new MapBuilder()
+                    .set("name", "HR")
+                    .set("boss", "Eric")
+                    .set("employees", List.of(
+                        new MapBuilder()
+                            .set("name", "Mary")
+                            .set("age", 54)
+                            .createMap(),
+                        new MapBuilder()
+                            .set("name", "John")
+                            .set("age", 46)
+                            .createMap()))
+                    .createMap()))
+            .createMap()
     );
     //@formatter:on
     //System.out.println(companies);
@@ -258,8 +279,152 @@ public class RenderSessionTest {
     String out = rs.render();
     out = out.replaceAll("\\s+", "");
     //System.out.println(out);
-    String expected = "<html></body><table><tr><td>Name</td><td>Shell</td><td>Profits</td><td>5029872.8</td><td>Departments</td><td><table><tr><td>Name</td><td>ICT</td><td>Boss</td><td>John</td><td>Employees</td><td><table><tr><td>Name</td><td>Pete</td><td>Age</td><td>27</td></tr><tr><td>Name</td><td>Jake</td><td>Age</td><td>52</td></tr></table></td></tr><tr><td>Name</td><td>HR</td><td>Boss</td><td>Joanna</td><td>Employees</td><td><table><tr><td>Name</td><td>Mary</td><td>Age</td><td>27</td></tr><tr><td>Name</td><td>John</td><td>Age</td><td>52</td></tr></table></td></tr></table></td></tr><tr><td>Name</td><td>Goggle</td><td>Profits</td><td>3.8632534578E8</td><td>Departments</td><td><table><tr><td>Name</td><td>ICT</td><td>Boss</td><td>Jane</td><td>Employees</td><td><table><tr><td>Name</td><td>Capote</td><td>Age</td><td>66</td></tr><tr><td>Name</td><td>Joan</td><td>Age</td><td>51</td></tr></table></td></tr><tr><td>Name</td><td>HR</td><td>Boss</td><td>Eric</td><td>Employees</td><td><table><tr><td>Name</td><td>Mary</td><td>Age</td><td>54</td></tr><tr><td>Name</td><td>John</td><td>Age</td><td>46</td></tr></table></td></tr></table></td></tr></table></body></html>";
+    String expected = "<html><body><table><tr><td>Name</td><td>Shell</td><td>Profits</td><td>5029872.8</td><td>Departments</td><td><table><tr><td>Name</td><td>ICT</td><td>Boss</td><td>John</td><td>Employees</td><td><table><tr><td>Name</td><td>Pete</td><td>Age</td><td>27</td></tr><tr><td>Name</td><td>Jake</td><td>Age</td><td>52</td></tr></table></td></tr><tr><td>Name</td><td>HR</td><td>Boss</td><td>Joanna</td><td>Employees</td><td><table><tr><td>Name</td><td>Mary</td><td>Age</td><td>27</td></tr><tr><td>Name</td><td>John</td><td>Age</td><td>52</td></tr></table></td></tr></table></td></tr><tr><td>Name</td><td>Goggle</td><td>Profits</td><td>3.8632534578E8</td><td>Departments</td><td><table><tr><td>Name</td><td>ICT</td><td>Boss</td><td>Jane</td><td>Employees</td><td><table><tr><td>Name</td><td>Capote</td><td>Age</td><td>66</td></tr><tr><td>Name</td><td>Joan</td><td>Age</td><td>51</td></tr></table></td></tr><tr><td>Name</td><td>HR</td><td>Boss</td><td>Eric</td><td>Employees</td><td><table><tr><td>Name</td><td>Mary</td><td>Age</td><td>54</td></tr><tr><td>Name</td><td>John</td><td>Age</td><td>46</td></tr></table></td></tr></table></td></tr></table></body></html>";
     assertEquals(expected, out);
+  }
+
+  @Test
+  public void populate02() throws ParseException {
+    String src = """
+        FOO
+            ~%%begin:companies%
+            BAR
+            ~%%end:companies%
+        FOO
+        """;
+    Template tmpl = Template.fromString(src);
+    RenderSession rs = tmpl.newRenderSession();
+    rs.populate("companies", null);
+    String out = rs.render();
+    out = out.replaceAll("\\s+", "");
+    //System.out.println(out);
+    assertEquals("FOOBARFOO", out);
+  }
+
+  @Test
+  public void populate03() throws ParseException {
+    String src = """
+        FOO
+            ~%%begin:companies%
+            BAR
+            ~%%end:companies%
+        FOO
+        """;
+    Template tmpl = Template.fromString(src);
+    RenderSession rs = tmpl.newRenderSession();
+    rs.populate("companies", Accessor.UNDEFINED);
+    String out = rs.render();
+    out = out.replaceAll("\\s+", "");
+    //System.out.println(out);
+    assertEquals("FOOFOO", out);
+  }
+
+  @Test
+  public void show01() throws ParseException {
+    String src = """
+        FOO
+            ~%%begin:companies%
+            BAR
+            ~%%end:companies%
+            ~%%begin:teapots%
+            BOZO
+            ~%%end:teapots%
+        FOO
+        """;
+    Template tmpl = Template.fromString(src);
+    RenderSession rs = tmpl.newRenderSession();
+    rs.show(2);
+    String out = rs.render();
+    out = out.replaceAll("\\s+", "");
+    //System.out.println(out);
+    assertEquals("FOOBARBARBOZOBOZOFOO", out);
+  }
+
+  @Test
+  public void show02() throws ParseException {
+    String src = """
+        FOO
+            ~%%begin:companies%
+            BAR
+            ~%%end:companies%
+            ~%%begin:teapots%
+            BOZO
+            ~%%end:teapots%
+        FOO
+        """;
+    Template tmpl = Template.fromString(src);
+    RenderSession rs = tmpl.newRenderSession();
+    rs.show(2, "companies");
+    String out = rs.render();
+    out = out.replaceAll("\\s+", "");
+    //System.out.println(out);
+    assertEquals("FOOBARBARFOO", out);
+  }
+
+  @Test
+  public void show03() throws ParseException {
+    String src = """
+        FOO
+            ~%%begin:companies%
+            BAR
+            ~%%end:companies%
+            ~%%begin:teapots%
+            BOZO
+            ~%%end:teapots%
+        FOO
+        """;
+    Template tmpl = Template.fromString(src);
+    RenderSession rs = tmpl.newRenderSession();
+    rs.show("teapots");
+    String out = rs.render();
+    out = out.replaceAll("\\s+", "");
+    //System.out.println(out);
+    assertEquals("FOOBOZOFOO", out);
+  }
+
+  @Test
+  public void showRecursive00() throws ParseException {
+    String src = """
+        Foo
+            ~%%begin:companies%
+            Bar
+              ~%%begin:departments%
+                Kitchen
+                ~%%begin:employees%
+                  Sink
+                ~%%end:employees%
+              ~%%end:departments%
+            ~%%end:companies%
+            ~%%begin:teapots%
+            Bozo
+            ~%%end:teapots%
+        Foo
+        """;
+    Template tmpl = Template.fromString(src);
+    RenderSession rs = tmpl.newRenderSession();
+    rs.showRecursive();
+    String out = rs.render();
+    out = out.replaceAll("\\s+", "");
+    //System.out.println(out);
+    assertEquals("FooBarKitchenSinkBozoFoo", out);
+  }
+
+  @Test
+  public void populateWithValue() throws ParseException {
+    String src = """
+        FOO
+            ~%%begin:companies%
+            ~%myVar%
+            ~%%end:companies%
+        FOO
+        """;
+    Template tmpl = Template.fromString(src);
+    RenderSession rs = tmpl.newRenderSession();
+    rs.populateWithValue("companies", "BAR");
+    String out = rs.render();
+    out = out.replaceAll("\\s+", "");
+    //System.out.println(out);
+    assertEquals("FOOBARFOO", out);
   }
 
 }
