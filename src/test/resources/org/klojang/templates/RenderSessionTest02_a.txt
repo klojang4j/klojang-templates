@@ -1,4 +1,0 @@
-DEPARTMENT: ~%name%
-MANAGER: ~%manager.name% (~%manager.birthDate%)
-EMPLOYEES:~%%begin:employees%
-*	~%name%			~%address.number% ~%address.street%		~%birthDate%~%%end:employees%

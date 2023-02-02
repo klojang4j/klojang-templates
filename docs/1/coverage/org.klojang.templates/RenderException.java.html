@@ -7,7 +7,6 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 import static java.lang.String.format;
-import static org.klojang.templates.x.Messages.ERR_NO_SUCH_TEMPLATE;
 import static org.klojang.templates.x.Messages.ERR_NO_SUCH_VARIABLE;
 import static org.klojang.util.ArrayMethods.implode;
 
@@ -20,126 +19,99 @@ public sealed class RenderException extends RuntimeException permits
     BadStringifierException {
 
   static RenderException noStringifierForGroup(VariablePart part, VarGroup group) {
-<span class="nc" id="L23">    String msg = &quot;Cannot render variable %s at line %d, column %d. The specified &quot;</span>
-        + &quot;variable group (%s) is not associated with a stringifier.&quot;;
-<span class="nc" id="L25">    String fmt = &quot;No stringifier associated with variable group \&quot;%s\&quot;&quot;;</span>
-<span class="nc" id="L26">    return new RenderException(format(fmt, group));</span>
+<span class="nc" id="L22">    String fmt = &quot;No stringifier associated with variable group \&quot;%s\&quot;&quot;;</span>
+<span class="nc" id="L23">    return new RenderException(format(fmt, group));</span>
   }
 
   static Supplier&lt;RenderException&gt; noSuchVariable(Template t, String var) {
-<span class="fc" id="L30">    String fqn = TemplateUtils.getFQName(t, var);</span>
-<span class="pc" id="L31">    return () -&gt; new RenderException(format(ERR_NO_SUCH_VARIABLE, fqn));</span>
+<span class="fc" id="L27">    String fqn = TemplateUtils.getFQName(t, var);</span>
+<span class="pc" id="L28">    return () -&gt; new RenderException(format(ERR_NO_SUCH_VARIABLE, fqn));</span>
   }
 
   static Supplier&lt;RenderException&gt; noSuchTemplate(Template t, String name) {
-<span class="pc" id="L35">    return () -&gt; new RenderException(</span>
-<span class="nc" id="L36">        format(&quot;no such template: \&quot;%s\&quot;&quot;, TemplateUtils.getFQName(t, name)));</span>
+<span class="pc" id="L32">    return () -&gt; new RenderException(</span>
+<span class="nc" id="L33">        format(&quot;no such template: \&quot;%s\&quot;&quot;, TemplateUtils.getFQName(t, name)));</span>
   }
 
   static Supplier&lt;RenderException&gt; alreadySet(Template t, String var) {
-<span class="fc" id="L40">    String fqn = TemplateUtils.getFQName(t, var);</span>
-<span class="fc" id="L41">    String fmt = &quot;Variable already set: \&quot;%s\&quot;&quot;;</span>
-<span class="pc" id="L42">    return () -&gt; new RenderException(format(fmt, fqn));</span>
+<span class="fc" id="L37">    String fqn = TemplateUtils.getFQName(t, var);</span>
+<span class="fc" id="L38">    String fmt = &quot;variable %s has already been set&quot;;</span>
+<span class="pc" id="L39">    return () -&gt; new RenderException(format(fmt, fqn));</span>
   }
 
   static RenderException repetitionMismatch(
       Template t, RenderSession[] sessions, int repeats) {
-<span class="nc" id="L47">    String fmt =</span>
+<span class="nc" id="L44">    String fmt =</span>
         &quot;When populating a repeating template in multiple passes you must always &quot;
             + &quot;provide the same number of source data objects. Received %d source &quot;
             + &quot;data objects in first round. Now got %d&quot;;
-<span class="nc" id="L51">    String fqn = TemplateUtils.getFQName(t);</span>
-<span class="nc" id="L52">    return new RenderException(format(fmt, fqn, sessions.length, repeats));</span>
+<span class="nc" id="L48">    String fqn = TemplateUtils.getFQName(t);</span>
+<span class="nc" id="L49">    return new RenderException(format(fmt, fqn, sessions.length, repeats));</span>
   }
 
-  public static Function&lt;String, RenderException&gt; frozenSession() {
-<span class="pc" id="L56">    return s -&gt; new RenderException(&quot;Session frozen after rendering&quot;);</span>
+  static Function&lt;String, RenderException&gt; frozenSession() {
+<span class="pc" id="L53">    return s -&gt; new RenderException(&quot;Session frozen after rendering&quot;);</span>
   }
 
-  static Supplier&lt;RenderException&gt; frozen() {
-<span class="nc" id="L60">    return () -&gt; new RenderException(&quot;Session frozen after rendering&quot;);</span>
+  static Function&lt;String, RenderException&gt; isTextOnly(Template t) {
+<span class="fc" id="L57">    String fqn = TemplateUtils.getFQName(t);</span>
+<span class="fc" id="L58">    String fmt = &quot;not a text-only template: %s&quot;;</span>
+<span class="pc" id="L59">    return s -&gt; new RenderException(format(fmt, fqn));</span>
   }
 
-  public static RenderException multiPassNotAllowed(Template t) {
-<span class="nc" id="L64">    String fqn = TemplateUtils.getFQName(t);</span>
-<span class="nc" id="L65">    String fmt =</span>
-        &quot;show() can be called only once per text-only template (template specified: \&quot;%s\&quot;)&quot;;
-<span class="nc" id="L67">    return new RenderException(format(fmt, fqn));</span>
+  static Function&lt;String, RenderException&gt; isOneVarTemplate(Template t) {
+<span class="fc" id="L63">    String fqn = TemplateUtils.getFQName(t);</span>
+<span class="fc" id="L64">    String fmt = &quot;not a one-variable template: %s&quot;;</span>
+<span class="pc" id="L65">    return s -&gt; new RenderException(format(fmt, fqn));</span>
   }
 
-  static Function&lt;String, RenderException&gt; textOnly(Template t) {
-<span class="fc" id="L71">    String fqn = TemplateUtils.getFQName(t);</span>
-<span class="fc" id="L72">    String fmt = &quot;Not a text-only template: %s&quot;;</span>
-<span class="pc" id="L73">    return s -&gt; new RenderException(format(fmt, fqn));</span>
-  }
-
-  static Supplier&lt;RenderException&gt; notTextOnly(Template t) {
-<span class="fc" id="L77">    String fqn = TemplateUtils.getFQName(t);</span>
-<span class="fc" id="L78">    String fmt = &quot;Not a text-only template: %s&quot;;</span>
-<span class="pc" id="L79">    return () -&gt; new RenderException(format(fmt, fqn));</span>
-  }
-
-  static Function&lt;String, RenderException&gt; notMonoTemplate(Template t) {
-<span class="fc" id="L83">    String fqn = TemplateUtils.getFQName(t);</span>
-<span class="fc" id="L84">    String fmt = &quot;Not a one-variable template: %s&quot;;</span>
-<span class="pc" id="L85">    return s -&gt; new RenderException(format(fmt, fqn));</span>
-  }
-
-  static Function&lt;String, RenderException&gt; notTupleTemplate(Template t) {
-<span class="nc" id="L89">    String fqn = TemplateUtils.getFQName(t);</span>
-<span class="nc" id="L90">    String fmt = &quot;Not a two-variable template: %s&quot;;</span>
-<span class="nc" id="L91">    return s -&gt; new RenderException(format(fmt, fqn));</span>
+  static Function&lt;String, RenderException&gt; isTwoVarTemplate(Template t) {
+<span class="fc" id="L69">    String fqn = TemplateUtils.getFQName(t);</span>
+<span class="fc" id="L70">    String fmt = &quot;not a two-variable template: %s&quot;;</span>
+<span class="pc" id="L71">    return s -&gt; new RenderException(format(fmt, fqn));</span>
   }
 
   static Function&lt;String, RenderException&gt; missingSourceData(Template t) {
-<span class="fc" id="L95">    String fqn = TemplateUtils.getFQName(t);</span>
-<span class="fc" id="L96">    String fmt = &quot;Source data must not be null for template %s&quot;;</span>
-<span class="pc" id="L97">    return s -&gt; new RenderException(format(fmt, fqn));</span>
+<span class="fc" id="L75">    String fqn = TemplateUtils.getFQName(t);</span>
+<span class="fc" id="L76">    String fmt = &quot;source data must not be null for template %s&quot;;</span>
+<span class="pc" id="L77">    return s -&gt; new RenderException(format(fmt, fqn));</span>
   }
 
   static RenderException accessException(
       Template t, String var, RuntimeException exc, Object data, Accessor&lt;?&gt; acc) {
-<span class="nc" id="L102">    String fqn = TemplateUtils.getFQName(t, var);</span>
-<span class="nc" id="L103">    String fmt0 = &quot;An exception occurred while retrieving a value for %s from %s using %s: %s.&quot;;</span>
+<span class="nc" id="L82">    String fqn = TemplateUtils.getFQName(t, var);</span>
+<span class="nc" id="L83">    String fmt0 = &quot;Error while retrieving value for %s from %s using %s: %s.&quot;;</span>
     String fmt1;
     String excMsg;
-<span class="nc" id="L106">    if (!acc.getClass()</span>
-<span class="nc" id="L107">        .getName()</span>
-<span class="nc bnc" id="L108" title="All 2 branches missed.">        .startsWith(KlojangException.class.getPackageName())) {</span>
-<span class="nc" id="L109">      String pkg = implode(acc.getClass().getPackageName().split(&quot;\\.&quot;), &quot;.&quot;, 2);</span>
-<span class="nc" id="L110">      excMsg = ExceptionMethods.getDetailedMessage(exc, pkg);</span>
-<span class="nc" id="L111">      fmt1 =</span>
-          fmt0
-              + &quot; Make sure the accessor returns Accessor.UNDEFINED and does **not** accidentally&quot;
-              + &quot; cause a RuntimeException to be thrown for variables for which it cannot provide&quot;
-              + &quot; a value.&quot;;
-<span class="nc" id="L116">    } else {</span>
-<span class="nc" id="L117">      fmt1 = fmt0;</span>
-<span class="nc" id="L118">      excMsg = exc.toString();</span>
+<span class="nc" id="L86">    if (!acc.getClass()</span>
+<span class="nc" id="L87">        .getName()</span>
+<span class="nc bnc" id="L88" title="All 2 branches missed.">        .startsWith(Template.class.getPackageName())) {</span>
+<span class="nc" id="L89">      String pkg = implode(acc.getClass().getPackageName().split(&quot;\\.&quot;), &quot;.&quot;, 2);</span>
+<span class="nc" id="L90">      excMsg = ExceptionMethods.getDetailedMessage(exc, pkg);</span>
+<span class="nc" id="L91">      fmt1 = fmt0</span>
+          + &quot; Make sure the accessor **never** throws an exception if it cannot&quot;
+          + &quot; provide a value for a variable. Return Accessor.UNDEFINED instead.&quot;;
+<span class="nc" id="L94">    } else {</span>
+<span class="nc" id="L95">      fmt1 = fmt0;</span>
+<span class="nc" id="L96">      excMsg = exc.toString();</span>
     }
-<span class="nc" id="L120">    return new RenderException(</span>
-<span class="nc" id="L121">        format(fmt1,</span>
+<span class="nc" id="L98">    return new RenderException(</span>
+<span class="nc" id="L99">        format(fmt1,</span>
             fqn,
-<span class="nc" id="L123">            data.getClass().getName(),</span>
-<span class="nc" id="L124">            acc.getClass().getName(),</span>
+<span class="nc" id="L101">            data.getClass().getName(),</span>
+<span class="nc" id="L102">            acc.getClass().getName(),</span>
             excMsg));
   }
 
   static Function&lt;String, RenderException&gt; noChildSessionsYet(Template t) {
-<span class="nc" id="L129">    String fqn = TemplateUtils.getFQName(t);</span>
-<span class="nc" id="L130">    String fmt = &quot;No child sessions yet for template %s&quot;;</span>
-<span class="nc" id="L131">    return s -&gt; new RenderException(format(fmt, fqn));</span>
-  }
-
-  static Function&lt;String, RenderException&gt; illegalValue(String name,
-      Object value) {
-<span class="nc" id="L136">    String fmt = &quot;Illegal value for \&quot;%s\&quot;: %s&quot;;</span>
-<span class="nc" id="L137">    return s -&gt; new RenderException(format(fmt, name, value));</span>
+<span class="nc" id="L107">    String fqn = TemplateUtils.getFQName(t);</span>
+<span class="nc" id="L108">    String fmt = &quot;no child sessions yet for template %s&quot;;</span>
+<span class="nc" id="L109">    return s -&gt; new RenderException(format(fmt, fqn));</span>
   }
 
   public RenderException(String message) {
-<span class="nc" id="L141">    super(message);</span>
-<span class="nc" id="L142">  }</span>
+<span class="nc" id="L113">    super(message);</span>
+<span class="nc" id="L114">  }</span>
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

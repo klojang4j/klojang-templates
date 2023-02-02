@@ -20,7 +20,7 @@ public final class TemplateCache {
 
   public static final TemplateCache INSTANCE = new TemplateCache();
 
-  private final HashMap<String, Template> cache;
+  private final HashMap<TemplateLocation, Template> cache;
   private final WiredList<String> entries;
   private final int maxSize;
 
@@ -42,12 +42,7 @@ public final class TemplateCache {
     }
   }
 
-  public Template get(String name, Class<?> clazz, String path)
-      throws ParseException {
-    return get(name, new TemplateLocation(clazz, path));
-  }
-
-  public Template get(String name, TemplateLocation location) throws ParseException {
+  public Template get(TemplateLocation location, String name) throws ParseException {
     if (maxSize == 0 || location.path() == null) { // caching disabled
       logTemplateRetrieval(name, location);
       return new Parser(name, location).parse();
@@ -64,7 +59,7 @@ public final class TemplateCache {
         cache.remove(eldest);
         entries.add(location.path());
       }
-      cache.put(location.path(), tmpl);
+      cache.put(location, tmpl);
     } else {
       LOG.trace("Found");
     }

@@ -41,8 +41,8 @@ public final class TemplateUtils {
    */
   public static String getFQName(Template template) {
 <span class="fc" id="L43">    Check.notNull(template);</span>
-<span class="pc bpc" id="L44" title="1 of 2 branches missed.">    if (template.getParent() == null) {</span>
-<span class="nc" id="L45">      return template.getName();</span>
+<span class="fc bfc" id="L44" title="All 2 branches covered.">    if (template.getParent() == null) {</span>
+<span class="fc" id="L45">      return template.getName();</span>
     }
 <span class="fc" id="L47">    int sz = 0;</span>
 <span class="fc" id="L48">    ArrayList&lt;String&gt; chunks = new ArrayList&lt;&gt;(5);</span>

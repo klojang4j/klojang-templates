@@ -115,47 +115,64 @@ public final class TemplateLocation {
 
   @Override
   public int hashCode() {
-<span class="nc" id="L118">    return Objects.hash(clazz, path, type);</span>
+<span class="pc bpc" id="L118" title="1 of 2 branches missed.">    if (type == RESOURCE) {</span>
+<span class="fc" id="L119">      return Objects.hash(type, path, clazz.getPackage());</span>
+    }
+<span class="nc" id="L121">    return Objects.hash(type, path, null);</span>
   }
 
   @Override
   public boolean equals(Object obj) {
-<span class="nc bnc" id="L123" title="All 2 branches missed.">    if (this == obj) {</span>
-<span class="nc" id="L124">      return true;</span>
-<span class="nc bnc" id="L125" title="All 4 branches missed.">    } else if (obj == null || getClass() != obj.getClass()) {</span>
-<span class="nc" id="L126">      return false;</span>
+<span class="pc bpc" id="L126" title="1 of 2 branches missed.">    if (this == obj) {</span>
+<span class="nc" id="L127">      return true;</span>
+<span class="pc bpc" id="L128" title="1 of 2 branches missed.">    } else if (obj == null) {</span>
+<span class="nc" id="L129">      return false;</span>
+<span class="pc bpc" id="L130" title="1 of 2 branches missed.">    } else if (obj instanceof TemplateLocation tl) {</span>
+<span class="pc bpc" id="L131" title="2 of 4 branches missed.">      if (type != tl.type || !path.equals(tl.path)) {</span>
+<span class="nc" id="L132">        return false;</span>
+<span class="pc bpc" id="L133" title="1 of 2 branches missed.">      } else if (type == RESOURCE) {</span>
+<span class="pc bpc" id="L134" title="1 of 2 branches missed.">        return clazz.getPackage() == tl.clazz.getPackage();</span>
+<span class="nc bnc" id="L135" title="All 2 branches missed.">      } else if (type == RESOLVER) {</span>
+<span class="nc" id="L136">        return pathResolver.equals(tl.path);</span>
+      }
+<span class="nc" id="L138">      return true;</span>
     }
-<span class="nc" id="L128">    TemplateLocation other = (TemplateLocation) obj;</span>
-<span class="nc bnc" id="L129" title="All 4 branches missed.">    return type == other.type</span>
-<span class="nc bnc" id="L130" title="All 2 branches missed.">        &amp;&amp; (type != RESOURCE || clazz.getPackage() == other.clazz.getPackage())</span>
-<span class="nc bnc" id="L131" title="All 2 branches missed.">        &amp;&amp; Objects.equals(path, other.path);</span>
+<span class="nc" id="L140">    return false;</span>
   }
 
   public String toString() {
-<span class="nc bnc" id="L135" title="All 2 branches missed.">    if (type == STRING) {</span>
-<span class="nc" id="L136">      return concat(</span>
-          &quot;TemplateId[sourceType=&quot;,
+<span class="nc bnc" id="L144" title="All 2 branches missed.">    if (type == STRING) {</span>
+<span class="nc" id="L145">      return concat(</span>
+<span class="nc" id="L146">          getClass().getSimpleName(),</span>
+          &quot;[sourceType=&quot;,
           type,
           &quot;;package=&quot;,
-<span class="nc" id="L140">          clazz.getPackage().getName(),</span>
+<span class="nc" id="L150">          clazz.getPackage().getName(),</span>
           &quot;;resolver=&quot;,
           pathResolver,
           &quot;]&quot;);
     }
-<span class="nc bnc" id="L145" title="All 2 branches missed.">    if (type == RESOURCE) {</span>
-<span class="nc" id="L146">      return concat(</span>
-          &quot;TemplateId[sourceType=&quot;,
+<span class="nc bnc" id="L155" title="All 2 branches missed.">    if (type == RESOURCE) {</span>
+<span class="nc" id="L156">      return concat(</span>
+<span class="nc" id="L157">          getClass().getSimpleName(),</span>
+          &quot;[sourceType=&quot;,
           type,
           &quot;;path=&quot;,
           path,
           &quot;;package=&quot;,
-<span class="nc" id="L152">          clazz.getPackage().getName(),</span>
+<span class="nc" id="L163">          clazz.getPackage().getName(),</span>
           &quot;]&quot;);
-<span class="nc bnc" id="L154" title="All 2 branches missed.">    } else if (type == FILE) {</span>
-<span class="nc" id="L155">      return concat(&quot;TemplateId[sourceType=&quot;, type, &quot;;path=&quot;, path, &quot;]&quot;);</span>
+<span class="nc bnc" id="L165" title="All 2 branches missed.">    } else if (type == FILE) {</span>
+<span class="nc" id="L166">      return concat(getClass().getSimpleName(),</span>
+          &quot;[sourceType=&quot;,
+          type,
+          &quot;;path=&quot;,
+          path,
+          &quot;]&quot;);
     }
-<span class="nc" id="L157">    return concat(</span>
-        &quot;TemplateId[sourceType=&quot;,
+<span class="nc" id="L173">    return concat(</span>
+<span class="nc" id="L174">        getClass().getSimpleName(),</span>
+        &quot;[sourceType=&quot;,
         type,
         &quot;;path=&quot;,
         path,

@@ -172,7 +172,7 @@ public final class Parser {
 <span class="fc" id="L172">      String name = m.group(2);</span>
 <span class="fc" id="L173">      String path = m.group(3);</span>
 <span class="fc" id="L174">      EMPTY_INCLUDE_PATH.check(path, src, offset + m.start(3)).isNot(blank());</span>
-<span class="pc bpc" id="L175" title="1 of 2 branches missed.">      if (name == null) {</span>
+<span class="fc bfc" id="L175" title="All 2 branches covered.">      if (name == null) {</span>
 <span class="fc" id="L176">        name = IncludedTemplatePart.basename(path);</span>
       }
 <span class="fc" id="L178">      EMPTY_TMPL_NAME.check(name, src, offset + m.start(2)).isNot(blank());</span>
@@ -180,62 +180,65 @@ public final class Parser {
 <span class="fc" id="L180">          .check(name, src, offset + m.start(2), name)</span>
 <span class="fc" id="L181">          .isNot(in(), names)</span>
 <span class="fc" id="L182">          .isNot(EQ(), ROOT_TEMPLATE_NAME);</span>
-      TemplateLocation newId;
+      TemplateLocation loc;
 <span class="pc bpc" id="L184" title="1 of 2 branches missed.">      if (location.clazz() != null) { // Load as resource</span>
 <span class="pc bpc" id="L185" title="1 of 2 branches missed.">        if (location.clazz().getResource(path) == null) {</span>
 <span class="nc" id="L186">          throw INVALID_INCLUDE_PATH.asException(src, offset + m.start(3), path);</span>
         }
-<span class="fc" id="L188">        newId = new TemplateLocation(location.clazz(), path);</span>
+<span class="fc" id="L188">        loc = new TemplateLocation(location.clazz(), path);</span>
 <span class="nc bnc" id="L189" title="All 2 branches missed.">      } else if (location.pathResolver() != null) { // Load using path resolver</span>
 <span class="nc" id="L190">        PathResolver pr = location.pathResolver();</span>
 <span class="nc bnc" id="L191" title="All 4 branches missed.">        if (pr.isValidPath(path).isPresent() &amp;&amp; !pr.isValidPath(path).get()) {</span>
 <span class="nc" id="L192">          throw INVALID_INCLUDE_PATH.asException(src, offset + m.start(3), path);</span>
         }
-<span class="nc" id="L194">        newId = new TemplateLocation(location.pathResolver(), path);</span>
+<span class="nc" id="L194">        loc = new TemplateLocation(location.pathResolver(), path);</span>
 <span class="nc" id="L195">      } else { // Load from file system</span>
 <span class="nc bnc" id="L196" title="All 2 branches missed.">        if (!new File(path).isFile()) {</span>
 <span class="nc" id="L197">          throw INVALID_INCLUDE_PATH.asException(src, offset + m.start(3), path);</span>
         }
-<span class="nc" id="L199">        newId = new TemplateLocation(path);</span>
+<span class="nc" id="L199">        loc = new TemplateLocation(path);</span>
       }
 <span class="fc" id="L201">      names.add(name);</span>
-<span class="fc" id="L202">      Template nested = TemplateCache.INSTANCE.get(name, newId);</span>
-<span class="fc" id="L203">      parts.add(new IncludedTemplatePart(nested, offset + m.start()));</span>
-<span class="fc" id="L204">      end = m.end();</span>
-<span class="fc bfc" id="L205" title="All 2 branches covered.">    } while (m.find());</span>
-<span class="pc bpc" id="L206" title="1 of 2 branches missed.">    if (end &lt; unparsed.text().length()) {</span>
-<span class="fc" id="L207">      parts.add(todo(unparsed, end, unparsed.text().length()));</span>
+<span class="fc" id="L202">      Template nested = TemplateCache.INSTANCE.get(loc, name);</span>
+<span class="pc bpc" id="L203" title="1 of 2 branches missed.">      if (!nested.getName().equals(name)) {</span>
+<span class="nc" id="L204">        nested = new Template(Private.of(nested), name);</span>
+      }
+<span class="fc" id="L206">      parts.add(new IncludedTemplatePart(nested, offset + m.start()));</span>
+<span class="fc" id="L207">      end = m.end();</span>
+<span class="fc bfc" id="L208" title="All 2 branches covered.">    } while (m.find());</span>
+<span class="pc bpc" id="L209" title="1 of 2 branches missed.">    if (end &lt; unparsed.text().length()) {</span>
+<span class="fc" id="L210">      parts.add(todo(unparsed, end, unparsed.text().length()));</span>
     }
-<span class="fc" id="L209">    return parts;</span>
+<span class="fc" id="L212">    return parts;</span>
   }
 
   private List&lt;Part&gt; parseVars(UnparsedPart unparsed,
       Set&lt;String&gt; names,
       boolean hidden)
       throws ParseException {
-<span class="fc bfc" id="L216" title="All 2 branches covered.">    Pattern p = hidden ? Regex.of().cmtVariable : Regex.of().variable;</span>
-<span class="fc" id="L217">    Matcher m = match(p, unparsed);</span>
-<span class="fc bfc" id="L218" title="All 2 branches covered.">    if (!m.find()) {</span>
-<span class="fc" id="L219">      return Collections.singletonList(unparsed);</span>
+<span class="fc bfc" id="L219" title="All 2 branches covered.">    Pattern p = hidden ? Regex.of().cmtVariable : Regex.of().variable;</span>
+<span class="fc" id="L220">    Matcher m = match(p, unparsed);</span>
+<span class="fc bfc" id="L221" title="All 2 branches covered.">    if (!m.find()) {</span>
+<span class="fc" id="L222">      return Collections.singletonList(unparsed);</span>
     }
-<span class="fc" id="L221">    List&lt;Part&gt; parts = new ArrayList&lt;&gt;();</span>
-<span class="fc" id="L222">    int offset = unparsed.start(), end = 0;</span>
+<span class="fc" id="L224">    List&lt;Part&gt; parts = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L225">    int offset = unparsed.start(), end = 0;</span>
     do {
-<span class="fc bfc" id="L224" title="All 2 branches covered.">      if (m.start() &gt; end) {</span>
-<span class="fc" id="L225">        parts.add(todo(unparsed, end, m.start()));</span>
+<span class="fc bfc" id="L227" title="All 2 branches covered.">      if (m.start() &gt; end) {</span>
+<span class="fc" id="L228">        parts.add(todo(unparsed, end, m.start()));</span>
       }
-<span class="fc" id="L227">      String prefix = m.group(2);</span>
-<span class="fc" id="L228">      String name = m.group(3);</span>
-<span class="fc" id="L229">      EMPTY_VAR_NAME.check(name, src, offset + m.start(3)).isNot(blank());</span>
-<span class="fc" id="L230">      VAR_NAME_WITH_TMPL_NAME</span>
-<span class="fc" id="L231">          .check(name, src, offset + m.start(3), name).isNot(in(), names);</span>
-<span class="fc" id="L232">      parts.add(new VariablePart(prefix, name, offset + m.start()));</span>
-<span class="fc" id="L233">      end = m.end();</span>
-<span class="fc bfc" id="L234" title="All 2 branches covered.">    } while (m.find());</span>
-<span class="fc bfc" id="L235" title="All 2 branches covered.">    if (end &lt; unparsed.text().length()) {</span>
-<span class="fc" id="L236">      parts.add(todo(unparsed, end, unparsed.text().length()));</span>
+<span class="fc" id="L230">      String prefix = m.group(2);</span>
+<span class="fc" id="L231">      String name = m.group(3);</span>
+<span class="fc" id="L232">      EMPTY_VAR_NAME.check(name, src, offset + m.start(3)).isNot(blank());</span>
+<span class="fc" id="L233">      VAR_NAME_WITH_TMPL_NAME</span>
+<span class="fc" id="L234">          .check(name, src, offset + m.start(3), name).isNot(in(), names);</span>
+<span class="fc" id="L235">      parts.add(new VariablePart(prefix, name, offset + m.start()));</span>
+<span class="fc" id="L236">      end = m.end();</span>
+<span class="fc bfc" id="L237" title="All 2 branches covered.">    } while (m.find());</span>
+<span class="fc bfc" id="L238" title="All 2 branches covered.">    if (end &lt; unparsed.text().length()) {</span>
+<span class="fc" id="L239">      parts.add(todo(unparsed, end, unparsed.text().length()));</span>
     }
-<span class="fc" id="L238">    return parts;</span>
+<span class="fc" id="L241">    return parts;</span>
   }
 
   /*
@@ -243,72 +246,72 @@ public final class Parser {
    * parsed out
    */
   private List&lt;Part&gt; collectTextParts(List&lt;Part&gt; in) throws ParseException {
-<span class="fc" id="L246">    List&lt;Part&gt; out = new ArrayList&lt;&gt;(in.size());</span>
-<span class="fc bfc" id="L247" title="All 2 branches covered.">    for (Part p : in) {</span>
-<span class="fc bfc" id="L248" title="All 2 branches covered.">      if (p.getClass() == UnparsedPart.class) {</span>
-<span class="fc" id="L249">        UnparsedPart unparsed = (UnparsedPart) p;</span>
-<span class="pc bpc" id="L250" title="1 of 2 branches missed.">        if (unparsed.text().length() != 0) {</span>
-<span class="fc" id="L251">          checkGarbage(unparsed);</span>
-<span class="fc" id="L252">          String text = Regex.of().placeholder</span>
-<span class="fc" id="L253">              .matcher(unparsed.text())</span>
-<span class="fc" id="L254">              .replaceAll(EMPTY_STRING);</span>
-<span class="pc bpc" id="L255" title="1 of 2 branches missed.">          if (text.contains(Regex.PLACEHOLDER_START_END)) {</span>
-<span class="nc" id="L256">            int idx = p.start()</span>
-<span class="nc" id="L257">                + unparsed.text().indexOf(Regex.PLACEHOLDER_START_END);</span>
-<span class="nc" id="L258">            throw PLACEHOLDER_NOT_CLOSED.asException(text, idx);</span>
+<span class="fc" id="L249">    List&lt;Part&gt; out = new ArrayList&lt;&gt;(in.size());</span>
+<span class="fc bfc" id="L250" title="All 2 branches covered.">    for (Part p : in) {</span>
+<span class="fc bfc" id="L251" title="All 2 branches covered.">      if (p.getClass() == UnparsedPart.class) {</span>
+<span class="fc" id="L252">        UnparsedPart unparsed = (UnparsedPart) p;</span>
+<span class="pc bpc" id="L253" title="1 of 2 branches missed.">        if (unparsed.text().length() != 0) {</span>
+<span class="fc" id="L254">          checkGarbage(unparsed);</span>
+<span class="fc" id="L255">          String text = Regex.of().placeholder</span>
+<span class="fc" id="L256">              .matcher(unparsed.text())</span>
+<span class="fc" id="L257">              .replaceAll(EMPTY_STRING);</span>
+<span class="pc bpc" id="L258" title="1 of 2 branches missed.">          if (text.contains(Regex.PLACEHOLDER_START_END)) {</span>
+<span class="nc" id="L259">            int idx = p.start()</span>
+<span class="nc" id="L260">                + unparsed.text().indexOf(Regex.PLACEHOLDER_START_END);</span>
+<span class="nc" id="L261">            throw PLACEHOLDER_NOT_CLOSED.asException(text, idx);</span>
           }
-<span class="fc" id="L260">          out.add(new TextPart(text, p.start()));</span>
+<span class="fc" id="L263">          out.add(new TextPart(text, p.start()));</span>
         }
-<span class="fc" id="L262">      } else {</span>
-<span class="fc" id="L263">        out.add(p);</span>
+<span class="fc" id="L265">      } else {</span>
+<span class="fc" id="L266">        out.add(p);</span>
       }
-<span class="fc" id="L265">    }</span>
-<span class="fc" id="L266">    return out;</span>
+<span class="fc" id="L268">    }</span>
+<span class="fc" id="L269">    return out;</span>
   }
 
   private void checkGarbage(UnparsedPart unparsed) throws ParseException {
-<span class="fc" id="L270">    String str = unparsed.text();</span>
-<span class="fc" id="L271">    int off = unparsed.start();</span>
-<span class="fc" id="L272">    int idx0 = str.indexOf(Regex.TMPL_START + &quot;begin:&quot;);</span>
-<span class="fc" id="L273">    BEGIN_TAG_NOT_TERMINATED.checkInt(idx0, src, off + idx0).is(eq(), -1);</span>
-<span class="fc" id="L274">    int idx1 = str.indexOf(Regex.TMPL_START + &quot;end:&quot;);</span>
-<span class="fc" id="L275">    END_TAG_NOT_TERMINATED.checkInt(idx1, src, off + idx1).is(eq(), -1);</span>
-<span class="fc" id="L276">    int idx2 = str.indexOf(Regex.TMPL_START + &quot;include:&quot;);</span>
-<span class="fc" id="L277">    INCLUDE_TAG_NOT_TERMINATED.checkInt(idx2, src, off + idx2).is(eq(), -1);</span>
-<span class="fc" id="L278">    Matcher m = Regex.of().beginTag.matcher(str);</span>
-<span class="pc bpc" id="L279" title="1 of 2 branches missed.">    if (m.find()) {</span>
-<span class="nc" id="L280">      throw MISSING_END_TAG.asException(src, off + m.start(), m.group(1));</span>
+<span class="fc" id="L273">    String str = unparsed.text();</span>
+<span class="fc" id="L274">    int off = unparsed.start();</span>
+<span class="fc" id="L275">    int idx0 = str.indexOf(Regex.TMPL_START + &quot;begin:&quot;);</span>
+<span class="fc" id="L276">    BEGIN_TAG_NOT_TERMINATED.checkInt(idx0, src, off + idx0).is(eq(), -1);</span>
+<span class="fc" id="L277">    int idx1 = str.indexOf(Regex.TMPL_START + &quot;end:&quot;);</span>
+<span class="fc" id="L278">    END_TAG_NOT_TERMINATED.checkInt(idx1, src, off + idx1).is(eq(), -1);</span>
+<span class="fc" id="L279">    int idx2 = str.indexOf(Regex.TMPL_START + &quot;include:&quot;);</span>
+<span class="fc" id="L280">    INCLUDE_TAG_NOT_TERMINATED.checkInt(idx2, src, off + idx2).is(eq(), -1);</span>
+<span class="fc" id="L281">    Matcher m = Regex.of().beginTag.matcher(str);</span>
+<span class="pc bpc" id="L282" title="1 of 2 branches missed.">    if (m.find()) {</span>
+<span class="nc" id="L283">      throw MISSING_END_TAG.asException(src, off + m.start(), m.group(1));</span>
     }
-<span class="fc" id="L282">    m = Regex.of().endTag.matcher(str);</span>
-<span class="pc bpc" id="L283" title="1 of 2 branches missed.">    if (m.find()) {</span>
-<span class="nc" id="L284">      throw DANGLING_END_TAG.asException(src, off + m.start(), m.group(1));</span>
+<span class="fc" id="L285">    m = Regex.of().endTag.matcher(str);</span>
+<span class="pc bpc" id="L286" title="1 of 2 branches missed.">    if (m.find()) {</span>
+<span class="nc" id="L287">      throw DANGLING_END_TAG.asException(src, off + m.start(), m.group(1));</span>
     }
-<span class="fc" id="L286">    m = Regex.of().ditchTag.matcher(str);</span>
-<span class="pc bpc" id="L287" title="1 of 2 branches missed.">    if (m.find()) {</span>
-<span class="nc" id="L288">      throw DITCH_BLOCK_NOT_CLOSED.asException(src, off + m.start());</span>
+<span class="fc" id="L289">    m = Regex.of().ditchTag.matcher(str);</span>
+<span class="pc bpc" id="L290" title="1 of 2 branches missed.">    if (m.find()) {</span>
+<span class="nc" id="L291">      throw DITCH_BLOCK_NOT_CLOSED.asException(src, off + m.start());</span>
     }
-<span class="fc" id="L290">  }</span>
+<span class="fc" id="L293">  }</span>
 
   private static Matcher match(Pattern pattern, UnparsedPart unparsed) {
-<span class="fc" id="L293">    return pattern.matcher(unparsed.text());</span>
+<span class="fc" id="L296">    return pattern.matcher(unparsed.text());</span>
   }
 
   private static UnparsedPart todo(UnparsedPart p, int from, int to) {
-<span class="fc" id="L297">    String s = p.text().substring(from, to);</span>
-<span class="fc" id="L298">    return new UnparsedPart(s, from + p.start());</span>
+<span class="fc" id="L300">    String s = p.text().substring(from, to);</span>
+<span class="fc" id="L301">    return new UnparsedPart(s, from + p.start());</span>
   }
 
   private static void logParsing(String name, TemplateLocation location) {
-<span class="pc bpc" id="L302" title="1 of 2 branches missed.">    if (LOG.isTraceEnabled()) {</span>
-<span class="nc bnc" id="L303" title="All 2 branches missed.">      if (name == ROOT_TEMPLATE_NAME) {</span>
-<span class="nc" id="L304">        LOG.trace(&quot;Parsing root template&quot;);</span>
-<span class="nc bnc" id="L305" title="All 2 branches missed.">      } else if (location.type() == STRING) {</span>
-<span class="nc" id="L306">        LOG.trace(&quot;Parsing inline template \&quot;{}\&quot;&quot;, name);</span>
+<span class="pc bpc" id="L305" title="1 of 2 branches missed.">    if (LOG.isTraceEnabled()) {</span>
+<span class="nc bnc" id="L306" title="All 2 branches missed.">      if (name == ROOT_TEMPLATE_NAME) {</span>
+<span class="nc" id="L307">        LOG.trace(&quot;Parsing root template&quot;);</span>
+<span class="nc bnc" id="L308" title="All 2 branches missed.">      } else if (location.type() == STRING) {</span>
+<span class="nc" id="L309">        LOG.trace(&quot;Parsing inline template \&quot;{}\&quot;&quot;, name);</span>
       } else {
-<span class="nc" id="L308">        LOG.trace(&quot;Parsing included template \&quot;{}\&quot;&quot;, name);</span>
+<span class="nc" id="L311">        LOG.trace(&quot;Parsing included template \&quot;{}\&quot;&quot;, name);</span>
       }
     }
-<span class="fc" id="L311">  }</span>
+<span class="fc" id="L314">  }</span>
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

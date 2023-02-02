@@ -1,6 +1,0 @@
-DEPARTMENT: HR
-MANAGER: Albert Einstein (1968-07-12)
-EMPLOYEES:
-*	Richard Dawkins			8 Dawkins street		1978-08-12
-*	Roger Penrose			103 Penrose blvd.		1989-02-17
-*	Juan Maldacena			34 Maldacena ave.		1961-10-29

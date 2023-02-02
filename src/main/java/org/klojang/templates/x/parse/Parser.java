@@ -180,26 +180,29 @@ public final class Parser {
           .check(name, src, offset + m.start(2), name)
           .isNot(in(), names)
           .isNot(EQ(), ROOT_TEMPLATE_NAME);
-      TemplateLocation newId;
+      TemplateLocation loc;
       if (location.clazz() != null) { // Load as resource
         if (location.clazz().getResource(path) == null) {
           throw INVALID_INCLUDE_PATH.asException(src, offset + m.start(3), path);
         }
-        newId = new TemplateLocation(location.clazz(), path);
+        loc = new TemplateLocation(location.clazz(), path);
       } else if (location.pathResolver() != null) { // Load using path resolver
         PathResolver pr = location.pathResolver();
         if (pr.isValidPath(path).isPresent() && !pr.isValidPath(path).get()) {
           throw INVALID_INCLUDE_PATH.asException(src, offset + m.start(3), path);
         }
-        newId = new TemplateLocation(location.pathResolver(), path);
+        loc = new TemplateLocation(location.pathResolver(), path);
       } else { // Load from file system
         if (!new File(path).isFile()) {
           throw INVALID_INCLUDE_PATH.asException(src, offset + m.start(3), path);
         }
-        newId = new TemplateLocation(path);
+        loc = new TemplateLocation(path);
       }
       names.add(name);
-      Template nested = TemplateCache.INSTANCE.get(name, newId);
+      Template nested = TemplateCache.INSTANCE.get(loc, name);
+      if (!nested.getName().equals(name)) {
+        nested = new Template(Private.of(nested), name);
+      }
       parts.add(new IncludedTemplatePart(nested, offset + m.start()));
       end = m.end();
     } while (m.find());

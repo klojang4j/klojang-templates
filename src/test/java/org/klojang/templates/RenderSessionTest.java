@@ -2,11 +2,13 @@ package org.klojang.templates;
 
 import org.junit.jupiter.api.Test;
 import org.klojang.path.util.MapBuilder;
+import org.klojang.util.AnyTuple2;
 
 import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class RenderSessionTest {
 
@@ -320,6 +322,21 @@ public class RenderSessionTest {
   }
 
   @Test
+  public void populate04() throws ParseException {
+    String src = """
+        <html><body>
+            ~%%begin:main-table%
+              ~%%include:contents1:include-01.html%
+            ~%%end:main-table%
+            ~%%include:contents2:include-01.html%
+        </body></html>
+        """;
+    Template tmpl = Template.fromString(getClass(), src);
+    assertNotNull(tmpl);
+  }
+
+
+  @Test
   public void show01() throws ParseException {
     String src = """
         FOO
@@ -410,7 +427,37 @@ public class RenderSessionTest {
   }
 
   @Test
-  public void populateWithValue() throws ParseException {
+  public void showRecursive01() throws ParseException {
+    String src = """
+        Foo
+            ~%%begin:companies%
+            Bar
+              ~%%begin:departments%
+                Kitchen
+                ~%%begin:employees%
+                  Sink
+                ~%%end:employees%
+              ~%%end:departments%
+            ~%%end:companies%
+            ~%%begin:teapots%
+            Bozo
+            ~%%end:teapots%
+            ~%%begin:chairs%
+              Cheerio
+            ~%%end:chairs%
+        Foo
+        """;
+    Template tmpl = Template.fromString(src);
+    RenderSession rs = tmpl.newRenderSession();
+    rs.showRecursive("chairs");
+    String out = rs.render();
+    out = out.replaceAll("\\s+", "");
+    //System.out.println(out);
+    assertEquals("FooCheerioFoo", out);
+  }
+
+  @Test
+  public void populate1_00() throws ParseException {
     String src = """
         FOO
             ~%%begin:companies%
@@ -420,11 +467,201 @@ public class RenderSessionTest {
         """;
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
-    rs.populateWithValue("companies", "BAR");
+    rs.populate1("companies", "BAR");
     String out = rs.render();
     out = out.replaceAll("\\s+", "");
     //System.out.println(out);
     assertEquals("FOOBARFOO", out);
+  }
+
+  @Test
+  public void populate2_00() throws ParseException {
+    String src = """
+        Foo
+            ~%%begin:companies%
+            ~%foo%
+            ~%bar%
+            ~%%end:companies%
+        Foo
+        """;
+    Template tmpl = Template.fromString(src);
+    RenderSession rs = tmpl.newRenderSession();
+    rs.populate2("companies", List.of(AnyTuple2.of("Pig", "Pony")));
+    String out = rs.render();
+    out = out.replaceAll("\\s+", "");
+    //System.out.println(out);
+    assertEquals("FooPigPonyFoo", out);
+  }
+
+  @Test
+  public void populate2_01() throws ParseException {
+    String src = """
+        Foo
+            ~%%begin:companies%
+            ~%foo%
+            ~%bar%
+            ~%%end:companies%
+        Foo
+        """;
+    Template tmpl = Template.fromString(src);
+    RenderSession rs = tmpl.newRenderSession();
+    rs.populate2("companies",
+        List.of(AnyTuple2.of("Pig", "Pony"), AnyTuple2.of("Horse", "Cat")));
+    String out = rs.render();
+    out = out.replaceAll("\\s+", "");
+    //System.out.println(out);
+    assertEquals("FooPigPonyHorseCatFoo", out);
+  }
+
+  @Test
+  public void insert00() throws ParseException {
+    String src = """
+        <html><body>
+        <p>~%message%</p>
+        ~%%begin:foo%
+          <p>~%bar%</p>
+        ~%%end:foo%
+        </body></html>
+        """;
+    Map<String, Object> data = new MapBuilder()
+        .set("message", "hello")
+        .set("foo.bar", "teapot")
+        .createMap();
+    Template tmpl = Template.fromString(src);
+    RenderSession rs = tmpl.newRenderSession();
+    rs.insert(data);
+    String out = rs.render();
+    out = out.replaceAll("\\s+", "");
+    //System.out.println(out);
+    assertEquals("<html><body><p>hello</p><p>teapot</p></body></html>", out);
+  }
+
+  @Test
+  public void insert01() throws ParseException {
+    String src = """
+        <html><body>
+        <p>~%message%</p>
+        ~%%begin:foo%
+          <p>~%bar%</p>
+        ~%%end:foo%
+        </body></html>
+        """;
+    Map<String, Object> data = new MapBuilder()
+        .set("message", "1 < 2")
+        .set("foo.bar", "teapot")
+        .createMap();
+    Template tmpl = Template.fromString(src);
+    RenderSession rs = tmpl.newRenderSession();
+    rs.insert(data, VarGroup.HTML);
+    String out = rs.render();
+    out = out.replaceAll("\\s+", "");
+    //System.out.println(out);
+    assertEquals("<html><body><p>1&lt;2</p><p>teapot</p></body></html>", out);
+  }
+
+  @Test
+  public void insert02() throws ParseException {
+    String src = """
+        <html><body>
+        <p>~%message%</p>
+        ~%%begin:foo%
+          <p>~%bar%</p>
+        ~%%end:foo%
+        </body></html>
+        """;
+    Map<String, Object> data = new MapBuilder()
+        .set("message", "hello")
+        .createMap();
+    data.put("foo", List.of(Map.of("bar", "tea"), Map.of("bar", "pot")));
+    Template tmpl = Template.fromString(src);
+    RenderSession rs = tmpl.newRenderSession();
+    rs.insert(data, VarGroup.HTML);
+    String out = rs.render();
+    out = out.replaceAll("\\s+", "");
+    //System.out.println(out);
+    assertEquals("<html><body><p>hello</p><p>tea</p><p>pot</p></body></html>", out);
+  }
+
+  @Test
+  public void insert03() throws ParseException {
+    String src = """
+        <html><body>
+        <p>~%message%</p>
+        ~%%begin:foo%
+          <p>~%bar%</p>
+        ~%%end:foo%
+        </body></html>
+        """;
+    Map<String, Object> data = new MapBuilder()
+        .set("message", Accessor.UNDEFINED)
+        .createMap();
+    data.put("foo", Accessor.UNDEFINED);
+    Template tmpl = Template.fromString(src);
+    RenderSession rs = tmpl.newRenderSession();
+    rs.insert(data, VarGroup.HTML);
+    String out = rs.render();
+    out = out.replaceAll("\\s+", "");
+    //System.out.println(out);
+    assertEquals("<html><body><p></p></body></html>", out);
+  }
+
+  @Test
+  public void insert04() throws ParseException {
+    String src = "foo";
+    Template tmpl = Template.fromString(src);
+    RenderSession rs = tmpl.newRenderSession();
+    rs.insert(null);
+    String out = rs.render();
+    out = out.replaceAll("\\s+", "");
+    //System.out.println(out);
+    assertEquals("foo", out);
+  }
+
+  @Test
+  public void insert05() throws ParseException {
+    String src = """
+        <html><body>
+        <p>~%message%</p>
+        ~%%begin:foo%
+          <p>~%bar%</p>
+        ~%%end:foo%
+        </body></html>
+        """;
+    Map<String, Object> data = new MapBuilder()
+        .set("message", "hello")
+        .createMap();
+    data.put("foo", List.of(Map.of("bar", "tea"), Map.of("bar", "pot")));
+    Template tmpl = Template.fromString(src);
+    RenderSession rs = tmpl.newRenderSession();
+    rs.insert(data, "message");
+    String out = rs.render();
+    out = out.replaceAll("\\s+", "");
+    //System.out.println(out);
+    assertEquals("<html><body><p>hello</p></body></html>", out);
+  }
+
+
+  @Test
+  public void insert06() throws ParseException {
+    String src = """
+        <html><body>
+        <p>~%message%</p>
+        ~%%begin:foo%
+          <p>~%bar%</p>
+        ~%%end:foo%
+        </body></html>
+        """;
+    Map<String, Object> data = new MapBuilder()
+        .set("message", "hello")
+        .createMap();
+    data.put("foo", List.of(Map.of("bar", "tea"), Map.of("bar", "pot")));
+    Template tmpl = Template.fromString(src);
+    RenderSession rs = tmpl.newRenderSession();
+    rs.insert(data, "foo", "bar");
+    String out = rs.render();
+    out = out.replaceAll("\\s+", "");
+    //System.out.println(out);
+    assertEquals("<html><body><p></p><p>tea</p><p>pot</p></body></html>", out);
   }
 
 }

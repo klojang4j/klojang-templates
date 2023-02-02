@@ -103,8 +103,9 @@ public final class Template {
     Check.notNull(clazz, Tag.CLASS);
     Check.notNull(path, Tag.PATH)
         .has(clazz::getResource, notNull(), "No such resource: \"%s\"", path);
-    return TemplateCache.INSTANCE.get(ROOT_TEMPLATE_NAME,
-        new TemplateLocation(clazz, path));
+    return TemplateCache.INSTANCE.get(new TemplateLocation(clazz, path),
+        ROOT_TEMPLATE_NAME
+    );
   }
 
   /**
@@ -119,8 +120,8 @@ public final class Template {
    */
   public static Template fromFile(String path) throws ParseException {
     Check.notNull(path, Tag.PATH);
-    return TemplateCache.INSTANCE.get(ROOT_TEMPLATE_NAME,
-        new TemplateLocation(path));
+    return TemplateCache.INSTANCE.get(new TemplateLocation(path), ROOT_TEMPLATE_NAME
+    );
   }
 
   /**
@@ -136,8 +137,9 @@ public final class Template {
       throws ParseException {
     Check.notNull(pathResolver, "pathResolver");
     Check.notNull(path, Tag.PATH);
-    return TemplateCache.INSTANCE.get(ROOT_TEMPLATE_NAME,
-        new TemplateLocation(pathResolver, path));
+    return TemplateCache.INSTANCE.get(new TemplateLocation(pathResolver, path),
+        ROOT_TEMPLATE_NAME
+    );
   }
 
   private final String name;
@@ -155,17 +157,31 @@ public final class Template {
    * For internal use only.
    */
   @ModulePrivate
-  public Template(Private<String> name,
-      TemplateLocation location,
-      List<Part> parts) {
-    parts.forEach(p -> p.setParentTemplate(this));
-    this.name = name.get();
-    this.location = location.type() == STRING ? null : location;
-    this.parts = parts;
-    this.varIndices = getVarIndices(parts);
-    this.tmplIndices = getTmplIndices(parts);
-    this.names = getNames(parts);
-    this.textIndices = getTextIndices(parts);
+  public Template(Private<String> x, TemplateLocation y, List<Part> z) {
+    z.forEach(p -> p.setParentTemplate(this));
+    this.name = x.get();
+    this.location = y.type() == STRING ? null : y;
+    this.parts = z;
+    this.varIndices = getVarIndices(z);
+    this.tmplIndices = getTmplIndices(z);
+    this.names = getNames(z);
+    this.textIndices = getTextIndices(z);
+  }
+
+  /**
+   * For internal use only.
+   */
+  @ModulePrivate
+  public Template(Private<Template> x, String y) {
+    this.name = y;
+    Template t = x.get();
+    this.location = t.location;
+    this.parts = t.parts;
+    this.varIndices = t.varIndices;
+    this.tmplIndices = t.tmplIndices;
+    this.nestedTemplates = t.nestedTemplates;
+    this.names = t.names;
+    this.textIndices = t.textIndices;
   }
 
   /**

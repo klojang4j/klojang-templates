@@ -115,26 +115,36 @@ public final class TemplateLocation {
 
   @Override
   public int hashCode() {
-    return Objects.hash(clazz, path, type);
+    if (type == RESOURCE) {
+      return Objects.hash(type, path, clazz.getPackage());
+    }
+    return Objects.hash(type, path, null);
   }
 
   @Override
   public boolean equals(Object obj) {
     if (this == obj) {
       return true;
-    } else if (obj == null || getClass() != obj.getClass()) {
+    } else if (obj == null) {
       return false;
+    } else if (obj instanceof TemplateLocation tl) {
+      if (type != tl.type || !path.equals(tl.path)) {
+        return false;
+      } else if (type == RESOURCE) {
+        return clazz.getPackage() == tl.clazz.getPackage();
+      } else if (type == RESOLVER) {
+        return pathResolver.equals(tl.path);
+      }
+      return true;
     }
-    TemplateLocation other = (TemplateLocation) obj;
-    return type == other.type
-        && (type != RESOURCE || clazz.getPackage() == other.clazz.getPackage())
-        && Objects.equals(path, other.path);
+    return false;
   }
 
   public String toString() {
     if (type == STRING) {
       return concat(
-          "TemplateId[sourceType=",
+          getClass().getSimpleName(),
+          "[sourceType=",
           type,
           ";package=",
           clazz.getPackage().getName(),
@@ -144,7 +154,8 @@ public final class TemplateLocation {
     }
     if (type == RESOURCE) {
       return concat(
-          "TemplateId[sourceType=",
+          getClass().getSimpleName(),
+          "[sourceType=",
           type,
           ";path=",
           path,
@@ -152,10 +163,16 @@ public final class TemplateLocation {
           clazz.getPackage().getName(),
           "]");
     } else if (type == FILE) {
-      return concat("TemplateId[sourceType=", type, ";path=", path, "]");
+      return concat(getClass().getSimpleName(),
+          "[sourceType=",
+          type,
+          ";path=",
+          path,
+          "]");
     }
     return concat(
-        "TemplateId[sourceType=",
+        getClass().getSimpleName(),
+        "[sourceType=",
         type,
         ";path=",
         path,
