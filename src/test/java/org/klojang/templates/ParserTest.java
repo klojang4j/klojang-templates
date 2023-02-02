@@ -1,10 +1,10 @@
-package org.klojang.templates.x.parse;
+package org.klojang.templates;
 
 import org.junit.jupiter.api.Test;
-import org.klojang.templates.ParseException;
-import org.klojang.templates.Template;
-import org.klojang.templates.VarGroup;
-import org.klojang.templates.x.TemplateLocation;
+import org.klojang.templates.x.parse.NestedTemplatePart;
+import org.klojang.templates.x.parse.Part;
+import org.klojang.templates.x.parse.TextPart;
+import org.klojang.templates.x.parse.VariablePart;
 
 import java.util.List;
 

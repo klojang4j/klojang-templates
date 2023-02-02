@@ -1,12 +1,7 @@
-package org.klojang.templates.x.parse;
+package org.klojang.templates;
 
 import org.klojang.check.fallible.FallibleBiFunction;
-import org.klojang.templates.ParseException;
-import org.klojang.templates.PathResolutionException;
-import org.klojang.templates.PathResolver;
-import org.klojang.templates.Template;
-import org.klojang.templates.x.Private;
-import org.klojang.templates.x.TemplateLocation;
+import org.klojang.templates.x.parse.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,11 +12,10 @@ import java.util.regex.Pattern;
 
 import static org.klojang.check.CommonChecks.*;
 import static org.klojang.templates.Template.ROOT_TEMPLATE_NAME;
-import static org.klojang.templates.x.TemplateLocationType.STRING;
 import static org.klojang.templates.x.parse.ErrorType.*;
 import static org.klojang.util.StringMethods.EMPTY_STRING;
 
-public final class Parser {
+final class Parser {
 
   private static final Logger LOG = LoggerFactory.getLogger(Parser.class);
 
@@ -32,19 +26,19 @@ public final class Parser {
   private final TemplateLocation location;
   private final String src;
 
-  public Parser(String name, TemplateLocation location)
+  Parser(String name, TemplateLocation location)
       throws PathResolutionException {
     this(name, location, location.getSource());
   }
 
-  public Parser(String name, TemplateLocation location, String src) {
+  Parser(String name, TemplateLocation location, String src) {
     this.name = name;
     this.location = location;
     this.src = src;
   }
 
-  public Template parse() throws ParseException {
-    return new Template(Private.of(name), location, List.copyOf(getParts()));
+  Template parse() throws ParseException {
+    return new Template(name, location, List.copyOf(getParts()));
   }
 
   // visible for testing
@@ -186,12 +180,12 @@ public final class Parser {
           throw INVALID_INCLUDE_PATH.asException(src, offset + m.start(3), path);
         }
         loc = new TemplateLocation(location.clazz(), path);
-      } else if (location.pathResolver() != null) { // Load using path resolver
-        PathResolver pr = location.pathResolver();
+      } else if (location.resolver() != null) { // Load using path resolver
+        PathResolver pr = location.resolver();
         if (pr.isValidPath(path).isPresent() && !pr.isValidPath(path).get()) {
           throw INVALID_INCLUDE_PATH.asException(src, offset + m.start(3), path);
         }
-        loc = new TemplateLocation(location.pathResolver(), path);
+        loc = new TemplateLocation(location.resolver(), path);
       } else { // Load from file system
         if (!new File(path).isFile()) {
           throw INVALID_INCLUDE_PATH.asException(src, offset + m.start(3), path);
@@ -201,7 +195,7 @@ public final class Parser {
       names.add(name);
       Template nested = TemplateCache.INSTANCE.get(loc, name);
       if (!nested.getName().equals(name)) {
-        nested = new Template(Private.of(nested), name);
+        nested = new Template(nested, name);
       }
       parts.add(new IncludedTemplatePart(nested, offset + m.start()));
       end = m.end();
@@ -305,7 +299,7 @@ public final class Parser {
     if (LOG.isTraceEnabled()) {
       if (name == ROOT_TEMPLATE_NAME) {
         LOG.trace("Parsing root template");
-      } else if (location.type() == STRING) {
+      } else if (location.isString()) {
         LOG.trace("Parsing inline template \"{}\"", name);
       } else {
         LOG.trace("Parsing included template \"{}\"", name);

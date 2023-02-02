@@ -2,8 +2,8 @@ package org.klojang.templates;
 
 import org.klojang.check.Check;
 import org.klojang.check.Tag;
+import org.klojang.templates.x.MTag;
 import org.klojang.templates.x.Private;
-import org.klojang.templates.x.TemplateLocation;
 import org.klojang.templates.x.parse.*;
 import org.klojang.util.ModulePrivate;
 import org.klojang.util.collection.IntArrayList;
@@ -16,7 +16,7 @@ import java.util.*;
 import static java.util.stream.Collectors.toUnmodifiableList;
 import static org.klojang.check.CommonChecks.*;
 import static org.klojang.templates.TemplateUtils.getFQName;
-import static org.klojang.templates.x.TemplateLocationType.STRING;
+import static org.klojang.templates.x.Messages.ERR_NO_SUCH_TEMPLATE;
 import static org.klojang.util.CollectionMethods.implode;
 import static org.klojang.util.ObjectMethods.ifNotNull;
 
@@ -69,7 +69,7 @@ public final class Template {
    * string are never cached.
    *
    * @param clazz Any {@code Class} object that provides access to the included
-   *     tempate files by calling {@code getResourceAsStream} on it
+   *     template files by calling {@code getResourceAsStream} on it
    * @param source The source code for the {@code Template}
    * @return a {@code Template} instance
    * @throws ParseException if the template source contains a syntax error
@@ -89,10 +89,10 @@ public final class Template {
    * be loaded this way as well. Templates created from a classpath resource are
    * always cached. Thus, calling this method multiple times with the same
    * {@code clazz} and {@code path} arguments will always return the same
-   * {@code Template} instance. (More precizely: the cache key is the combination of
+   * {@code Template} instance. (More precisely: the cache key is the combination of
    * {@code clazz.getPackage()} and {@code path}.)
    *
-   * @param clazz Any {@code Class} object that provides access to the tempate
+   * @param clazz Any {@code Class} object that provides access to the template
    *     file by calling {@code getResourceAsStream} on it
    * @param path The location of the template file
    * @return a {@code Template} instance
@@ -128,16 +128,16 @@ public final class Template {
    * Creates a {@code Template} from the source provided by the specified
    * {@link PathResolver}.
    *
-   * @param pathResolver the {@code PathResolver}
+   * @param resolver the {@code PathResolver}
    * @param path the path to be resolved by the {@code PathResolver}
    * @return a {@code Template} instance
    * @throws ParseException if the template source contains a syntax error
    */
-  public static Template fromResolver(PathResolver pathResolver, String path)
+  public static Template fromResolver(PathResolver resolver, String path)
       throws ParseException {
-    Check.notNull(pathResolver, "pathResolver");
+    Check.notNull(resolver, "resolver");
     Check.notNull(path, Tag.PATH);
-    return TemplateCache.INSTANCE.get(new TemplateLocation(pathResolver, path),
+    return TemplateCache.INSTANCE.get(new TemplateLocation(resolver, path),
         ROOT_TEMPLATE_NAME
     );
   }
@@ -153,35 +153,26 @@ public final class Template {
 
   Template parent;
 
-  /**
-   * For internal use only.
-   */
-  @ModulePrivate
-  public Template(Private<String> x, TemplateLocation y, List<Part> z) {
-    z.forEach(p -> p.setParentTemplate(this));
-    this.name = x.get();
-    this.location = y.type() == STRING ? null : y;
-    this.parts = z;
-    this.varIndices = getVarIndices(z);
-    this.tmplIndices = getTmplIndices(z);
-    this.names = getNames(z);
-    this.textIndices = getTextIndices(z);
+  Template(String name, TemplateLocation location, List<Part> parts) {
+    parts.forEach(p -> p.setParentTemplate(this));
+    this.name = name;
+    this.location = location;
+    this.parts = parts;
+    this.varIndices = getVarIndices(parts);
+    this.tmplIndices = getTmplIndices(parts);
+    this.names = getNames(parts);
+    this.textIndices = getTextIndices(parts);
   }
 
-  /**
-   * For internal use only.
-   */
-  @ModulePrivate
-  public Template(Private<Template> x, String y) {
-    this.name = y;
-    Template t = x.get();
-    this.location = t.location;
-    this.parts = t.parts;
-    this.varIndices = t.varIndices;
-    this.tmplIndices = t.tmplIndices;
-    this.nestedTemplates = t.nestedTemplates;
-    this.names = t.names;
-    this.textIndices = t.textIndices;
+  public Template(Template cached, String name) {
+    this.name = name;
+    this.location = cached.location;
+    this.parts = cached.parts;
+    this.varIndices = cached.varIndices;
+    this.tmplIndices = cached.tmplIndices;
+    this.nestedTemplates = cached.nestedTemplates;
+    this.names = cached.names;
+    this.textIndices = cached.textIndices;
   }
 
   /**
@@ -236,7 +227,7 @@ public final class Template {
    * method returns its path, else {@code null}. In other words, for {@code included}
    * templates this method (by definition) returns a non-null value. For inline
    * templates this method (by definition) returns {@code null}. For <i>this</i>
-   * {@code Template} the return value depends how you got hold of the instance.
+   * {@code Template} the return value depends on how you got hold of the instance.
    *
    * @return the file location (if any) of the source code for this {@code Template}
    */
@@ -340,7 +331,7 @@ public final class Template {
    * @return the {@code Template} with the specified name
    */
   public Template getNestedTemplate(String name) {
-    Check.notNull(name).is(keyIn(), tmplIndices, "No such template: \"%s\"", name);
+    Check.notNull(name).is(keyIn(), tmplIndices, ERR_NO_SUCH_TEMPLATE, name);
     int partIndex = tmplIndices.get(name);
     return ((NestedTemplatePart) parts.get(partIndex)).getTemplate();
   }
@@ -393,7 +384,7 @@ public final class Template {
    * @return A new {@code RenderSession}
    */
   public RenderSession newRenderSession(StringifierRegistry stringifiers) {
-    Check.notNull(stringifiers, "stringifiers");
+    Check.notNull(stringifiers, MTag.STRINGIFIERS);
     return new SessionConfig(this, stringifiers).newRenderSession();
   }
 
@@ -408,7 +399,7 @@ public final class Template {
    * @return A new {@code RenderSession}
    */
   public RenderSession newRenderSession(AccessorRegistry accessors) {
-    Check.notNull(accessors, "accessors");
+    Check.notNull(accessors, MTag.ACCESSORS);
     return new SessionConfig(this, accessors).newRenderSession();
   }
 
@@ -426,8 +417,8 @@ public final class Template {
    */
   public RenderSession newRenderSession(AccessorRegistry accessors,
       StringifierRegistry stringifiers) {
-    Check.notNull(accessors, "accessors");
-    Check.notNull(stringifiers, "stringifiers");
+    Check.notNull(accessors, MTag.ACCESSORS);
+    Check.notNull(stringifiers, MTag.STRINGIFIERS);
     return new SessionConfig(this, accessors, stringifiers).newRenderSession();
   }
 
@@ -435,26 +426,21 @@ public final class Template {
   public boolean equals(Object obj) {
     if (this == obj) {
       return true;
-    } else if (obj == null || getClass() != obj.getClass()) {
-      return false;
     }
-    Template other = (Template) obj;
-    if (location != null) {
+    if (obj instanceof Template other) {
+      if (location.isString()) {
+        return parent != null
+            && getRootTemplate().equals(other.getRootTemplate())
+            && getFQName(this).equals(getFQName(other));
+      }
       return location.equals(other.location);
-    }
-    if (parent != null) {
-      Template r0 = getRootTemplate();
-      return r0.location != null
-          && other.parent != null
-          && r0.location.equals(other.getRootTemplate().location)
-          && getFQName(this).equals(getFQName(other));
     }
     return false;
   }
 
   @Override
   public int hashCode() {
-    return location == null ? 0 : location.hashCode();
+    return location.hashCode();
   }
 
   /**

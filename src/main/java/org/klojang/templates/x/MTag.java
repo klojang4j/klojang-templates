@@ -11,5 +11,8 @@ public final class MTag {
 
   public static final String REPEATS = "repeats";
 
+  public static final String ACCESSORS = "accessors";
+
+  public static final String STRINGIFIERS = "stringifiers";
 
 }

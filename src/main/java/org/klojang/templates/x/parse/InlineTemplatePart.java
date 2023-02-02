@@ -5,9 +5,9 @@ import org.klojang.templates.Template;
 import static org.klojang.templates.x.parse.Regex.TMPL_START;
 import static org.klojang.templates.x.parse.Regex.VAR_END;
 
-final class InlineTemplatePart extends NestedTemplatePart {
+public final class InlineTemplatePart extends NestedTemplatePart {
 
-  InlineTemplatePart(Template template, int start) {
+  public InlineTemplatePart(Template template, int start) {
     super(template, start);
   }
 

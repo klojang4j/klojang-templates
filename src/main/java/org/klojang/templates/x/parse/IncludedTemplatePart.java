@@ -12,13 +12,13 @@ import static org.klojang.util.StringMethods.substringBefore;
  *
  * @author Ayco Holleman
  */
-final class IncludedTemplatePart extends NestedTemplatePart {
+public final class IncludedTemplatePart extends NestedTemplatePart {
 
-  static String basename(String path) {
+  public static String basename(String path) {
     return substringBefore(substrAfter(path, "/", -1), ".", -1);
   }
 
-  IncludedTemplatePart(Template template, int start) {
+  public IncludedTemplatePart(Template template, int start) {
     super(template, start);
   }
 

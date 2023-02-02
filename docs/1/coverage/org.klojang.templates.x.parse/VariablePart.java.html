@@ -18,7 +18,7 @@ public final class VariablePart extends AbstractPart implements NamedPart {
   private final VarGroup group;
   private final String name;
 
-  VariablePart(String prefix, String name, int start) {
+  public VariablePart(String prefix, String name, int start) {
 <span class="fc" id="L22">    super(start);</span>
 <span class="fc bfc" id="L23" title="All 2 branches covered.">    if (prefix == null) {</span>
 <span class="fc" id="L24">      group = null;</span>

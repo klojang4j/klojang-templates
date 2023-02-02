@@ -4,12 +4,12 @@ public final class UnparsedPart extends AbstractPart {
 
   private final String text;
 
-  UnparsedPart(String text, int start) {
+  public UnparsedPart(String text, int start) {
     super(start);
     this.text = text;
   }
 
-  String text() {
+  public String text() {
     return text;
   }
 

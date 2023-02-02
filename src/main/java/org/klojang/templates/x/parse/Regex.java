@@ -23,28 +23,28 @@ public final class Regex {
   public static final String TMPL_START = Setting.TMPL_START.get();
   public static final String TMPL_END = Setting.TMPL_END.get();
 
-  static final String PLACEHOLDER_START_END = "<!--%-->";
+  public static final String PLACEHOLDER_START_END = "<!--%-->";
 
   private static Regex instance;
 
-  static Regex of() throws ParseException {
+  public static Regex of() throws ParseException {
     if (instance == null) {
       return instance = new Regex();
     }
     return instance;
   }
 
-  final Pattern variable;
-  final Pattern cmtVariable;
-  final Pattern beginTag;
-  final Pattern endTag;
-  final Pattern inlineTemplate;
-  final Pattern cmtInlineTemplate;
-  final Pattern includedTemplate;
-  final Pattern cmtIncludedTemplate;
-  final Pattern ditchTag;
-  final Pattern ditchBlock;
-  final Pattern placeholder;
+  public final Pattern variable;
+  public final Pattern cmtVariable;
+  public final Pattern beginTag;
+  public final Pattern endTag;
+  public final Pattern inlineTemplate;
+  public final Pattern cmtInlineTemplate;
+  public final Pattern includedTemplate;
+  public final Pattern cmtIncludedTemplate;
+  public final Pattern ditchTag;
+  public final Pattern ditchBlock;
+  public final Pattern placeholder;
 
   private Regex() throws ParseException {
 

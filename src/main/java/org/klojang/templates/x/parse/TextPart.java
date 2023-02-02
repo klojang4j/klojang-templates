@@ -4,7 +4,7 @@ public final class TextPart extends AbstractPart {
 
   private final String text;
 
-  TextPart(String text, int start) {
+  public TextPart(String text, int start) {
     super(start);
     this.text = text;
   }

@@ -1,10 +1,7 @@
-package org.klojang.templates.x.parse;
+package org.klojang.templates;
 
 import org.klojang.check.Check;
 import org.klojang.collections.WiredList;
-import org.klojang.templates.ParseException;
-import org.klojang.templates.Template;
-import org.klojang.templates.x.TemplateLocation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,14 +11,14 @@ import static org.klojang.check.CommonChecks.gte;
 import static org.klojang.templates.Setting.TMPL_CACHE_SIZE;
 import static org.klojang.templates.Template.ROOT_TEMPLATE_NAME;
 
-public final class TemplateCache {
+final class TemplateCache {
 
   private static final Logger LOG = LoggerFactory.getLogger(TemplateCache.class);
 
   public static final TemplateCache INSTANCE = new TemplateCache();
 
   private final HashMap<TemplateLocation, Template> cache;
-  private final WiredList<String> entries;
+  private final WiredList<TemplateLocation> entries;
   private final int maxSize;
 
   private TemplateCache() {
@@ -42,8 +39,8 @@ public final class TemplateCache {
     }
   }
 
-  public Template get(TemplateLocation location, String name) throws ParseException {
-    if (maxSize == 0 || location.path() == null) { // caching disabled
+  Template get(TemplateLocation location, String name) throws ParseException {
+    if (maxSize == 0 || location.isString()) {
       logTemplateRetrieval(name, location);
       return new Parser(name, location).parse();
     }
@@ -54,10 +51,10 @@ public final class TemplateCache {
       logTemplateRetrieval(name, location);
       tmpl = new Parser(name, location).parse();
       if (maxSize != -1 && entries.size() >= maxSize) {
-        String eldest = entries.removeLast();
-        LOG.trace("Cache overflow. Evicting {}", eldest);
+        TemplateLocation eldest = entries.removeLast();
+        LOG.trace("Cache overflow. Evicting {}", eldest.path());
         cache.remove(eldest);
-        entries.add(location.path());
+        entries.add(location);
       }
       cache.put(location, tmpl);
     } else {

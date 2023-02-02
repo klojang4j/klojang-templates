@@ -1,8 +1,7 @@
-package org.klojang.templates.x;
+package org.klojang.templates;
 
 import org.klojang.check.Check;
-import org.klojang.templates.PathResolutionException;
-import org.klojang.templates.PathResolver;
+import org.klojang.templates.x.TemplateLocationType;
 import org.klojang.util.IOMethods;
 
 import java.io.*;
@@ -20,20 +19,20 @@ public final class TemplateLocation {
   private static final String ERR_NO_PATH = "Cannot load source for %s";
 
   private final TemplateLocationType type;
-  private final PathResolver pathResolver;
+  private final PathResolver resolver;
   private final Class<?> clazz;
   private final String path;
 
   public TemplateLocation(TemplateLocation parent) {
     this.type = STRING;
-    this.pathResolver = parent.pathResolver;
+    this.resolver = parent.resolver;
     this.clazz = parent.clazz;
     this.path = null;
   }
 
   private TemplateLocation() {
     this.type = STRING;
-    this.pathResolver = null;
+    this.resolver = null;
     this.clazz = null;
     this.path = null;
   }
@@ -45,13 +44,13 @@ public final class TemplateLocation {
   public TemplateLocation(File file) {
     this.path = file.getAbsolutePath();
     this.type = FILE;
-    this.pathResolver = null;
+    this.resolver = null;
     this.clazz = null;
   }
 
   public TemplateLocation(Class<?> clazz) {
     this.type = STRING;
-    this.pathResolver = null;
+    this.resolver = null;
     this.clazz = clazz;
     this.path = null;
   }
@@ -60,11 +59,11 @@ public final class TemplateLocation {
     this.clazz = clazz;
     this.path = path;
     this.type = RESOURCE;
-    this.pathResolver = null;
+    this.resolver = null;
   }
 
-  public TemplateLocation(PathResolver pathResolver, String path) {
-    this.pathResolver = pathResolver;
+  public TemplateLocation(PathResolver resolver, String path) {
+    this.resolver = resolver;
     this.path = path;
     this.type = RESOLVER;
     this.clazz = null;
@@ -89,7 +88,7 @@ public final class TemplateLocation {
         throw new PathResolutionException(path);
       }
     }
-    try (InputStream in = pathResolver.resolvePath(path)) {
+    try (InputStream in = resolver.resolvePath(path)) {
       Check.on(PathResolutionException::new, in).is(notNull(), path);
       return IOMethods.getContents(in);
     } catch (IOException e) {
@@ -101,8 +100,8 @@ public final class TemplateLocation {
     return type;
   }
 
-  public PathResolver pathResolver() {
-    return pathResolver;
+  public PathResolver resolver() {
+    return resolver;
   }
 
   public Class<?> clazz() {
@@ -111,6 +110,10 @@ public final class TemplateLocation {
 
   public String path() {
     return path;
+  }
+
+  boolean isString() {
+    return type == STRING;
   }
 
   @Override
@@ -125,17 +128,14 @@ public final class TemplateLocation {
   public boolean equals(Object obj) {
     if (this == obj) {
       return true;
-    } else if (obj == null) {
-      return false;
-    } else if (obj instanceof TemplateLocation tl) {
-      if (type != tl.type || !path.equals(tl.path)) {
-        return false;
-      } else if (type == RESOURCE) {
-        return clazz.getPackage() == tl.clazz.getPackage();
-      } else if (type == RESOLVER) {
-        return pathResolver.equals(tl.path);
-      }
-      return true;
+    } else if (obj instanceof TemplateLocation other) {
+      return type == other.type && path.equals(other.path) &&
+          switch (type) {
+            case RESOURCE -> clazz.getPackage() == other.clazz.getPackage();
+            case RESOLVER -> resolver.equals(other.path);
+            case FILE -> true;
+            case STRING -> false;
+          };
     }
     return false;
   }
@@ -149,7 +149,7 @@ public final class TemplateLocation {
           ";package=",
           clazz.getPackage().getName(),
           ";resolver=",
-          pathResolver,
+          resolver,
           "]");
     }
     if (type == RESOURCE) {
@@ -177,7 +177,7 @@ public final class TemplateLocation {
         ";path=",
         path,
         ";resolver=",
-        pathResolver,
+        resolver,
         "]");
   }
 

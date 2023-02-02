@@ -23,28 +23,28 @@ public final class Regex {
 <span class="fc" id="L23">  public static final String TMPL_START = Setting.TMPL_START.get();</span>
 <span class="fc" id="L24">  public static final String TMPL_END = Setting.TMPL_END.get();</span>
 
-  static final String PLACEHOLDER_START_END = &quot;&lt;!--%--&gt;&quot;;
+  public static final String PLACEHOLDER_START_END = &quot;&lt;!--%--&gt;&quot;;
 
   private static Regex instance;
 
-  static Regex of() throws ParseException {
+  public static Regex of() throws ParseException {
 <span class="fc bfc" id="L31" title="All 2 branches covered.">    if (instance == null) {</span>
 <span class="fc" id="L32">      return instance = new Regex();</span>
     }
 <span class="fc" id="L34">    return instance;</span>
   }
 
-  final Pattern variable;
-  final Pattern cmtVariable;
-  final Pattern beginTag;
-  final Pattern endTag;
-  final Pattern inlineTemplate;
-  final Pattern cmtInlineTemplate;
-  final Pattern includedTemplate;
-  final Pattern cmtIncludedTemplate;
-  final Pattern ditchTag;
-  final Pattern ditchBlock;
-  final Pattern placeholder;
+  public final Pattern variable;
+  public final Pattern cmtVariable;
+  public final Pattern beginTag;
+  public final Pattern endTag;
+  public final Pattern inlineTemplate;
+  public final Pattern cmtInlineTemplate;
+  public final Pattern includedTemplate;
+  public final Pattern cmtIncludedTemplate;
+  public final Pattern ditchTag;
+  public final Pattern ditchBlock;
+  public final Pattern placeholder;
 
 <span class="fc" id="L49">  private Regex() throws ParseException {</span>
 

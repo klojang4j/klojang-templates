@@ -45,8 +45,8 @@ import static org.klojang.util.ArrayMethods.prefix;
 
   /**
    * {@link Template#fromString(String) Template.fromString} was called without the
-   * Class argument and hence included templates cannot be loaded using {@code
-   * Class.getResourceAsStream}.
+   * Class argument and hence included templates cannot be loaded using
+   * {@code Class.getResourceAsStream}.
    */
 <span class="fc" id="L51">  MISSING_CLASS_OBJECT(</span>
       &quot;No Class object provided. Cannot call getResourceAsStream(\&quot;%s\&quot;)&quot;),
@@ -69,8 +69,8 @@ import static org.klojang.util.ArrayMethods.prefix;
 <span class="fc" id="L69">  END_TAG_NOT_TERMINATED(&quot;Template \&quot;end\&quot; tag not terminated&quot;),</span>
 
   /**
-   * The character sequence {@code ~%%include:} was found, but no terminating {@code
-   * %} followed.
+   * The character sequence {@code ~%%include:} was found, but no terminating
+   * {@code %} followed.
    */
 <span class="fc" id="L75">  INCLUDE_TAG_NOT_TERMINATED(&quot;Template \&quot;include\&quot; tag not terminated&quot;),</span>
 
@@ -93,43 +93,46 @@ import static org.klojang.util.ArrayMethods.prefix;
 <span class="fc" id="L93">  DITCH_BLOCK_NOT_CLOSED(&quot;Ditch block not closed&quot;),</span>
 
   /**
-   * A placeholder block was not closed. (There was an uneven number of {@code
-   * &lt;!--%--&gt;} tokens.)
+   * A placeholder block was not closed. (There was an uneven number of
+   * {@code &lt;!--%--&gt;} tokens.)
    */
 <span class="fc" id="L99">  PLACEHOLDER_NOT_CLOSED(&quot;Placeholder block not closed&quot;);</span>
 
   private static final String ERR_BASE = &quot;Error at line %d, column %d. &quot;;
 
-  private String format;
+  private final String format;
 
 <span class="fc" id="L105">  private ErrorType(String format) {</span>
 <span class="fc" id="L106">    this.format = ERR_BASE + format;</span>
 <span class="fc" id="L107">  }</span>
 
-  String asMessage(String src, int pos, Object... args) {
+  public String asMessage(String src, int pos, Object... args) {
 <span class="nc" id="L110">    int[] x = StringMethods.getLineAndColumn(src, pos);</span>
 <span class="nc" id="L111">    return String.format(format, prefix(args, x[0] + 1, x[1] + 1));</span>
   }
 
-  ParseException asException(String src, int pos, Object... args) {
+  public ParseException asException(String src, int pos, Object... args) {
 <span class="nc" id="L115">    return new ParseException(asMessage(src, pos, args));</span>
   }
 
-  Function&lt;String, ParseException&gt; asExceptionProvider(String src,
+  public Function&lt;String, ParseException&gt; asExceptionProvider(String src,
       int pos,
       Object... args) {
 <span class="pc" id="L121">    return s -&gt; asException(src, pos, args);</span>
   }
 
-  IntCheck&lt;ParseException&gt; checkInt(int arg, String src, int pos, Object... args) {
-<span class="fc" id="L125">    return Check.on(asExceptionProvider(src, pos, args), arg);</span>
-  }
-
-  &lt;T&gt; ObjectCheck&lt;T, ParseException&gt; check(T arg,
+  public IntCheck&lt;ParseException&gt; checkInt(int arg,
       String src,
       int pos,
       Object... args) {
-<span class="fc" id="L132">    return Check.on(asExceptionProvider(src, pos, args), arg);</span>
+<span class="fc" id="L128">    return Check.on(asExceptionProvider(src, pos, args), arg);</span>
+  }
+
+  public &lt;T&gt; ObjectCheck&lt;T, ParseException&gt; check(T arg,
+      String src,
+      int pos,
+      Object... args) {
+<span class="fc" id="L135">    return Check.on(asExceptionProvider(src, pos, args), arg);</span>
   }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
