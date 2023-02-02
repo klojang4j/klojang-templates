@@ -3,9 +3,7 @@ package org.klojang.templates;
 import org.klojang.check.Check;
 import org.klojang.check.Tag;
 import org.klojang.templates.x.MTag;
-import org.klojang.templates.x.Private;
 import org.klojang.templates.x.parse.*;
-import org.klojang.util.ModulePrivate;
 import org.klojang.util.collection.IntArrayList;
 import org.klojang.util.collection.IntList;
 import org.slf4j.Logger;
@@ -40,10 +38,10 @@ public final class Template {
 
   /**
    * The name given to the root template: "{root}". Any {@code Template} that is
-   * explicitly instantiated by calling one of the {@code parse} methods gets this
-   * name. Templates nested inside this template get their name from the source code
-   * (for example: {@code ~%%begin:foo%} or {@code ~%%include:/views/foo.html%} or
-   * {@code ~%%include:foo:/views/bar.html%}).
+   * explicitly instantiated by calling one of the {@code fromXXX()} methods gets
+   * this name. Templates nested inside this template get their name from the source
+   * code (for example: {@code ~%%begin:foo%} or {@code ~%%include:/views/foo.html%}
+   * or {@code ~%%include:foo:/views/bar.html%}).
    */
   public static final String ROOT_TEMPLATE_NAME = "{root}";
 
@@ -59,7 +57,7 @@ public final class Template {
    */
   public static Template fromString(String source) throws ParseException {
     Check.notNull(source, "source");
-    return new Parser(ROOT_TEMPLATE_NAME, TemplateLocation.NONE, source).parse();
+    return new Parser(TemplateLocation.NONE, ROOT_TEMPLATE_NAME, source).parse();
   }
 
   /**
@@ -78,8 +76,7 @@ public final class Template {
       throws ParseException {
     Check.notNull(clazz, Tag.CLASS);
     Check.notNull(source, "source");
-    return new Parser(ROOT_TEMPLATE_NAME,
-        new TemplateLocation(clazz),
+    return new Parser(new TemplateLocation(clazz), ROOT_TEMPLATE_NAME,
         source).parse();
   }
 
@@ -120,8 +117,8 @@ public final class Template {
    */
   public static Template fromFile(String path) throws ParseException {
     Check.notNull(path, Tag.PATH);
-    return TemplateCache.INSTANCE.get(new TemplateLocation(path), ROOT_TEMPLATE_NAME
-    );
+    return TemplateCache.INSTANCE.get(new TemplateLocation(path),
+        ROOT_TEMPLATE_NAME);
   }
 
   /**
@@ -151,10 +148,15 @@ public final class Template {
   // All variable names and nested template together
   private final List<String> names;
 
-  Template parent;
+  private Template parent;
 
   Template(String name, TemplateLocation location, List<Part> parts) {
-    parts.forEach(p -> p.setParentTemplate(this));
+    parts.forEach(p -> {
+      p.setParentTemplate(this);
+      if (p instanceof IncludedTemplatePart itp) {
+        itp.getTemplate().parent = this;
+      }
+    });
     this.name = name;
     this.location = location;
     this.parts = parts;
@@ -164,7 +166,7 @@ public final class Template {
     this.textIndices = getTextIndices(parts);
   }
 
-  public Template(Template cached, String name) {
+  Template(Template cached, String name) {
     this.name = name;
     this.location = cached.location;
     this.parts = cached.parts;
@@ -176,7 +178,10 @@ public final class Template {
   }
 
   /**
-   * Returns the name of this {@code Template}.
+   * Returns the name of this {@code Template}. It this {@code Template} was
+   * explicitly instantiated using one of the {@code fromXXX()} methods, its name
+   * will be "{root}"; otherwise it is a nested template and its name will be
+   * extracted from the source code (e.g. {@code ~%%begin:foo%}).
    *
    * @return the name of this {@code Template}
    */
@@ -185,9 +190,10 @@ public final class Template {
   }
 
   /**
-   * Returns the template inside which this {@code Template} is nested. If this is
-   * the root template (the template that was explicitly created by a call to one of
-   * the {@code fromXXX()} methods), this method returns {@code null}.
+   * Returns the template inside which this {@code Template} is nested. If this
+   * {@code Template} is the root template (the template that was explicitly created
+   * by a call to one of the {@code fromXXX()} methods), this method returns
+   * {@code null}.
    *
    * @return the template inside which this {@code Template} is nested
    */
@@ -196,18 +202,10 @@ public final class Template {
   }
 
   /**
-   * For internal use only.
-   */
-  @ModulePrivate
-  public void setParent(Private<Template> parent) {
-    this.parent = parent.get();
-  }
-
-  /**
    * Returns the ultimate ancestor of this {@code Template}. In other words, the
    * {@code Template} that was explicitly created by a call to one of the
    * {@code fromXXX()} methods of this class. If this {@code Template} <i>is</i> the
-   * root template, then this method return {@code this}.
+   * root template, then this method returns {@code this}.
    *
    * @return the ultimate ancestor of this {@code Template}
    */

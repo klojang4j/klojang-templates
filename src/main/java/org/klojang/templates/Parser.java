@@ -26,12 +26,11 @@ final class Parser {
   private final TemplateLocation location;
   private final String src;
 
-  Parser(String name, TemplateLocation location)
-      throws PathResolutionException {
-    this(name, location, location.getSource());
+  Parser(TemplateLocation location, String name) throws PathResolutionException {
+    this(location, name, location.getSource());
   }
 
-  Parser(String name, TemplateLocation location, String src) {
+  Parser(TemplateLocation location, String name, String src) {
     this.name = name;
     this.location = location;
     this.src = src;
@@ -136,7 +135,7 @@ final class Parser {
           .isNot(in(), names)
           .isNot(EQ(), ROOT_TEMPLATE_NAME);
       names.add(name);
-      Parser parser = new Parser(name, new TemplateLocation(location), mySrc);
+      Parser parser = new Parser(new TemplateLocation(location), name, mySrc);
       parts.add(new InlineTemplatePart(parser.parse(), offset + m.start()));
       end = m.end();
     } while (m.find());

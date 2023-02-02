@@ -9,7 +9,7 @@ public abstract sealed class AbstractPart implements Part permits
 
   private Template parent;
 
-  AbstractPart(int start) {
+  public AbstractPart(int start) {
     this.start = start;
   }
 

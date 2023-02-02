@@ -41,15 +41,15 @@ final class TemplateCache {
 
   Template get(TemplateLocation location, String name) throws ParseException {
 <span class="pc bpc" id="L43" title="2 of 4 branches missed.">    if (maxSize == 0 || location.isString()) {</span>
-<span class="nc" id="L44">      logTemplateRetrieval(name, location);</span>
-<span class="nc" id="L45">      return new Parser(name, location).parse();</span>
+<span class="nc" id="L44">      logTemplateRetrieval(location, name);</span>
+<span class="nc" id="L45">      return new Parser(location, name).parse();</span>
     }
-<span class="fc" id="L47">    logCacheSearch(name, location);</span>
-<span class="fc" id="L48">    Template tmpl = cache.get(location.path());</span>
-<span class="pc bpc" id="L49" title="1 of 2 branches missed.">    if (tmpl == null) {</span>
+<span class="fc" id="L47">    logCacheSearch(location, name);</span>
+<span class="fc" id="L48">    Template tmpl = cache.get(location);</span>
+<span class="fc bfc" id="L49" title="All 2 branches covered.">    if (tmpl == null) {</span>
 <span class="fc" id="L50">      LOG.trace(&quot;Not found&quot;);</span>
-<span class="fc" id="L51">      logTemplateRetrieval(name, location);</span>
-<span class="fc" id="L52">      tmpl = new Parser(name, location).parse();</span>
+<span class="fc" id="L51">      logTemplateRetrieval(location, name);</span>
+<span class="fc" id="L52">      tmpl = new Parser(location, name).parse();</span>
 <span class="pc bpc" id="L53" title="3 of 4 branches missed.">      if (maxSize != -1 &amp;&amp; entries.size() &gt;= maxSize) {</span>
 <span class="nc" id="L54">        TemplateLocation eldest = entries.removeLast();</span>
 <span class="nc" id="L55">        LOG.trace(&quot;Cache overflow. Evicting {}&quot;, eldest.path());</span>
@@ -58,12 +58,12 @@ final class TemplateCache {
       }
 <span class="fc" id="L59">      cache.put(location, tmpl);</span>
     } else {
-<span class="nc" id="L61">      LOG.trace(&quot;Found&quot;);</span>
+<span class="fc" id="L61">      LOG.trace(&quot;Found&quot;);</span>
     }
 <span class="fc" id="L63">    return tmpl;</span>
   }
 
-  private static void logTemplateRetrieval(String name, TemplateLocation location) {
+  private static void logTemplateRetrieval(TemplateLocation location, String name) {
 <span class="pc bpc" id="L67" title="1 of 2 branches missed.">    if (LOG.isTraceEnabled()) {</span>
 <span class="nc bnc" id="L68" title="All 2 branches missed.">      if (name == ROOT_TEMPLATE_NAME) {</span>
 <span class="nc bnc" id="L69" title="All 2 branches missed.">        if (location.path() == null) {</span>
@@ -79,15 +79,17 @@ final class TemplateCache {
     }
 <span class="fc" id="L80">  }</span>
 
-  private static void logCacheSearch(String name, TemplateLocation id) {
+  private static void logCacheSearch(TemplateLocation location, String name) {
 <span class="pc bpc" id="L83" title="1 of 2 branches missed.">    if (LOG.isTraceEnabled()) {</span>
 <span class="nc bnc" id="L84" title="All 2 branches missed.">      if (name == ROOT_TEMPLATE_NAME) {</span>
-<span class="nc" id="L85">        LOG.trace(&quot;Searching cache for template {}@{})&quot;, name, id.path());</span>
+<span class="nc" id="L85">        LOG.trace(&quot;Searching cache for template {}@{})&quot;, name, location.path());</span>
       } else {
-<span class="nc" id="L87">        LOG.trace(&quot;Searching cache for included template {}@{}&quot;, name, id.path());</span>
+<span class="nc" id="L87">        LOG.trace(&quot;Searching cache for included template {}@{}&quot;,</span>
+            name,
+<span class="nc" id="L89">            location.path());</span>
       }
     }
-<span class="fc" id="L90">  }</span>
+<span class="fc" id="L92">  }</span>
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

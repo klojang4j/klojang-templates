@@ -1,7 +1,6 @@
 package org.klojang.templates.x.parse;
 
 import org.klojang.templates.Template;
-import org.klojang.templates.x.Private;
 
 public abstract sealed class NestedTemplatePart extends AbstractPart implements
     NamedPart permits IncludedTemplatePart, InlineTemplatePart {
@@ -25,12 +24,6 @@ public abstract sealed class NestedTemplatePart extends AbstractPart implements
   @Override
   public String toString() {
     return template.toString();
-  }
-
-  @Override
-  public void setParentTemplate(Template parent) {
-    super.setParentTemplate(parent);
-    template.setParent(Private.of(parent));
   }
 
 }

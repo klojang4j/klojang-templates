@@ -2,7 +2,7 @@ package org.klojang.templates;
 
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class TemplateTest {
 
@@ -17,7 +17,7 @@ public class TemplateTest {
         </body></html>
         """;
     Template tmpl = Template.fromString(getClass(), src);
-    assertNotNull(tmpl);
+    assertEquals(2, tmpl.getNestedTemplates().size());
   }
 
 }
