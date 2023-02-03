@@ -25,8 +25,8 @@ public final class ClassPathResolver implements PathResolver {
 
   @Override
   public boolean equals(Object obj) {
-<span class="fc bfc" id="L28" title="All 2 branches covered.">    if (this == obj) {</span>
-<span class="fc" id="L29">      return true;</span>
+<span class="pc bpc" id="L28" title="1 of 2 branches missed.">    if (this == obj) {</span>
+<span class="nc" id="L29">      return true;</span>
 <span class="pc bpc" id="L30" title="1 of 2 branches missed.">    } else if (obj instanceof ClassPathResolver cpr) {</span>
 <span class="pc bpc" id="L31" title="1 of 2 branches missed.">      return clazz.getPackage() == cpr.clazz.getPackage();</span>
     }

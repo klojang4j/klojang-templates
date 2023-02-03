@@ -232,7 +232,7 @@ public final class Template {
    * @return the file location (if any) of the source code for this {@code Template}
    */
   public String getPath() {
-    return ifNotNull(location, TemplateLocation::getPath);
+    return ifNotNull(location, TemplateLocation::path);
   }
 
   /**

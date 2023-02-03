@@ -232,7 +232,7 @@ public final class Template {
    * @return the file location (if any) of the source code for this {@code Template}
    */
   public String getPath() {
-<span class="nc" id="L235">    return ifNotNull(location, TemplateLocation::getPath);</span>
+<span class="nc" id="L235">    return ifNotNull(location, TemplateLocation::path);</span>
   }
 
   /**

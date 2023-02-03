@@ -4,47 +4,31 @@ import org.klojang.util.IOMethods;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Objects;
 
-public final class TemplateLocation {
+import static org.klojang.templates.PathResolver.INVALID_PATH;
 
-<span class="fc" id="L11">  public static final TemplateLocation STRING = new TemplateLocation();</span>
+<span class="pc" id="L10">public record TemplateLocation(String path, PathResolver resolver) {</span>
 
-  private final PathResolver resolver;
-  private final String path;
+<span class="fc" id="L12">  public static final TemplateLocation STRING = new TemplateLocation();</span>
 
-<span class="fc" id="L16">  private TemplateLocation() {</span>
-<span class="fc" id="L17">    this.path = null;</span>
-<span class="fc" id="L18">    this.resolver = null;</span>
-<span class="fc" id="L19">  }</span>
+  private TemplateLocation() {
+<span class="fc" id="L15">    this(null, null);</span>
+<span class="fc" id="L16">  }</span>
 
   public TemplateLocation(PathResolver resolver) {
-<span class="fc" id="L22">    this(null, resolver);</span>
-<span class="fc" id="L23">  }</span>
-
-<span class="fc" id="L25">  public TemplateLocation(String path, PathResolver resolver) {</span>
-<span class="fc" id="L26">    this.path = path;</span>
-<span class="fc" id="L27">    this.resolver = resolver;</span>
-<span class="fc" id="L28">  }</span>
+<span class="fc" id="L19">    this(null, resolver);</span>
+<span class="fc" id="L20">  }</span>
 
   public boolean isInvalid() {
-<span class="fc" id="L31">    return resolver.isValidPath(path).equals(PathResolver.INVALID_PATH);</span>
+<span class="fc" id="L23">    return resolver.isValidPath(path).equals(INVALID_PATH);</span>
   }
 
   public String read() throws PathResolutionException {
-<span class="fc" id="L35">    try (InputStream in = resolver.resolvePath(path)) {</span>
-<span class="fc" id="L36">      return IOMethods.getContents(in);</span>
-<span class="nc" id="L37">    } catch (IOException e) {</span>
-<span class="nc" id="L38">      throw new PathResolutionException(path);</span>
+<span class="fc" id="L27">    try (InputStream in = resolver.resolvePath(path)) {</span>
+<span class="fc" id="L28">      return IOMethods.getContents(in);</span>
+<span class="nc" id="L29">    } catch (IOException e) {</span>
+<span class="nc" id="L30">      throw new PathResolutionException(path);</span>
     }
-  }
-
-  public String getPath() {
-<span class="nc" id="L43">    return path;</span>
-  }
-
-  public PathResolver getResolver() {
-<span class="fc" id="L47">    return resolver;</span>
   }
 
   /*
@@ -52,26 +36,11 @@ public final class TemplateLocation {
    * have a &quot;physical&quot; location).
    */
   boolean isString() {
-<span class="pc bpc" id="L55" title="1 of 2 branches missed.">    return path == null;</span>
-  }
-
-  @Override
-  public int hashCode() {
-<span class="fc" id="L60">    return Objects.hash(path, resolver);</span>
-  }
-
-  @Override
-  public boolean equals(Object obj) {
-<span class="pc bpc" id="L65" title="1 of 2 branches missed.">    if (this == obj) {</span>
-<span class="nc" id="L66">      return true;</span>
-<span class="pc bpc" id="L67" title="1 of 2 branches missed.">    } else if (obj instanceof TemplateLocation other) {</span>
-<span class="pc bpc" id="L68" title="2 of 4 branches missed.">      return Objects.equals(path, other.path) &amp;&amp; resolver.equals(other.resolver);</span>
-    }
-<span class="nc" id="L70">    return false;</span>
+<span class="pc bpc" id="L39" title="1 of 2 branches missed.">    return path == null;</span>
   }
 
   public String toString() {
-<span class="nc" id="L74">    return path;</span>
+<span class="nc" id="L43">    return path;</span>
   }
 
 }

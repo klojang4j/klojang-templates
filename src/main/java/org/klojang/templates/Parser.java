@@ -136,7 +136,7 @@ final class Parser {
       names.add(name);
       // No path is associated with an inline template, but they inherit the
       // PathResolver of the template in which they are nested
-      TemplateLocation loc = new TemplateLocation(location.getResolver());
+      TemplateLocation loc = new TemplateLocation(location.resolver());
       Parser parser = new Parser(loc, name, mySrc);
       parts.add(new InlineTemplatePart(parser.parse(), offset + m.start()));
       end = m.end();
@@ -175,7 +175,7 @@ final class Parser {
           .check(name, src, offset + m.start(2), name)
           .isNot(in(), names)
           .isNot(EQ(), ROOT_TEMPLATE_NAME);
-      TemplateLocation loc = new TemplateLocation(path, location.getResolver());
+      TemplateLocation loc = new TemplateLocation(path, location.resolver());
       if (loc.isInvalid()) {
         throw INVALID_INCLUDE_PATH.asException(src, offset + m.start(3), path);
       }

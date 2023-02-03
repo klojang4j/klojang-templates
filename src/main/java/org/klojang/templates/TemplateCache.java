@@ -52,7 +52,7 @@ final class TemplateCache {
       tmpl = new Parser(location, name).parse();
       if (maxSize != -1 && entries.size() >= maxSize) {
         TemplateLocation eldest = entries.removeLast();
-        LOG.trace("Cache overflow. Evicting {}", eldest.getPath());
+        LOG.trace("Cache overflow. Evicting {}", eldest.path());
         cache.remove(eldest);
         entries.add(location);
       }
@@ -66,15 +66,15 @@ final class TemplateCache {
   private static void logTemplateRetrieval(TemplateLocation location, String name) {
     if (LOG.isTraceEnabled()) {
       if (name == ROOT_TEMPLATE_NAME) {
-        if (location.getPath() == null) {
+        if (location.path() == null) {
           LOG.trace("Loading template {}", name);
         } else {
-          LOG.trace("Loading template {} from {}", name, location.getPath());
+          LOG.trace("Loading template {} from {}", name, location.path());
         }
-      } else if (location.getPath() == null) {
+      } else if (location.path() == null) {
         LOG.trace("Loading included template \"{}\"", name);
       } else {
-        LOG.trace("Loading included template \"{}\" from {}", name, location.getPath());
+        LOG.trace("Loading included template \"{}\" from {}", name, location.path());
       }
     }
   }
@@ -82,11 +82,11 @@ final class TemplateCache {
   private static void logCacheSearch(TemplateLocation location, String name) {
     if (LOG.isTraceEnabled()) {
       if (name == ROOT_TEMPLATE_NAME) {
-        LOG.trace("Searching cache for template {}@{})", name, location.getPath());
+        LOG.trace("Searching cache for template {}@{})", name, location.path());
       } else {
         LOG.trace("Searching cache for included template {}@{}",
             name,
-            location.getPath());
+            location.path());
       }
     }
   }

@@ -9,8 +9,15 @@ import java.util.Optional;
  * code for a template. Implementations are given the path string extracted from
  * {@code ~%%include:/path/to/resource.html%} and must return an {@link InputStream}
  * to the source code. This enables you to implement and use a custom mechanism for
- * loading templates. Klojang Templates provides two built-in mechanisms: loading
- * templates from the file system and loading templates from the classpath.
+ * loading templates. Klojang Templates provides two implementations itself: one that
+ * loads templates from the file system (used under the hood by
+ * {@link Template#fromFile(String) Template.fromFile()}), and another one that loads
+ * templates from the classpath (used by
+ * {@link Template#fromResource(Class, String) Template.fromResource()}). You can use
+ * different path resolvers for different templates, but nested templates always
+ * inherit the {@code PathResolver} from the root template (the template that was
+ * explicitly instantiated using one of the {@code fromXXX()} methods on the
+ * {@code Template} class.
  *
  * @author Ayco Holleman
  * @see Template#fromResolver(PathResolver, String)
