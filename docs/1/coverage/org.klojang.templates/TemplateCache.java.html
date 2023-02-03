@@ -52,7 +52,7 @@ final class TemplateCache {
 <span class="fc" id="L52">      tmpl = new Parser(location, name).parse();</span>
 <span class="pc bpc" id="L53" title="3 of 4 branches missed.">      if (maxSize != -1 &amp;&amp; entries.size() &gt;= maxSize) {</span>
 <span class="nc" id="L54">        TemplateLocation eldest = entries.removeLast();</span>
-<span class="nc" id="L55">        LOG.trace(&quot;Cache overflow. Evicting {}&quot;, eldest.path());</span>
+<span class="nc" id="L55">        LOG.trace(&quot;Cache overflow. Evicting {}&quot;, eldest.getPath());</span>
 <span class="nc" id="L56">        cache.remove(eldest);</span>
 <span class="nc" id="L57">        entries.add(location);</span>
       }
@@ -66,15 +66,15 @@ final class TemplateCache {
   private static void logTemplateRetrieval(TemplateLocation location, String name) {
 <span class="pc bpc" id="L67" title="1 of 2 branches missed.">    if (LOG.isTraceEnabled()) {</span>
 <span class="nc bnc" id="L68" title="All 2 branches missed.">      if (name == ROOT_TEMPLATE_NAME) {</span>
-<span class="nc bnc" id="L69" title="All 2 branches missed.">        if (location.path() == null) {</span>
+<span class="nc bnc" id="L69" title="All 2 branches missed.">        if (location.getPath() == null) {</span>
 <span class="nc" id="L70">          LOG.trace(&quot;Loading template {}&quot;, name);</span>
         } else {
-<span class="nc" id="L72">          LOG.trace(&quot;Loading template {} from {}&quot;, name, location.path());</span>
+<span class="nc" id="L72">          LOG.trace(&quot;Loading template {} from {}&quot;, name, location.getPath());</span>
         }
-<span class="nc bnc" id="L74" title="All 2 branches missed.">      } else if (location.path() == null) {</span>
+<span class="nc bnc" id="L74" title="All 2 branches missed.">      } else if (location.getPath() == null) {</span>
 <span class="nc" id="L75">        LOG.trace(&quot;Loading included template \&quot;{}\&quot;&quot;, name);</span>
       } else {
-<span class="nc" id="L77">        LOG.trace(&quot;Loading included template \&quot;{}\&quot; from {}&quot;, name, location.path());</span>
+<span class="nc" id="L77">        LOG.trace(&quot;Loading included template \&quot;{}\&quot; from {}&quot;, name, location.getPath());</span>
       }
     }
 <span class="fc" id="L80">  }</span>
@@ -82,11 +82,11 @@ final class TemplateCache {
   private static void logCacheSearch(TemplateLocation location, String name) {
 <span class="pc bpc" id="L83" title="1 of 2 branches missed.">    if (LOG.isTraceEnabled()) {</span>
 <span class="nc bnc" id="L84" title="All 2 branches missed.">      if (name == ROOT_TEMPLATE_NAME) {</span>
-<span class="nc" id="L85">        LOG.trace(&quot;Searching cache for template {}@{})&quot;, name, location.path());</span>
+<span class="nc" id="L85">        LOG.trace(&quot;Searching cache for template {}@{})&quot;, name, location.getPath());</span>
       } else {
 <span class="nc" id="L87">        LOG.trace(&quot;Searching cache for included template {}@{}&quot;,</span>
             name,
-<span class="nc" id="L89">            location.path());</span>
+<span class="nc" id="L89">            location.getPath());</span>
       }
     }
 <span class="fc" id="L92">  }</span>

@@ -1,6 +1,7 @@
 package org.klojang.templates;
 
 import org.junit.jupiter.api.Test;
+import org.klojang.templates.x.ClassPathResolver;
 import org.klojang.templates.x.parse.NestedTemplatePart;
 import org.klojang.templates.x.parse.Part;
 import org.klojang.templates.x.parse.TextPart;
@@ -17,7 +18,7 @@ public class ParserTest {
   @Test
   public void parseVariables00() throws ParseException {
     String src = "<tr><td>~%foo%</td></tr>";
-    Parser parser = new Parser(TemplateLocation.NONE, ROOT_TEMPLATE_NAME, src);
+    Parser parser = new Parser(TemplateLocation.STRING, ROOT_TEMPLATE_NAME, src);
     List<Part> parts = parser.getParts();
     assertEquals(3, parts.size());
     assertTrue(parts.get(0) instanceof TextPart);
@@ -33,7 +34,7 @@ public class ParserTest {
   @Test
   public void parseVariables01() throws ParseException {
     String src = "<tr><td><!-- ~%foo% --></td></tr>";
-    Parser parser = new Parser(TemplateLocation.NONE, ROOT_TEMPLATE_NAME, src);
+    Parser parser = new Parser(TemplateLocation.STRING, ROOT_TEMPLATE_NAME, src);
     List<Part> parts = parser.getParts();
     assertEquals(3, parts.size());
     assertTrue(parts.get(0) instanceof TextPart);
@@ -55,7 +56,7 @@ public class ParserTest {
           <td>~%text:bar%</td>
         </tr>
         """;
-    Parser parser = new Parser(TemplateLocation.NONE, ROOT_TEMPLATE_NAME, src);
+    Parser parser = new Parser(TemplateLocation.STRING, ROOT_TEMPLATE_NAME, src);
     List<Part> parts = parser.getParts();
     assertEquals(5, parts.size());
     assertTrue(parts.get(0) instanceof TextPart);
@@ -101,7 +102,7 @@ public class ParserTest {
         </body>
         </html>
         """;
-    Parser parser = new Parser(TemplateLocation.NONE, ROOT_TEMPLATE_NAME, src);
+    Parser parser = new Parser(TemplateLocation.STRING, ROOT_TEMPLATE_NAME, src);
     List<Part> parts = parser.getParts();
     assertTrue(parts.get(1) instanceof NestedTemplatePart);
     Template t = ((NestedTemplatePart) parts.get(1)).getTemplate();
@@ -145,7 +146,7 @@ public class ParserTest {
         </body>
         </html>
         """;
-    Parser parser = new Parser(TemplateLocation.NONE, ROOT_TEMPLATE_NAME, src);
+    Parser parser = new Parser(TemplateLocation.STRING, ROOT_TEMPLATE_NAME, src);
     List<Part> parts = parser.getParts();
     assertTrue(parts.get(1) instanceof NestedTemplatePart);
     Template t = ((NestedTemplatePart) parts.get(1)).getTemplate();
@@ -180,8 +181,9 @@ public class ParserTest {
         </body>
         </html>
         """;
-    Parser parser = new Parser(new TemplateLocation(getClass()), ROOT_TEMPLATE_NAME,
-        src);
+    PathResolver resolver = new ClassPathResolver(getClass());
+    TemplateLocation location = new TemplateLocation(resolver);
+    Parser parser = new Parser(location, ROOT_TEMPLATE_NAME, src);
     List<Part> parts = parser.getParts();
     assertTrue(parts.get(1) instanceof NestedTemplatePart);
     NestedTemplatePart tp = (NestedTemplatePart) parts.get(1);
@@ -220,8 +222,9 @@ public class ParserTest {
         </body>
         </html>
         """;
-    Parser parser = new Parser(new TemplateLocation(getClass()), ROOT_TEMPLATE_NAME,
-        src);
+    PathResolver resolver = new ClassPathResolver(getClass());
+    TemplateLocation location = new TemplateLocation(resolver);
+    Parser parser = new Parser(location, ROOT_TEMPLATE_NAME, src);
     List<Part> parts = parser.getParts();
     assertTrue(parts.get(1) instanceof NestedTemplatePart);
     NestedTemplatePart tp = (NestedTemplatePart) parts.get(1);

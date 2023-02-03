@@ -21,18 +21,31 @@ import java.util.Optional;
 public interface PathResolver {
 
   /**
-   * Returns whether the path specified in an included template
-   * ({@code ~%%include:/path/to/resource.html%}) represents a valid resource. If it
-   * is expensive to determine this (e.g. it requires a database lookup or an FTP
+   * An {@code Optional} containing {@code Boolean.TRUE}. Can be used as return value
+   * for {@link #isValidPath(String) isValidPath()}.
+   */
+<span class="fc" id="L27">  Optional&lt;Boolean&gt; VALID_PATH = Optional.of(Boolean.TRUE);</span>
+  /**
+   * An {@code Optional} containing {@code Boolean.FALSE}. Can be used as return
+   * value for {@link #isValidPath(String) isValidPath()}.
+   */
+<span class="fc" id="L32">  Optional&lt;Boolean&gt; INVALID_PATH = Optional.of(Boolean.FALSE);</span>
+
+  /**
+   * Returns whether the path specified in an included template (like
+   * {@code ~%%include:/path/to/foo.html%}) represents a valid resource. If it is
+   * expensive to determine this (e.g. it requires a database lookup or an FTP
    * connection), you may return an empty {@code Optional}. If the {@code Optional}
-   * contains a {@code Boolean.FALSE} this will result in fail-fast behaviour (namely
-   * already when the template source is being parsed).
+   * does contain a value and it is {@code Boolean.FALSE}, this will result in
+   * fail-fast behaviour; a {@link ParseException} is thrown immediately upon
+   * receiving {@code Boolean.FALSE}. The default implementation returns an empty
+   * {@code Optional}.
    *
    * @param path the path to verify
    * @return whether it is a valid path
    */
   default Optional&lt;Boolean&gt; isValidPath(String path) {
-<span class="nc" id="L35">    return Optional.empty();</span>
+<span class="nc" id="L48">    return Optional.empty();</span>
   }
 
   /**

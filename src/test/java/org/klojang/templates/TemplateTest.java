@@ -3,6 +3,7 @@ package org.klojang.templates;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class TemplateTest {
 
@@ -18,6 +19,14 @@ public class TemplateTest {
         """;
     Template tmpl = Template.fromString(getClass(), src);
     assertEquals(2, tmpl.getNestedTemplates().size());
+    assertEquals("contents1", tmpl.getNestedTemplates().get(0).getName());
+    assertEquals("contents2", tmpl.getNestedTemplates().get(1).getName());
+  }
+
+  @Test
+  public void fromFile() throws ParseException {
+    assertThrows(IllegalArgumentException.class,
+        () -> Template.fromFile("/foo/∞/bar/π"));
   }
 
 }

@@ -1,0 +1,41 @@
+package org.klojang.templates.x;
+
+import org.klojang.templates.PathResolver;
+
+import java.io.InputStream;
+import java.util.Optional;
+
+public final class ClassPathResolver implements PathResolver {
+
+  private final Class<?> clazz;
+
+  public ClassPathResolver(Class<?> clazz) {
+    this.clazz = clazz;
+  }
+
+  @Override
+  public Optional<Boolean> isValidPath(String path) {
+    return clazz.getResource(path) == null ? INVALID_PATH : VALID_PATH;
+  }
+
+  @Override
+  public InputStream resolvePath(String path) {
+    return clazz.getResourceAsStream(path);
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    } else if (obj instanceof ClassPathResolver cpr) {
+      return clazz.getPackage() == cpr.clazz.getPackage();
+    }
+    return false;
+  }
+
+  @Override
+  public int hashCode() {
+    return clazz.hashCode();
+  }
+
+}

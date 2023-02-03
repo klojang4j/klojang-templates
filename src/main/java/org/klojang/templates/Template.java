@@ -2,6 +2,8 @@ package org.klojang.templates;
 
 import org.klojang.check.Check;
 import org.klojang.check.Tag;
+import org.klojang.templates.x.ClassPathResolver;
+import org.klojang.templates.x.FilePathResolver;
 import org.klojang.templates.x.MTag;
 import org.klojang.templates.x.parse.*;
 import org.klojang.util.collection.IntArrayList;
@@ -9,6 +11,7 @@ import org.klojang.util.collection.IntList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.util.*;
 
 import static java.util.stream.Collectors.toUnmodifiableList;
@@ -47,8 +50,8 @@ public final class Template {
 
   /**
    * Parses the specified string into a {@code Template} instance. If the string
-   * contains any {@code include} declarations (e.g.
-   * {@code ~%%include:/path/to/template%}) the path will be interpreted as a file
+   * contains any {@code include} declarations (like
+   * {@code ~%%include:/path/to/foo.html%}), the path will be interpreted as a file
    * system resource. Templates created from a string are never cached.
    *
    * @param source The source code for the {@code Template}
@@ -56,8 +59,8 @@ public final class Template {
    * @throws ParseException if the template source contains a syntax error
    */
   public static Template fromString(String source) throws ParseException {
-    Check.notNull(source, "source");
-    return new Parser(TemplateLocation.NONE, ROOT_TEMPLATE_NAME, source).parse();
+    Check.notNull(source, Tag.SOURCE);
+    return new Parser(TemplateLocation.STRING, ROOT_TEMPLATE_NAME, source).parse();
   }
 
   /**
@@ -75,9 +78,10 @@ public final class Template {
   public static Template fromString(Class<?> clazz, String source)
       throws ParseException {
     Check.notNull(clazz, Tag.CLASS);
-    Check.notNull(source, "source");
-    return new Parser(new TemplateLocation(clazz), ROOT_TEMPLATE_NAME,
-        source).parse();
+    Check.notNull(source, Tag.SOURCE);
+    PathResolver resolver = new ClassPathResolver(clazz);
+    TemplateLocation location = new TemplateLocation(resolver);
+    return new Parser(location, ROOT_TEMPLATE_NAME, source).parse();
   }
 
   /**
@@ -98,11 +102,10 @@ public final class Template {
   public static Template fromResource(Class<?> clazz, String path)
       throws ParseException {
     Check.notNull(clazz, Tag.CLASS);
-    Check.notNull(path, Tag.PATH)
-        .has(clazz::getResource, notNull(), "No such resource: \"%s\"", path);
-    return TemplateCache.INSTANCE.get(new TemplateLocation(clazz, path),
-        ROOT_TEMPLATE_NAME
-    );
+    Check.notNull(path).is(resourceOf(), clazz);
+    PathResolver resolver = new ClassPathResolver(clazz);
+    TemplateLocation location = new TemplateLocation(path, resolver);
+    return TemplateCache.INSTANCE.get(location, ROOT_TEMPLATE_NAME);
   }
 
   /**
@@ -116,9 +119,9 @@ public final class Template {
    * @throws ParseException if the template source contains a syntax error
    */
   public static Template fromFile(String path) throws ParseException {
-    Check.notNull(path, Tag.PATH);
-    return TemplateCache.INSTANCE.get(new TemplateLocation(path),
-        ROOT_TEMPLATE_NAME);
+    Check.notNull(path).has(File::new, regularFile());
+    TemplateLocation location = new TemplateLocation(path, new FilePathResolver());
+    return TemplateCache.INSTANCE.get(location, ROOT_TEMPLATE_NAME);
   }
 
   /**
@@ -134,9 +137,8 @@ public final class Template {
       throws ParseException {
     Check.notNull(resolver, "resolver");
     Check.notNull(path, Tag.PATH);
-    return TemplateCache.INSTANCE.get(new TemplateLocation(resolver, path),
-        ROOT_TEMPLATE_NAME
-    );
+    TemplateLocation location = new TemplateLocation(path, resolver);
+    return TemplateCache.INSTANCE.get(location, ROOT_TEMPLATE_NAME);
   }
 
   private final String name;
@@ -153,8 +155,8 @@ public final class Template {
   Template(String name, TemplateLocation location, List<Part> parts) {
     parts.forEach(p -> {
       p.setParentTemplate(this);
-      if (p instanceof IncludedTemplatePart itp) {
-        itp.getTemplate().parent = this;
+      if (p instanceof NestedTemplatePart ntp) {
+        ntp.getTemplate().parent = this;
       }
     });
     this.name = name;
@@ -230,7 +232,7 @@ public final class Template {
    * @return the file location (if any) of the source code for this {@code Template}
    */
   public String getPath() {
-    return ifNotNull(location, TemplateLocation::path);
+    return ifNotNull(location, TemplateLocation::getPath);
   }
 
   /**

@@ -5,7 +5,6 @@ import org.klojang.templates.x.parse.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -27,7 +26,7 @@ final class Parser {
   private final String src;
 
   Parser(TemplateLocation location, String name) throws PathResolutionException {
-    this(location, name, location.getSource());
+    this(location, name, location.read());
   }
 
   Parser(TemplateLocation location, String name, String src) {
@@ -133,9 +132,12 @@ final class Parser {
       DUPLICATE_TMPL_NAME
           .check(name, src, offset + m.start(1), name)
           .isNot(in(), names)
-          .isNot(EQ(), ROOT_TEMPLATE_NAME);
+          .isNot(equalTo(), ROOT_TEMPLATE_NAME);
       names.add(name);
-      Parser parser = new Parser(new TemplateLocation(location), name, mySrc);
+      // No path is associated with an inline template, but they inherit the
+      // PathResolver of the template in which they are nested
+      TemplateLocation loc = new TemplateLocation(location.getResolver());
+      Parser parser = new Parser(loc, name, mySrc);
       parts.add(new InlineTemplatePart(parser.parse(), offset + m.start()));
       end = m.end();
     } while (m.find());
@@ -173,23 +175,9 @@ final class Parser {
           .check(name, src, offset + m.start(2), name)
           .isNot(in(), names)
           .isNot(EQ(), ROOT_TEMPLATE_NAME);
-      TemplateLocation loc;
-      if (location.clazz() != null) { // Load as resource
-        if (location.clazz().getResource(path) == null) {
-          throw INVALID_INCLUDE_PATH.asException(src, offset + m.start(3), path);
-        }
-        loc = new TemplateLocation(location.clazz(), path);
-      } else if (location.resolver() != null) { // Load using path resolver
-        PathResolver pr = location.resolver();
-        if (pr.isValidPath(path).isPresent() && !pr.isValidPath(path).get()) {
-          throw INVALID_INCLUDE_PATH.asException(src, offset + m.start(3), path);
-        }
-        loc = new TemplateLocation(location.resolver(), path);
-      } else { // Load from file system
-        if (!new File(path).isFile()) {
-          throw INVALID_INCLUDE_PATH.asException(src, offset + m.start(3), path);
-        }
-        loc = new TemplateLocation(path);
+      TemplateLocation loc = new TemplateLocation(path, location.getResolver());
+      if (loc.isInvalid()) {
+        throw INVALID_INCLUDE_PATH.asException(src, offset + m.start(3), path);
       }
       names.add(name);
       Template nested = TemplateCache.INSTANCE.get(loc, name);
