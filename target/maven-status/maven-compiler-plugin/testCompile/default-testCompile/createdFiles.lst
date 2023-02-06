@@ -1,0 +1,7 @@
+org/klojang/templates/RenderSessionTest.class
+org/klojang/templates/TemplateTest.class
+org/klojang/templates/ParserTest.class
+org/klojang/templates/name/CamelCaseToSnakeLowerCaseTest.class
+org/klojang/templates/x/parse/RegexTest.class
+org/klojang/templates/name/SnakeCaseToCamelCaseTest.class
+org/klojang/templates/x/parse/EscapeTypeTest.class

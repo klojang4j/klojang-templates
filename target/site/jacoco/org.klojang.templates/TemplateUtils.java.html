@@ -1,0 +1,290 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TemplateUtils.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Klojang Templates</a> &gt; <a href="index.source.html" class="el_package">org.klojang.templates</a> &gt; <span class="el_source">TemplateUtils.java</span></div><h1>TemplateUtils.java</h1><pre class="source lang-java linenums">package org.klojang.templates;
+
+import org.klojang.check.Check;
+import org.klojang.templates.x.Messages;
+import org.klojang.templates.x.parse.Part;
+import org.klojang.templates.x.parse.VariablePart;
+import org.klojang.util.Tuple2;
+
+import java.io.PrintStream;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import static java.util.Arrays.copyOfRange;
+import static org.klojang.check.CommonChecks.empty;
+import static org.klojang.check.CommonChecks.in;
+import static org.klojang.util.StringMethods.count;
+import static org.klojang.util.StringMethods.substringBefore;
+
+/**
+ * Utility class extending the functionality of the {@link Template} class.
+ *
+ * @author Ayco Holleman
+ */
+public final class TemplateUtils {
+
+<span class="nc" id="L28">  private TemplateUtils() {</span>
+<span class="nc" id="L29">    throw new UnsupportedOperationException();</span>
+  }
+
+  /**
+   * Returns the fully-qualified name of the specified template, relative to the root
+   * template. If the template &lt;i&gt;is&lt;/i&gt; the root template,
+   * {@link Template#ROOT_TEMPLATE_NAME} is returned. The fully-qualified name is a
+   * dot-separated concatenation of template names, with each subsequent name
+   * representing a template at the next nesting level.
+   *
+   * @param template the template for which to retrieve the fully-qualified name
+   * @return the fully-qualified name of the template
+   */
+  public static String getFQName(Template template) {
+<span class="fc" id="L43">    Check.notNull(template);</span>
+<span class="fc bfc" id="L44" title="All 2 branches covered.">    if (template.getParent() == null) {</span>
+<span class="fc" id="L45">      return template.getName();</span>
+    }
+<span class="fc" id="L47">    int sz = 0;</span>
+<span class="fc" id="L48">    ArrayList&lt;String&gt; chunks = new ArrayList&lt;&gt;(5);</span>
+<span class="fc" id="L49">    for (Template t = template;</span>
+<span class="pc bpc" id="L50" title="1 of 4 branches missed.">        t != null &amp;&amp; t.getParent() != null;</span>
+<span class="fc" id="L51">        t = t.getParent()) {</span>
+<span class="fc" id="L52">      chunks.add(t.getName());</span>
+<span class="fc" id="L53">      sz += t.getName().length() + 1;</span>
+    }
+<span class="fc" id="L55">    StringBuilder sb = new StringBuilder(sz);</span>
+<span class="fc bfc" id="L56" title="All 2 branches covered.">    for (int i = chunks.size() - 1; i &gt;= 0; --i) {</span>
+<span class="fc bfc" id="L57" title="All 2 branches covered.">      if (sb.length() != 0) {</span>
+<span class="fc" id="L58">        sb.append('.');</span>
+      }
+<span class="fc" id="L60">      sb.append(chunks.get(i));</span>
+    }
+<span class="fc" id="L62">    return sb.toString();</span>
+  }
+
+  /**
+   * Returns the fully-qualified name of the specified name, relative to the
+   * specified template. The fully-qualified name is a dot-separated concatenation of
+   * template names, with each subsequent name representing a template at the next
+   * nesting level. The last segment of the fully-qualified name will be the
+   * specified name itself.
+   *
+   * @param template
+   * @param name
+   * @return
+   */
+  public static String getFQName(Template template, String name) {
+<span class="fc" id="L77">    Check.notNull(template, &quot;template&quot;);</span>
+<span class="fc" id="L78">    Check.notNull(name, &quot;name&quot;);</span>
+<span class="fc" id="L79">    int sz = name.length();</span>
+<span class="fc" id="L80">    ArrayList&lt;String&gt; chunks = new ArrayList&lt;&gt;(5);</span>
+<span class="fc" id="L81">    chunks.add(name);</span>
+<span class="fc" id="L82">    for (Template t = template;</span>
+<span class="pc bpc" id="L83" title="1 of 4 branches missed.">        t != null &amp;&amp; t.getParent() != null;</span>
+<span class="fc" id="L84">        t = t.getParent()) {</span>
+<span class="fc" id="L85">      chunks.add(t.getName());</span>
+<span class="fc" id="L86">      sz += t.getName().length() + 1;</span>
+    }
+<span class="fc" id="L88">    StringBuilder sb = new StringBuilder(sz);</span>
+<span class="fc bfc" id="L89" title="All 2 branches covered.">    for (int i = chunks.size() - 1; i &gt;= 0; --i) {</span>
+<span class="fc bfc" id="L90" title="All 2 branches covered.">      if (sb.length() != 0) {</span>
+<span class="fc" id="L91">        sb.append('.');</span>
+      }
+<span class="fc" id="L93">      sb.append(chunks.get(i));</span>
+    }
+<span class="fc" id="L95">    return sb.toString();</span>
+  }
+
+  /**
+   * Returns the names of all variables and all nested templates within the specified
+   * template and all templates descending from it. The returned {@code Set} is
+   * created on demand and modifiable.
+   *
+   * @param template the {@code Template} to extract the names from
+   * @return The names of all variables and nested templates within the specified
+   *     template and all templates descending from it
+   */
+  public static Set&lt;String&gt; getAllNames(Template template) {
+<span class="nc" id="L108">    Check.notNull(template, &quot;template&quot;);</span>
+<span class="nc" id="L109">    Set&lt;String&gt; names = new HashSet&lt;&gt;();</span>
+<span class="nc" id="L110">    collectNames(template, names);</span>
+<span class="nc" id="L111">    return names;</span>
+  }
+
+  private static void collectNames(Template template, Set&lt;String&gt; names) {
+<span class="nc" id="L115">    names.addAll(template.getNames());</span>
+<span class="nc bnc" id="L116" title="All 2 branches missed.">    for (Template t : template.getNestedTemplates()) {</span>
+<span class="nc" id="L117">      collectNames(t, names);</span>
+<span class="nc" id="L118">    }</span>
+<span class="nc" id="L119">  }</span>
+
+  /**
+   * Returns a {@code List} containing the specified {@code Template} and all
+   * templates descending from it. The specified {@code Template} will be the first
+   * element of the {@code List}. The {@code List} is created on demand and
+   * modifiable.
+   *
+   * @return a {@code List} containing the {@code Template} and all templates
+   *     descending from it
+   */
+  public static List&lt;Template&gt; getTemplateHierarchy(Template template) {
+<span class="nc" id="L131">    Check.notNull(template, &quot;template&quot;);</span>
+<span class="nc" id="L132">    ArrayList&lt;Template&gt; tmpls = new ArrayList&lt;&gt;(20);</span>
+<span class="nc" id="L133">    tmpls.add(template);</span>
+<span class="nc" id="L134">    collectTemplates(template, tmpls);</span>
+<span class="nc" id="L135">    return tmpls;</span>
+  }
+
+  private static void collectTemplates(Template t0, ArrayList&lt;Template&gt; tmpls) {
+<span class="nc" id="L139">    List&lt;Template&gt; myTmpls = t0.getNestedTemplates();</span>
+<span class="nc" id="L140">    tmpls.addAll(myTmpls);</span>
+<span class="nc" id="L141">    myTmpls.forEach(t -&gt; collectTemplates(t, tmpls));</span>
+<span class="nc" id="L142">  }</span>
+
+  /**
+   * Returns the nested template corresponding to the specified fully-qualified name.
+   * Contrary to
+   * {@link Template#getNestedTemplate(String) Template.getNestedTemplate} this
+   * method lets you retrieve nested templates at any depth (nesting level). The
+   * fully-qualified name must be relative to the specified template and must not
+   * start with the specified template's name itself.
+   *
+   * @param template the template containing the (deeply) nested template
+   * @param fqName the fully qualified name of the nested template
+   * @return The (possibly deeply) nested template corresponding to the specified
+   *     fully-qualified name
+   */
+  public static Template getNestedTemplate(Template template, String fqName) {
+<span class="nc" id="L158">    Check.notNull(template, &quot;template&quot;);</span>
+<span class="nc" id="L159">    Check.that(fqName, &quot;fqName&quot;).isNot(empty());</span>
+<span class="nc" id="L160">    return getNestedTemplate(template, fqName, fqName.split(&quot;\\.&quot;));</span>
+  }
+
+  private static Template getNestedTemplate(Template t0,
+      String fqName,
+      String[] names) {
+<span class="nc bnc" id="L166" title="All 2 branches missed.">    if (names.length == 0) {</span>
+<span class="nc" id="L167">      return t0;</span>
+    }
+<span class="nc" id="L169">    Check.that(names[0]).is(in(),</span>
+<span class="nc" id="L170">        t0.getNestedTemplateNames(),</span>
+        Messages.ERR_NO_SUCH_TEMPLATE,
+        fqName);
+<span class="nc" id="L173">    t0 = t0.getNestedTemplate(names[0]);</span>
+<span class="nc" id="L174">    return getNestedTemplate(t0, fqName, copyOfRange(names, 1, names.length));</span>
+  }
+
+  /**
+   * Returns the template containing the variable or nested template denoted by the
+   * specified fully-qualified name, relative to the specified template.
+   *
+   * @param template the template relative to which the fully-qualified name
+   *     should be taken
+   * @param fqName the fully-qualified name
+   * @return The template containing the variable or nested template denoted by the
+   *     specified fully-qualified name
+   */
+  public static Template getParentTemplate(Template template, String fqName) {
+<span class="nc" id="L188">    Check.notNull(template, &quot;template&quot;);</span>
+<span class="nc" id="L189">    Check.that(fqName, &quot;fqName&quot;).isNot(empty());</span>
+<span class="nc bnc" id="L190" title="All 2 branches missed.">    if (count(fqName, &quot;.&quot;) == 1) {</span>
+<span class="nc" id="L191">      Check.that(fqName).is(in(),</span>
+<span class="nc" id="L192">          template.getNames(),</span>
+          Messages.ERR_BAD_NAME,
+          fqName);
+<span class="nc" id="L195">      return template;</span>
+    }
+<span class="nc" id="L197">    return getNestedTemplate(template, substringBefore(fqName, &quot;.&quot;, 1));</span>
+  }
+
+  /**
+   * Returns, for this {@code Template} and all templates descending from it, the
+   * names of their variables. Each tuple in the returned {@code List} contains a
+   * {@code Template} instance and a variable name. The returned {@code List} is
+   * created on demand and modifiable.
+   *
+   * @return all variable names in this {@code Template} and the templates nested
+   *     inside it
+   */
+  public static List&lt;Tuple2&lt;Template, String&gt;&gt; getVarsPerTemplate(Template template) {
+<span class="fc" id="L210">    Check.notNull(template, &quot;template&quot;);</span>
+<span class="fc" id="L211">    ArrayList&lt;Tuple2&lt;Template, String&gt;&gt; tuples = new ArrayList&lt;&gt;(25);</span>
+<span class="fc" id="L212">    collectVarsPerTemplate(template, tuples);</span>
+<span class="fc" id="L213">    return tuples;</span>
+  }
+
+  private static void collectVarsPerTemplate(Template t0,
+      ArrayList&lt;Tuple2&lt;Template, String&gt;&gt; tuples) {
+<span class="pc" id="L218">    t0.getVariables().stream().map(s -&gt; Tuple2.of(t0, s)).forEach(tuples::add);</span>
+<span class="fc" id="L219">    t0.getNestedTemplates().forEach(t -&gt; collectVarsPerTemplate(t, tuples));</span>
+<span class="fc" id="L220">  }</span>
+
+  /**
+   * Returns all instances of variables within the specified template and with the
+   * specified prefix.
+   *
+   * @param template the {@code Template} in which to search
+   * @param prefix the variable prefix (a.k.a. the variable group)
+   * @return all instances of variables with the specified name and prefix
+   */
+  public static List&lt;VariablePart&gt; getVariableInstances(Template template,
+      String prefix) {
+<span class="nc" id="L232">    Check.notNull(template, &quot;template&quot;);</span>
+<span class="nc" id="L233">    Check.notNull(prefix, &quot;prefix&quot;);</span>
+<span class="nc" id="L234">    List&lt;VariablePart&gt; vars = new ArrayList&lt;&gt;(template.getParts().size());</span>
+<span class="nc bnc" id="L235" title="All 2 branches missed.">    for (Part p : template.getParts()) {</span>
+<span class="nc bnc" id="L236" title="All 2 branches missed.">      if (p.getClass() == VariablePart.class) {</span>
+<span class="nc" id="L237">        VariablePart vp = (VariablePart) p;</span>
+<span class="nc bnc" id="L238" title="All 4 branches missed.">        if (vp.getVarGroup().isPresent() &amp;&amp; vp.getVarGroup().get().getName().equals(</span>
+            prefix)) {
+<span class="nc" id="L240">          vars.add(vp);</span>
+        }
+      }
+<span class="nc" id="L243">    }</span>
+<span class="nc" id="L244">    return vars;</span>
+  }
+
+  /**
+   * Returns all instances of variables within the specified template, with the
+   * specified name, and with the specified prefix.
+   *
+   * @param template the {@code Template} in which to search
+   * @param prefix the variable prefix (a.k.a. the variable group)
+   * @param varName the variableName
+   * @return all instances of variables with the specified name and prefix
+   */
+  public static List&lt;VariablePart&gt; getVariableInstances(
+      Template template, String prefix, String varName) {
+<span class="nc" id="L258">    Check.notNull(template, &quot;template&quot;);</span>
+<span class="nc" id="L259">    Check.notNull(prefix, &quot;prefix&quot;);</span>
+<span class="nc" id="L260">    Check.notNull(varName, &quot;varName&quot;);</span>
+<span class="nc" id="L261">    List&lt;VariablePart&gt; vars = new ArrayList&lt;&gt;(template.getParts().size());</span>
+<span class="nc bnc" id="L262" title="All 2 branches missed.">    for (Part p : template.getParts()) {</span>
+<span class="nc bnc" id="L263" title="All 2 branches missed.">      if (p.getClass() == VariablePart.class) {</span>
+<span class="nc" id="L264">        VariablePart vp = (VariablePart) p;</span>
+<span class="nc bnc" id="L265" title="All 2 branches missed.">        if (vp.getName().equals(varName)) {</span>
+<span class="nc bnc" id="L266" title="All 2 branches missed.">          if (vp.getVarGroup().isPresent() &amp;&amp; vp.getVarGroup()</span>
+<span class="nc" id="L267">              .get()</span>
+<span class="nc" id="L268">              .getName()</span>
+<span class="nc bnc" id="L269" title="All 2 branches missed.">              .equals(prefix)) {</span>
+<span class="nc" id="L270">            vars.add(vp);</span>
+          }
+        }
+      }
+<span class="nc" id="L274">    }</span>
+<span class="nc" id="L275">    return vars;</span>
+  }
+
+  /**
+   * Prints out the constituent parts of the specified {@code Template}. Can be used
+   * for debugging purposes.
+   *
+   * @param template the {@code Template} whose parts to print
+   * @param out the {@code PrintStream} to which to print
+   */
+  public static void printParts(Template template, PrintStream out) {
+<span class="nc" id="L286">    new PartsPrinter(template).printParts(out);</span>
+<span class="nc" id="L287">  }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

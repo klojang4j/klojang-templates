@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Setting.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Klojang Templates</a> &gt; <a href="index.source.html" class="el_package">org.klojang.templates</a> &gt; <span class="el_source">Setting.java</span></div><h1>Setting.java</h1><pre class="source lang-java linenums">package org.klojang.templates;
+
+import org.klojang.check.Check;
+import org.klojang.convert.Bool;
+import org.klojang.templates.x.acc.BeanAccessor;
+import org.klojang.templates.x.acc.PathAccessor;
+
+import static org.klojang.check.CommonChecks.numerical;
+
+/**
+ * Specifies all system properties and/or environment variables that will be picked
+ * up by Klojang Templates. Environment variables take precedence over system
+ * properties.
+ *
+ * @author Ayco Holleman
+ */
+<span class="fc" id="L17">public enum Setting {</span>
+
+  /**
+   * &lt;p&gt;System Property: {@code org.klojang.templates.cacheSize}&lt;br&gt;Environment
+   * Variable: {@code KJT_CACHE_SIZE}&lt;br&gt;Default Value: {@code -1}.
+   *
+   * &lt;p&gt;Specifies the maximum size of an internally maintained cache of
+   * {@link Template} instances - used to reduce the overhead of parsing template
+   * files. When the cache reaches the specified size, {@code Template} instances are
+   * evicted on a least-recently-used basis. A value of -1 means the cache is allowed
+   * to grow to any size. A value of 0 disables caching. The latter is useful during
+   * development and/or debugging as the template file will be re-loaded and
+   * re-parsed every time you press the refresh button in the browser.
+   * &lt;/p&gt;
+   */
+<span class="fc" id="L32">  TMPL_CACHE_SIZE(&quot;org.klojang.templates.cacheSize&quot;, &quot;KJT_CACHE_SIZE&quot;, &quot;-1&quot;),</span>
+
+  /**
+   * &lt;p&gt;System Property:
+   * {@code org.klojang.templates.varStart}&lt;br&gt;Environment Variable:
+   * {@code KJT_VAR_START}&lt;br&gt;Default Value: {@code ~%}.
+   *
+   * &lt;p&gt;Specifies the character sequence at the start of a template
+   * variable.
+   */
+<span class="fc" id="L42">  VAR_START(&quot;org.klojang.templates.varStart&quot;, &quot;KJT_VAR_START&quot;, &quot;~%&quot;),</span>
+
+  /**
+   * &lt;p&gt;System Property:
+   * {@code org.klojang.templates.varEnd}&lt;br&gt;Environment Variable:
+   * {@code KJT_VAR_END}&lt;br&gt;Default Value: {@code %}.
+   *
+   * &lt;p&gt;Specifies the character sequence at the end of a template variable.
+   */
+<span class="fc" id="L51">  VAR_END(&quot;org.klojang.templates.varEnd&quot;, &quot;KJT_VAR_END&quot;, &quot;%&quot;),</span>
+
+  /**
+   * &lt;p&gt;System Property:
+   * {@code org.klojang.templates.tmplStart}&lt;br&gt;Environment Variable:
+   * {@code KJT_TMPL_START}&lt;br&gt;Default Value: {@code ~%%}.
+   *
+   * &lt;p&gt;Specifies the character sequence at the start of a template tag. The
+   * character sequence is used for included templates
+   * ({@code ~%%include:/path/to/foo.html%}), for the start tag of inline templates
+   * ({@code ~%%begin:foo%}) &lt;b&gt;and&lt;/b&gt; for the end tag of inline templates
+   * ({@code ~%%end:foo%}).
+   */
+<span class="fc" id="L64">  TMPL_START(&quot;org.klojang.templates.tmplStart&quot;, &quot;KJT_TMPL_START&quot;, &quot;~%%&quot;),</span>
+
+  /**
+   * &lt;p&gt;System Property:
+   * {@code org.klojang.templates.tmplStart}&lt;br&gt;Environment Variable:
+   * {@code KJT_TMPL_END}&lt;br&gt;Default Value: {@code %}.
+   *
+   * &lt;p&gt;Specifies the character sequence at the end of a template tag. The
+   * character sequence is used for included templates
+   * ({@code ~%%include:/path/to/foo.html%}), for the start tag of inline templates
+   * ({@code ~%%begin:foo%}) &lt;b&gt;and&lt;/b&gt; for the end tag of inline templates
+   * ({@code ~%%end:foo%}).
+   */
+<span class="fc" id="L77">  TMPL_END(&quot;org.klojang.templates.tmplEnd&quot;, &quot;KJT_TMPL_END&quot;, &quot;%&quot;),</span>
+
+  /**
+   * &lt;p&gt;System Property:
+   * {@code org.klojang.templates.useBeanAccessor}&lt;br&gt;Environment Variable:
+   * {@code KJT_USE_BEAN_ACCESSOR}&lt;br&gt;Default Value: {@code false}.
+   *
+   * &lt;p&gt;Specifying {@code true} means that if a template is
+   * {@linkplain RenderSession#insert(Object, String...) populated} with an object
+   * for which no dedicated {@link Accessor} implementation exists, the
+   * {@code RenderSession} will use a {@link BeanAccessor} rather than a
+   * {@link PathAccessor} to extract values from it. A {@code PathAccessor} can
+   * handle many more types than a {@code BeanAccessor} and it can access deeply
+   * nested objects. It is therefore a safer choice as a default. However, it is also
+   * slightly less efficient. Moreover, nested objects generally correspond to nested
+   * templates, where they appear as root-level objects. Your application may never
+   * ever have to access deeply nested values to populate a template. If so, consider
+   * using the {@code BeanAccessor} class as the fallback {@code Accessor}
+   * implementation. See also {@link AccessorRegistry}.
+   */
+<span class="fc" id="L97">  USE_BEAN_ACCESSOR(&quot;org.klojang.templates.useBeanAccessor&quot;,</span>
+      &quot;KJT_USE_BEAN_ACCESSOR&quot;,
+      &quot;false&quot;);
+
+  private final String sysprop;
+  private final String envvar;
+  private final String dfault;
+
+<span class="fc" id="L105">  Setting(String sysprop, String envvar, String dfault) {</span>
+<span class="fc" id="L106">    this.sysprop = sysprop;</span>
+<span class="fc" id="L107">    this.envvar = envvar;</span>
+<span class="fc" id="L108">    this.dfault = dfault;</span>
+<span class="fc" id="L109">  }</span>
+
+  /**
+   * Returns the value of the system property or its default value if not specified.
+   *
+   * @return the value of the system property or its default value if not specified
+   */
+  public String get() {
+    String env;
+<span class="pc bpc" id="L118" title="1 of 2 branches missed.">    if ((env = System.getenv(envvar)) != null) {</span>
+<span class="nc" id="L119">      return env;</span>
+    }
+<span class="fc" id="L121">    return System.getProperty(sysprop, dfault);</span>
+  }
+
+  /**
+   * Returns the value of the system property as an integer or its default value if
+   * not specified.
+   *
+   * @return the value of the system property as an integer or its default value if
+   *     not specified
+   */
+  public int getInt() {
+<span class="fc" id="L132">    return Check.that(get()).is(numerical(), int.class).ok(Integer::parseInt);</span>
+  }
+
+  /**
+   * Returns the value of the system property as a {@code boolean} or its default
+   * value if not specified.
+   *
+   * @return the value of the system property as an {@code boolean} or its default
+   *     value if not specified
+   */
+  public boolean getBoolean() {
+<span class="fc" id="L143">    return Check.that(get(), sysprop).is(Bool::isConvertible).ok(Bool::from);</span>
+  }
+
+  /**
+   * Returns the name of the system property associated with this enum constant.
+   *
+   * @return the name of the system property associated with this enum constant
+   */
+  public String property() {
+<span class="fc" id="L152">    return sysprop;</span>
+  }
+
+  /**
+   * Returns the name of the environment variable associated with this enum
+   * constant.
+   *
+   * @return the name of the environment variable associated with this enum constant
+   */
+  public String envVar() {
+<span class="nc" id="L162">    return sysprop.replace('.', '_').toUpperCase();</span>
+  }
+
+  /**
+   * Returns the default value for the system property.
+   *
+   * @return the default value for the system property
+   */
+  public String defaultValue() {
+<span class="nc" id="L171">    return dfault;</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

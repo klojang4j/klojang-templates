@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>OptionalAccessor.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Klojang Templates</a> &gt; <a href="index.source.html" class="el_package">org.klojang.templates</a> &gt; <span class="el_source">OptionalAccessor.java</span></div><h1>OptionalAccessor.java</h1><pre class="source lang-java linenums">package org.klojang.templates;
+
+import java.util.Optional;
+
+/**
+ * An {@link Accessor} implementation that can be used to access {@link Optional} instances. If the
+ * {@code Optional} is empty its {@code access} method returns {@link Accessor#UNDEFINED}. Otherwise
+ * the {@code OptionalAccessor} will consult the {@link AccessorRegistry} that created it and
+ * delegate to the {@code Accessor} for the object inside the {@code Optional}.
+ *
+ * @author Ayco Holleman
+ * @param &lt;T&gt; The type of the object inside the {@code Optional}
+ */
+class OptionalAccessor&lt;T&gt; implements Accessor&lt;Optional&lt;T&gt;&gt; {
+
+  private final AccessorRegistry af;
+  private final Template tmpl;
+
+<span class="nc" id="L19">  OptionalAccessor(AccessorRegistry af, Template tmpl) {</span>
+<span class="nc" id="L20">    this.af = af;</span>
+<span class="nc" id="L21">    this.tmpl = tmpl;</span>
+<span class="nc" id="L22">  }</span>
+
+  @Override
+  @SuppressWarnings(&quot;unchecked&quot;)
+  public Object access(Optional&lt;T&gt; data, String property) throws RenderException {
+<span class="nc bnc" id="L27" title="All 2 branches missed.">    if (data.isEmpty()) {</span>
+<span class="nc" id="L28">      return UNDEFINED;</span>
+    }
+<span class="nc" id="L30">    T obj = data.get();</span>
+<span class="nc" id="L31">    return ((Accessor&lt;T&gt;) af.getAccessor(obj, tmpl)).access(obj, property);</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

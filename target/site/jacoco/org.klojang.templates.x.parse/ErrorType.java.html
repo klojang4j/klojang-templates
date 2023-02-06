@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ErrorType.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Klojang Templates</a> &gt; <a href="index.source.html" class="el_package">org.klojang.templates.x.parse</a> &gt; <span class="el_source">ErrorType.java</span></div><h1>ErrorType.java</h1><pre class="source lang-java linenums">package org.klojang.templates.x.parse;
+
+import org.klojang.check.Check;
+import org.klojang.check.IntCheck;
+import org.klojang.check.ObjectCheck;
+import org.klojang.templates.ParseException;
+import org.klojang.templates.Template;
+import org.klojang.util.StringMethods;
+
+import java.util.function.Function;
+
+import static org.klojang.util.ArrayMethods.prefix;
+
+/**
+ * Symbolic constants for all possible errors in a Klojang template.
+ *
+ * @author Ayco Holleman
+ */
+<span class="fc" id="L19">public enum ErrorType {</span>
+
+  /**
+   * Illegal whitespace-only variable name.
+   */
+<span class="fc" id="L24">  EMPTY_VAR_NAME(&quot;Empty variable name&quot;),</span>
+
+  /**
+   * Illegal whitespace-only include path.
+   */
+<span class="fc" id="L29">  EMPTY_INCLUDE_PATH(&quot;Empty include path&quot;),</span>
+
+  /**
+   * Invalid include path.
+   */
+<span class="fc" id="L34">  INVALID_INCLUDE_PATH(&quot;Invalid include path: %s&quot;),</span>
+
+  /**
+   * Illegal whitespace-only template name.
+   */
+<span class="fc" id="L39">  EMPTY_TMPL_NAME(&quot;Empty template name&quot;),</span>
+
+  /**
+   * Duplicate template name.
+   */
+<span class="fc" id="L44">  DUPLICATE_TMPL_NAME(&quot;Duplicate template name \&quot;%s\&quot;&quot;),</span>
+
+  /**
+   * {@link Template#fromString(String) Template.fromString} was called without the
+   * Class argument and hence included templates cannot be loaded using
+   * {@code Class.getResourceAsStream}.
+   */
+<span class="fc" id="L51">  MISSING_CLASS_OBJECT(</span>
+      &quot;No Class object provided. Cannot call getResourceAsStream(\&quot;%s\&quot;)&quot;),
+
+  /**
+   * Variable cannot have same name as template.
+   */
+<span class="fc" id="L57">  VAR_NAME_WITH_TMPL_NAME(&quot;Variable cannot have same name as template: \&quot;%s\&quot;&quot;),</span>
+
+  /**
+   * The character sequence {@code ~%%begin:} was found, but no terminating {@code %}
+   * followed.
+   */
+<span class="fc" id="L63">  BEGIN_TAG_NOT_TERMINATED(&quot;Template \&quot;begin\&quot; tag not terminated&quot;),</span>
+
+  /**
+   * The character sequence {@code ~%%end:} was found, but no terminating {@code %}
+   * followed.
+   */
+<span class="fc" id="L69">  END_TAG_NOT_TERMINATED(&quot;Template \&quot;end\&quot; tag not terminated&quot;),</span>
+
+  /**
+   * The character sequence {@code ~%%include:} was found, but no terminating
+   * {@code %} followed.
+   */
+<span class="fc" id="L75">  INCLUDE_TAG_NOT_TERMINATED(&quot;Template \&quot;include\&quot; tag not terminated&quot;),</span>
+
+  /**
+   * An inline template template did not close properly. For example ~%%begin:foo%
+   * was found, but ~%%end:foo% was not.
+   */
+<span class="fc" id="L81">  MISSING_END_TAG(&quot;Missing end tag for inline template \&quot;%s\&quot;&quot;),</span>
+
+  /**
+   * A dangling end-of-template was found. For example ~%%end:foo% was found, but not
+   * preced by ~%%begin:foo%.
+   */
+<span class="fc" id="L87">  DANGLING_END_TAG(&quot;Dangling end tag with template name \&quot;%s\&quot;&quot;),</span>
+
+  /**
+   * A ditch block was not closed. (There was an uneven number of {@code &lt;!--%%--&gt;}
+   * tokens.)
+   */
+<span class="fc" id="L93">  DITCH_BLOCK_NOT_CLOSED(&quot;Ditch block not closed&quot;),</span>
+
+  /**
+   * A placeholder block was not closed. (There was an uneven number of
+   * {@code &lt;!--%--&gt;} tokens.)
+   */
+<span class="fc" id="L99">  PLACEHOLDER_NOT_CLOSED(&quot;Placeholder block not closed&quot;);</span>
+
+  private static final String ERR_BASE = &quot;Error at line %d, column %d. &quot;;
+
+  private final String format;
+
+<span class="fc" id="L105">  private ErrorType(String format) {</span>
+<span class="fc" id="L106">    this.format = ERR_BASE + format;</span>
+<span class="fc" id="L107">  }</span>
+
+  public String asMessage(String src, int pos, Object... args) {
+<span class="nc" id="L110">    int[] x = StringMethods.getLineAndColumn(src, pos);</span>
+<span class="nc" id="L111">    return String.format(format, prefix(args, x[0] + 1, x[1] + 1));</span>
+  }
+
+  public ParseException asException(String src, int pos, Object... args) {
+<span class="nc" id="L115">    return new ParseException(asMessage(src, pos, args));</span>
+  }
+
+  public Function&lt;String, ParseException&gt; asExceptionProvider(String src,
+      int pos,
+      Object... args) {
+<span class="pc" id="L121">    return s -&gt; asException(src, pos, args);</span>
+  }
+
+  public IntCheck&lt;ParseException&gt; checkInt(int arg,
+      String src,
+      int pos,
+      Object... args) {
+<span class="fc" id="L128">    return Check.on(asExceptionProvider(src, pos, args), arg);</span>
+  }
+
+  public &lt;T&gt; ObjectCheck&lt;T, ParseException&gt; check(T arg,
+      String src,
+      int pos,
+      Object... args) {
+<span class="fc" id="L135">    return Check.on(asExceptionProvider(src, pos, args), arg);</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
