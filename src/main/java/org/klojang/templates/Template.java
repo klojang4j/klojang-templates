@@ -329,7 +329,7 @@ public final class Template {
    * @return the {@code Template} with the specified name
    */
   public Template getNestedTemplate(String name) {
-    Check.notNull(name).is(keyIn(), tmplIndices, ERR_NO_SUCH_TEMPLATE, name);
+    Check.notNull(name).is(keyIn(), tmplIndices, ERR_NO_SUCH_TEMPLATE);
     int partIndex = tmplIndices.get(name);
     return ((NestedTemplatePart) parts.get(partIndex)).getTemplate();
   }

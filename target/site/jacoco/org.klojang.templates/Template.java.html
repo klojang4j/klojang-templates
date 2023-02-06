@@ -230,7 +230,7 @@ public final class Template {
    * @return the file location (if any) of the source code for this {@code Template}
    */
   public Optional&lt;String&gt; getPath() {
-<span class="nc" id="L233">    return Optional.ofNullable(location.path());</span>
+<span class="fc" id="L233">    return Optional.ofNullable(location.path());</span>
   }
 
   /**
@@ -329,7 +329,7 @@ public final class Template {
    * @return the {@code Template} with the specified name
    */
   public Template getNestedTemplate(String name) {
-<span class="fc" id="L332">    Check.notNull(name).is(keyIn(), tmplIndices, ERR_NO_SUCH_TEMPLATE, name);</span>
+<span class="fc" id="L332">    Check.notNull(name).is(keyIn(), tmplIndices, ERR_NO_SUCH_TEMPLATE);</span>
 <span class="fc" id="L333">    int partIndex = tmplIndices.get(name);</span>
 <span class="fc" id="L334">    return ((NestedTemplatePart) parts.get(partIndex)).getTemplate();</span>
   }
