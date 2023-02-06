@@ -40,19 +40,21 @@ public interface PathResolver {
 
   /**
    * Returns whether the path specified in an included template (like
-   * {@code ~%%include:/path/to/foo.html%}) represents a valid resource. If it is
+   * {@code ~%%include:/path/to/foo.html%}) points to an existing resource. If it is
    * expensive to determine this (e.g. it requires a database lookup or an FTP
    * connection), you may return an empty {@code Optional}. If the {@code Optional}
    * does contain a value and it is {@code Boolean.FALSE}, this will result in
    * fail-fast behaviour; a {@link ParseException} is thrown immediately upon
-   * receiving {@code Boolean.FALSE}. The default implementation returns an empty
-   * {@code Optional}.
+   * receiving {@code Boolean.FALSE}. When returning an empty {@code Optional},
+   * parsing will fail at a later point in the parsing process, which makes it
+   * somewhat harder to understand what was wrong with the template code. The default
+   * implementation returns an empty {@code Optional}.
    *
    * @param path the path to verify
    * @return whether it is a valid path
    */
   default Optional&lt;Boolean&gt; isValidPath(String path) {
-<span class="nc" id="L55">    return Optional.empty();</span>
+<span class="nc" id="L57">    return Optional.empty();</span>
   }
 
   /**

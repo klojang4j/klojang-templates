@@ -809,36 +809,32 @@ public final class RenderSession {
   @Override
   public String toString() {
 <span class="nc" id="L811">    return concat(getClass().getSimpleName(),</span>
-        &quot; &quot;,
-<span class="nc" id="L813">        System.identityHashCode(this),</span>
-        &quot; for template &quot;,
-<span class="nc" id="L815">        getFQName(config.getTemplate()),</span>
-        &quot; (&quot;,
-<span class="nc" id="L817">        ifNull(config.getTemplate().getPath(), &quot;inline&quot;),</span>
-        &quot;)&quot;);
+        &quot;[template=&quot;,
+<span class="nc" id="L813">        getFQName(config.getTemplate()),</span>
+        &quot;]&quot;);
   }
 
   RenderState getState() {
-<span class="fc" id="L822">    return state;</span>
+<span class="fc" id="L818">    return state;</span>
   }
 
   private Template getNestedTemplate(String name) {
-<span class="fc" id="L826">    Check.notNull(name, MTag.TEMPLATE_NAME);</span>
-<span class="fc" id="L827">    Template t = config.getTemplate();</span>
-<span class="fc" id="L828">    return Check.that(name)</span>
-<span class="fc" id="L829">        .is(elementOf(), t.getNestedTemplateNames(), noSuchTemplate(t, name))</span>
-<span class="fc" id="L830">        .ok(t::getNestedTemplate);</span>
+<span class="fc" id="L822">    Check.notNull(name, MTag.TEMPLATE_NAME);</span>
+<span class="fc" id="L823">    Template t = config.getTemplate();</span>
+<span class="fc" id="L824">    return Check.that(name)</span>
+<span class="fc" id="L825">        .is(elementOf(), t.getNestedTemplateNames(), noSuchTemplate(t, name))</span>
+<span class="fc" id="L826">        .ok(t::getNestedTemplate);</span>
   }
 
   private String stringify(Stringifier stringifier, String varName, Object value) {
     try {
-<span class="fc" id="L835">      String s = stringifier.toString(value);</span>
-<span class="pc bpc" id="L836" title="1 of 2 branches missed.">      if (s == null) {</span>
-<span class="nc" id="L837">        throw stringifierReturnedNull(config.getTemplate(), varName);</span>
+<span class="fc" id="L831">      String s = stringifier.toString(value);</span>
+<span class="pc bpc" id="L832" title="1 of 2 branches missed.">      if (s == null) {</span>
+<span class="nc" id="L833">        throw stringifierReturnedNull(config.getTemplate(), varName);</span>
       }
-<span class="fc" id="L839">      return s;</span>
-<span class="nc" id="L840">    } catch (NullPointerException e) {</span>
-<span class="nc" id="L841">      throw stringifierNotNullResistant(config.getTemplate(), varName);</span>
+<span class="fc" id="L835">      return s;</span>
+<span class="nc" id="L836">    } catch (NullPointerException e) {</span>
+<span class="nc" id="L837">      throw stringifierNotNullResistant(config.getTemplate(), varName);</span>
     }
   }
 

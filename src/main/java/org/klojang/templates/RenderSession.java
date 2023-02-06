@@ -809,13 +809,9 @@ public final class RenderSession {
   @Override
   public String toString() {
     return concat(getClass().getSimpleName(),
-        " ",
-        System.identityHashCode(this),
-        " for template ",
+        "[template=",
         getFQName(config.getTemplate()),
-        " (",
-        ifNull(config.getTemplate().getPath(), "inline"),
-        ")");
+        "]");
   }
 
   RenderState getState() {

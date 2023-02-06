@@ -24,12 +24,12 @@ public final class IncludedTemplatePart extends NestedTemplatePart {
 
   @Override
   public String toString() {
-<span class="nc" id="L27">    String basename = basename(template.getPath().toString());</span>
+<span class="nc" id="L27">    String basename = basename(template.getPath().get().toString());</span>
 <span class="nc" id="L28">    StringBuilder sb = new StringBuilder(32).append(TMPL_START).append(&quot;include:&quot;);</span>
 <span class="nc bnc" id="L29" title="All 2 branches missed.">    if (!template.getName().equals(basename)) {</span>
 <span class="nc" id="L30">      sb.append(template.getName()).append(':');</span>
     }
-<span class="nc" id="L32">    return sb.append(template.getPath()).append(VAR_END).toString();</span>
+<span class="nc" id="L32">    return sb.append(template.getPath().get()).append(VAR_END).toString();</span>
   }
 
 }

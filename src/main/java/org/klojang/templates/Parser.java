@@ -134,8 +134,8 @@ final class Parser {
           .isNot(in(), names)
           .isNot(equalTo(), ROOT_TEMPLATE_NAME);
       names.add(name);
-      // No path is associated with an inline template, but they inherit the
-      // PathResolver of the template in which they are nested
+      // No path is associated with an inline template, but it inherits the
+      // PathResolver of the template in which it is nested
       TemplateLocation loc = new TemplateLocation(location.resolver());
       Parser parser = new Parser(loc, name, mySrc);
       parts.add(new InlineTemplatePart(parser.parse(), offset + m.start()));
@@ -174,7 +174,7 @@ final class Parser {
       DUPLICATE_TMPL_NAME
           .check(name, src, offset + m.start(2), name)
           .isNot(in(), names)
-          .isNot(EQ(), ROOT_TEMPLATE_NAME);
+          .isNot(equalTo(), ROOT_TEMPLATE_NAME);
       TemplateLocation loc = new TemplateLocation(path, location.resolver());
       if (loc.isInvalid()) {
         throw INVALID_INCLUDE_PATH.asException(src, offset + m.start(3), path);
@@ -195,9 +195,11 @@ final class Parser {
 
   private List<Part> parseVars(UnparsedPart unparsed,
       Set<String> names,
-      boolean hidden)
+      boolean inComments)
       throws ParseException {
-    Pattern p = hidden ? Regex.of().cmtVariable : Regex.of().variable;
+    Pattern p = inComments
+        ? Regex.of().cmtVariable
+        : Regex.of().variable;
     Matcher m = match(p, unparsed);
     if (!m.find()) {
       return Collections.singletonList(unparsed);

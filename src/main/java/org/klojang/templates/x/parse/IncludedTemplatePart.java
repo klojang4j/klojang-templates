@@ -24,12 +24,12 @@ public final class IncludedTemplatePart extends NestedTemplatePart {
 
   @Override
   public String toString() {
-    String basename = basename(template.getPath().toString());
+    String basename = basename(template.getPath().get().toString());
     StringBuilder sb = new StringBuilder(32).append(TMPL_START).append("include:");
     if (!template.getName().equals(basename)) {
       sb.append(template.getName()).append(':');
     }
-    return sb.append(template.getPath()).append(VAR_END).toString();
+    return sb.append(template.getPath().get()).append(VAR_END).toString();
   }
 
 }

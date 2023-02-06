@@ -41,10 +41,10 @@ final class RenderableImpl implements Renderable {
   @Override
   public String toString() {
     Template t = state.getSessionConfig().getTemplate();
-    if (t.getPath() == null) {
-      return concat(Renderable.class.getName(), "[template=", t.getName(), "]");
+    if (t.getPath().isPresent()) {
+      return concat(Renderable.class.getName(), "[source=", t.getPath().get(), "]");
     }
-    return concat(Renderable.class.getName(), "[source=", t.getPath(), "]");
+    return concat(Renderable.class.getName(), "[template=", t.getName(), "]");
   }
 
   private void render(RenderState state0, PrintStream ps) {
