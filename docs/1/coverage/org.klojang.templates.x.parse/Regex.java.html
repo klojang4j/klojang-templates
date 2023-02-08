@@ -14,21 +14,26 @@ import static org.klojang.check.CommonChecks.blank;
 
 public final class Regex {
 
+  private static final int MULTILINE = Pattern.MULTILINE | Pattern.DOTALL;
+
   private static final String REGEX_CMT_START = &quot;&lt;!--\\s*&quot;;
   private static final String REGEX_CMT_END = &quot;\\s*--&gt;&quot;;
 
-  private static final String REGEX_VAR_GROUP_PREFIX = &quot;([a-zA-Z][a-zA-Z0-9_\\-]*)&quot;;
+  /**
+   * Regular expression for inline group name prefixes, as in: ~%prefix:varname%.
+   */
+  private static final String REGEX_PREFIX = &quot;([a-zA-Z][a-zA-Z0-9_\\-]*)&quot;;
 
-  private static final String REGEX_SEGMENT = &quot;(([a-zA-Z_]\\w*)|\\d+)&quot;;
+  private static final String REGEX_NAME = &quot;([a-zA-Z0-9_\\-]+)&quot;;
   private static final String REGEX_PATH
       = &quot;(&quot;
-      + REGEX_SEGMENT
-      + &quot;(\\.&quot; + REGEX_SEGMENT + &quot;)*&quot;
+      + REGEX_NAME
+      + &quot;(\\.&quot; + REGEX_NAME + &quot;)*&quot;
       + &quot;)&quot;;
 
   private static final String REGEX_VARIABLE
       = &quot;~%&quot;
-      + &quot;(&quot; + REGEX_VAR_GROUP_PREFIX + &quot;:)?&quot;
+      + &quot;(&quot; + REGEX_PREFIX + &quot;:)?&quot;
       + REGEX_PATH
       + &quot;%&quot;;
 
@@ -36,8 +41,23 @@ public final class Regex {
       = REGEX_CMT_START
       + REGEX_VARIABLE
       + REGEX_CMT_END;
-<span class="fc" id="L39">  public static final Pattern CMT_VARIABLE = compile(REGEX_CMT_VARIABLE);</span>
-<span class="fc" id="L40">  public static final Pattern VARIABLE = compile(REGEX_VARIABLE);</span>
+  private static final String REGEX_INLINE_TEMPLATE
+      = &quot;~%%begin:&quot; + REGEX_NAME + &quot;%&quot;
+      + &quot;(.*?)&quot;
+      + &quot;~%%end:\\1%&quot;;
+
+  private static final String REGEX_CMT_INLINE_TEMPLATE
+      = REGEX_CMT_START
+      + REGEX_INLINE_TEMPLATE
+      + REGEX_CMT_END;
+
+<span class="fc" id="L54">  public static final Pattern VARIABLE = compile(REGEX_VARIABLE);</span>
+<span class="fc" id="L55">  public static final Pattern CMT_VARIABLE = compile(REGEX_CMT_VARIABLE);</span>
+<span class="fc" id="L56">  public static final Pattern INLINE_TEMPLATE</span>
+<span class="fc" id="L57">      = compile(REGEX_INLINE_TEMPLATE, MULTILINE);</span>
+<span class="fc" id="L58">  public static final Pattern CMT_INLINE_TEMPLATE</span>
+<span class="fc" id="L59">      = compile(REGEX_CMT_INLINE_TEMPLATE, MULTILINE);</span>
+
   private static final String ERR_ILLEGAL_VAL = &quot;Illegal value for system property %s: \&quot;%s\&quot;&quot;;
   private static final String ERR_IDENTICAL = &quot;varStart and tmplStart must be different&quot;;
 
@@ -51,10 +71,10 @@ public final class Regex {
   private static Regex instance;
 
   public static Regex of() throws ParseException {
-<span class="fc bfc" id="L54" title="All 2 branches covered.">    if (instance == null) {</span>
-<span class="fc" id="L55">      return instance = new Regex();</span>
+<span class="fc bfc" id="L74" title="All 2 branches covered.">    if (instance == null) {</span>
+<span class="fc" id="L75">      return instance = new Regex();</span>
     }
-<span class="fc" id="L57">    return instance;</span>
+<span class="fc" id="L77">    return instance;</span>
   }
 
   public final Pattern variable;
@@ -69,35 +89,32 @@ public final class Regex {
   public final Pattern ditchBlock;
   public final Pattern placeholder;
 
-<span class="fc" id="L72">  private Regex() throws ParseException {</span>
+<span class="fc" id="L92">  private Regex() throws ParseException {</span>
 
-<span class="fc" id="L74">    checkSysProps();</span>
+<span class="fc" id="L94">    checkSysProps();</span>
 
-<span class="fc" id="L76">    String vStart = quote(VAR_START);</span>
-<span class="fc" id="L77">    String vEnd = quote(VAR_END);</span>
-<span class="fc" id="L78">    String tStart = quote(TMPL_START);</span>
-<span class="fc" id="L79">    String tEnd = quote(TMPL_END);</span>
+<span class="fc" id="L96">    String vStart = quote(VAR_START);</span>
+<span class="fc" id="L97">    String vEnd = quote(VAR_END);</span>
+<span class="fc" id="L98">    String tStart = quote(TMPL_START);</span>
+<span class="fc" id="L99">    String tEnd = quote(TMPL_END);</span>
 
-<span class="fc" id="L81">    String varGroupPrefix = &quot;([a-zA-Z_]\\w*)&quot;;</span>
-<span class="fc" id="L82">    String identifier = &quot;[a-zA-Z0-9_\\-\\.]+&quot;;</span>
+<span class="fc" id="L101">    String name = &quot;([a-zA-Z0-9_\\.\\-]+)&quot;;</span>
 
-<span class="fc" id="L84">    String name = &quot;([a-zA-Z0-9_\\.\\-]+)&quot;;</span>
+<span class="fc" id="L103">    String cmtStart = &quot;&lt;!--\\s*&quot;;</span>
 
-<span class="fc" id="L86">    String cmtStart = &quot;&lt;!--\\s*&quot;;</span>
-
-<span class="fc" id="L88">    String cmtEnd = &quot;\\s*--&gt;&quot;;</span>
+<span class="fc" id="L105">    String cmtEnd = &quot;\\s*--&gt;&quot;;</span>
 
     //String ptnVariable = vStart + &quot;(&quot; + name + &quot;:)?(.+?)&quot; + vEnd;
-<span class="fc" id="L91">    String ptnVariable = &quot;~%(([a-zA-Z_]\\w*):)?([a-zA-Z0-9_\\.\\-]+)%&quot;;</span>
-<span class="fc" id="L92">    String ptnCmtVariable = cmtStart + ptnVariable + cmtEnd;</span>
+<span class="fc" id="L108">    String ptnVariable = &quot;~%(([a-zA-Z_]\\w*):)?([a-zA-Z0-9_\\.\\-]+)%&quot;;</span>
+<span class="fc" id="L109">    String ptnCmtVariable = cmtStart + ptnVariable + cmtEnd;</span>
 
-<span class="fc" id="L94">    String ptnInlineBegin = tStart + &quot;begin:&quot; + name + tEnd;</span>
+<span class="fc" id="L111">    String ptnInlineBegin = tStart + &quot;begin:&quot; + name + tEnd;</span>
 
-<span class="fc" id="L96">    String ptnInlineEnd = tStart + &quot;end:&quot; + name + tEnd;</span>
+<span class="fc" id="L113">    String ptnInlineEnd = tStart + &quot;end:&quot; + name + tEnd;</span>
 
-<span class="fc" id="L98">    String ptnInlineTmpl = ptnInlineBegin + &quot;(.*?)&quot; + tStart + &quot;end:\\1&quot; + tEnd;</span>
+<span class="fc" id="L115">    String ptnInlineTmpl = ptnInlineBegin + &quot;(.*?)&quot; + tStart + &quot;end:\\1&quot; + tEnd;</span>
 
-<span class="fc" id="L100">    String ptnCmtInlineTmpl =</span>
+<span class="fc" id="L117">    String ptnCmtInlineTmpl =</span>
         cmtStart
             + ptnInlineBegin
             + cmtEnd
@@ -108,63 +125,63 @@ public final class Regex {
             + tEnd
             + cmtEnd;
 
-<span class="fc" id="L111">    String ptnIncludedTmpl = tStart + &quot;include:(&quot; + name + &quot;:)?(.+?)&quot; + tEnd;</span>
+<span class="fc" id="L128">    String ptnIncludedTmpl = tStart + &quot;include:(&quot; + name + &quot;:)?(.+?)&quot; + tEnd;</span>
 
-<span class="fc" id="L113">    String ptnCmtIncludedTmpl = cmtStart + ptnIncludedTmpl + cmtEnd;</span>
+<span class="fc" id="L130">    String ptnCmtIncludedTmpl = cmtStart + ptnIncludedTmpl + cmtEnd;</span>
 
-<span class="fc" id="L115">    String ptnDitchTag = &quot;&lt;!--%%(.*?)--&gt;&quot;;</span>
+<span class="fc" id="L132">    String ptnDitchTag = &quot;&lt;!--%%(.*?)--&gt;&quot;;</span>
 
-<span class="fc" id="L117">    String ptnDitchBlock = ptnDitchTag + &quot;(.*?)&quot; + ptnDitchTag;</span>
+<span class="fc" id="L134">    String ptnDitchBlock = ptnDitchTag + &quot;(.*?)&quot; + ptnDitchTag;</span>
 
-<span class="fc" id="L119">    String ptnPlaceholder = PLACEHOLDER_START_END + &quot;(.*?)&quot; + PLACEHOLDER_START_END;</span>
+<span class="fc" id="L136">    String ptnPlaceholder = PLACEHOLDER_START_END + &quot;(.*?)&quot; + PLACEHOLDER_START_END;</span>
 
     // Equivalent to prefixing the regular expression with &quot;(?ms)&quot;
-<span class="fc" id="L122">    int msModifiers = Pattern.MULTILINE | Pattern.DOTALL;</span>
+<span class="fc" id="L139">    int msModifiers = Pattern.MULTILINE | Pattern.DOTALL;</span>
 
-<span class="fc" id="L124">    this.variable = compile(ptnVariable);</span>
-<span class="fc" id="L125">    this.cmtVariable = compile(ptnCmtVariable);</span>
-<span class="fc" id="L126">    this.beginTag = compile(ptnInlineBegin);</span>
-<span class="fc" id="L127">    this.endTag = compile(ptnInlineEnd);</span>
-<span class="fc" id="L128">    this.inlineTemplate = compile(ptnInlineTmpl, msModifiers);</span>
-<span class="fc" id="L129">    this.cmtInlineTemplate = compile(ptnCmtInlineTmpl, msModifiers);</span>
-<span class="fc" id="L130">    this.includedTemplate = compile(ptnIncludedTmpl);</span>
-<span class="fc" id="L131">    this.cmtIncludedTemplate = compile(ptnCmtIncludedTmpl);</span>
-<span class="fc" id="L132">    this.ditchTag = compile(ptnDitchTag);</span>
-<span class="fc" id="L133">    this.ditchBlock = compile(ptnDitchBlock, msModifiers);</span>
-<span class="fc" id="L134">    this.placeholder = compile(ptnPlaceholder, msModifiers);</span>
-<span class="fc" id="L135">  }</span>
+<span class="fc" id="L141">    this.variable = compile(ptnVariable);</span>
+<span class="fc" id="L142">    this.cmtVariable = compile(ptnCmtVariable);</span>
+<span class="fc" id="L143">    this.beginTag = compile(ptnInlineBegin);</span>
+<span class="fc" id="L144">    this.endTag = compile(ptnInlineEnd);</span>
+<span class="fc" id="L145">    this.inlineTemplate = compile(ptnInlineTmpl, msModifiers);</span>
+<span class="fc" id="L146">    this.cmtInlineTemplate = compile(ptnCmtInlineTmpl, msModifiers);</span>
+<span class="fc" id="L147">    this.includedTemplate = compile(ptnIncludedTmpl);</span>
+<span class="fc" id="L148">    this.cmtIncludedTemplate = compile(ptnCmtIncludedTmpl);</span>
+<span class="fc" id="L149">    this.ditchTag = compile(ptnDitchTag);</span>
+<span class="fc" id="L150">    this.ditchBlock = compile(ptnDitchBlock, msModifiers);</span>
+<span class="fc" id="L151">    this.placeholder = compile(ptnPlaceholder, msModifiers);</span>
+<span class="fc" id="L152">  }</span>
 
   private static void checkSysProps() throws ParseException {
-<span class="fc" id="L138">    checkThat(VAR_START).isNot(blank(), ERR_ILLEGAL_VAL, VAR_START);</span>
-<span class="fc" id="L139">    checkThat(VAR_END).isNot(blank(), ERR_ILLEGAL_VAL, VAR_END);</span>
-<span class="fc" id="L140">    checkThat(TMPL_START)</span>
-<span class="fc" id="L141">        .isNot(blank(), ERR_ILLEGAL_VAL, TMPL_START)</span>
-<span class="fc" id="L142">        .isNot(EQ(), VAR_START, ERR_IDENTICAL);</span>
-<span class="fc" id="L143">    checkThat(TMPL_END).isNot(blank(), ERR_ILLEGAL_VAL, TMPL_END);</span>
-<span class="fc" id="L144">  }</span>
+<span class="fc" id="L155">    checkThat(VAR_START).isNot(blank(), ERR_ILLEGAL_VAL, VAR_START);</span>
+<span class="fc" id="L156">    checkThat(VAR_END).isNot(blank(), ERR_ILLEGAL_VAL, VAR_END);</span>
+<span class="fc" id="L157">    checkThat(TMPL_START)</span>
+<span class="fc" id="L158">        .isNot(blank(), ERR_ILLEGAL_VAL, TMPL_START)</span>
+<span class="fc" id="L159">        .isNot(EQ(), VAR_START, ERR_IDENTICAL);</span>
+<span class="fc" id="L160">    checkThat(TMPL_END).isNot(blank(), ERR_ILLEGAL_VAL, TMPL_END);</span>
+<span class="fc" id="L161">  }</span>
 
   public void printAll() {
-<span class="fc" id="L147">    System.out.println(&quot;VARIABLE .......: &quot; + variable);</span>
-<span class="fc" id="L148">    System.out.println(&quot;VARIABLE_CMT ...: &quot; + cmtVariable);</span>
-<span class="fc" id="L149">    System.out.println(&quot;NESTED .........: &quot; + inlineTemplate);</span>
-<span class="fc" id="L150">    System.out.println(&quot;NESTED_CMT .....: &quot; + cmtInlineTemplate);</span>
-<span class="fc" id="L151">    System.out.println(&quot;INCLUDE ........: &quot; + includedTemplate);</span>
-<span class="fc" id="L152">    System.out.println(&quot;INCLUDE_CMT ....: &quot; + cmtIncludedTemplate);</span>
-<span class="fc" id="L153">    System.out.println(&quot;DITCH_BLOCK: ...: &quot; + ditchBlock);</span>
-<span class="fc" id="L154">    System.out.println(&quot;PLACEHOLDER: ...: &quot; + placeholder);</span>
-<span class="fc" id="L155">  }</span>
+<span class="fc" id="L164">    System.out.println(&quot;VARIABLE .......: &quot; + variable);</span>
+<span class="fc" id="L165">    System.out.println(&quot;VARIABLE_CMT ...: &quot; + cmtVariable);</span>
+<span class="fc" id="L166">    System.out.println(&quot;NESTED .........: &quot; + inlineTemplate);</span>
+<span class="fc" id="L167">    System.out.println(&quot;NESTED_CMT .....: &quot; + cmtInlineTemplate);</span>
+<span class="fc" id="L168">    System.out.println(&quot;INCLUDE ........: &quot; + includedTemplate);</span>
+<span class="fc" id="L169">    System.out.println(&quot;INCLUDE_CMT ....: &quot; + cmtIncludedTemplate);</span>
+<span class="fc" id="L170">    System.out.println(&quot;DITCH_BLOCK: ...: &quot; + ditchBlock);</span>
+<span class="fc" id="L171">    System.out.println(&quot;PLACEHOLDER: ...: &quot; + placeholder);</span>
+<span class="fc" id="L172">  }</span>
 
   private static ObjectCheck&lt;String, ParseException&gt; checkThat(String sysprop) {
-<span class="fc" id="L158">    return Check.on(ParseException::new, sysprop);</span>
+<span class="fc" id="L175">    return Check.on(ParseException::new, sysprop);</span>
   }
 
   private static String quote(String token) {
-<span class="fc" id="L162">    String special = &quot;\\^$.|?*+()[]{}&quot;;</span>
-<span class="fc" id="L163">    Set&lt;Integer&gt; specialChars = special.codePoints().boxed().collect(toSet());</span>
-<span class="fc" id="L164">    Set&lt;Integer&gt; tokenChars = token.codePoints().boxed().collect(toSet());</span>
-<span class="pc bpc" id="L165" title="1 of 2 branches missed.">    return tokenChars.stream().anyMatch(specialChars::contains)</span>
-<span class="nc" id="L166">        ? Pattern.quote(token)</span>
-<span class="fc" id="L167">        : token;</span>
+<span class="fc" id="L179">    String special = &quot;\\^$.|?*+()[]{}&quot;;</span>
+<span class="fc" id="L180">    Set&lt;Integer&gt; specialChars = special.codePoints().boxed().collect(toSet());</span>
+<span class="fc" id="L181">    Set&lt;Integer&gt; tokenChars = token.codePoints().boxed().collect(toSet());</span>
+<span class="pc bpc" id="L182" title="1 of 2 branches missed.">    return tokenChars.stream().anyMatch(specialChars::contains)</span>
+<span class="nc" id="L183">        ? Pattern.quote(token)</span>
+<span class="fc" id="L184">        : token;</span>
   }
 
 }

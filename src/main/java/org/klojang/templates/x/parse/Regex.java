@@ -19,18 +19,21 @@ public final class Regex {
   private static final String REGEX_CMT_START = "<!--\\s*";
   private static final String REGEX_CMT_END = "\\s*-->";
 
-  private static final String REGEX_VAR_GROUP_PREFIX = "([a-zA-Z][a-zA-Z0-9_\\-]*)";
+  /**
+   * Regular expression for inline group name prefixes, as in: ~%prefix:varname%.
+   */
+  private static final String REGEX_PREFIX = "([a-zA-Z][a-zA-Z0-9_\\-]*)";
 
-  private static final String REGEX_SEGMENT = "(([a-zA-Z_]\\w*)|\\d+)";
+  private static final String REGEX_NAME = "([a-zA-Z0-9_\\-]+)";
   private static final String REGEX_PATH
       = "("
-      + REGEX_SEGMENT
-      + "(\\." + REGEX_SEGMENT + ")*"
+      + REGEX_NAME
+      + "(\\." + REGEX_NAME + ")*"
       + ")";
 
   private static final String REGEX_VARIABLE
       = "~%"
-      + "(" + REGEX_VAR_GROUP_PREFIX + ":)?"
+      + "(" + REGEX_PREFIX + ":)?"
       + REGEX_PATH
       + "%";
 
@@ -39,7 +42,7 @@ public final class Regex {
       + REGEX_VARIABLE
       + REGEX_CMT_END;
   private static final String REGEX_INLINE_TEMPLATE
-      = "~%%begin:" + REGEX_PATH + "%"
+      = "~%%begin:" + REGEX_NAME + "%"
       + "(.*?)"
       + "~%%end:\\1%";
 

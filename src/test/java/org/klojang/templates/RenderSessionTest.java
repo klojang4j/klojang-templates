@@ -328,7 +328,7 @@ public class RenderSessionTest {
     String src = """
         <html><body>
             ~%%begin:main-table%
-              ~%%include:contents1:include-01.html%%
+              FOO
             ~%%end:main-table%
             ~%%include:contents2:include-01.html%%
         </body></html>

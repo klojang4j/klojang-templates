@@ -125,7 +125,7 @@ final class Parser {
         parts.add(todo(unparsed, end, m.start()));
       }
       String name = m.group(1);
-      String mySrc = m.group(7);
+      String mySrc = m.group(2);
       EMPTY_TMPL_NAME.check(name, src, offset + m.start(1)).isNot(blank());
       DUPLICATE_TMPL_NAME
           .check(name, src, offset + m.start(1), name)

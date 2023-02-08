@@ -171,25 +171,25 @@ public class ParserTest {
 
   @Test
   public void parseInlineTemplates02() throws ParseException {
-    String src = "<!--~%%begin:foo.2.bar%~%%end:foo.2.bar%-->";
+    String src = "<!--~%%begin:__foo-bar-00__%~%%end:__foo-bar-00__%-->";
     Parser parser = new Parser(TemplateLocation.STRING, ROOT_TEMPLATE_NAME, src);
     List<Part> parts = parser.getParts();
     assertEquals(1, parts.size());
     assertTrue(parts.get(0) instanceof InlineTemplatePart);
     InlineTemplatePart itp = (InlineTemplatePart) parts.get(0);
-    assertEquals("foo.2.bar", itp.getName());
+    assertEquals("__foo-bar-00__", itp.getName());
     assertEquals(0, itp.getTemplate().getParts().size());
   }
 
   @Test
   public void parseInlineTemplates03() throws ParseException {
-    String src = "<!--~%%begin:foo.2.bar% FOO ~%%end:foo.2.bar%-->";
+    String src = "<!--~%%begin:21% FOO ~%%end:21%-->";
     Parser parser = new Parser(TemplateLocation.STRING, ROOT_TEMPLATE_NAME, src);
     List<Part> parts = parser.getParts();
     assertEquals(1, parts.size());
     assertTrue(parts.get(0) instanceof InlineTemplatePart);
     InlineTemplatePart itp = (InlineTemplatePart) parts.get(0);
-    assertEquals("foo.2.bar", itp.getName());
+    assertEquals("21", itp.getName());
     assertEquals(1, itp.getTemplate().getParts().size());
     assertTrue(itp.getTemplate().getParts().get(0) instanceof TextPart);
     assertEquals(" FOO ", itp.getTemplate().getParts().get(0).toString());
