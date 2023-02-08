@@ -51,12 +51,32 @@ public final class Regex {
       + REGEX_INLINE_TEMPLATE
       + REGEX_CMT_END;
 
+  private static final String REGEX_INCLUDE_PATH
+      = "([a-zA-Z0-9_~:;/?#!$&%,@+.=\\-\\[\\]\\(\\)]+?)";
+
+  private static final String REGEX_INCLUDED_TEMPLATE
+      = "~%%include:"
+      + "(" + REGEX_NAME + ":)?"
+      + REGEX_INCLUDE_PATH
+      + "%%";
+
+  private static final String CMT_REGEX_INCLUDED_TEMPLATE
+      = REGEX_CMT_START
+      + REGEX_INCLUDED_TEMPLATE
+      + REGEX_CMT_END;
+
   public static final Pattern VARIABLE = compile(REGEX_VARIABLE);
   public static final Pattern CMT_VARIABLE = compile(REGEX_CMT_VARIABLE);
   public static final Pattern INLINE_TEMPLATE
       = compile(REGEX_INLINE_TEMPLATE, MULTILINE);
   public static final Pattern CMT_INLINE_TEMPLATE
       = compile(REGEX_CMT_INLINE_TEMPLATE, MULTILINE);
+
+  public static final Pattern INCLUDE_PATH = compile(REGEX_INCLUDE_PATH);
+
+  public static final Pattern INCLUDED_TEMPLATE = compile(REGEX_INCLUDED_TEMPLATE);
+
+  public static final Pattern CMT_INCLUDED_TEMPLATE = compile(REGEX_INCLUDED_TEMPLATE);
 
   private static final String ERR_ILLEGAL_VAL = "Illegal value for system property %s: \"%s\"";
   private static final String ERR_IDENTICAL = "varStart and tmplStart must be different";

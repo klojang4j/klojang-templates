@@ -149,9 +149,7 @@ final class Parser {
       Set<String> names,
       boolean inComments)
       throws ParseException {
-    Pattern p = inComments
-        ? Regex.of().cmtIncludedTemplate
-        : Regex.of().includedTemplate;
+    Pattern p = inComments ? Regex.CMT_INCLUDED_TEMPLATE : Regex.INCLUDED_TEMPLATE;
     Matcher m = match(p, unparsed);
     if (!m.find()) {
       return Collections.singletonList(unparsed);

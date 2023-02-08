@@ -14,9 +14,9 @@ public class TemplateTest {
     String src = """
         <html><body>
             ~%%begin:main%
-              ~%%include:contents_a:include-01.html%
+              ~%%include:contents_a:include-01.html%%
             ~%%end:main%
-            ~%%include:contents_b:include-01.html%
+            ~%%include:contents_b:include-01.html%%
         </body></html>
         """;
     Template tmpl = Template.fromString(getClass(), src);
@@ -36,9 +36,9 @@ public class TemplateTest {
     String src = """
          <html><body>
             ~%%begin:main%
-              ~%%include:contents_a:include-01.html%
+              ~%%include:contents_a:include-01.html%%
             ~%%end:main%
-            ~%%include:contents_b:include-01.html%
+            ~%%include:contents_b:include-01.html%%
         </body></html>
         """;
     Template tmpl = Template.fromString(getClass(), src);

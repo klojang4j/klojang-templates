@@ -201,7 +201,7 @@ public class ParserTest {
         <html>
         <head>
         <script type="text/javascript">
-        ~%%include:jsVars.js%
+        ~%%include:jsVars.js%%
         </script>
         </head>
         <body>
@@ -210,7 +210,7 @@ public class ParserTest {
               <tr><th>Name</th><th>Age</th>
             </thead>
             <tbody>
-              ~%%include:tableRow.html%
+              ~%%include:tableRow.html%%
             </tbody>
           </table>
         </body>
@@ -242,7 +242,7 @@ public class ParserTest {
         <html>
         <head>
         <script type="text/javascript">
-        <!-- ~%%include:jsVars.js% -->
+        <!-- ~%%include:jsVars.js%% -->
         </script>
         </head>
         <body>
@@ -251,7 +251,7 @@ public class ParserTest {
               <tr><th>Name</th><th>Age</th>
             </thead>
             <tbody>
-              <!-- ~%%include:tableRow.html% -->
+              <!-- ~%%include:tableRow.html%% -->
             </tbody>
           </table>
         </body>

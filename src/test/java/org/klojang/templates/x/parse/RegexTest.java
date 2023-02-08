@@ -244,8 +244,22 @@ public class RegexTest {
   }
 
   @Test
-  public void test1000() {
-    System.out.println(Regex.INLINE_TEMPLATE);
+  public void includedTemplate00() {
+    System.out.println(Regex.INCLUDED_TEMPLATE);
+    Matcher m = Regex.INCLUDED_TEMPLATE.matcher("~%%include:sammy:foo.b%ar.html%%");
+    assertTrue(m.find());
+    assertEquals("sammy", m.group(2));
+    assertEquals("foo.b%ar.html", m.group(3));
+  }
+
+  @Test
+  public void includedTemplate01() {
+    System.out.println(Regex.INCLUDED_TEMPLATE);
+    Matcher m = Regex.INCLUDED_TEMPLATE.matcher(
+        "~%%include:main-table:foo.html?x=23&y=44#anchor1%%");
+    assertTrue(m.find());
+    assertEquals("main-table", m.group(2));
+    assertEquals("foo.html?x=23&y=44#anchor1", m.group(3));
   }
 
 }
