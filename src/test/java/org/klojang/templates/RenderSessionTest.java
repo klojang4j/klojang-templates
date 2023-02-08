@@ -2,6 +2,7 @@ package org.klojang.templates;
 
 import org.junit.jupiter.api.Test;
 import org.klojang.path.util.MapBuilder;
+import org.klojang.templates.x.parse.Regex;
 import org.klojang.util.AnyTuple2;
 
 import java.util.List;
@@ -323,18 +324,18 @@ public class RenderSessionTest {
 
   @Test
   public void populate04() throws ParseException {
+    Regex.of().printAll();
     String src = """
         <html><body>
             ~%%begin:main-table%
-              ~%%include:contents1:include-01.html%
+              ~%%include:contents1:include-01.html%%
             ~%%end:main-table%
-            ~%%include:contents2:include-01.html%
+            ~%%include:contents2:include-01.html%%
         </body></html>
         """;
     Template tmpl = Template.fromString(getClass(), src);
     assertNotNull(tmpl);
   }
-
 
   @Test
   public void show01() throws ParseException {
@@ -639,7 +640,6 @@ public class RenderSessionTest {
     //System.out.println(out);
     assertEquals("<html><body><p>hello</p></body></html>", out);
   }
-
 
   @Test
   public void insert06() throws ParseException {

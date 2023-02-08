@@ -221,7 +221,7 @@ public class RegexTest {
   public void ditch04() throws ParseException, RenderException {
     String src = """
         <td>
-          ~%foo%
+          ~%html-extra2:foo%
           <!--%% ~%ignoreMe% -->
           foo==bar
           ~%ignoreMe%
@@ -232,7 +232,7 @@ public class RegexTest {
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
     String out = rs.set("foo", 'A').set("bar", 'B').render();
-    out=out.replaceAll("\\s","");
+    out = out.replaceAll("\\s", "");
     assertEquals("<td>AB</td>", out);
   }
 
@@ -241,6 +241,10 @@ public class RegexTest {
     Matcher m = Regex.of().cmtVariable.matcher("<!-- ~%person% -->");
     assertTrue(m.find());
     assertEquals("person", m.group(3));
+  }
+
+  @Test
+  public void test1000() {
   }
 
 }

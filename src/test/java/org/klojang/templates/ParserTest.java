@@ -77,6 +77,18 @@ public class ParserTest {
   }
 
   @Test
+  public void parseVariables03() throws ParseException {
+    String src = "~%foo-bar2:departments.0.employees.0.name%";
+    Parser parser = new Parser(TemplateLocation.STRING, ROOT_TEMPLATE_NAME, src);
+    List<Part> parts = parser.getParts();
+    assertEquals(1, parts.size());
+    assertTrue(parts.get(0) instanceof VariablePart);
+    VariablePart vp = (VariablePart) parts.get(0);
+    assertEquals("foo-bar2", vp.getVarGroup().get().getName());
+    assertEquals("departments.0.employees.0.name", vp.getName());
+  }
+
+  @Test
   public void parseNestedTemplates00() throws ParseException {
     String src = """
         <html>

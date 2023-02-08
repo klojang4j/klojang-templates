@@ -197,9 +197,7 @@ final class Parser {
       Set<String> names,
       boolean inComments)
       throws ParseException {
-    Pattern p = inComments
-        ? Regex.of().cmtVariable
-        : Regex.of().variable;
+    Pattern p = inComments ? Regex.CMT_VARIABLE : Regex.VARIABLE;
     Matcher m = match(p, unparsed);
     if (!m.find()) {
       return Collections.singletonList(unparsed);

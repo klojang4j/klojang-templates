@@ -3,7 +3,6 @@ package org.klojang.templates.x.parse;
 import org.klojang.check.Check;
 import org.klojang.check.ObjectCheck;
 import org.klojang.templates.ParseException;
-import org.klojang.templates.Setting;
 
 import java.util.Set;
 import java.util.regex.Pattern;
@@ -15,13 +14,37 @@ import static org.klojang.check.CommonChecks.blank;
 
 public final class Regex {
 
+  private static final String REGEX_CMT_START = "<!--\\s*";
+  private static final String REGEX_CMT_END = "\\s*-->";
+
+  private static final String REGEX_VAR_GROUP_PREFIX = "([a-zA-Z][a-zA-Z0-9_\\-]*)";
+
+  private static final String REGEX_SEGMENT = "(([a-zA-Z_]\\w*)|\\d+)";
+  private static final String REGEX_PATH
+      = "("
+      + REGEX_SEGMENT
+      + "(\\." + REGEX_SEGMENT + ")*"
+      + ")";
+
+  private static final String REGEX_VARIABLE
+      = "~%"
+      + "(" + REGEX_VAR_GROUP_PREFIX + ":)?"
+      + REGEX_PATH
+      + "%";
+
+  private static final String REGEX_CMT_VARIABLE
+      = REGEX_CMT_START
+      + REGEX_VARIABLE
+      + REGEX_CMT_END;
+  public static final Pattern CMT_VARIABLE = compile(REGEX_CMT_VARIABLE);
+  public static final Pattern VARIABLE = compile(REGEX_VARIABLE);
   private static final String ERR_ILLEGAL_VAL = "Illegal value for system property %s: \"%s\"";
   private static final String ERR_IDENTICAL = "varStart and tmplStart must be different";
 
-  public static final String VAR_START = Setting.VAR_START.get();
-  public static final String VAR_END = Setting.VAR_END.get();
-  public static final String TMPL_START = Setting.TMPL_START.get();
-  public static final String TMPL_END = Setting.TMPL_END.get();
+  public static final String VAR_START = "~%";
+  public static final String VAR_END = "%";
+  public static final String TMPL_START = "~%%";
+  public static final String TMPL_END = VAR_END;
 
   public static final String PLACEHOLDER_START_END = "<!--%-->";
 
@@ -55,15 +78,17 @@ public final class Regex {
     String tStart = quote(TMPL_START);
     String tEnd = quote(TMPL_END);
 
-    // Used for group name prefixes and template names, *not* for variable names
-    String name = "([a-zA-Z_]\\w*)";
+    String varGroupPrefix = "([a-zA-Z_]\\w*)";
+    String identifier = "[a-zA-Z0-9_\\-\\.]+";
+
+    String name = "([a-zA-Z0-9_\\.\\-]+)";
 
     String cmtStart = "<!--\\s*";
 
     String cmtEnd = "\\s*-->";
 
-    String ptnVariable = vStart + "(" + name + ":)?(.+?)" + vEnd;
-
+    //String ptnVariable = vStart + "(" + name + ":)?(.+?)" + vEnd;
+    String ptnVariable = "~%(([a-zA-Z_]\\w*):)?([a-zA-Z0-9_\\.\\-]+)%";
     String ptnCmtVariable = cmtStart + ptnVariable + cmtEnd;
 
     String ptnInlineBegin = tStart + "begin:" + name + tEnd;
@@ -118,7 +143,7 @@ public final class Regex {
     checkThat(TMPL_END).isNot(blank(), ERR_ILLEGAL_VAL, TMPL_END);
   }
 
-  void printAll() {
+  public void printAll() {
     System.out.println("VARIABLE .......: " + variable);
     System.out.println("VARIABLE_CMT ...: " + cmtVariable);
     System.out.println("NESTED .........: " + inlineTemplate);
