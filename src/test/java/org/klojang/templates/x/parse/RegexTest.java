@@ -245,6 +245,7 @@ public class RegexTest {
 
   @Test
   public void test1000() {
+    System.out.println(Regex.INLINE_TEMPLATE);
   }
 
 }

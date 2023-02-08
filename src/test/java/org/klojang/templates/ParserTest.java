@@ -2,10 +2,7 @@ package org.klojang.templates;
 
 import org.junit.jupiter.api.Test;
 import org.klojang.templates.x.ClassPathResolver;
-import org.klojang.templates.x.parse.NestedTemplatePart;
-import org.klojang.templates.x.parse.Part;
-import org.klojang.templates.x.parse.TextPart;
-import org.klojang.templates.x.parse.VariablePart;
+import org.klojang.templates.x.parse.*;
 
 import java.util.List;
 
@@ -89,7 +86,7 @@ public class ParserTest {
   }
 
   @Test
-  public void parseNestedTemplates00() throws ParseException {
+  public void parseInlineTemplates00() throws ParseException {
     String src = """
         <html>
         <head>
@@ -129,7 +126,7 @@ public class ParserTest {
   }
 
   @Test
-  public void parseNestedTemplates01() throws ParseException {
+  public void parseInlineTemplates01() throws ParseException {
     String src = """
         <html>
         <head>
@@ -170,6 +167,32 @@ public class ParserTest {
     assertEquals(2, t.getNames().size());
     assertTrue(t.getNames().contains("name"));
     assertTrue(t.getNames().contains("age"));
+  }
+
+  @Test
+  public void parseInlineTemplates02() throws ParseException {
+    String src = "<!--~%%begin:foo.2.bar%~%%end:foo.2.bar%-->";
+    Parser parser = new Parser(TemplateLocation.STRING, ROOT_TEMPLATE_NAME, src);
+    List<Part> parts = parser.getParts();
+    assertEquals(1, parts.size());
+    assertTrue(parts.get(0) instanceof InlineTemplatePart);
+    InlineTemplatePart itp = (InlineTemplatePart) parts.get(0);
+    assertEquals("foo.2.bar", itp.getName());
+    assertEquals(0, itp.getTemplate().getParts().size());
+  }
+
+  @Test
+  public void parseInlineTemplates03() throws ParseException {
+    String src = "<!--~%%begin:foo.2.bar% FOO ~%%end:foo.2.bar%-->";
+    Parser parser = new Parser(TemplateLocation.STRING, ROOT_TEMPLATE_NAME, src);
+    List<Part> parts = parser.getParts();
+    assertEquals(1, parts.size());
+    assertTrue(parts.get(0) instanceof InlineTemplatePart);
+    InlineTemplatePart itp = (InlineTemplatePart) parts.get(0);
+    assertEquals("foo.2.bar", itp.getName());
+    assertEquals(1, itp.getTemplate().getParts().size());
+    assertTrue(itp.getTemplate().getParts().get(0) instanceof TextPart);
+    assertEquals(" FOO ", itp.getTemplate().getParts().get(0).toString());
   }
 
   @Test

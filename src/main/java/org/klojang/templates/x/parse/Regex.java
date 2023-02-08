@@ -14,6 +14,8 @@ import static org.klojang.check.CommonChecks.blank;
 
 public final class Regex {
 
+  private static final int MULTILINE = Pattern.MULTILINE | Pattern.DOTALL;
+
   private static final String REGEX_CMT_START = "<!--\\s*";
   private static final String REGEX_CMT_END = "\\s*-->";
 
@@ -36,8 +38,23 @@ public final class Regex {
       = REGEX_CMT_START
       + REGEX_VARIABLE
       + REGEX_CMT_END;
-  public static final Pattern CMT_VARIABLE = compile(REGEX_CMT_VARIABLE);
+  private static final String REGEX_INLINE_TEMPLATE
+      = "~%%begin:" + REGEX_PATH + "%"
+      + "(.*?)"
+      + "~%%end:\\1%";
+
+  private static final String REGEX_CMT_INLINE_TEMPLATE
+      = REGEX_CMT_START
+      + REGEX_INLINE_TEMPLATE
+      + REGEX_CMT_END;
+
   public static final Pattern VARIABLE = compile(REGEX_VARIABLE);
+  public static final Pattern CMT_VARIABLE = compile(REGEX_CMT_VARIABLE);
+  public static final Pattern INLINE_TEMPLATE
+      = compile(REGEX_INLINE_TEMPLATE, MULTILINE);
+  public static final Pattern CMT_INLINE_TEMPLATE
+      = compile(REGEX_CMT_INLINE_TEMPLATE, MULTILINE);
+
   private static final String ERR_ILLEGAL_VAL = "Illegal value for system property %s: \"%s\"";
   private static final String ERR_IDENTICAL = "varStart and tmplStart must be different";
 
@@ -77,9 +94,6 @@ public final class Regex {
     String vEnd = quote(VAR_END);
     String tStart = quote(TMPL_START);
     String tEnd = quote(TMPL_END);
-
-    String varGroupPrefix = "([a-zA-Z_]\\w*)";
-    String identifier = "[a-zA-Z0-9_\\-\\.]+";
 
     String name = "([a-zA-Z0-9_\\.\\-]+)";
 

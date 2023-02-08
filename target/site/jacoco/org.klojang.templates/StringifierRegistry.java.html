@@ -454,10 +454,10 @@ public final class StringifierRegistry {
 <span class="fc bfc" id="L454" title="All 2 branches covered.">    if (part.getVarGroup().isPresent()) {</span>
 <span class="fc" id="L455">      VarGroup vg = part.getVarGroup().get();</span>
 <span class="fc" id="L456">      id = new StringifierId(vg);</span>
-<span class="pc bpc" id="L457" title="1 of 2 branches missed.">      if (null != (sf = stringifiers.get(id))) {</span>
+<span class="fc bfc" id="L457" title="All 2 branches covered.">      if (null != (sf = stringifiers.get(id))) {</span>
 <span class="fc" id="L458">        return sf;</span>
       }
-<span class="pc bfc" id="L460" title="All 2 branches covered.">    } else if (varGroup != null) {</span>
+<span class="fc bfc" id="L460" title="All 2 branches covered.">    } else if (varGroup != null) {</span>
 <span class="fc" id="L461">      id = new StringifierId(varGroup);</span>
 <span class="pc bpc" id="L462" title="1 of 2 branches missed.">      if (null != (sf = stringifiers.get(id))) {</span>
 <span class="fc" id="L463">        return sf;</span>

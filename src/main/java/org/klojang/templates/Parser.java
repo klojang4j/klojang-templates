@@ -113,9 +113,7 @@ final class Parser {
       Set<String> names,
       boolean inComments)
       throws ParseException {
-    Pattern p = inComments
-        ? Regex.of().cmtInlineTemplate
-        : Regex.of().inlineTemplate;
+    Pattern p = inComments ? Regex.CMT_INLINE_TEMPLATE : Regex.INLINE_TEMPLATE;
     Matcher m = match(p, unparsed);
     if (!m.find()) {
       return Collections.singletonList(unparsed);
@@ -127,7 +125,7 @@ final class Parser {
         parts.add(todo(unparsed, end, m.start()));
       }
       String name = m.group(1);
-      String mySrc = m.group(2);
+      String mySrc = m.group(7);
       EMPTY_TMPL_NAME.check(name, src, offset + m.start(1)).isNot(blank());
       DUPLICATE_TMPL_NAME
           .check(name, src, offset + m.start(1), name)
