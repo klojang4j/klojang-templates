@@ -17,58 +17,85 @@ public final class Regex {
   private static final int MULTILINE = Pattern.MULTILINE | Pattern.DOTALL;
 
   private static final String REGEX_CMT_START = "<!--\\s*";
+
   private static final String REGEX_CMT_END = "\\s*-->";
 
   /**
    * Regular expression for inline group name prefixes, as in: ~%prefix:varname%.
    */
-  private static final String REGEX_PREFIX = "([a-zA-Z][a-zA-Z0-9_\\-]*)";
+  static final String REGEX_PREFIX = "([a-zA-Z][a-zA-Z0-9_\\-]*)";
 
-  private static final String REGEX_NAME = "([a-zA-Z0-9_\\-]+)";
-  private static final String REGEX_PATH
+  static final String REGEX_NAME = "([a-zA-Z0-9_\\-]+)";
+  static final String REGEX_PATH
       = "("
       + REGEX_NAME
       + "(\\." + REGEX_NAME + ")*"
       + ")";
 
-  private static final String REGEX_VARIABLE
+  static final String REGEX_VARIABLE
       = "~%"
       + "(" + REGEX_PREFIX + ":)?"
       + REGEX_PATH
       + "%";
 
-  private static final String REGEX_CMT_VARIABLE
+  static final String REGEX_CMT_VARIABLE
       = REGEX_CMT_START
       + REGEX_VARIABLE
       + REGEX_CMT_END;
-  private static final String REGEX_INLINE_TEMPLATE
+
+  static final String REGEX_INLINE_TEMPLATE
       = "~%%begin:" + REGEX_NAME + "%"
       + "(.*?)"
       + "~%%end:\\1%";
 
-  private static final String REGEX_CMT_INLINE_TEMPLATE
+  // Used only for syntax error detection:
+  static final String REGEX_INLINE_TEMPLATE_BEGIN = "~%%begin:" + REGEX_NAME + "%";
+
+  static final String REGEX_INLINE_TEMPLATE_END = "~%%end:" + REGEX_NAME + "%";
+
+  static final String REGEX_CMT_INLINE_TEMPLATE
       = REGEX_CMT_START
       + REGEX_INLINE_TEMPLATE
       + REGEX_CMT_END;
 
-  private static final String REGEX_INCLUDE_PATH
+  static final String REGEX_INCLUDE_PATH
       = "([a-zA-Z0-9_~:;/?#!$&%,@+.=\\-\\[\\]\\(\\)]+?)";
 
-  private static final String REGEX_INCLUDED_TEMPLATE
+  static final String REGEX_INCLUDED_TEMPLATE
       = "~%%include:"
       + "(" + REGEX_NAME + ":)?"
       + REGEX_INCLUDE_PATH
       + "%%";
 
-  private static final String CMT_REGEX_INCLUDED_TEMPLATE
+  static final String CMT_REGEX_INCLUDED_TEMPLATE
       = REGEX_CMT_START
       + REGEX_INCLUDED_TEMPLATE
       + REGEX_CMT_END;
 
+
+  // Used only for syntax error detection:
+  static final String REGEX_DITCH_TAG = "<!--%%(.*?)-->";
+
+  static final String REGEX_DITCH_BLOCK
+      = REGEX_DITCH_TAG + "(.*?)" + REGEX_DITCH_TAG;
+
+  static final String PLACEHOLDER_TAG = "<!--%-->";
+
+  static final String REGEX_PLACEHOLDER = "<!--%-->(.*?)<!--%-->";
+
   public static final Pattern VARIABLE = compile(REGEX_VARIABLE);
+
   public static final Pattern CMT_VARIABLE = compile(REGEX_CMT_VARIABLE);
+
   public static final Pattern INLINE_TEMPLATE
       = compile(REGEX_INLINE_TEMPLATE, MULTILINE);
+
+  public static final Pattern INLINE_TEMPLATE_BEGIN
+      = compile(REGEX_INLINE_TEMPLATE_BEGIN);
+
+  public static final Pattern INLINE_TEMPLATE_END
+      = compile(REGEX_INLINE_TEMPLATE_END);
+
   public static final Pattern CMT_INLINE_TEMPLATE
       = compile(REGEX_CMT_INLINE_TEMPLATE, MULTILINE);
 
@@ -76,7 +103,14 @@ public final class Regex {
 
   public static final Pattern INCLUDED_TEMPLATE = compile(REGEX_INCLUDED_TEMPLATE);
 
-  public static final Pattern CMT_INCLUDED_TEMPLATE = compile(REGEX_INCLUDED_TEMPLATE);
+  public static final Pattern CMT_INCLUDED_TEMPLATE
+      = compile(CMT_REGEX_INCLUDED_TEMPLATE);
+
+  public static final Pattern DITCH_TAG = compile(REGEX_DITCH_TAG, MULTILINE);
+
+  public static final Pattern DITCH_BLOCK = compile(REGEX_DITCH_BLOCK, MULTILINE);
+
+  public static final Pattern PLACEHOLDER = compile(REGEX_PLACEHOLDER, MULTILINE);
 
   private static final String ERR_ILLEGAL_VAL = "Illegal value for system property %s: \"%s\"";
   private static final String ERR_IDENTICAL = "varStart and tmplStart must be different";
@@ -97,16 +131,16 @@ public final class Regex {
     return instance;
   }
 
-  public final Pattern variable;
-  public final Pattern cmtVariable;
-  public final Pattern beginTag;
-  public final Pattern endTag;
-  public final Pattern inlineTemplate;
-  public final Pattern cmtInlineTemplate;
-  public final Pattern includedTemplate;
-  public final Pattern cmtIncludedTemplate;
-  public final Pattern ditchTag;
-  public final Pattern ditchBlock;
+  private final Pattern variable;
+  private final Pattern cmtVariable;
+  private final Pattern beginTag;
+  private final Pattern endTag;
+  private final Pattern inlineTemplate;
+  private final Pattern cmtInlineTemplate;
+  private final Pattern includedTemplate;
+  private final Pattern cmtIncludedTemplate;
+  private final Pattern ditchTag;
+  private final Pattern ditchBlock;
   public final Pattern placeholder;
 
   private Regex() throws ParseException {

@@ -90,7 +90,7 @@ final class Parser {
   private static List&lt;Part&gt; purgeDitchBlocksInPart(UnparsedPart unparsed)
       throws ParseException {
 <span class="fc" id="L92">    String src = unparsed.text();</span>
-<span class="fc" id="L93">    Matcher m = Regex.of().ditchBlock.matcher(src);</span>
+<span class="fc" id="L93">    Matcher m = Regex.DITCH_BLOCK.matcher(src);</span>
 <span class="fc bfc" id="L94" title="All 2 branches covered.">    if (!m.find()) {</span>
 <span class="fc" id="L95">      return Collections.singletonList(unparsed);</span>
     }
@@ -249,21 +249,21 @@ final class Parser {
   private void checkGarbage(UnparsedPart unparsed) throws ParseException {
 <span class="fc" id="L250">    String str = unparsed.text();</span>
 <span class="fc" id="L251">    int off = unparsed.start();</span>
-<span class="fc" id="L252">    int idx0 = str.indexOf(Regex.TMPL_START + &quot;begin:&quot;);</span>
-<span class="fc" id="L253">    BEGIN_TAG_NOT_TERMINATED.checkInt(idx0, src, off + idx0).is(eq(), -1);</span>
-<span class="fc" id="L254">    int idx1 = str.indexOf(Regex.TMPL_START + &quot;end:&quot;);</span>
-<span class="fc" id="L255">    END_TAG_NOT_TERMINATED.checkInt(idx1, src, off + idx1).is(eq(), -1);</span>
-<span class="fc" id="L256">    int idx2 = str.indexOf(Regex.TMPL_START + &quot;include:&quot;);</span>
-<span class="fc" id="L257">    INCLUDE_TAG_NOT_TERMINATED.checkInt(idx2, src, off + idx2).is(eq(), -1);</span>
-<span class="fc" id="L258">    Matcher m = Regex.of().beginTag.matcher(str);</span>
+<span class="fc" id="L252">    int idx = str.indexOf(&quot;~%%begin:&quot;);</span>
+<span class="fc" id="L253">    BEGIN_TAG_NOT_TERMINATED.checkInt(idx, src, off + idx).is(eq(), -1);</span>
+<span class="fc" id="L254">    idx = str.indexOf(&quot;~%%end:&quot;);</span>
+<span class="fc" id="L255">    END_TAG_NOT_TERMINATED.checkInt(idx, src, off + idx).is(eq(), -1);</span>
+<span class="fc" id="L256">    idx = str.indexOf(&quot;~%%include:&quot;);</span>
+<span class="fc" id="L257">    INCLUDE_TAG_NOT_TERMINATED.checkInt(idx, src, off + idx).is(eq(), -1);</span>
+<span class="fc" id="L258">    Matcher m = Regex.INLINE_TEMPLATE_BEGIN.matcher(str);</span>
 <span class="pc bpc" id="L259" title="1 of 2 branches missed.">    if (m.find()) {</span>
 <span class="nc" id="L260">      throw MISSING_END_TAG.asException(src, off + m.start(), m.group(1));</span>
     }
-<span class="fc" id="L262">    m = Regex.of().endTag.matcher(str);</span>
+<span class="fc" id="L262">    m = Regex.INLINE_TEMPLATE_END.matcher(str);</span>
 <span class="pc bpc" id="L263" title="1 of 2 branches missed.">    if (m.find()) {</span>
 <span class="nc" id="L264">      throw DANGLING_END_TAG.asException(src, off + m.start(), m.group(1));</span>
     }
-<span class="fc" id="L266">    m = Regex.of().ditchTag.matcher(str);</span>
+<span class="fc" id="L266">    m = Regex.DITCH_TAG.matcher(str);</span>
 <span class="pc bpc" id="L267" title="1 of 2 branches missed.">    if (m.find()) {</span>
 <span class="nc" id="L268">      throw DITCH_BLOCK_NOT_CLOSED.asException(src, off + m.start());</span>
     }

@@ -90,7 +90,7 @@ final class Parser {
   private static List<Part> purgeDitchBlocksInPart(UnparsedPart unparsed)
       throws ParseException {
     String src = unparsed.text();
-    Matcher m = Regex.of().ditchBlock.matcher(src);
+    Matcher m = Regex.DITCH_BLOCK.matcher(src);
     if (!m.find()) {
       return Collections.singletonList(unparsed);
     }
@@ -249,21 +249,21 @@ final class Parser {
   private void checkGarbage(UnparsedPart unparsed) throws ParseException {
     String str = unparsed.text();
     int off = unparsed.start();
-    int idx0 = str.indexOf(Regex.TMPL_START + "begin:");
-    BEGIN_TAG_NOT_TERMINATED.checkInt(idx0, src, off + idx0).is(eq(), -1);
-    int idx1 = str.indexOf(Regex.TMPL_START + "end:");
-    END_TAG_NOT_TERMINATED.checkInt(idx1, src, off + idx1).is(eq(), -1);
-    int idx2 = str.indexOf(Regex.TMPL_START + "include:");
-    INCLUDE_TAG_NOT_TERMINATED.checkInt(idx2, src, off + idx2).is(eq(), -1);
-    Matcher m = Regex.of().beginTag.matcher(str);
+    int idx = str.indexOf("~%%begin:");
+    BEGIN_TAG_NOT_TERMINATED.checkInt(idx, src, off + idx).is(eq(), -1);
+    idx = str.indexOf("~%%end:");
+    END_TAG_NOT_TERMINATED.checkInt(idx, src, off + idx).is(eq(), -1);
+    idx = str.indexOf("~%%include:");
+    INCLUDE_TAG_NOT_TERMINATED.checkInt(idx, src, off + idx).is(eq(), -1);
+    Matcher m = Regex.INLINE_TEMPLATE_BEGIN.matcher(str);
     if (m.find()) {
       throw MISSING_END_TAG.asException(src, off + m.start(), m.group(1));
     }
-    m = Regex.of().endTag.matcher(str);
+    m = Regex.INLINE_TEMPLATE_END.matcher(str);
     if (m.find()) {
       throw DANGLING_END_TAG.asException(src, off + m.start(), m.group(1));
     }
-    m = Regex.of().ditchTag.matcher(str);
+    m = Regex.DITCH_TAG.matcher(str);
     if (m.find()) {
       throw DITCH_BLOCK_NOT_CLOSED.asException(src, off + m.start());
     }
