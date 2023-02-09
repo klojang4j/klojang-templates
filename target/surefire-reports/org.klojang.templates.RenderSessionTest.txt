@@ -1,4 +1,4 @@
 -------------------------------------------------------------------------------
 Test set: org.klojang.templates.RenderSessionTest
 -------------------------------------------------------------------------------
-Tests run: 33, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.336 s - in org.klojang.templates.RenderSessionTest
+Tests run: 33, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.302 s - in org.klojang.templates.RenderSessionTest

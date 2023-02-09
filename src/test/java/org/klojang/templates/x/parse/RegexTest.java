@@ -16,11 +16,6 @@ import static org.junit.jupiter.api.Assertions.*;
 public class RegexTest {
 
   @Test
-  public void print() throws ParseException {
-    Regex.of().printAll();
-  }
-
-  @Test
   public void variable00() throws ParseException {
     assertTrue(Regex.VARIABLE.matcher("~%person%").find());
     assertTrue(Regex.VARIABLE.matcher("foo~%person%").find());

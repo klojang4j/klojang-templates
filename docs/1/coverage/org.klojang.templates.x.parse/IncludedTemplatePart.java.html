@@ -2,8 +2,6 @@
 
 import org.klojang.templates.Template;
 
-import static org.klojang.templates.x.parse.Regex.TMPL_START;
-import static org.klojang.templates.x.parse.Regex.VAR_END;
 import static org.klojang.util.StringMethods.substrAfter;
 import static org.klojang.util.StringMethods.substringBefore;
 
@@ -15,21 +13,21 @@ import static org.klojang.util.StringMethods.substringBefore;
 public final class IncludedTemplatePart extends NestedTemplatePart {
 
   public static String basename(String path) {
-<span class="fc" id="L18">    return substringBefore(substrAfter(path, &quot;/&quot;, -1), &quot;.&quot;, -1);</span>
+<span class="fc" id="L16">    return substringBefore(substrAfter(path, &quot;/&quot;, -1), &quot;.&quot;, -1);</span>
   }
 
   public IncludedTemplatePart(Template template, int start) {
-<span class="fc" id="L22">    super(template, start);</span>
-<span class="fc" id="L23">  }</span>
+<span class="fc" id="L20">    super(template, start);</span>
+<span class="fc" id="L21">  }</span>
 
   @Override
   public String toString() {
-<span class="nc" id="L27">    String basename = basename(template.getPath().get().toString());</span>
-<span class="nc" id="L28">    StringBuilder sb = new StringBuilder(32).append(TMPL_START).append(&quot;include:&quot;);</span>
-<span class="nc bnc" id="L29" title="All 2 branches missed.">    if (!template.getName().equals(basename)) {</span>
-<span class="nc" id="L30">      sb.append(template.getName()).append(':');</span>
+<span class="nc" id="L25">    String basename = basename(template.getPath().get().toString());</span>
+<span class="nc" id="L26">    StringBuilder sb = new StringBuilder(32).append(&quot;~%%include:&quot;);</span>
+<span class="nc bnc" id="L27" title="All 2 branches missed.">    if (!template.getName().equals(basename)) {</span>
+<span class="nc" id="L28">      sb.append(template.getName()).append(':');</span>
     }
-<span class="nc" id="L32">    return sb.append(template.getPath().get()).append(VAR_END).toString();</span>
+<span class="nc" id="L30">    return sb.append(template.getPath().get()).append(&quot;%%&quot;).toString();</span>
   }
 
 }

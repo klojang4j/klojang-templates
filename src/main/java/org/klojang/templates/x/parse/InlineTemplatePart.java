@@ -2,9 +2,6 @@ package org.klojang.templates.x.parse;
 
 import org.klojang.templates.Template;
 
-import static org.klojang.templates.x.parse.Regex.TMPL_START;
-import static org.klojang.templates.x.parse.Regex.VAR_END;
-
 public final class InlineTemplatePart extends NestedTemplatePart {
 
   public InlineTemplatePart(Template template, int start) {
@@ -13,15 +10,13 @@ public final class InlineTemplatePart extends NestedTemplatePart {
 
   public String toString() {
     return new StringBuilder(100)
-        .append(TMPL_START)
-        .append("begin:")
+        .append("~%%begin:")
         .append(template.getName())
-        .append(VAR_END)
-        .append(template.toString())
-        .append(TMPL_START)
-        .append("end:")
+        .append('%')
+        .append(template)
+        .append("~%%end:")
         .append(template.getName())
-        .append(VAR_END)
+        .append('%')
         .toString();
   }
 

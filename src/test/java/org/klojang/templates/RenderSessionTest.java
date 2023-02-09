@@ -324,7 +324,6 @@ public class RenderSessionTest {
 
   @Test
   public void populate04() throws ParseException {
-    Regex.of().printAll();
     String src = """
         <html><body>
             ~%%begin:main-table%

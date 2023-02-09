@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report-3.0.xsd" version="3.0" name="org.klojang.templates.name.SnakeCaseToCamelCaseTest" time="0.025" tests="8" errors="0" skipped="0" failures="0">
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report-3.0.xsd" version="3.0" name="org.klojang.templates.name.SnakeCaseToCamelCaseTest" time="0.011" tests="8" errors="0" skipped="0" failures="0">
   <properties>
     <property name="git.tags" value=""/>
     <property name="java.specification.version" value="19"/>
@@ -10,16 +10,16 @@
     <property name="git.build.host" value="ayco-Latitude-5430"/>
     <property name="java.vm.vendor" value="Oracle Corporation"/>
     <property name="sun.arch.data.model" value="64"/>
-    <property name="git.commit.id" value="2a403a9b58f5f085d38a78f6af47550117f86e48"/>
+    <property name="git.commit.id" value="f103141bab71abec975a87b7eefe858697f366b9"/>
     <property name="java.vendor.url" value="https://java.oracle.com/"/>
     <property name="java.vm.specification.version" value="19"/>
     <property name="os.name" value="Linux"/>
-    <property name="git.commit.author.time" value="2023-02-08 14:38:11"/>
+    <property name="git.commit.author.time" value="2023-02-09 08:46:18"/>
     <property name="sun.java.launcher" value="SUN_STANDARD"/>
     <property name="user.country" value="US"/>
     <property name="git.build.user.name" value="Ayco Holleman"/>
     <property name="sun.boot.library.path" value="/opt/jdk-19/lib"/>
-    <property name="sun.java.command" value="/home/ayco/git-repos/klojang/klojang-templates/target/surefire/surefirebooter-20230209084522928_3.jar /home/ayco/git-repos/klojang/klojang-templates/target/surefire 2023-02-09T08-45-22_797-jvmRun1 surefire-20230209084522928_1tmp surefire_0-20230209084522928_2tmp"/>
+    <property name="sun.java.command" value="/home/ayco/git-repos/klojang/klojang-templates/target/surefire/surefirebooter-20230209091244298_3.jar /home/ayco/git-repos/klojang/klojang-templates/target/surefire 2023-02-09T09-12-44_145-jvmRun1 surefire-20230209091244298_1tmp surefire_0-20230209091244298_2tmp"/>
     <property name="jdk.debug" value="release"/>
     <property name="surefire.test.class.path" value="/home/ayco/git-repos/klojang/klojang-templates/target/test-classes:/home/ayco/git-repos/klojang/klojang-templates/target/classes:/home/ayco/.m2/repository/org/klojang/klojang-check/2.1.0/klojang-check-2.1.0.jar:/home/ayco/.m2/repository/org/klojang/klojang-util/1.1.1/klojang-util-1.1.1.jar:/home/ayco/.m2/repository/org/klojang/klojang-collections/2.0.1/klojang-collections-2.0.1.jar:/home/ayco/.m2/repository/org/klojang/klojang-convert/1.0.0/klojang-convert-1.0.0.jar:/home/ayco/.m2/repository/org/klojang/klojang-invoke/1.0.0/klojang-invoke-1.0.0.jar:/home/ayco/.m2/repository/org/apache/commons/commons-text/1.10.0/commons-text-1.10.0.jar:/home/ayco/.m2/repository/org/apache/commons/commons-lang3/3.12.0/commons-lang3-3.12.0.jar:/home/ayco/.m2/repository/org/apache/httpcomponents/httpclient/4.5.14/httpclient-4.5.14.jar:/home/ayco/.m2/repository/org/apache/httpcomponents/httpcore/4.4.16/httpcore-4.4.16.jar:/home/ayco/.m2/repository/commons-logging/commons-logging/1.2/commons-logging-1.2.jar:/home/ayco/.m2/repository/commons-codec/commons-codec/1.11/commons-codec-1.11.jar:/home/ayco/.m2/repository/org/slf4j/slf4j-api/2.0.6/slf4j-api-2.0.6.jar:/home/ayco/.m2/repository/org/junit/jupiter/junit-jupiter/5.9.2/junit-jupiter-5.9.2.jar:/home/ayco/.m2/repository/org/junit/jupiter/junit-jupiter-api/5.9.2/junit-jupiter-api-5.9.2.jar:/home/ayco/.m2/repository/org/opentest4j/opentest4j/1.2.0/opentest4j-1.2.0.jar:/home/ayco/.m2/repository/org/junit/platform/junit-platform-commons/1.9.2/junit-platform-commons-1.9.2.jar:/home/ayco/.m2/repository/org/apiguardian/apiguardian-api/1.1.2/apiguardian-api-1.1.2.jar:/home/ayco/.m2/repository/org/junit/jupiter/junit-jupiter-params/5.9.2/junit-jupiter-params-5.9.2.jar:/home/ayco/.m2/repository/org/junit/jupiter/junit-jupiter-engine/5.9.2/junit-jupiter-engine-5.9.2.jar:/home/ayco/.m2/repository/org/junit/platform/junit-platform-engine/1.9.2/junit-platform-engine-1.9.2.jar:/home/ayco/.m2/repository/com/h2database/h2/2.1.214/h2-2.1.214.jar:"/>
     <property name="sun.cpu.endian" value="little"/>
@@ -29,21 +29,21 @@
     <property name="java.specification.vendor" value="Oracle Corporation"/>
     <property name="java.version.date" value="2022-10-18"/>
     <property name="java.home" value="/opt/jdk-19"/>
-    <property name="git.total.commit.count" value="30"/>
+    <property name="git.total.commit.count" value="31"/>
     <property name="file.separator" value="/"/>
     <property name="basedir" value="/home/ayco/git-repos/klojang/klojang-templates"/>
     <property name="java.vm.compressedOopsMode" value="Zero based"/>
     <property name="line.separator" value="&#10;"/>
     <property name="checkstyle.skip" value="true"/>
-    <property name="git.commit.committer.time" value="2023-02-08 14:38:11"/>
+    <property name="git.commit.committer.time" value="2023-02-09 08:46:18"/>
     <property name="git.build.user.email" value="ayco.holleman@naturalis.nl"/>
     <property name="java.vm.specification.vendor" value="Oracle Corporation"/>
     <property name="java.specification.name" value="Java Platform API Specification"/>
     <property name="git.closest.tag.name" value=""/>
     <property name="git.local.branch.ahead" value="0"/>
-    <property name="git.build.time" value="2023-02-09 08:45:21"/>
-    <property name="surefire.real.class.path" value="/home/ayco/git-repos/klojang/klojang-templates/target/surefire/surefirebooter-20230209084522928_3.jar"/>
-    <property name="git.commit.message.full" value="3rd move towards more more rigid var/tmpl name requirements"/>
+    <property name="git.build.time" value="2023-02-09 09:12:42"/>
+    <property name="surefire.real.class.path" value="/home/ayco/git-repos/klojang/klojang-templates/target/surefire/surefirebooter-20230209091244298_3.jar"/>
+    <property name="git.commit.message.full" value="4th move towards more more rigid var/tmpl name requirements"/>
     <property name="sun.management.compiler" value="HotSpot 64-Bit Tiered Compilers"/>
     <property name="java.runtime.version" value="19.0.1+10-21"/>
     <property name="user.name" value="ayco"/>
@@ -63,28 +63,28 @@
     <property name="user.dir" value="/home/ayco/git-repos/klojang/klojang-templates"/>
     <property name="os.arch" value="amd64"/>
     <property name="git.commit.user.name" value="Ayco Holleman"/>
-    <property name="git.commit.id.abbrev" value="2a403a9"/>
+    <property name="git.commit.id.abbrev" value="f103141"/>
     <property name="java.vm.specification.name" value="Java Virtual Machine Specification"/>
-    <property name="git.commit.id.describe-short" value="2a403a9-dirty"/>
-    <property name="git.commit.id.describe" value="2a403a9-dirty"/>
+    <property name="git.commit.id.describe-short" value="f103141-dirty"/>
+    <property name="git.commit.id.describe" value="f103141-dirty"/>
     <property name="native.encoding" value="UTF-8"/>
     <property name="java.library.path" value="/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib"/>
-    <property name="git.commit.message.short" value="3rd move towards more more rigid var/tmpl name requirements"/>
+    <property name="git.commit.message.short" value="4th move towards more more rigid var/tmpl name requirements"/>
     <property name="java.vm.info" value="mixed mode, sharing"/>
     <property name="stderr.encoding" value="UTF-8"/>
     <property name="java.vendor" value="Oracle Corporation"/>
     <property name="java.vm.version" value="19.0.1+10-21"/>
     <property name="sun.io.unicode.encoding" value="UnicodeLittle"/>
     <property name="java.class.version" value="63.0"/>
-    <property name="git.commit.time" value="2023-02-08 14:38:11"/>
+    <property name="git.commit.time" value="2023-02-09 08:46:18"/>
     <property name="git.remote.origin.url" value="https://github.com/klojang4j/klojang-templates.git"/>
   </properties>
-  <testcase name="test00" classname="org.klojang.templates.name.SnakeCaseToCamelCaseTest" time="0.005"/>
-  <testcase name="test01" classname="org.klojang.templates.name.SnakeCaseToCamelCaseTest" time="0.001"/>
-  <testcase name="test02" classname="org.klojang.templates.name.SnakeCaseToCamelCaseTest" time="0.001"/>
-  <testcase name="test03" classname="org.klojang.templates.name.SnakeCaseToCamelCaseTest" time="0.001"/>
-  <testcase name="test04" classname="org.klojang.templates.name.SnakeCaseToCamelCaseTest" time="0.001"/>
+  <testcase name="test00" classname="org.klojang.templates.name.SnakeCaseToCamelCaseTest" time="0.002"/>
+  <testcase name="test01" classname="org.klojang.templates.name.SnakeCaseToCamelCaseTest" time="0"/>
+  <testcase name="test02" classname="org.klojang.templates.name.SnakeCaseToCamelCaseTest" time="0"/>
+  <testcase name="test03" classname="org.klojang.templates.name.SnakeCaseToCamelCaseTest" time="0"/>
+  <testcase name="test04" classname="org.klojang.templates.name.SnakeCaseToCamelCaseTest" time="0"/>
   <testcase name="test05" classname="org.klojang.templates.name.SnakeCaseToCamelCaseTest" time="0"/>
-  <testcase name="test06" classname="org.klojang.templates.name.SnakeCaseToCamelCaseTest" time="0.006"/>
-  <testcase name="test07" classname="org.klojang.templates.name.SnakeCaseToCamelCaseTest" time="0.002"/>
+  <testcase name="test06" classname="org.klojang.templates.name.SnakeCaseToCamelCaseTest" time="0.003"/>
+  <testcase name="test07" classname="org.klojang.templates.name.SnakeCaseToCamelCaseTest" time="0.001"/>
 </testsuite>

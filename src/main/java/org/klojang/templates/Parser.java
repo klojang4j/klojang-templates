@@ -229,7 +229,7 @@ final class Parser {
         UnparsedPart unparsed = (UnparsedPart) p;
         if (unparsed.text().length() != 0) {
           checkGarbage(unparsed);
-          String text = Regex.of().placeholder
+          String text = Regex.PLACEHOLDER
               .matcher(unparsed.text())
               .replaceAll(EMPTY_STRING);
           if (text.contains(Regex.PLACEHOLDER_START_END)) {

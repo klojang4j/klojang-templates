@@ -2,27 +2,22 @@
 
 import org.klojang.templates.Template;
 
-import static org.klojang.templates.x.parse.Regex.TMPL_START;
-import static org.klojang.templates.x.parse.Regex.VAR_END;
-
 public final class InlineTemplatePart extends NestedTemplatePart {
 
   public InlineTemplatePart(Template template, int start) {
-<span class="fc" id="L11">    super(template, start);</span>
-<span class="fc" id="L12">  }</span>
+<span class="fc" id="L8">    super(template, start);</span>
+<span class="fc" id="L9">  }</span>
 
   public String toString() {
-<span class="nc" id="L15">    return new StringBuilder(100)</span>
-<span class="nc" id="L16">        .append(TMPL_START)</span>
-<span class="nc" id="L17">        .append(&quot;begin:&quot;)</span>
+<span class="nc" id="L12">    return new StringBuilder(100)</span>
+<span class="nc" id="L13">        .append(&quot;~%%begin:&quot;)</span>
+<span class="nc" id="L14">        .append(template.getName())</span>
+<span class="nc" id="L15">        .append('%')</span>
+<span class="nc" id="L16">        .append(template)</span>
+<span class="nc" id="L17">        .append(&quot;~%%end:&quot;)</span>
 <span class="nc" id="L18">        .append(template.getName())</span>
-<span class="nc" id="L19">        .append(VAR_END)</span>
-<span class="nc" id="L20">        .append(template.toString())</span>
-<span class="nc" id="L21">        .append(TMPL_START)</span>
-<span class="nc" id="L22">        .append(&quot;end:&quot;)</span>
-<span class="nc" id="L23">        .append(template.getName())</span>
-<span class="nc" id="L24">        .append(VAR_END)</span>
-<span class="nc" id="L25">        .toString();</span>
+<span class="nc" id="L19">        .append('%')</span>
+<span class="nc" id="L20">        .toString();</span>
   }
 
 }

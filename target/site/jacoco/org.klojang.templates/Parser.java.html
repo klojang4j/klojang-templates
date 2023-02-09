@@ -229,7 +229,7 @@ final class Parser {
 <span class="fc" id="L229">        UnparsedPart unparsed = (UnparsedPart) p;</span>
 <span class="fc bfc" id="L230" title="All 2 branches covered.">        if (unparsed.text().length() != 0) {</span>
 <span class="fc" id="L231">          checkGarbage(unparsed);</span>
-<span class="fc" id="L232">          String text = Regex.of().placeholder</span>
+<span class="fc" id="L232">          String text = Regex.PLACEHOLDER</span>
 <span class="fc" id="L233">              .matcher(unparsed.text())</span>
 <span class="fc" id="L234">              .replaceAll(EMPTY_STRING);</span>
 <span class="pc bpc" id="L235" title="1 of 2 branches missed.">          if (text.contains(Regex.PLACEHOLDER_START_END)) {</span>

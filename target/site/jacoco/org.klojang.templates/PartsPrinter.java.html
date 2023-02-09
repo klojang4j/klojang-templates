@@ -65,7 +65,7 @@ final class PartsPrinter {
 <span class="nc" id="L65">        Template t2 = ((NestedTemplatePart) p).getTemplate();</span>
 <span class="nc" id="L66">        String name = t2.getName();</span>
 <span class="nc" id="L67">        printCell(out, name, w2);</span>
-<span class="nc" id="L68">        String s = Regex.TMPL_START + &quot;begin:&quot; + name + Regex.VAR_END;</span>
+<span class="nc" id="L68">        String s = &quot;~%%begin:&quot; + name + '%';</span>
 <span class="nc" id="L69">        out.println(s);</span>
 <span class="nc" id="L70">        printDivider(out);</span>
 <span class="nc" id="L71">        PartsPrinter printer = new PartsPrinter(t2, w0, w1, w2);</span>
@@ -73,7 +73,7 @@ final class PartsPrinter {
 <span class="nc" id="L73">        printCell(out, t.getName(), w0);</span>
 <span class="nc" id="L74">        printCell(out, &quot;TEMPLATE&quot;, w1);</span>
 <span class="nc" id="L75">        printCell(out, name, w2);</span>
-<span class="nc" id="L76">        s = Regex.TMPL_START + &quot;end:&quot; + name + Regex.VAR_END;</span>
+<span class="nc" id="L76">        s = &quot;~%%end:&quot; + name + '%';</span>
 <span class="nc" id="L77">        out.println(s);</span>
 <span class="nc" id="L78">        printDivider(out);</span>
       }

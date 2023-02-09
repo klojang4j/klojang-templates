@@ -5,9 +5,6 @@ import org.klojang.templates.x.Private;
 
 import java.util.Optional;
 
-import static org.klojang.templates.x.parse.Regex.VAR_END;
-import static org.klojang.templates.x.parse.Regex.VAR_START;
-
 /**
  * A {@link Part} implementation for representing template variables.
  *
@@ -19,14 +16,14 @@ public final class VariablePart extends AbstractPart implements NamedPart {
   private final String name;
 
   public VariablePart(String prefix, String name, int start) {
-<span class="fc" id="L22">    super(start);</span>
-<span class="fc bfc" id="L23" title="All 2 branches covered.">    if (prefix == null) {</span>
-<span class="fc" id="L24">      group = null;</span>
+<span class="fc" id="L19">    super(start);</span>
+<span class="fc bfc" id="L20" title="All 2 branches covered.">    if (prefix == null) {</span>
+<span class="fc" id="L21">      group = null;</span>
     } else {
-<span class="fc" id="L26">      group = VarGroup.createPrivileged(Private.of(prefix));</span>
+<span class="fc" id="L23">      group = VarGroup.createPrivileged(Private.of(prefix));</span>
     }
-<span class="fc" id="L28">    this.name = name;</span>
-<span class="fc" id="L29">  }</span>
+<span class="fc" id="L25">    this.name = name;</span>
+<span class="fc" id="L26">  }</span>
 
   /**
    * Returns an {@code Optional} containing the group name prefix, or an empty
@@ -37,7 +34,7 @@ public final class VariablePart extends AbstractPart implements NamedPart {
    * @return An {@code Optional} containing the group name prefix
    */
   public Optional&lt;VarGroup&gt; getVarGroup() {
-<span class="fc" id="L40">    return Optional.ofNullable(group);</span>
+<span class="fc" id="L37">    return Optional.ofNullable(group);</span>
   }
 
   /**
@@ -47,12 +44,12 @@ public final class VariablePart extends AbstractPart implements NamedPart {
    */
   @Override
   public String getName() {
-<span class="fc" id="L50">    return name;</span>
+<span class="fc" id="L47">    return name;</span>
   }
 
   @Override
   public String toString() {
-<span class="nc" id="L55">    return VAR_START + name + VAR_END;</span>
+<span class="nc" id="L52">    return &quot;~%&quot; + name + &quot;%&quot;;</span>
   }
 
 }
