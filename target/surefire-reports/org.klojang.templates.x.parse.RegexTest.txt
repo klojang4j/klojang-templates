@@ -1,4 +1,4 @@
 -------------------------------------------------------------------------------
 Test set: org.klojang.templates.x.parse.RegexTest
 -------------------------------------------------------------------------------
-Tests run: 24, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.031 s - in org.klojang.templates.x.parse.RegexTest
+Tests run: 24, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.051 s - in org.klojang.templates.x.parse.RegexTest

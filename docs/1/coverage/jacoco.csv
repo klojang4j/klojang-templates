@@ -17,7 +17,7 @@ Klojang Templates,org.klojang.templates.x.parse,VariablePart,4,25,0,2,1,8,1,4,1,
 Klojang Templates,org.klojang.templates.x.parse,InlineTemplatePart,25,5,0,0,9,2,1,1,1,1
 Klojang Templates,org.klojang.templates.x.parse,UnparsedPart,3,10,0,0,1,4,1,2,1,2
 Klojang Templates,org.klojang.templates.x.parse,TextPart,0,13,0,0,0,5,0,3,0,3
-Klojang Templates,org.klojang.templates.x.parse,Regex,3,42,0,0,1,17,1,1,1,1
+Klojang Templates,org.klojang.templates.x.parse,Regex,44,42,0,0,10,15,2,1,2,1
 Klojang Templates,org.klojang.templates.x.parse,AbstractPart,0,16,0,0,0,7,0,4,0,4
 Klojang Templates,org.klojang.templates.x.parse,ErrorType,39,132,0,0,3,21,3,5,3,5
 Klojang Templates,org.klojang.templates.x.parse,IncludedTemplatePart,40,13,2,0,5,3,2,2,1,2
