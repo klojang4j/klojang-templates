@@ -2,7 +2,6 @@ package org.klojang.templates;
 
 import org.junit.jupiter.api.Test;
 import org.klojang.path.util.MapBuilder;
-import org.klojang.templates.x.parse.Regex;
 import org.klojang.util.AnyTuple2;
 
 import java.util.List;

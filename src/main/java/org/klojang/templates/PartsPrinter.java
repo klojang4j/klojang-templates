@@ -1,6 +1,5 @@
 package org.klojang.templates;
 
-import org.klojang.templates.x.parse.Regex;
 import org.klojang.templates.x.parse.NestedTemplatePart;
 import org.klojang.templates.x.parse.Part;
 import org.klojang.templates.x.parse.TextPart;

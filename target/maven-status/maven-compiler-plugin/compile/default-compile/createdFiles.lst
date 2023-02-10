@@ -17,10 +17,10 @@ org/klojang/templates/TemplateLocation.class
 org/klojang/templates/x/parse/ErrorType.class
 org/klojang/templates/x/parse/VariablePart.class
 org/klojang/templates/AccessorRegistry.class
-org/klojang/templates/x/parse/Regex.class
 org/klojang/templates/PathResolutionException.class
 org/klojang/templates/x/acc/NullAccessor.class
 org/klojang/templates/RenderException.class
+org/klojang/templates/Regex.class
 org/klojang/templates/ParseException.class
 org/klojang/templates/TemplateCache.class
 org/klojang/templates/Setting.class

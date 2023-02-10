@@ -1,10 +1,6 @@
-package org.klojang.templates.x.parse;
+package org.klojang.templates;
 
 import org.junit.jupiter.api.Test;
-import org.klojang.templates.ParseException;
-import org.klojang.templates.RenderException;
-import org.klojang.templates.RenderSession;
-import org.klojang.templates.Template;
 import org.klojang.util.IOMethods;
 
 import java.io.IOException;
@@ -14,6 +10,12 @@ import java.util.regex.Matcher;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class RegexTest {
+
+  @Test
+  public void printAll00() {
+    Regex.printAll();
+    ;
+  }
 
   @Test
   public void variable00() throws ParseException {
@@ -230,7 +232,6 @@ public class RegexTest {
 
   @Test
   public void includedTemplate00() {
-    System.out.println(Regex.INCLUDED_TEMPLATE);
     Matcher m = Regex.INCLUDED_TEMPLATE.matcher("~%%include:sammy:foo.b%ar.html%%");
     assertTrue(m.find());
     assertEquals("sammy", m.group(2));
@@ -239,7 +240,6 @@ public class RegexTest {
 
   @Test
   public void includedTemplate01() {
-    System.out.println(Regex.INCLUDED_TEMPLATE);
     Matcher m = Regex.INCLUDED_TEMPLATE.matcher(
         "~%%include:main-table:foo.html?x=23&y=44#anchor1%%%");
     assertTrue(m.find());

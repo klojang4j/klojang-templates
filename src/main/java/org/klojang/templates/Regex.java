@@ -1,4 +1,4 @@
-package org.klojang.templates.x.parse;
+package org.klojang.templates;
 
 import org.klojang.templates.RenderSession;
 import org.klojang.templates.VarGroup;
@@ -8,8 +8,13 @@ import java.util.regex.Pattern;
 import static java.util.regex.Pattern.compile;
 
 /**
- * Tokens and regular expressions used by the template parser to parse templates. You
- * will never
+ * Tokens and regular expressions used by the template parser to parse templates. For
+ * all intents and purposes, this is an internal class, and you would not miss out on
+ * any functionality if it were. However, making this class and the constants defined
+ * in it public makes the API documentation as a whole more self-contained, since it
+ * is the only class that describes which syntactical constructs there are and what
+ * they look like. This class could also be useful for tool makers (e.g. when writing
+ * a syntax highlighting plugin).
  */
 public final class Regex {
 
@@ -112,7 +117,7 @@ public final class Regex {
       + "(.*?)"
       + "~%%end:\\1%";
 
-  // Used only for syntax error detection:
+  // Used only for syntax error reporting:
   static final String REGEX_INLINE_TEMPLATE_BEGIN = "~%%begin:" + REGEX_NAME + "%";
 
   static final String REGEX_INLINE_TEMPLATE_END = "~%%end:" + REGEX_NAME + "%";
@@ -197,21 +202,16 @@ public final class Regex {
       = compile(REGEX_INLINE_TEMPLATE, MULTILINE);
 
   // Only used for syntax error reporting
-  public static final Pattern INLINE_TEMPLATE_BEGIN = compile(
+  static final Pattern INLINE_TEMPLATE_BEGIN = compile(
       REGEX_INLINE_TEMPLATE_BEGIN);
 
-  public static final Pattern INLINE_TEMPLATE_END = compile(REGEX_INLINE_TEMPLATE_END);
+  static final Pattern INLINE_TEMPLATE_END = compile(REGEX_INLINE_TEMPLATE_END);
 
   /**
    * The compiled version of {@link #REGEX_INLINE_TEMPLATE}.
    */
   public static final Pattern CMT_INLINE_TEMPLATE
       = compile(REGEX_CMT_INLINE_TEMPLATE, MULTILINE);
-
-  /**
-   * The compiled version of {@link #REGEX_INLINE_TEMPLATE}.
-   */
-  public static final Pattern INCLUDE_PATH = compile(REGEX_INCLUDE_PATH);
 
   /**
    * The compiled version of {@link #REGEX_INLINE_TEMPLATE}.
@@ -225,7 +225,7 @@ public final class Regex {
       = compile(CMT_REGEX_INCLUDED_TEMPLATE);
 
   // Only used for syntax error reporting
-  public static final Pattern DITCH_TAG = compile(REGEX_DITCH_TAG, MULTILINE);
+  static final Pattern DITCH_TAG = compile(REGEX_DITCH_TAG, MULTILINE);
 
   /**
    * The compiled version of {@link #REGEX_DITCH_BLOCK}.
@@ -237,8 +237,11 @@ public final class Regex {
    */
   public static final Pattern PLACEHOLDER = compile(REGEX_PLACEHOLDER, MULTILINE);
 
-  public static final String PLACEHOLDER_START_END = "<!--%-->";
+  static final String PLACEHOLDER_START_END = "<!--%-->";
 
+  /**
+   * Prints the regular expressions.
+   */
   public static void printAll() {
     System.out.println("VARIABLE ................: " + VARIABLE);
     System.out.println("CMT_VARIABLE ............: " + CMT_VARIABLE);

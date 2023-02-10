@@ -2,6 +2,7 @@
 /home/ayco/git-repos/klojang/klojang-templates/src/main/java/org/klojang/templates/name/WordCaseToCameCase.java
 /home/ayco/git-repos/klojang/klojang-templates/src/main/java/org/klojang/templates/name/CamelCaseToWordCase.java
 /home/ayco/git-repos/klojang/klojang-templates/src/main/java/org/klojang/templates/name/WordCaseToSnakeUpperCase.java
+/home/ayco/git-repos/klojang/klojang-templates/src/main/java/org/klojang/templates/Regex.java
 /home/ayco/git-repos/klojang/klojang-templates/src/main/java/org/klojang/templates/x/parse/IncludedTemplatePart.java
 /home/ayco/git-repos/klojang/klojang-templates/src/main/java/org/klojang/templates/x/acc/PathAccessor.java
 /home/ayco/git-repos/klojang/klojang-templates/src/main/java/org/klojang/templates/PartsPrinter.java
@@ -40,7 +41,6 @@
 /home/ayco/git-repos/klojang/klojang-templates/src/main/java/org/klojang/templates/x/StandardStringifiers.java
 /home/ayco/git-repos/klojang/klojang-templates/src/main/java/org/klojang/templates/SessionConfig.java
 /home/ayco/git-repos/klojang/klojang-templates/src/main/java/org/klojang/templates/TemplateUtils.java
-/home/ayco/git-repos/klojang/klojang-templates/src/main/java/org/klojang/templates/x/parse/Regex.java
 /home/ayco/git-repos/klojang/klojang-templates/src/main/java/org/klojang/templates/name/package-info.java
 /home/ayco/git-repos/klojang/klojang-templates/src/main/java/org/klojang/templates/x/parse/UnparsedPart.java
 /home/ayco/git-repos/klojang/klojang-templates/src/main/java/org/klojang/templates/x/ClassPathResolver.java
