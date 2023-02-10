@@ -4,7 +4,6 @@ import org.klojang.check.Check;
 import org.klojang.check.IntCheck;
 import org.klojang.check.ObjectCheck;
 import org.klojang.templates.ParseException;
-import org.klojang.templates.Template;
 import org.klojang.util.StringMethods;
 
 import java.util.function.Function;
@@ -16,17 +15,7 @@ import static org.klojang.util.ArrayMethods.prefix;
  *
  * @author Ayco Holleman
  */
-public enum ErrorType {
-
-  /**
-   * Illegal whitespace-only variable name.
-   */
-  EMPTY_VAR_NAME("Empty variable name"),
-
-  /**
-   * Illegal whitespace-only include path.
-   */
-  EMPTY_INCLUDE_PATH("Empty include path"),
+public enum ParseError {
 
   /**
    * Invalid include path.
@@ -34,22 +23,9 @@ public enum ErrorType {
   INVALID_INCLUDE_PATH("Invalid include path: %s"),
 
   /**
-   * Illegal whitespace-only template name.
-   */
-  EMPTY_TMPL_NAME("Empty template name"),
-
-  /**
    * Duplicate template name.
    */
   DUPLICATE_TMPL_NAME("Duplicate template name \"%s\""),
-
-  /**
-   * {@link Template#fromString(String) Template.fromString} was called without the
-   * Class argument and hence included templates cannot be loaded using
-   * {@code Class.getResourceAsStream}.
-   */
-  MISSING_CLASS_OBJECT(
-      "No Class object provided. Cannot call getResourceAsStream(\"%s\")"),
 
   /**
    * Variable cannot have same name as template.
@@ -70,7 +46,7 @@ public enum ErrorType {
 
   /**
    * The character sequence {@code ~%%include:} was found, but no terminating
-   * {@code %} followed.
+   * {@code %%} followed.
    */
   INCLUDE_TAG_NOT_TERMINATED("Template \"include\" tag not terminated"),
 
@@ -96,13 +72,18 @@ public enum ErrorType {
    * A placeholder block was not closed. (There was an uneven number of
    * {@code <!--%-->} tokens.)
    */
-  PLACEHOLDER_NOT_CLOSED("Placeholder block not closed");
+  PLACEHOLDER_NOT_CLOSED("Placeholder block not closed"),
+
+  /**
+   * An unexpected exception occurred while parsing the template.
+   */
+  UNEXPECTED("Unexpected error while parsing template");
 
   private static final String ERR_BASE = "Error at line %d, column %d. ";
 
   private final String format;
 
-  private ErrorType(String format) {
+  ParseError(String format) {
     this.format = ERR_BASE + format;
   }
 
@@ -112,7 +93,7 @@ public enum ErrorType {
   }
 
   public ParseException asException(String src, int pos, Object... args) {
-    return new ParseException(asMessage(src, pos, args));
+    return new ParseException(this, asMessage(src, pos, args));
   }
 
   public Function<String, ParseException> asExceptionProvider(String src,

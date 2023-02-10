@@ -29,30 +29,50 @@ public class RegexTest {
   }
 
   @Test
-  public void variable01() throws ParseException {
+  public void variable01() {
     assertTrue(Regex.VARIABLE.matcher("~%person.address%").find());
     assertTrue(Regex.VARIABLE.matcher("~%person.address.street%").find());
   }
 
   @Test
-  public void variable02() throws ParseException {
+  public void variable02() {
     assertTrue(Regex.VARIABLE.matcher("~%html:person.address%").find());
     assertTrue(Regex.VARIABLE.matcher("~%js:person.address%").find());
     assertTrue(Regex.VARIABLE.matcher("~%text:person.address%").find());
   }
 
   @Test
-  public void variable03() throws ParseException {
+  public void variable03() {
     assertTrue(Regex.CMT_VARIABLE.matcher("<!--~%person%-->").find());
     assertTrue(Regex.CMT_VARIABLE.matcher("<!-- ~%person% -->").find());
     assertTrue(Regex.CMT_VARIABLE.matcher("<!--\t~%person%\t-->").find());
     assertTrue(Regex.CMT_VARIABLE.matcher("FOO\t<!--~%person%-->BAR").find());
-    assertTrue(Regex.CMT_VARIABLE.matcher("\n<!--      \t~%person%\t\t   -->\n")
+    assertTrue(Regex.CMT_VARIABLE
+        .matcher("\n<!--      \t~%person%\t\t   -->\n")
         .find());
   }
 
   @Test
-  public void test04() throws ParseException, IOException {
+  public void variable04() throws ParseException {
+    String src = "<!--~%firstName%-->John<!--%-->";
+    Template t = Template.fromString(src);
+    RenderSession rs = t.newRenderSession();
+    String s = rs.render();
+    assertEquals("", s);
+  }
+
+  @Test
+  public void variable05() throws ParseException {
+    String src = "<!--~%firstName%-->John<!--%-->";
+    Template t = Template.fromString(src);
+    RenderSession rs = t.newRenderSession();
+    rs.set("firstName", "Mark");
+    String s = rs.render();
+    assertEquals("Mark", s);
+  }
+
+  @Test
+  public void test04() throws IOException {
     try (InputStream is = getClass().getResourceAsStream("RegexTest.test04.html")) {
       String s = IOMethods.getContents(is);
       assertTrue(Regex.INLINE_TEMPLATE.matcher(s).find());
@@ -60,7 +80,7 @@ public class RegexTest {
   }
 
   @Test
-  public void test05() throws ParseException, IOException {
+  public void test05() throws IOException {
     try (InputStream is = getClass().getResourceAsStream("RegexTest.test05.html")) {
       String s = IOMethods.getContents(is);
       assertTrue(Regex.CMT_INLINE_TEMPLATE.matcher(s).find());

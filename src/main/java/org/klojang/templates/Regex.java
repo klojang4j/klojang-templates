@@ -95,14 +95,16 @@ public final class Regex {
    * <blockquote><pre>{@code
    * <tr>
    *   <td>
-   *      <!-- ~%firstName% -->
-   *      <!--%-->
-   *        John
-   *        Maynard
-   *      <!--%-->
+   *    <!-- ~%firstName% -->
+   *    <!--%-->
+   *      John<br>
+   *      Maynard
+   *    <!--%-->
    *   </td>
    * </tr>
    * }</pre></blockquote>
+   *
+   * @see #REGEX_PLACEHOLDER
    */
   static final String REGEX_CMT_VARIABLE
       = "<!--[ \\t]*"
@@ -168,20 +170,22 @@ public final class Regex {
   static final String REGEX_DITCH_TAG = "<!--%%(.*?)-->";
 
   /**
-   * Regular expression for a ditch block. A ditch block is a pair of
-   * {@code &lt;--%%--&gt;} tags and anything between them. A ditch block is the
-   * Klojang Templates equivalent of an HTML or Java comment.
+   * Regular expression for ditch blocks. A ditch block is a pair of
+   * {@code &lt;--%%--&gt;} tags and any text between them. A ditch block is the
+   * Klojang Templates equivalent of an HTML or Java comment. A ditch block cannot be
+   * nested inside an inline template (or any other syntactical construct provided by
+   * Klojang Templates for that matter).
    */
   public static final String REGEX_DITCH_BLOCK
       = REGEX_DITCH_TAG + "(.*?)" + REGEX_DITCH_TAG;
 
   /**
-   * Regular expression for a placeholder. A placeholder is a pair of
-   * {@code &lt;--%--&gt;} tags and anything between them. When a template is
-   * rendered by Klojang Templates, these tokens, and everything between them are
-   * erased from the template. However, since they also are self-closed HTML
-   * comments, a browser would display what is between these tokens when rendering
-   * the raw, unprocessed template.
+   * Regular expression for placeholders. A placeholder is a pair of
+   * {@code &lt;--%--&gt;} tags and any text between them. When a template is
+   * rendered by Klojang Templates, these tokens, and any text between them are
+   * erased from the template. However, since they are self-closed HTML comments, a
+   * browser would display what is between these tokens when rendering the raw,
+   * unprocessed template.
    */
   public static final String REGEX_PLACEHOLDER = "<!--%-->(.*?)<!--%-->";
 

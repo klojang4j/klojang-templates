@@ -95,14 +95,16 @@ import static java.util.regex.Pattern.compile;
    * &lt;blockquote&gt;&lt;pre&gt;{@code
    * &lt;tr&gt;
    *   &lt;td&gt;
-   *      &lt;!-- ~%firstName% --&gt;
-   *      &lt;!--%--&gt;
-   *        John
-   *        Maynard
-   *      &lt;!--%--&gt;
+   *    &lt;!-- ~%firstName% --&gt;
+   *    &lt;!--%--&gt;
+   *      John&lt;br&gt;
+   *      Maynard
+   *    &lt;!--%--&gt;
    *   &lt;/td&gt;
    * &lt;/tr&gt;
    * }&lt;/pre&gt;&lt;/blockquote&gt;
+   *
+   * @see #REGEX_PLACEHOLDER
    */
   static final String REGEX_CMT_VARIABLE
       = &quot;&lt;!--[ \\t]*&quot;
@@ -168,74 +170,76 @@ import static java.util.regex.Pattern.compile;
   static final String REGEX_DITCH_TAG = &quot;&lt;!--%%(.*?)--&gt;&quot;;
 
   /**
-   * Regular expression for a ditch block. A ditch block is a pair of
-   * {@code &amp;lt;--%%--&amp;gt;} tags and anything between them. A ditch block is the
-   * Klojang Templates equivalent of an HTML or Java comment.
+   * Regular expression for ditch blocks. A ditch block is a pair of
+   * {@code &amp;lt;--%%--&amp;gt;} tags and any text between them. A ditch block is the
+   * Klojang Templates equivalent of an HTML or Java comment. A ditch block cannot be
+   * nested inside an inline template (or any other syntactical construct provided by
+   * Klojang Templates for that matter).
    */
   public static final String REGEX_DITCH_BLOCK
       = REGEX_DITCH_TAG + &quot;(.*?)&quot; + REGEX_DITCH_TAG;
 
   /**
-   * Regular expression for a placeholder. A placeholder is a pair of
-   * {@code &amp;lt;--%--&amp;gt;} tags and anything between them. When a template is
-   * rendered by Klojang Templates, these tokens, and everything between them are
-   * erased from the template. However, since they also are self-closed HTML
-   * comments, a browser would display what is between these tokens when rendering
-   * the raw, unprocessed template.
+   * Regular expression for placeholders. A placeholder is a pair of
+   * {@code &amp;lt;--%--&amp;gt;} tags and any text between them. When a template is
+   * rendered by Klojang Templates, these tokens, and any text between them are
+   * erased from the template. However, since they are self-closed HTML comments, a
+   * browser would display what is between these tokens when rendering the raw,
+   * unprocessed template.
    */
   public static final String REGEX_PLACEHOLDER = &quot;&lt;!--%--&gt;(.*?)&lt;!--%--&gt;&quot;;
 
   /**
    * The compiled version of {@link #REGEX_VARIABLE}.
    */
-<span class="fc" id="L191">  public static final Pattern VARIABLE = compile(REGEX_VARIABLE);</span>
+<span class="fc" id="L195">  public static final Pattern VARIABLE = compile(REGEX_VARIABLE);</span>
 
   /**
    * The compiled version of {@link #REGEX_CMT_VARIABLE}.
    */
-<span class="fc" id="L196">  public static final Pattern CMT_VARIABLE = compile(REGEX_CMT_VARIABLE);</span>
+<span class="fc" id="L200">  public static final Pattern CMT_VARIABLE = compile(REGEX_CMT_VARIABLE);</span>
 
   /**
    * The compiled version of {@link #REGEX_INLINE_TEMPLATE}.
    */
-<span class="fc" id="L201">  public static final Pattern INLINE_TEMPLATE</span>
-<span class="fc" id="L202">      = compile(REGEX_INLINE_TEMPLATE, MULTILINE);</span>
+<span class="fc" id="L205">  public static final Pattern INLINE_TEMPLATE</span>
+<span class="fc" id="L206">      = compile(REGEX_INLINE_TEMPLATE, MULTILINE);</span>
 
   // Only used for syntax error reporting
-<span class="fc" id="L205">  static final Pattern INLINE_TEMPLATE_BEGIN = compile(</span>
+<span class="fc" id="L209">  static final Pattern INLINE_TEMPLATE_BEGIN = compile(</span>
       REGEX_INLINE_TEMPLATE_BEGIN);
 
-<span class="fc" id="L208">  static final Pattern INLINE_TEMPLATE_END = compile(REGEX_INLINE_TEMPLATE_END);</span>
+<span class="fc" id="L212">  static final Pattern INLINE_TEMPLATE_END = compile(REGEX_INLINE_TEMPLATE_END);</span>
 
   /**
    * The compiled version of {@link #REGEX_INLINE_TEMPLATE}.
    */
-<span class="fc" id="L213">  public static final Pattern CMT_INLINE_TEMPLATE</span>
-<span class="fc" id="L214">      = compile(REGEX_CMT_INLINE_TEMPLATE, MULTILINE);</span>
+<span class="fc" id="L217">  public static final Pattern CMT_INLINE_TEMPLATE</span>
+<span class="fc" id="L218">      = compile(REGEX_CMT_INLINE_TEMPLATE, MULTILINE);</span>
 
   /**
    * The compiled version of {@link #REGEX_INLINE_TEMPLATE}.
    */
-<span class="fc" id="L219">  public static final Pattern INCLUDED_TEMPLATE = compile(REGEX_INCLUDED_TEMPLATE);</span>
+<span class="fc" id="L223">  public static final Pattern INCLUDED_TEMPLATE = compile(REGEX_INCLUDED_TEMPLATE);</span>
 
   /**
    * The compiled version of {@link #CMT_INCLUDED_TEMPLATE}.
    */
-<span class="fc" id="L224">  public static final Pattern CMT_INCLUDED_TEMPLATE</span>
-<span class="fc" id="L225">      = compile(CMT_REGEX_INCLUDED_TEMPLATE);</span>
+<span class="fc" id="L228">  public static final Pattern CMT_INCLUDED_TEMPLATE</span>
+<span class="fc" id="L229">      = compile(CMT_REGEX_INCLUDED_TEMPLATE);</span>
 
   // Only used for syntax error reporting
-<span class="fc" id="L228">  static final Pattern DITCH_TAG = compile(REGEX_DITCH_TAG, MULTILINE);</span>
+<span class="fc" id="L232">  static final Pattern DITCH_TAG = compile(REGEX_DITCH_TAG, MULTILINE);</span>
 
   /**
    * The compiled version of {@link #REGEX_DITCH_BLOCK}.
    */
-<span class="fc" id="L233">  public static final Pattern DITCH_BLOCK = compile(REGEX_DITCH_BLOCK, MULTILINE);</span>
+<span class="fc" id="L237">  public static final Pattern DITCH_BLOCK = compile(REGEX_DITCH_BLOCK, MULTILINE);</span>
 
   /**
    * The compiled version of {@link #REGEX_PLACEHOLDER}.
    */
-<span class="fc" id="L238">  public static final Pattern PLACEHOLDER = compile(REGEX_PLACEHOLDER, MULTILINE);</span>
+<span class="fc" id="L242">  public static final Pattern PLACEHOLDER = compile(REGEX_PLACEHOLDER, MULTILINE);</span>
 
   static final String PLACEHOLDER_START_END = &quot;&lt;!--%--&gt;&quot;;
 
@@ -243,15 +247,15 @@ import static java.util.regex.Pattern.compile;
    * Prints the regular expressions.
    */
   public static void printAll() {
-<span class="fc" id="L246">    System.out.println(&quot;VARIABLE ................: &quot; + VARIABLE);</span>
-<span class="fc" id="L247">    System.out.println(&quot;CMT_VARIABLE ............: &quot; + CMT_VARIABLE);</span>
-<span class="fc" id="L248">    System.out.println(&quot;INLINE_TEMPLATE .........: &quot; + INLINE_TEMPLATE);</span>
-<span class="fc" id="L249">    System.out.println(&quot;CMT_INLINE_TEMPLATE .....: &quot; + CMT_INLINE_TEMPLATE);</span>
-<span class="fc" id="L250">    System.out.println(&quot;INCLUDED_TEMPLATE .......: &quot; + INCLUDED_TEMPLATE);</span>
-<span class="fc" id="L251">    System.out.println(&quot;CMT_INCLUDED_TEMPLATE ...: &quot; + CMT_INCLUDED_TEMPLATE);</span>
-<span class="fc" id="L252">    System.out.println(&quot;DITCH_BLOCK .............: &quot; + DITCH_BLOCK);</span>
-<span class="fc" id="L253">    System.out.println(&quot;PLACEHOLDER .............: &quot; + PLACEHOLDER);</span>
-<span class="fc" id="L254">  }</span>
+<span class="fc" id="L250">    System.out.println(&quot;VARIABLE ................: &quot; + VARIABLE);</span>
+<span class="fc" id="L251">    System.out.println(&quot;CMT_VARIABLE ............: &quot; + CMT_VARIABLE);</span>
+<span class="fc" id="L252">    System.out.println(&quot;INLINE_TEMPLATE .........: &quot; + INLINE_TEMPLATE);</span>
+<span class="fc" id="L253">    System.out.println(&quot;CMT_INLINE_TEMPLATE .....: &quot; + CMT_INLINE_TEMPLATE);</span>
+<span class="fc" id="L254">    System.out.println(&quot;INCLUDED_TEMPLATE .......: &quot; + INCLUDED_TEMPLATE);</span>
+<span class="fc" id="L255">    System.out.println(&quot;CMT_INCLUDED_TEMPLATE ...: &quot; + CMT_INCLUDED_TEMPLATE);</span>
+<span class="fc" id="L256">    System.out.println(&quot;DITCH_BLOCK .............: &quot; + DITCH_BLOCK);</span>
+<span class="fc" id="L257">    System.out.println(&quot;PLACEHOLDER .............: &quot; + PLACEHOLDER);</span>
+<span class="fc" id="L258">  }</span>
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

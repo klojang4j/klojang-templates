@@ -11,7 +11,7 @@ import java.util.regex.Pattern;
 
 import static org.klojang.check.CommonChecks.*;
 import static org.klojang.templates.Template.ROOT_TEMPLATE_NAME;
-import static org.klojang.templates.x.parse.ErrorType.*;
+import static org.klojang.templates.x.parse.ParseError.*;
 import static org.klojang.util.StringMethods.EMPTY_STRING;
 
 final class Parser {
@@ -126,7 +126,6 @@ final class Parser {
       }
       String name = m.group(1);
       String mySrc = m.group(2);
-      EMPTY_TMPL_NAME.check(name, src, offset + m.start(1)).isNot(blank());
       DUPLICATE_TMPL_NAME
           .check(name, src, offset + m.start(1), name)
           .isNot(in(), names)
@@ -162,11 +161,9 @@ final class Parser {
       }
       String name = m.group(2);
       String path = m.group(3);
-      EMPTY_INCLUDE_PATH.check(path, src, offset + m.start(3)).isNot(blank());
       if (name == null) {
         name = IncludedTemplatePart.basename(path);
       }
-      EMPTY_TMPL_NAME.check(name, src, offset + m.start(2)).isNot(blank());
       DUPLICATE_TMPL_NAME
           .check(name, src, offset + m.start(2), name)
           .isNot(in(), names)
@@ -206,7 +203,6 @@ final class Parser {
       }
       String prefix = m.group(2);
       String name = m.group(3);
-      EMPTY_VAR_NAME.check(name, src, offset + m.start(3)).isNot(blank());
       VAR_NAME_WITH_TMPL_NAME
           .check(name, src, offset + m.start(3), name).isNot(in(), names);
       parts.add(new VariablePart(prefix, name, offset + m.start()));
@@ -249,12 +245,6 @@ final class Parser {
   private void checkGarbage(UnparsedPart unparsed) throws ParseException {
     String str = unparsed.text();
     int off = unparsed.start();
-    int idx = str.indexOf("~%%begin:");
-    BEGIN_TAG_NOT_TERMINATED.checkInt(idx, src, off + idx).is(eq(), -1);
-    idx = str.indexOf("~%%end:");
-    END_TAG_NOT_TERMINATED.checkInt(idx, src, off + idx).is(eq(), -1);
-    idx = str.indexOf("~%%include:");
-    INCLUDE_TAG_NOT_TERMINATED.checkInt(idx, src, off + idx).is(eq(), -1);
     Matcher m = Regex.INLINE_TEMPLATE_BEGIN.matcher(str);
     if (m.find()) {
       throw MISSING_END_TAG.asException(src, off + m.start(), m.group(1));
@@ -267,6 +257,12 @@ final class Parser {
     if (m.find()) {
       throw DITCH_BLOCK_NOT_CLOSED.asException(src, off + m.start());
     }
+    int idx = str.indexOf("~%%begin:");
+    BEGIN_TAG_NOT_TERMINATED.checkInt(idx, src, off + idx).is(eq(), -1);
+    idx = str.indexOf("~%%end:");
+    END_TAG_NOT_TERMINATED.checkInt(idx, src, off + idx).is(eq(), -1);
+    idx = str.indexOf("~%%include:");
+    INCLUDE_TAG_NOT_TERMINATED.checkInt(idx, src, off + idx).is(eq(), -1);
   }
 
   private static Matcher match(Pattern pattern, UnparsedPart unparsed) {

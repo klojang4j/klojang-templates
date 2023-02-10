@@ -277,4 +277,191 @@ public class ParserTest {
     assertTrue(t.getNames().contains("age"));
   }
 
+  @Test
+  public void ditchTagNotClosed00() throws ParseException {
+    String src = """
+        <table>
+        <!--%%-->
+        </table>
+        """;
+    try {
+      Template.fromString(src);
+    } catch (ParseException e) {
+      assertEquals(ParseError.DITCH_BLOCK_NOT_CLOSED, e.getError());
+    }
+  }
+
+  @Test
+  public void missingEndTag00() {
+    String src = """
+        ~%%begin:foo%
+          <p>Hello world
+        ~%%end:bar%
+        """;
+    try {
+      Template.fromString(src);
+    } catch (ParseException e) {
+      assertEquals(ParseError.MISSING_END_TAG, e.getError());
+    }
+  }
+
+  @Test
+  public void missingEndTag0100() {
+    String src = """
+        ~%%begin:foo%
+          <p>Hello world
+        ~%%end:foo
+         """;
+    try {
+      Template.fromString(src);
+    } catch (ParseException e) {
+      assertEquals(ParseError.MISSING_END_TAG, e.getError());
+    }
+  }
+
+  @Test
+  public void danglingEndTag00() {
+    String src = """
+        ~%%begin:foo%
+          <p>Hello world
+        ~%%end:foo%
+        ~%%end:bar%
+        """;
+    try {
+      Template.fromString(src);
+    } catch (ParseException e) {
+      assertEquals(ParseError.DANGLING_END_TAG, e.getError());
+    }
+  }
+
+  @Test
+  public void beginTagNotTerminated00() {
+    String src = """
+        ~%%begin:foo
+          <p>Hello world
+         """;
+    try {
+      Template.fromString(src);
+    } catch (ParseException e) {
+      assertEquals(ParseError.BEGIN_TAG_NOT_TERMINATED, e.getError());
+    }
+  }
+
+  @Test
+  public void endTagNotTerminated00() {
+    String src = """
+        ~%%begin:foo%
+          <p>Hello world
+        ~%%end:foo%
+        ~%%end:bar
+        """;
+    try {
+      Template.fromString(src);
+    } catch (ParseException e) {
+      assertEquals(ParseError.END_TAG_NOT_TERMINATED, e.getError());
+    }
+  }
+
+  @Test
+  public void includeTagNotTerminated00() {
+    String src = """
+        ~%%include:/foo/bar%
+        ~%%begin:foo%
+          <p>Hello world
+        ~%%end:foo%
+         """;
+    try {
+      Template.fromString(src);
+    } catch (ParseException e) {
+      assertEquals(ParseError.INCLUDE_TAG_NOT_TERMINATED, e.getError());
+    }
+  }
+
+  @Test
+  public void duplicateTmplName00() {
+    String src = """
+         <p>
+         ~%%begin:foo%
+           <p>Hello world
+         ~%%end:foo%
+        ~%%begin:foo%
+           <p>Hi there
+         ~%%end:foo%
+         </p>
+         """;
+    try {
+      Template.fromString(src);
+    } catch (ParseException e) {
+      assertEquals(ParseError.DUPLICATE_TMPL_NAME, e.getError());
+    }
+  }
+
+  @Test
+  public void varNameWithTmplName00() {
+    String src = """
+         <p>
+         ~%%begin:foo%
+           <p>Hello world
+         ~%%end:foo%
+        ~%foo%
+         </p>
+         """;
+    try {
+      Template.fromString(src);
+    } catch (ParseException e) {
+      assertEquals(ParseError.VAR_NAME_WITH_TMPL_NAME, e.getError());
+    }
+  }
+
+  @Test
+  public void varNameWithTmplName01() {
+    String src = """
+         <p>
+        ~%foo%
+        ~%%begin:foo%
+           <p>Hello world
+         ~%%end:foo%
+          </p>
+         """;
+    try {
+      Template.fromString(src);
+    } catch (ParseException e) {
+      assertEquals(ParseError.VAR_NAME_WITH_TMPL_NAME, e.getError());
+    }
+  }
+
+  @Test
+  public void ditchTagNotClosed01() throws ParseException {
+    String src = "<!--%%-->";
+    try {
+      Template.fromString(src);
+    } catch (ParseException e) {
+      assertEquals(ParseError.DITCH_BLOCK_NOT_CLOSED, e.getError());
+    }
+  }
+
+  @Test
+  public void placeholderNotClosed00() {
+    String src = """
+        <p>
+        <!--%-->Hello, world
+        </p>
+        """;
+    try {
+      Template.fromString(src);
+    } catch (ParseException e) {
+      assertEquals(ParseError.PLACEHOLDER_NOT_CLOSED, e.getError());
+    }
+  }
+
+  @Test
+  public void placeholderNotClosed01() {
+    String src = "<!--%-->";
+    try {
+      Template t = Template.fromString(src);
+    } catch (ParseException e) {
+      assertEquals(ParseError.PLACEHOLDER_NOT_CLOSED, e.getError());
+    }
+  }
+
 }
