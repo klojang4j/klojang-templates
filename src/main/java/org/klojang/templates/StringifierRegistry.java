@@ -147,7 +147,7 @@ public final class StringifierRegistry {
      * @param varNames Any array of fully-qualified variable names
      * @return This {@code Builder}
      * @see TemplateUtils#getFQName(Template, String)
-     * @see TemplateUtils#getParentTemplate(Template, String)
+     * @see TemplateUtils#getContainingTemplate(Template, String)
      */
     public Builder register(Stringifier stringifier,
         Template template,
@@ -156,7 +156,7 @@ public final class StringifierRegistry {
       Check.notNull(template, "template");
       Check.that(varNames, "varNames").is(deepNotEmpty());
       for (String name : varNames) {
-        Template tmpl = TemplateUtils.getParentTemplate(template, name);
+        Template tmpl = TemplateUtils.getContainingTemplate(template, name);
         Check.that(name).is(in(), tmpl.getVariables(), ERR_NO_SUCH_VARIABLE, name);
         Check.that(new StringifierId(template, name))
             .isNot(keyIn(), stringifiers, ERR_VAR_ASSIGNED)
@@ -340,7 +340,7 @@ public final class StringifierRegistry {
       Check.that(varNames, "varNames").isNot(empty());
       for (String var : varNames) {
         Check.that(var, "variable name").isNot(empty());
-        Template tmpl = TemplateUtils.getParentTemplate(template, var);
+        Template tmpl = TemplateUtils.getContainingTemplate(template, var);
         // Make sure var is a variable name, not a nested template name
         Check.that(var).is(in(), tmpl.getVariables());
         Tuple2<Template, String> tuple = Tuple2.of(tmpl, var);

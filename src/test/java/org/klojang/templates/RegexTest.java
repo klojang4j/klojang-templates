@@ -72,16 +72,24 @@ public class RegexTest {
   }
 
   @Test
-  public void test04() throws IOException {
-    try (InputStream is = getClass().getResourceAsStream("RegexTest.test04.html")) {
+  public void inline00() throws IOException {
+    try (InputStream is = getClass().getResourceAsStream("RegexTest.inline00.html")) {
       String s = IOMethods.getContents(is);
       assertTrue(Regex.INLINE_TEMPLATE.matcher(s).find());
     }
   }
 
   @Test
-  public void test05() throws IOException {
-    try (InputStream is = getClass().getResourceAsStream("RegexTest.test05.html")) {
+  public void inline01() throws IOException {
+    try (InputStream is = getClass().getResourceAsStream("RegexTest.inline01.html")) {
+      String s = IOMethods.getContents(is);
+      assertTrue(Regex.CMT_INLINE_TEMPLATE.matcher(s).find());
+    }
+  }
+
+  @Test
+  public void inline02() throws IOException {
+    try (InputStream is = getClass().getResourceAsStream("RegexTest.inline02.html")) {
       String s = IOMethods.getContents(is);
       assertTrue(Regex.CMT_INLINE_TEMPLATE.matcher(s).find());
     }
@@ -103,31 +111,28 @@ public class RegexTest {
   }
 
   @Test
-  public void include03() throws ParseException {
+  public void include03() {
     assertTrue(Regex.INCLUDED_TEMPLATE
         .matcher("~%%include:foo:/views/rows.html%%")
         .find());
   }
 
   @Test
-  public void include04() throws ParseException {
-    assertTrue(
-        Regex.INCLUDED_TEMPLATE
-            .matcher("FOO<!-- ~%%include:/views/rows.html%% -->BAR")
-            .find());
+  public void include04() {
+    String src = "FOO<!-- ~%%include:/views/rows.html%% -->BAR";
+    assertTrue(Regex.INCLUDED_TEMPLATE.matcher(src).find());
   }
 
   @Test
-  public void include05() throws ParseException {
-    assertTrue(Regex.INCLUDED_TEMPLATE
-        .matcher("FOO\n<!-- \t ~%%include:foo:/views/rows.html%%\t--> BAR")
-        .find());
+  public void include05() {
+    String src = "FOO ******* ~%%include:foo:/views/rows.html%% ******* BAR";
+    assertTrue(Regex.INCLUDED_TEMPLATE.matcher(src).find());
   }
 
   @Test
-  public void include06() throws ParseException {
-    Matcher m = Regex.INCLUDED_TEMPLATE.matcher(
-        "FOO ******* ~%%include:foo:/views/rows.html%% ******* BAR");
+  public void include06() {
+    String src = "FOO ******* ~%%include:foo:/views/rows.html%% ******* BAR";
+    Matcher m = Regex.INCLUDED_TEMPLATE.matcher(src);
     m.find();
     assertEquals(3, m.groupCount()); // The match itself, group(0), does not count
     assertEquals("~%%include:foo:/views/rows.html%%", m.group(0));
@@ -137,12 +142,11 @@ public class RegexTest {
   }
 
   @Test
-  public void include07() throws ParseException {
-    Matcher m = Regex.INCLUDED_TEMPLATE.matcher(
-        "FOO ******* ~%%include:/views/rows.html%% ******* BAR");
+  public void include07() {
+    String src = "FOO ******* ~%%include:/views/rows.html%% ******* BAR";
+    Matcher m = Regex.INCLUDED_TEMPLATE.matcher(src);
     m.find();
-    assertEquals(3,
-        m.groupCount()); // Number of groups defined by regex, not by input
+    assertEquals(3, m.groupCount());
     assertEquals("~%%include:/views/rows.html%%", m.group(0));
     assertNull(m.group(1));
     assertNull(m.group(2));
@@ -150,12 +154,11 @@ public class RegexTest {
   }
 
   @Test
-  public void hiddenInclude01() throws ParseException {
-    Matcher m = Regex.CMT_INCLUDED_TEMPLATE.matcher(
-        "FOO ******* <!--~%%include:/views/rows.html%%--> ******* BAR");
+  public void cmtInclude01() {
+    String src = "FOO ******* <!--~%%include:/views/rows.html%%--> ******* BAR";
+    Matcher m = Regex.CMT_INCLUDED_TEMPLATE.matcher(src);
     m.find();
-    assertEquals(3,
-        m.groupCount()); // Number of groups defined by regex, not by input
+    assertEquals(3, m.groupCount());
     assertEquals("<!--~%%include:/views/rows.html%%-->", m.group(0));
     assertNull(m.group(1));
     assertNull(m.group(2));
@@ -163,12 +166,11 @@ public class RegexTest {
   }
 
   @Test
-  public void hiddenInclude02() throws ParseException {
-    Matcher m = Regex.CMT_INCLUDED_TEMPLATE.matcher(
-        "FOO ******* <!--\n\t~%%include:/views/rows.html%% \t\n  --> ******* BAR");
+  public void cmtInclude02() {
+    String src = "FOO ******* <!--\n\t~%%include:/views/rows.html%% \t\n  --> ******* BAR";
+    Matcher m = Regex.CMT_INCLUDED_TEMPLATE.matcher(src);
     m.find();
-    assertEquals(3,
-        m.groupCount()); // Number of groups defined by regex, not by input
+    assertEquals(3, m.groupCount());
     assertEquals("<!--\n\t~%%include:/views/rows.html%% \t\n  -->", m.group(0));
     assertNull(m.group(1));
     assertNull(m.group(2));
@@ -176,14 +178,11 @@ public class RegexTest {
   }
 
   @Test
-  public void hiddenInclude03() throws ParseException {
-    Matcher m =
-        Regex.CMT_INCLUDED_TEMPLATE
-            .matcher(
-                "\n\nFOO ******* <!--\n\t~%%include:/views/rows.html%% \t\n  --> ******* \nBAR");
+  public void cmtInclude03() {
+    String src = "\n\nFOO ******* <!--\n\t~%%include:/views/rows.html%% \t\n  --> ******* \nBAR";
+    Matcher m = Regex.CMT_INCLUDED_TEMPLATE.matcher(src);
     m.find();
-    assertEquals(3,
-        m.groupCount()); // Number of groups defined by regex, not by input
+    assertEquals(3, m.groupCount());
     assertEquals("<!--\n\t~%%include:/views/rows.html%% \t\n  -->", m.group(0));
     assertNull(m.group(1));
     assertNull(m.group(2));
@@ -191,9 +190,9 @@ public class RegexTest {
   }
 
   @Test
-  public void ditch00() throws ParseException {
-    Matcher m = Regex.DITCH_BLOCK.matcher(
-        "FOO <!--%%--><tr><td>Hi!</td></tr><!--%%-->");
+  public void ditch00() {
+    String src = "FOO <!--%%--><tr><td>Hi!</td></tr><!--%%-->";
+    Matcher m = Regex.DITCH_BLOCK.matcher(src);
     assertTrue(m.find());
   }
 
@@ -244,7 +243,27 @@ public class RegexTest {
   }
 
   @Test
-  public void hiddenVar01() throws ParseException {
+  public void ditch05() throws ParseException, RenderException {
+    String src = """
+        <td>
+          ~%foo%
+          <!--%%-->
+          ~%%begin:foo%
+            <p>Hello world</p>
+          ~%%end:foo%
+          <!--%%-->
+          ~%bar%
+        </td>
+        """;
+    Template tmpl = Template.fromString(src);
+    RenderSession rs = tmpl.newRenderSession();
+    String out = rs.set("foo", 'A').set("bar", 'B').render();
+    out = out.replaceAll("\\s", "");
+    assertEquals("<td>AB</td>", out);
+  }
+
+  @Test
+  public void cmtVar01() throws ParseException {
     Matcher m = Regex.CMT_VARIABLE.matcher("<!-- ~%person% -->");
     assertTrue(m.find());
     assertEquals("person", m.group(3));

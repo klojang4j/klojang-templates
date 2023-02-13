@@ -15,5 +15,6 @@ public final class MTag {
 
   public static final String STRINGIFIERS = "stringifiers";
 
+  public static final String TEMPLATE = "template";
 
 }

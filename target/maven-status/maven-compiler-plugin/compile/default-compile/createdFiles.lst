@@ -14,7 +14,7 @@ org/klojang/templates/x/parse/Part.class
 org/klojang/templates/x/acc/package-info.class
 org/klojang/templates/name/SnakeCaseToCamelCase.class
 org/klojang/templates/TemplateLocation.class
-org/klojang/templates/x/parse/ErrorType.class
+org/klojang/templates/x/parse/ParseError.class
 org/klojang/templates/x/parse/VariablePart.class
 org/klojang/templates/AccessorRegistry.class
 org/klojang/templates/PathResolutionException.class

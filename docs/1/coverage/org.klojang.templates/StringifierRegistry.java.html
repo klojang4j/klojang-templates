@@ -147,7 +147,7 @@ public final class StringifierRegistry {
      * @param varNames Any array of fully-qualified variable names
      * @return This {@code Builder}
      * @see TemplateUtils#getFQName(Template, String)
-     * @see TemplateUtils#getParentTemplate(Template, String)
+     * @see TemplateUtils#getContainingTemplate(Template, String)
      */
     public Builder register(Stringifier stringifier,
         Template template,
@@ -156,7 +156,7 @@ public final class StringifierRegistry {
 <span class="nc" id="L156">      Check.notNull(template, &quot;template&quot;);</span>
 <span class="nc" id="L157">      Check.that(varNames, &quot;varNames&quot;).is(deepNotEmpty());</span>
 <span class="nc bnc" id="L158" title="All 2 branches missed.">      for (String name : varNames) {</span>
-<span class="nc" id="L159">        Template tmpl = TemplateUtils.getParentTemplate(template, name);</span>
+<span class="nc" id="L159">        Template tmpl = TemplateUtils.getContainingTemplate(template, name);</span>
 <span class="nc" id="L160">        Check.that(name).is(in(), tmpl.getVariables(), ERR_NO_SUCH_VARIABLE, name);</span>
 <span class="nc" id="L161">        Check.that(new StringifierId(template, name))</span>
 <span class="nc" id="L162">            .isNot(keyIn(), stringifiers, ERR_VAR_ASSIGNED)</span>
@@ -340,7 +340,7 @@ public final class StringifierRegistry {
 <span class="nc" id="L340">      Check.that(varNames, &quot;varNames&quot;).isNot(empty());</span>
 <span class="nc bnc" id="L341" title="All 2 branches missed.">      for (String var : varNames) {</span>
 <span class="nc" id="L342">        Check.that(var, &quot;variable name&quot;).isNot(empty());</span>
-<span class="nc" id="L343">        Template tmpl = TemplateUtils.getParentTemplate(template, var);</span>
+<span class="nc" id="L343">        Template tmpl = TemplateUtils.getContainingTemplate(template, var);</span>
         // Make sure var is a variable name, not a nested template name
 <span class="nc" id="L345">        Check.that(var).is(in(), tmpl.getVariables());</span>
 <span class="nc" id="L346">        Tuple2&lt;Template, String&gt; tuple = Tuple2.of(tmpl, var);</span>

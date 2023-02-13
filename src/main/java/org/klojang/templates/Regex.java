@@ -9,12 +9,11 @@ import static java.util.regex.Pattern.compile;
 
 /**
  * Tokens and regular expressions used by the template parser to parse templates. For
- * all intents and purposes, this is an internal class, and you would not miss out on
- * any functionality if it were. However, making this class and the constants defined
- * in it public makes the API documentation as a whole more self-contained, since it
- * is the only class that describes which syntactical constructs there are and what
- * they look like. This class could also be useful for tool makers (e.g. when writing
- * a syntax highlighting plugin).
+ * all intents and purposes, this is an internal class. However, by making this class
+ * and the constants defined in it public, the API documentation as a whole becomes
+ * more self-contained as it is only the only class from which you can infer what a
+ * Klojang template should look like. This class could also be useful for tool
+ * makers (e.g. when writing a syntax highlighting plugin).
  */
 public final class Regex {
 

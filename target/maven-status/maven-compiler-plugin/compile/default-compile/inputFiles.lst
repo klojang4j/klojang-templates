@@ -10,7 +10,6 @@
 /home/ayco/git-repos/klojang/klojang-templates/src/main/java/org/klojang/templates/name/WordCaseToSnakeLowerCase.java
 /home/ayco/git-repos/klojang/klojang-templates/src/main/java/org/klojang/templates/TemplateCache.java
 /home/ayco/git-repos/klojang/klojang-templates/src/main/java/org/klojang/templates/Parser.java
-/home/ayco/git-repos/klojang/klojang-templates/src/main/java/org/klojang/templates/x/parse/ErrorType.java
 /home/ayco/git-repos/klojang/klojang-templates/src/main/java/org/klojang/templates/NameMapper.java
 /home/ayco/git-repos/klojang/klojang-templates/src/main/java/org/klojang/templates/package-info.java
 /home/ayco/git-repos/klojang/klojang-templates/src/main/java/org/klojang/templates/x/parse/NamedPart.java
@@ -42,6 +41,7 @@
 /home/ayco/git-repos/klojang/klojang-templates/src/main/java/org/klojang/templates/SessionConfig.java
 /home/ayco/git-repos/klojang/klojang-templates/src/main/java/org/klojang/templates/TemplateUtils.java
 /home/ayco/git-repos/klojang/klojang-templates/src/main/java/org/klojang/templates/name/package-info.java
+/home/ayco/git-repos/klojang/klojang-templates/src/main/java/org/klojang/templates/x/parse/ParseError.java
 /home/ayco/git-repos/klojang/klojang-templates/src/main/java/org/klojang/templates/x/parse/UnparsedPart.java
 /home/ayco/git-repos/klojang/klojang-templates/src/main/java/org/klojang/templates/x/ClassPathResolver.java
 /home/ayco/git-repos/klojang/klojang-templates/src/main/java/org/klojang/templates/x/parse/VariablePart.java

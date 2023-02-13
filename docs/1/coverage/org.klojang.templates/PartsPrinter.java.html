@@ -21,99 +21,99 @@ final class PartsPrinter {
   private final int w2;
 
   PartsPrinter(Template t) {
-<span class="nc" id="L24">    this(t, getMaxTmplName(t), HDR_PART_TYPE.length(), getMaxVarName(t));</span>
-<span class="nc" id="L25">  }</span>
+<span class="fc" id="L24">    this(t, getMaxTmplName(t), HDR_PART_TYPE.length(), getMaxVarName(t));</span>
+<span class="fc" id="L25">  }</span>
 
-<span class="nc" id="L27">  private PartsPrinter(Template t, int w0, int w1, int w2) {</span>
-<span class="nc" id="L28">    this.t = t;</span>
-<span class="nc" id="L29">    this.w0 = w0;</span>
-<span class="nc" id="L30">    this.w1 = w1;</span>
-<span class="nc" id="L31">    this.w2 = w2;</span>
-<span class="nc" id="L32">  }</span>
+<span class="fc" id="L27">  private PartsPrinter(Template t, int w0, int w1, int w2) {</span>
+<span class="fc" id="L28">    this.t = t;</span>
+<span class="fc" id="L29">    this.w0 = w0;</span>
+<span class="fc" id="L30">    this.w1 = w1;</span>
+<span class="fc" id="L31">    this.w2 = w2;</span>
+<span class="fc" id="L32">  }</span>
 
   void printParts(PrintStream out) {
-<span class="nc" id="L35">    printParts(out, true);</span>
-<span class="nc" id="L36">  }</span>
+<span class="fc" id="L35">    printParts(out, true);</span>
+<span class="fc" id="L36">  }</span>
 
   private void printParts(PrintStream out, boolean printHeader) {
-<span class="nc bnc" id="L39" title="All 2 branches missed.">    if (printHeader) {</span>
-<span class="nc" id="L40">      printDivider(out);</span>
-<span class="nc" id="L41">      printCell(out, HDR_TEMPLATE, w0);</span>
-<span class="nc" id="L42">      printCell(out, HDR_PART_TYPE, w1);</span>
-<span class="nc" id="L43">      printCell(out, HDR_PART_NAME, w2);</span>
-<span class="nc" id="L44">      out.println();</span>
-<span class="nc" id="L45">      printDivider(out);</span>
+<span class="fc bfc" id="L39" title="All 2 branches covered.">    if (printHeader) {</span>
+<span class="fc" id="L40">      printDivider(out);</span>
+<span class="fc" id="L41">      printCell(out, HDR_TEMPLATE, w0);</span>
+<span class="fc" id="L42">      printCell(out, HDR_PART_TYPE, w1);</span>
+<span class="fc" id="L43">      printCell(out, HDR_PART_NAME, w2);</span>
+<span class="fc" id="L44">      out.println();</span>
+<span class="fc" id="L45">      printDivider(out);</span>
     }
-<span class="nc bnc" id="L47" title="All 2 branches missed.">    for (Part p : t.getParts()) {</span>
-<span class="nc bnc" id="L48" title="All 2 branches missed.">      if (p instanceof VariablePart) {</span>
-<span class="nc" id="L49">        printCell(out, t.getName(), w0);</span>
-<span class="nc" id="L50">        printCell(out, &quot;VARIABLE&quot;, w1);</span>
-<span class="nc" id="L51">        String name = ((VariablePart) p).getName();</span>
-<span class="nc" id="L52">        printCell(out, name, w2);</span>
-<span class="nc" id="L53">        out.println(p.toString());</span>
-<span class="nc" id="L54">        printDivider(out);</span>
-<span class="nc bnc" id="L55" title="All 2 branches missed.">      } else if (p instanceof TextPart) {</span>
-<span class="nc" id="L56">        printCell(out, t.getName(), w0);</span>
-<span class="nc" id="L57">        printCell(out, &quot;TEXT&quot;, w1);</span>
-<span class="nc" id="L58">        printCell(out, w2);</span>
-<span class="nc" id="L59">        out.println(p.toString().replaceAll(&quot;\\s+&quot;, &quot; &quot;));</span>
-<span class="nc" id="L60">        printDivider(out);</span>
+<span class="fc bfc" id="L47" title="All 2 branches covered.">    for (Part p : t.getParts()) {</span>
+<span class="fc bfc" id="L48" title="All 2 branches covered.">      if (p instanceof VariablePart) {</span>
+<span class="fc" id="L49">        printCell(out, t.getName(), w0);</span>
+<span class="fc" id="L50">        printCell(out, &quot;VARIABLE&quot;, w1);</span>
+<span class="fc" id="L51">        String name = ((VariablePart) p).getName();</span>
+<span class="fc" id="L52">        printCell(out, name, w2);</span>
+<span class="fc" id="L53">        out.println(p.toString());</span>
+<span class="fc" id="L54">        printDivider(out);</span>
+<span class="fc bfc" id="L55" title="All 2 branches covered.">      } else if (p instanceof TextPart) {</span>
+<span class="fc" id="L56">        printCell(out, t.getName(), w0);</span>
+<span class="fc" id="L57">        printCell(out, &quot;TEXT&quot;, w1);</span>
+<span class="fc" id="L58">        printCell(out, w2);</span>
+<span class="fc" id="L59">        out.println(p.toString().replaceAll(&quot;\\s+&quot;, &quot; &quot;));</span>
+<span class="fc" id="L60">        printDivider(out);</span>
       } else /* TemplatePart */ {
-<span class="nc" id="L62">        printCell(out, t.getName(), w0);</span>
-<span class="nc" id="L63">        printCell(out, &quot;TEMPLATE&quot;, w1);</span>
-<span class="nc" id="L64">        Template t2 = ((NestedTemplatePart) p).getTemplate();</span>
-<span class="nc" id="L65">        String name = t2.getName();</span>
-<span class="nc" id="L66">        printCell(out, name, w2);</span>
-<span class="nc" id="L67">        String s = &quot;~%%begin:&quot; + name + '%';</span>
-<span class="nc" id="L68">        out.println(s);</span>
-<span class="nc" id="L69">        printDivider(out);</span>
-<span class="nc" id="L70">        PartsPrinter printer = new PartsPrinter(t2, w0, w1, w2);</span>
-<span class="nc" id="L71">        printer.printParts(out, false);</span>
-<span class="nc" id="L72">        printCell(out, t.getName(), w0);</span>
-<span class="nc" id="L73">        printCell(out, &quot;TEMPLATE&quot;, w1);</span>
-<span class="nc" id="L74">        printCell(out, name, w2);</span>
-<span class="nc" id="L75">        s = &quot;~%%end:&quot; + name + '%';</span>
-<span class="nc" id="L76">        out.println(s);</span>
-<span class="nc" id="L77">        printDivider(out);</span>
+<span class="fc" id="L62">        printCell(out, t.getName(), w0);</span>
+<span class="fc" id="L63">        printCell(out, &quot;TEMPLATE&quot;, w1);</span>
+<span class="fc" id="L64">        Template t2 = ((NestedTemplatePart) p).getTemplate();</span>
+<span class="fc" id="L65">        String name = t2.getName();</span>
+<span class="fc" id="L66">        printCell(out, name, w2);</span>
+<span class="fc" id="L67">        String s = &quot;~%%begin:&quot; + name + '%';</span>
+<span class="fc" id="L68">        out.println(s);</span>
+<span class="fc" id="L69">        printDivider(out);</span>
+<span class="fc" id="L70">        PartsPrinter printer = new PartsPrinter(t2, w0, w1, w2);</span>
+<span class="fc" id="L71">        printer.printParts(out, false);</span>
+<span class="fc" id="L72">        printCell(out, t.getName(), w0);</span>
+<span class="fc" id="L73">        printCell(out, &quot;TEMPLATE&quot;, w1);</span>
+<span class="fc" id="L74">        printCell(out, name, w2);</span>
+<span class="fc" id="L75">        s = &quot;~%%end:&quot; + name + '%';</span>
+<span class="fc" id="L76">        out.println(s);</span>
+<span class="fc" id="L77">        printDivider(out);</span>
       }
-<span class="nc" id="L79">    }</span>
-<span class="nc" id="L80">  }</span>
+<span class="fc" id="L79">    }</span>
+<span class="fc" id="L80">  }</span>
 
   private static void printCell(PrintStream out, int width) {
-<span class="nc" id="L83">    printCell(out, &quot; &quot;, width);</span>
-<span class="nc" id="L84">  }</span>
+<span class="fc" id="L83">    printCell(out, &quot; &quot;, width);</span>
+<span class="fc" id="L84">  }</span>
 
   private static void printCell(PrintStream out, String val, int width) {
-<span class="nc" id="L87">    out.print(rpad(val, width, ' ', &quot; | &quot;));</span>
-<span class="nc" id="L88">  }</span>
+<span class="fc" id="L87">    out.print(rpad(val, width, ' ', &quot; | &quot;));</span>
+<span class="fc" id="L88">  }</span>
 
   private void printDivider(PrintStream out) {
-<span class="nc" id="L91">    out.print(rpad(&quot;-&quot;, w0, '-', &quot;-+-&quot;));</span>
-<span class="nc" id="L92">    out.print(rpad(&quot;-&quot;, w1, '-', &quot;-+-&quot;));</span>
-<span class="nc" id="L93">    out.println(rpad(&quot;-&quot;, w2, '-', &quot;-+&quot;));</span>
-<span class="nc" id="L94">  }</span>
+<span class="fc" id="L91">    out.print(rpad(&quot;-&quot;, w0, '-', &quot;-+-&quot;));</span>
+<span class="fc" id="L92">    out.print(rpad(&quot;-&quot;, w1, '-', &quot;-+-&quot;));</span>
+<span class="fc" id="L93">    out.println(rpad(&quot;-&quot;, w2, '-', &quot;-+&quot;));</span>
+<span class="fc" id="L94">  }</span>
 
   private static int getMaxTmplName(Template t) {
-<span class="nc" id="L97">    int i = Math.max(HDR_TEMPLATE.length(), t.getName().length());</span>
-<span class="nc bnc" id="L98" title="All 2 branches missed.">    for (Part p : t.getParts()) {</span>
-<span class="nc bnc" id="L99" title="All 2 branches missed.">      if (p instanceof NestedTemplatePart ntp) {</span>
-<span class="nc" id="L100">        i = Math.max(i, ntp.getTemplate().getName().length());</span>
-<span class="nc" id="L101">        i = Math.max(i, getMaxTmplName(ntp.getTemplate()));</span>
+<span class="fc" id="L97">    int i = Math.max(HDR_TEMPLATE.length(), t.getName().length());</span>
+<span class="fc bfc" id="L98" title="All 2 branches covered.">    for (Part p : t.getParts()) {</span>
+<span class="fc bfc" id="L99" title="All 2 branches covered.">      if (p instanceof NestedTemplatePart ntp) {</span>
+<span class="fc" id="L100">        i = Math.max(i, ntp.getTemplate().getName().length());</span>
+<span class="fc" id="L101">        i = Math.max(i, getMaxTmplName(ntp.getTemplate()));</span>
       }
-<span class="nc" id="L103">    }</span>
-<span class="nc" id="L104">    return i;</span>
+<span class="fc" id="L103">    }</span>
+<span class="fc" id="L104">    return i;</span>
   }
 
   private static int getMaxVarName(Template t) {
-<span class="nc" id="L108">    int i = HDR_PART_NAME.length();</span>
-<span class="nc bnc" id="L109" title="All 2 branches missed.">    for (Part p : t.getParts()) {</span>
-<span class="nc bnc" id="L110" title="All 2 branches missed.">      if (p instanceof VariablePart vp) {</span>
-<span class="nc" id="L111">        i = Math.max(i, vp.getName().length());</span>
-<span class="nc bnc" id="L112" title="All 2 branches missed.">      } else if (p instanceof NestedTemplatePart ntp) {</span>
-<span class="nc" id="L113">        i = Math.max(i, getMaxVarName(ntp.getTemplate()));</span>
+<span class="fc" id="L108">    int i = HDR_PART_NAME.length();</span>
+<span class="fc bfc" id="L109" title="All 2 branches covered.">    for (Part p : t.getParts()) {</span>
+<span class="fc bfc" id="L110" title="All 2 branches covered.">      if (p instanceof VariablePart vp) {</span>
+<span class="fc" id="L111">        i = Math.max(i, vp.getName().length());</span>
+<span class="fc bfc" id="L112" title="All 2 branches covered.">      } else if (p instanceof NestedTemplatePart ntp) {</span>
+<span class="fc" id="L113">        i = Math.max(i, getMaxVarName(ntp.getTemplate()));</span>
       }
-<span class="nc" id="L115">    }</span>
-<span class="nc" id="L116">    return i;</span>
+<span class="fc" id="L115">    }</span>
+<span class="fc" id="L116">    return i;</span>
   }
 
 }
