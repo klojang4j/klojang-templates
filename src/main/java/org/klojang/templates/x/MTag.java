@@ -13,6 +13,8 @@ public final class MTag {
 
   public static final String ACCESSORS = "accessors";
 
+  public static final String STRINGIFIER = "stringifier";
+
   public static final String STRINGIFIERS = "stringifiers";
 
   public static final String TEMPLATE = "template";
