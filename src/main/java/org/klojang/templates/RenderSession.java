@@ -3,7 +3,6 @@ package org.klojang.templates;
 import org.klojang.check.Check;
 import org.klojang.check.Tag;
 import org.klojang.templates.x.MTag;
-import org.klojang.templates.x.parse.VariablePart;
 import org.klojang.util.AnyTuple2;
 import org.klojang.util.CollectionMethods;
 import org.klojang.util.collection.IntList;

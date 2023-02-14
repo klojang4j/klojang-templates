@@ -1,7 +1,6 @@
 package org.klojang.templates;
 
 import org.klojang.check.fallible.FallibleBiFunction;
-import org.klojang.templates.x.parse.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -11,7 +10,7 @@ import java.util.regex.Pattern;
 
 import static org.klojang.check.CommonChecks.*;
 import static org.klojang.templates.Template.ROOT_TEMPLATE_NAME;
-import static org.klojang.templates.x.parse.ParseError.*;
+import static org.klojang.templates.ParseError.*;
 import static org.klojang.util.StringMethods.EMPTY_STRING;
 
 final class Parser {

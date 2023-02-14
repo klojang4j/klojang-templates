@@ -1,10 +1,5 @@
 package org.klojang.templates;
 
-import org.klojang.templates.x.parse.NestedTemplatePart;
-import org.klojang.templates.x.parse.Part;
-import org.klojang.templates.x.parse.TextPart;
-import org.klojang.templates.x.parse.VariablePart;
-
 import java.io.PrintStream;
 
 import static org.klojang.util.StringMethods.rpad;

@@ -5,7 +5,6 @@ import org.klojang.check.Tag;
 import org.klojang.templates.x.ClassPathResolver;
 import org.klojang.templates.x.FilePathResolver;
 import org.klojang.templates.x.MTag;
-import org.klojang.templates.x.parse.*;
 import org.klojang.util.collection.IntArrayList;
 import org.klojang.util.collection.IntList;
 import org.slf4j.Logger;

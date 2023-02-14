@@ -7,24 +7,24 @@ import java.io.InputStream;
 
 import static org.klojang.templates.PathResolver.INVALID_PATH;
 
-public record TemplateLocation(String path, PathResolver resolver) {
+record TemplateLocation(String path, PathResolver resolver) {
 
-  public static final TemplateLocation STRING = new TemplateLocation();
+  static final TemplateLocation STRING = new TemplateLocation();
 
   private TemplateLocation() {
     this(null, null);
   }
 
-  public TemplateLocation(PathResolver resolver) {
+  TemplateLocation(PathResolver resolver) {
     this(null, resolver);
   }
 
-  public boolean isInvalid() {
+  boolean isInvalid() {
     return resolver.isValidPath(path).equals(INVALID_PATH);
   }
 
-  public String read() throws PathResolutionException {
-    try (InputStream in = resolver.resolvePath(path)) {
+  String read() throws PathResolutionException {
+    try (InputStream in = resolver.resolve(path)) {
       return IOMethods.getContents(in);
     } catch (IOException e) {
       throw new PathResolutionException(path);
@@ -39,6 +39,7 @@ public record TemplateLocation(String path, PathResolver resolver) {
     return path == null;
   }
 
+  @Override
   public String toString() {
     return path;
   }

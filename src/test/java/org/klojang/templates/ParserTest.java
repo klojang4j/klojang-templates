@@ -2,7 +2,6 @@ package org.klojang.templates;
 
 import org.junit.jupiter.api.Test;
 import org.klojang.templates.x.ClassPathResolver;
-import org.klojang.templates.x.parse.*;
 
 import java.util.List;
 

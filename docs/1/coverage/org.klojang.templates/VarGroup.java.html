@@ -11,29 +11,29 @@ import static org.klojang.templates.x.Messages.ERR_NO_SUCH_VARGROUP;
 /**
  * A {@code VarGroup} lets you group template variables across one or more templates.
  * This enables you to
- * {@link StringifierRegistry.Builder#registerByGroup(Stringifier, String...)
- * provide} them with a shared stringifier. Variables can be assigned to a variable
- * group using a group name prefix. For example: {@code ~%html:firstName%} or
+ * {@linkplain StringifierRegistry.Builder#registerByGroup(Stringifier, String...)
+ * assign} a shared stringifier to them. Variables can be added to a variable group
+ * by using a group name prefix. For example: {@code ~%html:firstName%} or
  * {@code ~%js:firstName%} or {@code ~%myDateFormat:birthDate%}. The first two
  * examples use the predefined {@link #HTML} and {@link #JS} groups, which provide
  * HTML-escaping and Ecmascript-escaping, respectively. The third example is a custom
- * group that you can define and associate with a stringifier using the
- * {@link StringifierRegistry} class. Variable groups can also be assigned
- * {@link RenderSession#set(String, Object, VarGroup) programmatically}.
+ * group that you can define using the {@link StringifierRegistry} class. Variable
+ * groups can also be assigned &lt;i&gt;ad hoc&lt;/i&gt; using
+ * {@link RenderSession#set(String, Object, VarGroup)}.
  *
  * &lt;p&gt;Note that variable groups are assigned at the variable &lt;i&gt;occurrence&lt;/i&gt;
- * level. For example, you may have a variable named &quot;firstName&quot; occuring multiple
- * times in one and the same template. For the occurrences inside a &amp;lt;script&amp;gt;
- * you might want to use the &quot;js&quot; prefix, for the others the &quot;html&quot; prefix (or no
- * prefix at all). Therefore stringifiers associated with a variable group take the
- * highest precedence when deciding which stringifier to use, even higher (perhaps
- * paradoxically) than stringifiers associated with a variable!
+ * level. For example, a template may contain multiple instances of a variable named
+ * {@code firstName}. For the occurrences inside a &amp;lt;script&amp;gt; tag you might want
+ * to use the &quot;js&quot; prefix, for the others the &quot;html&quot; prefix (or no prefix at all).
+ * Therefore stringifiers associated with a variable group take the highest
+ * precedence when deciding which stringifier to use, even higher (perhaps
+ * paradoxically) than stringifiers associated with a variable.
  *
  * @author Ayco Holleman
  */
 public class VarGroup {
 
-<span class="fc" id="L36">  public static final HashMap&lt;String, VarGroup&gt; VAR_GROUPS = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L36">  private static final HashMap&lt;String, VarGroup&gt; VAR_GROUPS = new HashMap&lt;&gt;();</span>
 
   /**
    * A predefined variable group corresponding to the {@code text:} prefix. Forces
@@ -45,85 +45,88 @@ public class VarGroup {
   /**
    * A predefined variable group corresponding to the {@code html:} prefix. Variables
    * with this prefix are HTML-escaped. Note that the fact alone that a variable
-   * appears inside an HTML element, as in &lt;code&gt;&amp;lt;td&amp;gt;~%age%&amp;lt;/td&amp;gt;&lt;/code&gt;,
-   * does not mean that the variable &lt;i&gt;has to&lt;/i&gt; have the {@code html:} prefix. The
-   * {@code age} variable likely is an integer, which does not require any HTML
-   * escaping.
+   * appears inside an HTML element, as in {@code &lt;td&gt;~%age%&lt;/td&gt;}, does not mean
+   * that the variable &lt;i&gt;has to&lt;/i&gt; have the {@code html:} prefix. The {@code age}
+   * variable likely is an integer, which does not require any HTML escaping.
    */
-<span class="fc" id="L53">  public static final VarGroup HTML = withName(&quot;html&quot;);</span>
+<span class="fc" id="L52">  public static final VarGroup HTML = withName(&quot;html&quot;);</span>
 
   /**
    * A predefined variable group corresponding to the {@code js:} prefix. Variables
-   * with this prefix are JavaScript-escaped. Especially for use in
-   * &lt;code&gt;&amp;lt;script&amp;gt;&lt;/code&gt; tags.
+   * with this prefix are ECMASScript-escaped. Especially for use in {@code &lt;script&gt;}
+   * tags.
    */
-<span class="fc" id="L60">  public static final VarGroup JS = withName(&quot;js&quot;);</span>
+<span class="fc" id="L59">  public static final VarGroup JS = withName(&quot;js&quot;);</span>
 
   /**
    * A predefined variable group corresponding to the {@code attr:} prefix. Works
    * just like the {@code html:} prefix except that single and double quote
-   * characters are also escaped.
+   * characters are also escaped. Especially for use in element attribute values.
    */
-<span class="fc" id="L67">  public static final VarGroup ATTR = withName(&quot;attr&quot;);</span>
+<span class="fc" id="L66">  public static final VarGroup ATTR = withName(&quot;attr&quot;);</span>
 
   /**
    * A predefined variable group corresponding to the {@code jsattr:} prefix.
    * Variables with this prefix are first JavaScript-escaped and then HTML-escaped
    * like the {@link #ATTR} variable group. Especially for use in HTML attributes
-   * that contain JavaScript, like &lt;code&gt;onclick&lt;/code&gt; .
+   * that contain JavaScript, like {@code onclick} .
    */
-<span class="fc" id="L75">  public static final VarGroup JS_ATTR = withName(&quot;jsattr&quot;);</span>
+<span class="fc" id="L74">  public static final VarGroup JS_ATTR = withName(&quot;jsattr&quot;);</span>
 
   /**
    * A predefined variable group corresponding to the {@code param:} prefix. To be
    * used for template variables placed inside a URL as the value of a query
-   * parameter. It could also be used in the more unlikely case that the variable
-   * functions as the &lt;i&gt;name&lt;/i&gt; of the query parameter, because names and values
-   * are escaped in the same way in a URL. Note that it does not matter whether the
-   * URL as a whole is the value of a JavaScript variable or the contents of an HTML
-   * tag. Further escaping using either JavaScript-escaping rules or HTML-escaping
-   * rules will not change the value.
+   * parameter, like http://example.com/?id=~%param:id%. It could also be used in the
+   * more unlikely case that the variable functions as the &lt;i&gt;name&lt;/i&gt; of the query
+   * parameter, because names and values are escaped identically in a URL. Note that
+   * it does not matter whether the URL as a whole is the value of a JavaScript
+   * variable or the contents of an HTML tag. Further escaping using either
+   * JavaScript-escaping rules or HTML-escaping rules would not change the value.
    */
-<span class="fc" id="L87">  public static final VarGroup PARAM = withName(&quot;param&quot;);</span>
+<span class="fc" id="L86">  public static final VarGroup PARAM = withName(&quot;param&quot;);</span>
 
   /**
    * A predefined variable group corresponding to the {@code path:} prefix. To be
-   * used for template variables placed inside a URL as a path segment.
+   * used for template variables placed inside a URL as a path segment. For example:
+   * http://example.com/~%path:city%/~%path:restaurant%.
    */
 <span class="fc" id="L93">  public static final VarGroup PATH = withName(&quot;path&quot;);</span>
 
   /**
-   * Returns the {@code VarGroup} instance corresponding to the specified name (which
-   * also functions as the prefix). Throws an {@link IllegalArgumentException} if
+   * Returns the {@code VarGroup} with the specified name (which is also the prefix
+   * to be used inside a template). Throws an {@link IllegalArgumentException} if
    * there is no {@code VarGroup} with the specified name.
    *
-   * @param name The name or prefix
-   * @return The {@code VarGroup} instance corresponding to the specified name
+   * @param name the name or prefix
+   * @return the {@code VarGroup} instance corresponding to the specified name
    */
   public static VarGroup forName(String name) {
 <span class="fc" id="L104">    VarGroup vg = Check.notNull(name).ok(VAR_GROUPS::get);</span>
 <span class="fc" id="L105">    return Check.that(vg).is(notNull(), ERR_NO_SUCH_VARGROUP, name).ok();</span>
   }
 
-  /**
-   * For internal use only.
-   */
-  public static VarGroup createPrivileged(Private&lt;String&gt; name) {
-<span class="fc" id="L112">    return withName(name.get());</span>
+  static VarGroup createPrivileged(Private&lt;String&gt; name) {
+<span class="fc" id="L109">    return withName(name.get());</span>
   }
 
   private static VarGroup withName(String name) {
-<span class="fc" id="L116">    return VAR_GROUPS.computeIfAbsent(name, VarGroup::new);</span>
+<span class="fc" id="L113">    return VAR_GROUPS.computeIfAbsent(name, VarGroup::new);</span>
   }
 
   private final String name;
 
-<span class="fc" id="L121">  private VarGroup(String name) {</span>
-<span class="fc" id="L122">    this.name = name;</span>
-<span class="fc" id="L123">  }</span>
+<span class="fc" id="L118">  private VarGroup(String name) {</span>
+<span class="fc" id="L119">    this.name = name;</span>
+<span class="fc" id="L120">  }</span>
 
+  /**
+   * Returns the name of this {@code VarGroup}, which is also the prefix to be used
+   * inside a template.
+   *
+   * @return the name of this {@code VarGroup}
+   */
   public String getName() {
-<span class="fc" id="L126">    return name;</span>
+<span class="fc" id="L129">    return name;</span>
   }
 
 }

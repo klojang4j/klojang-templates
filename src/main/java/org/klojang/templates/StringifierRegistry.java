@@ -6,7 +6,6 @@ import org.klojang.collections.TypeMap;
 import org.klojang.templates.x.MTag;
 import org.klojang.templates.x.Private;
 import org.klojang.templates.x.StandardStringifiers;
-import org.klojang.templates.x.parse.VariablePart;
 import org.klojang.util.Tuple2;
 
 import java.util.ArrayList;

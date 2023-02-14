@@ -1,6 +1,5 @@
 package org.klojang.templates;
 
-import org.klojang.templates.x.parse.VariablePart;
 import org.klojang.util.ExceptionMethods;
 
 import java.util.function.Function;

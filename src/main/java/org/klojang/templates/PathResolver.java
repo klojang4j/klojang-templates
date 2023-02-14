@@ -65,6 +65,6 @@ public interface PathResolver {
    * @throws IOException If an error occurred while setting up the
    *     {@code InputStream}.
    */
-  InputStream resolvePath(String path) throws IOException;
+  InputStream resolve(String path) throws IOException;
 
 }

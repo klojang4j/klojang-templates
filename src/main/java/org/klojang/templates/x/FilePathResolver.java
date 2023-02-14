@@ -16,7 +16,7 @@ public final class FilePathResolver implements PathResolver {
   }
 
   @Override
-  public InputStream resolvePath(String path) throws FileNotFoundException {
+  public InputStream resolve(String path) throws FileNotFoundException {
     return new FileInputStream(path);
   }
 
