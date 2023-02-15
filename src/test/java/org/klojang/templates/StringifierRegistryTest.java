@@ -18,7 +18,7 @@ public class StringifierRegistryTest {
       obj -> obj == null ? "" : obj.toString().toLowerCase();
 
   public static final Stringifier typer =
-      obj -> obj == null ? "[null]" : obj.getClass().getSimpleName() + ' ' + obj;
+      obj -> obj == null ? "[null]" : obj.getClass().getSimpleName() + '@' + obj;
 
   public static final Stringifier decimal1 = obj ->
       obj == null
@@ -93,7 +93,7 @@ public class StringifierRegistryTest {
         .freeze();
     RenderSession rs = t.newRenderSession(reg);
     rs.set("foo", 10.7F);
-    assertEquals("Float 10.7", rs.render());
+    assertEquals("Float@10.7", rs.render());
   }
 
   @Test
@@ -350,7 +350,7 @@ public class StringifierRegistryTest {
     s = s.replaceAll("\\s+", "|");
     s = s.replaceAll(":\\|", ":");
     assertEquals(
-        "foo:666.0000|price:222.0000|sales:777.0000|t0_price:22|t0_sales:77|t1_price:Integer|2|t1_sales:Integer|7|",
+        "foo:666.0000|price:222.0000|sales:777.0000|t0_price:22|t0_sales:77|t1_price:Integer@2|t1_sales:Integer@7|",
         s);
   }
 
@@ -366,6 +366,59 @@ public class StringifierRegistryTest {
     RenderSession rs = t.newRenderSession(reg);
     rs.set("foo", null);
     assertEquals("[null]", rs.render());
+  }
+
+  @Test
+  public void test14() throws ParseException {
+    String src = """
+        foo: ~%foo%
+        price: ~%averagePrice%
+        sales: ~%averageSales%
+        ~%%begin:t0%
+            t0_price: ~%averagePrice%
+            t0_sales: ~%averageSales%
+            ~%%begin:t1%
+                t1_price: ~%averagePrice%
+                t1_sales: ~%averageSales%
+            ~%%end:t1%
+        ~%%end:t0%
+        """;
+    Template t = Template.fromString(src);
+    StringifierRegistry reg = StringifierRegistry
+        .configure()
+        .registerByTemplate(decimal1, t, null, "averagePrice")
+        .registerByTemplate(decimal2, t, "t0", "averagePrice")
+        .registerByTemplate(typer, t, "t0.t1", "averagePrice")
+        .freeze();
+    RenderSession rs = t.newRenderSession(reg);
+    Map<String, Object> map = new MapBuilder()
+        .set("foo", "666")
+        .set("averagePrice", 222)
+        .set("averageSales", 777)
+        .set("t0.averagePrice", 22)
+        .set("t0.averageSales", 77)
+        .set("t0.t1.averagePrice", 2)
+        .set("t0.t1.averageSales", 7)
+        .createMap();
+    rs.insert(map);
+    String s = rs.render();
+    s = s.replaceAll("\\s+", "|");
+    s = s.replaceAll(":\\|", ":");
+    assertEquals(
+        "foo:666|price:222.0000|sales:777|t0_price:22|t0_sales:77|t1_price:Integer@2|t1_sales:7|",
+        s);
+  }
+
+  @Test
+  public void test15() throws ParseException {
+    String src = "~%html:foo%";
+    Template t = Template.fromString(src);
+    StringifierRegistry reg = StringifierRegistry
+        .cleanSlate()
+        .freeze();
+    RenderSession rs = t.newRenderSession(reg);
+    String s = rs.set("foo", "<td>").render();
+    assertEquals("<td>", s);
   }
 
 }

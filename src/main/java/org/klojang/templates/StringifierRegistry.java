@@ -401,8 +401,9 @@ public final class StringifierRegistry {
 
   /**
    * Returns a {@code Builder} instance that lets you configure a
-   * {@code StringifierRegistry}. The registry will already contain stringifiers for
-   * the standard {@link VarGroup variable groups}.
+   * {@code StringifierRegistry}. The {@code StringifierRegistry} will already
+   * contain the {@linkplain Stringifier#DEFAULT default stringifier} and the
+   * stringifiers for the standard {@linkplain VarGroup variable groups}.
    *
    * @return A {@code Builder} instance that lets you configure a
    *     {@code StringifierRegistry}
@@ -414,14 +415,14 @@ public final class StringifierRegistry {
   /**
    * Returns a {@code Builder} instance that lets you configure a
    * {@code StringifierRegistry}. The registry will not contain any stringifier
-   * exception the {@link Stringifier#DEFAULT default stringifier}. Useful for
+   * except the {@linkplain Stringifier#DEFAULT default stringifier}. Useful for
    * non-HTML templates.
    *
    * @return A {@code Builder} instance that lets you configure a
    *     {@code StringifierRegistry}
    */
   public static Builder cleanSlate() {
-    return new Builder(true);
+    return new Builder(false);
   }
 
   private final Map<StringifierId, Stringifier> stringifiers;
