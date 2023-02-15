@@ -32,7 +32,7 @@ Klojang Templates,org.klojang.templates,Accessor,0,5,0,0,0,1,0,1,0,1
 Klojang Templates,org.klojang.templates,UnparsedPart,3,10,0,0,1,4,1,2,1,2
 Klojang Templates,org.klojang.templates,PartsPrinter,0,325,0,18,0,72,0,18,0,9
 Klojang Templates,org.klojang.templates,AccessorRegistry,48,67,11,5,10,18,9,4,1,4
-Klojang Templates,org.klojang.templates,RenderSession,110,1107,7,67,21,194,13,68,6,38
+Klojang Templates,org.klojang.templates,RenderSession,112,1151,8,64,22,200,14,67,6,39
 Klojang Templates,org.klojang.templates,TextPart,0,13,0,0,0,5,0,3,0,3
 Klojang Templates,org.klojang.templates,TemplateCache,112,112,19,11,21,28,14,6,0,5
 Klojang Templates,org.klojang.templates,BadStringifierException,36,0,0,0,6,0,3,0,3,0

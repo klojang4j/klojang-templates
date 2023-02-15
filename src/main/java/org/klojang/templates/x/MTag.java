@@ -5,7 +5,9 @@ package org.klojang.templates.x;
  */
 public final class MTag {
 
-  public static final String VAR_NAME = "varName";
+  public static final String VAR_NAME = "variable name";
+
+  public static final String VAR_GROUP = "variable group";
 
   public static final String TEMPLATE_NAME = "template name";
 
@@ -18,5 +20,11 @@ public final class MTag {
   public static final String STRINGIFIERS = "stringifiers";
 
   public static final String TEMPLATE = "template";
+
+  public static final String SEPARATOR = "separator";
+
+  public static final String PREFIX = "prefix";
+
+  public static final String SUFFIX = "suffix";
 
 }

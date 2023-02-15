@@ -364,7 +364,7 @@ public class StringifierRegistryTest {
         .setVariableType(Float.class, t, "foo")
         .freeze();
     RenderSession rs = t.newRenderSession(reg);
-    rs.set("foo", (Object) null);
+    rs.set("foo", null);
     assertEquals("[null]", rs.render());
   }
 

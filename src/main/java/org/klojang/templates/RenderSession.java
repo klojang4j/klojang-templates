@@ -4,7 +4,6 @@ import org.klojang.check.Check;
 import org.klojang.check.Tag;
 import org.klojang.templates.x.MTag;
 import org.klojang.util.AnyTuple2;
-import org.klojang.util.CollectionMethods;
 import org.klojang.util.collection.IntList;
 
 import java.io.ByteArrayOutputStream;
@@ -19,13 +18,18 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Collections.singletonMap;
 import static org.klojang.check.CommonChecks.*;
 import static org.klojang.check.CommonProperties.size;
+import static org.klojang.check.Tag.VALUES;
 import static org.klojang.templates.Accessor.UNDEFINED;
 import static org.klojang.templates.BadStringifierException.stringifierNotNullResistant;
 import static org.klojang.templates.BadStringifierException.stringifierReturnedNull;
 import static org.klojang.templates.RenderException.*;
 import static org.klojang.templates.TemplateUtils.getFQName;
+import static org.klojang.templates.x.MTag.*;
 import static org.klojang.util.ArrayMethods.EMPTY_STRING_ARRAY;
-import static org.klojang.util.ObjectMethods.*;
+import static org.klojang.util.CollectionMethods.findFirst;
+import static org.klojang.util.CollectionMethods.listify;
+import static org.klojang.util.ObjectMethods.isEmpty;
+import static org.klojang.util.ObjectMethods.n2e;
 import static org.klojang.util.StringMethods.concat;
 
 /**
@@ -74,7 +78,14 @@ public final class RenderSession {
    * @return this {@code RenderSession}
    */
   public RenderSession set(String varName, Object value) {
-    return set(varName, value, null);
+    Check.on(frozenSession(), state.isFrozen()).is(no());
+    Check.notNull(varName, VAR_NAME);
+    if (value == UNDEFINED) {
+      // Specifying UNDEFINED really misses the point of that constant, but
+      // we'll accept that value and process it as documented, namely: not.
+      return this;
+    }
+    return setVar(varName, listify(value), null, null, null, null);
   }
 
   /**
@@ -99,53 +110,32 @@ public final class RenderSession {
    */
   public RenderSession set(String varName, Object value, VarGroup varGroup) {
     Check.on(frozenSession(), state.isFrozen()).is(no());
-    Check.notNull(varName, MTag.VAR_NAME);
-    Template t = config.getTemplate();
-    Check.that(t).is(Template::hasVariable, varName, noSuchVariable(t, varName));
-    Check.that(state.isSet(varName)).is(no(), alreadySet(t, varName));
+    Check.notNull(varName, VAR_NAME).and(varGroup, VAR_GROUP).is(notNull());
     if (value == UNDEFINED) {
-      // Unless the user is manually going through, and accessing the properties
-      // of some source data object, specifying UNDEFINED misses the point of that
-      // constant, but since we can't know his, we'll have to accept that value
-      // and process it as it is meant to be processed (namely: not).
       return this;
     }
-    IntList indices = t.getVarPartIndices().get(varName);
-    StringifierRegistry sf = config.getStringifiers();
-    for (int i = 0; i < indices.size(); ++i) {
-      int partIndex = indices.get(i);
-      VariablePart part = t.getPart(partIndex);
-      Stringifier stringifier = sf.getStringifier(part, varGroup, value);
-      String stringified = stringify(stringifier, varName, value);
-      state.setVar(partIndex, new String[] {stringified});
-    }
-    state.done(varName);
-    return this;
+    return setVar(varName, listify(value), varGroup, null, null, null);
   }
 
   /**
    * Sets the specified variable to the concatenation of the values within the
-   * specified {@code List}. Unless the variable was declared with an inline group
-   * name prefix, the values wil be stringified using the
-   * {@link Stringifier#DEFAULT default stringifier}. The values are first
-   * stringified, then escaped, then concatenated. If the {@code List} is empty, the
-   * variable will not be rendered at all (that is, an empty string will be inserted
-   * at the location of the variable within the template).
+   * specified {@code List}. If the {@code List} is empty, the variable will not be
+   * rendered at all (that is, the variable will be replaced with an empty string).
    *
    * @param varName the name of the template variable
    * @param values the string values to concatenate
    * @return this {@code RenderSession}
    */
-  public RenderSession set(String varName, List<?> values) {
-    return set(varName, values, (VarGroup) null);
+  public RenderSession setList(String varName, List<?> values) {
+    Check.that(varName, VAR_NAME).is(notNull()).and(values, VALUES).is(notNull());
+    return setVar(varName, values, null, null, null, null);
   }
 
   /**
    * Sets the specified variable to the concatenation of the values within the
    * specified {@code List}. The values in the {@code List} are first stringified and
    * then concatenated. If the {@code List} is empty, the variable will not be
-   * rendered at all (that is, an empty string will be inserted at the location of
-   * the variable within the template).
+   * rendered at all (that is, the variable will be replaced with an empty string).
    *
    * @param varName the name of the template variable
    * @param values the string values to concatenate
@@ -153,8 +143,11 @@ public final class RenderSession {
    *     has no group name prefix
    * @return this {@code RenderSession}
    */
-  public RenderSession set(String varName, List<?> values, VarGroup varGroup) {
-    return set(varName, values, varGroup, null, null, null);
+  public RenderSession setList(String varName, List<?> values, VarGroup varGroup) {
+    Check.that(varName, VAR_NAME).is(notNull())
+        .and(values, VALUES).is(notNull())
+        .and(varGroup, VAR_GROUP).is(notNull());
+    return setVar(varName, values, varGroup, null, null, null);
   }
 
   /**
@@ -165,15 +158,13 @@ public final class RenderSession {
    * @param values the string values to concatenate
    * @param separator the suffix to use for each string
    * @return this {@code RenderSession}
-   * @see #set(String, List, VarGroup, String, String, String)
+   * @see #setList(String, List, VarGroup, String, String, String)
    */
-  public RenderSession set(String varName, List<?> values, String separator) {
-    return set(varName,
-        values,
-        null,
-        null,
-        separator,
-        null);
+  public RenderSession setList(String varName, List<?> values, String separator) {
+    Check.that(varName, VAR_NAME).is(notNull())
+        .and(values, VALUES).is(notNull())
+        .and(separator, SEPARATOR).is(notNull());
+    return setVar(varName, values, null, null, separator, null);
   }
 
   /**
@@ -183,16 +174,20 @@ public final class RenderSession {
    * @param varName the name of the template variable
    * @param values the string values to concatenate
    * @param varGroup the variable group to assign the variable to if the variable
-   *     has no group name prefix. May be {@code null}.
+   *     has no group name prefix.
    * @param separator the suffix to use for each string
    * @return this {@code RenderSession}
-   * @see #set(String, List, VarGroup, String, String, String)
+   * @see #setList(String, List, VarGroup, String, String, String)
    */
-  public RenderSession set(String varName,
+  public RenderSession setList(String varName,
       List<?> values,
       VarGroup varGroup,
       String separator) {
-    return set(varName, values, varGroup, null, separator, null);
+    Check.that(varName, VAR_NAME).is(notNull())
+        .and(values, VALUES).is(notNull())
+        .and(varGroup, VAR_GROUP).is(notNull())
+        .and(separator, SEPARATOR).is(notNull());
+    return setVar(varName, values, varGroup, null, separator, null);
   }
 
   /**
@@ -215,24 +210,34 @@ public final class RenderSession {
    * @param varName the name of the template variable
    * @param values the values to concatenate
    * @param varGroup the variable group to assign the variable to if the variable
-   *     has no group name prefix. May be {@code null}
-   * @param prefix the prefix to the first value. May be {@code null} (meaning:
-   *     no prefix)
-   * @param separator the separator between the values. May be {@code null}
-   *     (meaning: no separator)
-   * @param suffix the suffix to the last value. May be {@code null} (meaning: no
-   *     suffix)
+   *     has no group name prefix.
+   * @param prefix the prefix to the first value.
+   * @param separator the separator between the values.
+   * @param suffix the suffix to the last value.
    * @return this {@code RenderSession}
    */
-  public RenderSession set(String varName,
+  public RenderSession setList(String varName,
+      List<?> values,
+      VarGroup varGroup,
+      String prefix,
+      String separator,
+      String suffix) {
+    Check.that(varName, VAR_NAME).is(notNull())
+        .and(values, VALUES).is(notNull())
+        .and(varGroup, VAR_GROUP).is(notNull())
+        .and(prefix, PREFIX).is(notNull())
+        .and(separator, SEPARATOR).is(notNull())
+        .and(suffix, SUFFIX).is(notNull());
+    return setVar(varName, values, varGroup, prefix, separator, suffix);
+  }
+
+  private RenderSession setVar(String varName,
       List<?> values,
       VarGroup varGroup,
       String prefix,
       String separator,
       String suffix) {
     Check.on(frozenSession(), state.isFrozen()).is(no());
-    Check.notNull(varName, MTag.VAR_NAME);
-    Check.notNull(values, Tag.VALUES);
     Template t = config.getTemplate();
     Check.that(t).is(Template::hasVariable, varName, noSuchVariable(t, varName));
     Check.that(state.isSet(varName)).is(no(), alreadySet(t, varName));
@@ -253,27 +258,26 @@ public final class RenderSession {
 
   private void setVar(int partIndex,
       List<?> values,
-      VarGroup defGroup,
+      VarGroup varGroup,
       String prefix,
       String separator,
       String suffix) {
     VariablePart part = config.getTemplate().getPart(partIndex);
-    VarGroup varGroup = part.getVarGroup().orElse(defGroup);
-    prefix = n2e(prefix);
-    separator = n2e(separator);
-    suffix = n2e(suffix);
-    boolean plain = prefix.isEmpty() && separator.isEmpty() && suffix.isEmpty();
+    VarGroup group = part.getVarGroup().orElse(varGroup);
+    // Get first non-null element in list, so that we'll
+    // find the most specific stringifier
+    Object any = findFirst(values, notNull());
     StringifierRegistry sf = config.getStringifiers();
-    // Find first non-null value to increase the chance that we find a suitable
-    // stringifier:
-    Object any = values.stream().filter(notNull()).findFirst().orElse(null);
-    Stringifier stringifier = sf.getStringifier(part, varGroup, any);
+    Stringifier stringifier = sf.getStringifier(part, group, any);
     String[] stringified = new String[values.size()];
-    if (plain) {
+    if (prefix == null && separator == null && suffix == null) {
       for (int i = 0; i < values.size(); ++i) {
         stringified[i] = stringify(stringifier, part.getName(), values.get(i));
       }
     } else {
+      prefix = n2e(prefix);
+      separator = n2e(separator);
+      suffix = n2e(suffix);
       for (int i = 0; i < values.size(); ++i) {
         String s = stringify(stringifier, part.getName(), values.get(i));
         if (i == 0) {
@@ -303,7 +307,7 @@ public final class RenderSession {
    */
   public RenderSession paste(String varName, Renderable renderable) {
     Check.on(frozenSession(), state.isFrozen()).is(no());
-    Check.notNull(varName, MTag.VAR_NAME);
+    Check.notNull(varName, VAR_NAME);
     Check.notNull(renderable, "renderable");
     Template t = config.getTemplate();
     Check.that(t).is(Template::hasVariable, varName, noSuchVariable(t, varName));
@@ -376,7 +380,7 @@ public final class RenderSession {
       return this;
     }
     Template t = getNestedTemplate(nestedTemplateName);
-    List<?> data = CollectionMethods.listify(sourceData);
+    List<?> data = listify(sourceData);
     if (t.isTextOnly()) {
       return show(data.size(), t);
     }
@@ -682,7 +686,7 @@ public final class RenderSession {
           throw accessException(config.getTemplate(), varName, e, data, acc);
         }
         if (value != UNDEFINED) {
-          set(varName, value, defGroup);
+          setVar(varName, listify(value), defGroup, null, null, null);
         }
       }
     }

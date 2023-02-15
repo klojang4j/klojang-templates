@@ -59,7 +59,7 @@ public class RenderSessionTest {
     String src = "<td>~%foo%</td>";
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession(registry);
-    rs.set("foo", List.of('a', 'b', 'c'), VarGroup.forName("upper"));
+    rs.setList("foo", List.of('a', 'b', 'c'), VarGroup.forName("upper"));
     String out = rs.render();
     assertEquals("<td>ABC</td>", out);
   }
@@ -73,7 +73,7 @@ public class RenderSessionTest {
     String src = "<td>~%foo%</td>";
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession(registry);
-    rs.set("foo", List.of('a', 'b', 'c'), VarGroup.forName("upper"), "|");
+    rs.setList("foo", List.of('a', 'b', 'c'), VarGroup.forName("upper"), "|");
     String out = rs.render();
     assertEquals("<td>A|B|C</td>", out);
   }
@@ -83,7 +83,7 @@ public class RenderSessionTest {
     String src = "<td>~%foo%</td>";
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
-    rs.set("foo", List.of('a', 'b', 'c'), "|");
+    rs.setList("foo", List.of('a', 'b', 'c'), "|");
     String out = rs.render();
     assertEquals("<td>a|b|c</td>", out);
   }
@@ -93,7 +93,7 @@ public class RenderSessionTest {
     String src = "~%foo%";
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
-    rs.set("foo", List.of('a', 'b', 'c'), VarGroup.TEXT, "[", "|", "]");
+    rs.setList("foo", List.of('a', 'b', 'c'), VarGroup.TEXT, "[", "|", "]");
     String out = rs.render();
     assertEquals("[a|b|c]", out);
   }
@@ -103,7 +103,7 @@ public class RenderSessionTest {
     String src = "~%foo%";
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
-    rs.set("foo", List.of('a'), VarGroup.TEXT, "[", "|", "]");
+    rs.setList("foo", List.of('a'), VarGroup.TEXT, "[", "|", "]");
     String out = rs.render();
     assertEquals("[a]", out);
   }
@@ -113,7 +113,7 @@ public class RenderSessionTest {
     String src = "~%foo%";
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
-    rs.set("foo", List.of(), VarGroup.TEXT, "[", "|", "]");
+    rs.setList("foo", List.of(), VarGroup.TEXT, "[", "|", "]");
     String out = rs.render();
     assertEquals("", out);
   }
@@ -123,7 +123,7 @@ public class RenderSessionTest {
     String src = "~%foo%";
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
-    rs.set("foo", List.of('<', '>'), VarGroup.HTML, "<td>", "</td><td>", "</td>");
+    rs.setList("foo", List.of('<', '>'), VarGroup.HTML, "<td>", "</td><td>", "</td>");
     String out = rs.render();
     assertEquals("<td>&lt;</td><td>&gt;</td>", out);
   }
@@ -133,7 +133,7 @@ public class RenderSessionTest {
     String src = "~%foo%";
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
-    rs.set("foo",
+    rs.setList("foo",
         List.of('<', '>', '<'),
         VarGroup.HTML,
         "<td>",
@@ -148,7 +148,7 @@ public class RenderSessionTest {
     String src = "~%foo%";
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
-    rs.set("foo", List.of(1, 2, 3));
+    rs.setList("foo", List.of(1, 2, 3));
     String out = rs.render();
     assertEquals("123", out);
   }
