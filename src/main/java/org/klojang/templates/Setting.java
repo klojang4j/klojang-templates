@@ -33,51 +33,6 @@ public enum Setting {
 
   /**
    * <p>System Property:
-   * {@code org.klojang.templates.varStart}<br>Environment Variable:
-   * {@code KJT_VAR_START}<br>Default Value: {@code ~%}.
-   *
-   * <p>Specifies the character sequence at the start of a template
-   * variable.
-   */
-  VAR_START("org.klojang.templates.varStart", "KJT_VAR_START", "~%"),
-
-  /**
-   * <p>System Property:
-   * {@code org.klojang.templates.varEnd}<br>Environment Variable:
-   * {@code KJT_VAR_END}<br>Default Value: {@code %}.
-   *
-   * <p>Specifies the character sequence at the end of a template variable.
-   */
-  VAR_END("org.klojang.templates.varEnd", "KJT_VAR_END", "%"),
-
-  /**
-   * <p>System Property:
-   * {@code org.klojang.templates.tmplStart}<br>Environment Variable:
-   * {@code KJT_TMPL_START}<br>Default Value: {@code ~%%}.
-   *
-   * <p>Specifies the character sequence at the start of a template tag. The
-   * character sequence is used for included templates
-   * ({@code ~%%include:/path/to/foo.html%}), for the start tag of inline templates
-   * ({@code ~%%begin:foo%}) <b>and</b> for the end tag of inline templates
-   * ({@code ~%%end:foo%}).
-   */
-  TMPL_START("org.klojang.templates.tmplStart", "KJT_TMPL_START", "~%%"),
-
-  /**
-   * <p>System Property:
-   * {@code org.klojang.templates.tmplStart}<br>Environment Variable:
-   * {@code KJT_TMPL_END}<br>Default Value: {@code %}.
-   *
-   * <p>Specifies the character sequence at the end of a template tag. The
-   * character sequence is used for included templates
-   * ({@code ~%%include:/path/to/foo.html%}), for the start tag of inline templates
-   * ({@code ~%%begin:foo%}) <b>and</b> for the end tag of inline templates
-   * ({@code ~%%end:foo%}).
-   */
-  TMPL_END("org.klojang.templates.tmplEnd", "KJT_TMPL_END", "%"),
-
-  /**
-   * <p>System Property:
    * {@code org.klojang.templates.useBeanAccessor}<br>Environment Variable:
    * {@code KJT_USE_BEAN_ACCESSOR}<br>Default Value: {@code false}.
    *

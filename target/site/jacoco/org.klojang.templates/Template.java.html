@@ -5,7 +5,6 @@ import org.klojang.check.Tag;
 import org.klojang.templates.x.ClassPathResolver;
 import org.klojang.templates.x.FilePathResolver;
 import org.klojang.templates.x.MTag;
-import org.klojang.templates.x.parse.*;
 import org.klojang.util.collection.IntArrayList;
 import org.klojang.util.collection.IntList;
 import org.slf4j.Logger;
@@ -36,7 +35,7 @@ import static org.klojang.util.CollectionMethods.implode;
 public final class Template {
 
   @SuppressWarnings(&quot;unused&quot;)
-<span class="fc" id="L39">  private static final Logger LOG = LoggerFactory.getLogger(Template.class);</span>
+<span class="fc" id="L38">  private static final Logger LOG = LoggerFactory.getLogger(Template.class);</span>
 
   /**
    * The name given to the root template: &quot;{root}&quot;. Any {@code Template} that is
@@ -58,8 +57,8 @@ public final class Template {
    * @throws ParseException if the template source contains a syntax error
    */
   public static Template fromString(String source) throws ParseException {
-<span class="fc" id="L61">    Check.notNull(source, Tag.SOURCE);</span>
-<span class="fc" id="L62">    return new Parser(TemplateLocation.STRING, ROOT_TEMPLATE_NAME, source).parse();</span>
+<span class="fc" id="L60">    Check.notNull(source, Tag.SOURCE);</span>
+<span class="fc" id="L61">    return new Parser(TemplateLocation.STRING, ROOT_TEMPLATE_NAME, source).parse();</span>
   }
 
   /**
@@ -76,11 +75,11 @@ public final class Template {
    */
   public static Template fromString(Class&lt;?&gt; clazz, String source)
       throws ParseException {
-<span class="fc" id="L79">    Check.notNull(clazz, Tag.CLASS);</span>
-<span class="fc" id="L80">    Check.notNull(source, Tag.SOURCE);</span>
-<span class="fc" id="L81">    PathResolver resolver = new ClassPathResolver(clazz);</span>
-<span class="fc" id="L82">    TemplateLocation location = new TemplateLocation(resolver);</span>
-<span class="fc" id="L83">    return new Parser(location, ROOT_TEMPLATE_NAME, source).parse();</span>
+<span class="fc" id="L78">    Check.notNull(clazz, Tag.CLASS);</span>
+<span class="fc" id="L79">    Check.notNull(source, Tag.SOURCE);</span>
+<span class="fc" id="L80">    PathResolver resolver = new ClassPathResolver(clazz);</span>
+<span class="fc" id="L81">    TemplateLocation location = new TemplateLocation(resolver);</span>
+<span class="fc" id="L82">    return new Parser(location, ROOT_TEMPLATE_NAME, source).parse();</span>
   }
 
   /**
@@ -97,11 +96,11 @@ public final class Template {
    */
   public static Template fromResource(Class&lt;?&gt; clazz, String path)
       throws ParseException {
-<span class="nc" id="L100">    Check.notNull(clazz, Tag.CLASS);</span>
-<span class="nc" id="L101">    Check.notNull(path).is(resourceOf(), clazz);</span>
-<span class="nc" id="L102">    PathResolver resolver = new ClassPathResolver(clazz);</span>
-<span class="nc" id="L103">    TemplateLocation location = new TemplateLocation(path, resolver);</span>
-<span class="nc" id="L104">    return TemplateCache.INSTANCE.get(location, ROOT_TEMPLATE_NAME);</span>
+<span class="nc" id="L99">    Check.notNull(clazz, Tag.CLASS);</span>
+<span class="nc" id="L100">    Check.notNull(path).is(resourceOf(), clazz);</span>
+<span class="nc" id="L101">    PathResolver resolver = new ClassPathResolver(clazz);</span>
+<span class="nc" id="L102">    TemplateLocation location = new TemplateLocation(path, resolver);</span>
+<span class="nc" id="L103">    return TemplateCache.INSTANCE.get(location, ROOT_TEMPLATE_NAME);</span>
   }
 
   /**
@@ -114,9 +113,9 @@ public final class Template {
    * @throws ParseException if the template source contains a syntax error
    */
   public static Template fromFile(String path) throws ParseException {
-<span class="nc" id="L117">    Check.notNull(path).has(File::new, regularFile());</span>
-<span class="nc" id="L118">    TemplateLocation location = new TemplateLocation(path, new FilePathResolver());</span>
-<span class="nc" id="L119">    return TemplateCache.INSTANCE.get(location, ROOT_TEMPLATE_NAME);</span>
+<span class="nc" id="L116">    Check.notNull(path).has(File::new, regularFile());</span>
+<span class="nc" id="L117">    TemplateLocation location = new TemplateLocation(path, new FilePathResolver());</span>
+<span class="nc" id="L118">    return TemplateCache.INSTANCE.get(location, ROOT_TEMPLATE_NAME);</span>
   }
 
   /**
@@ -130,10 +129,10 @@ public final class Template {
    */
   public static Template fromResolver(PathResolver resolver, String path)
       throws ParseException {
-<span class="nc" id="L133">    Check.notNull(resolver, &quot;resolver&quot;);</span>
-<span class="nc" id="L134">    Check.notNull(path, Tag.PATH);</span>
-<span class="nc" id="L135">    TemplateLocation location = new TemplateLocation(path, resolver);</span>
-<span class="nc" id="L136">    return TemplateCache.INSTANCE.get(location, ROOT_TEMPLATE_NAME);</span>
+<span class="nc" id="L132">    Check.notNull(resolver, &quot;resolver&quot;);</span>
+<span class="nc" id="L133">    Check.notNull(path, Tag.PATH);</span>
+<span class="nc" id="L134">    TemplateLocation location = new TemplateLocation(path, resolver);</span>
+<span class="nc" id="L135">    return TemplateCache.INSTANCE.get(location, ROOT_TEMPLATE_NAME);</span>
   }
 
   private final String name;
@@ -147,32 +146,32 @@ public final class Template {
 
   private Template parent;
 
-<span class="fc" id="L150">  Template(String name, TemplateLocation location, List&lt;Part&gt; parts) {</span>
-<span class="fc" id="L151">    parts.forEach(p -&gt; {</span>
-<span class="fc" id="L152">      p.setParentTemplate(this);</span>
-<span class="fc bfc" id="L153" title="All 2 branches covered.">      if (p instanceof NestedTemplatePart ntp) {</span>
-<span class="fc" id="L154">        ntp.getTemplate().parent = this;</span>
+<span class="fc" id="L149">  Template(String name, TemplateLocation location, List&lt;Part&gt; parts) {</span>
+<span class="fc" id="L150">    parts.forEach(p -&gt; {</span>
+<span class="fc" id="L151">      p.setParentTemplate(this);</span>
+<span class="fc bfc" id="L152" title="All 2 branches covered.">      if (p instanceof NestedTemplatePart ntp) {</span>
+<span class="fc" id="L153">        ntp.getTemplate().parent = this;</span>
       }
-<span class="fc" id="L156">    });</span>
-<span class="fc" id="L157">    this.name = name;</span>
-<span class="fc" id="L158">    this.location = location;</span>
-<span class="fc" id="L159">    this.parts = parts;</span>
-<span class="fc" id="L160">    this.varIndices = getVarIndices(parts);</span>
-<span class="fc" id="L161">    this.tmplIndices = getTmplIndices(parts);</span>
-<span class="fc" id="L162">    this.names = getNames(parts);</span>
-<span class="fc" id="L163">    this.textIndices = getTextIndices(parts);</span>
-<span class="fc" id="L164">  }</span>
+<span class="fc" id="L155">    });</span>
+<span class="fc" id="L156">    this.name = name;</span>
+<span class="fc" id="L157">    this.location = location;</span>
+<span class="fc" id="L158">    this.parts = parts;</span>
+<span class="fc" id="L159">    this.varIndices = getVarIndices(parts);</span>
+<span class="fc" id="L160">    this.tmplIndices = getTmplIndices(parts);</span>
+<span class="fc" id="L161">    this.names = getNames(parts);</span>
+<span class="fc" id="L162">    this.textIndices = getTextIndices(parts);</span>
+<span class="fc" id="L163">  }</span>
 
-<span class="fc" id="L166">  Template(Template cached, String name) {</span>
-<span class="fc" id="L167">    this.name = name;</span>
-<span class="fc" id="L168">    this.location = cached.location;</span>
-<span class="fc" id="L169">    this.parts = cached.parts;</span>
-<span class="fc" id="L170">    this.varIndices = cached.varIndices;</span>
-<span class="fc" id="L171">    this.tmplIndices = cached.tmplIndices;</span>
-<span class="fc" id="L172">    this.nestedTemplates = cached.nestedTemplates;</span>
-<span class="fc" id="L173">    this.names = cached.names;</span>
-<span class="fc" id="L174">    this.textIndices = cached.textIndices;</span>
-<span class="fc" id="L175">  }</span>
+<span class="fc" id="L165">  Template(Template cached, String name) {</span>
+<span class="fc" id="L166">    this.name = name;</span>
+<span class="fc" id="L167">    this.location = cached.location;</span>
+<span class="fc" id="L168">    this.parts = cached.parts;</span>
+<span class="fc" id="L169">    this.varIndices = cached.varIndices;</span>
+<span class="fc" id="L170">    this.tmplIndices = cached.tmplIndices;</span>
+<span class="fc" id="L171">    this.nestedTemplates = cached.nestedTemplates;</span>
+<span class="fc" id="L172">    this.names = cached.names;</span>
+<span class="fc" id="L173">    this.textIndices = cached.textIndices;</span>
+<span class="fc" id="L174">  }</span>
 
   /**
    * Returns the name of this {@code Template}. It this {@code Template} was
@@ -183,7 +182,7 @@ public final class Template {
    * @return the name of this {@code Template}
    */
   public String getName() {
-<span class="fc" id="L186">    return name;</span>
+<span class="fc" id="L185">    return name;</span>
   }
 
   /**
@@ -195,7 +194,7 @@ public final class Template {
    * @return the template inside which this {@code Template} is nested
    */
   public Template getParent() {
-<span class="fc" id="L198">    return parent;</span>
+<span class="fc" id="L197">    return parent;</span>
   }
 
   /**
@@ -207,14 +206,14 @@ public final class Template {
    * @return the ultimate ancestor of this {@code Template}
    */
   public Template getRootTemplate() {
-<span class="nc bnc" id="L210" title="All 2 branches missed.">    if (parent == null) {</span>
-<span class="nc" id="L211">      return this;</span>
+<span class="fc bfc" id="L209" title="All 2 branches covered.">    if (parent == null) {</span>
+<span class="fc" id="L210">      return this;</span>
     }
-<span class="nc" id="L213">    Template t = parent;</span>
-<span class="nc bnc" id="L214" title="All 2 branches missed.">    while (t.getParent() != null) {</span>
-<span class="nc" id="L215">      t = t.getParent();</span>
+<span class="fc" id="L212">    Template t = parent;</span>
+<span class="fc bfc" id="L213" title="All 2 branches covered.">    while (t.getParent() != null) {</span>
+<span class="fc" id="L214">      t = t.getParent();</span>
     }
-<span class="nc" id="L217">    return t;</span>
+<span class="fc" id="L216">    return t;</span>
   }
 
   /**
@@ -230,7 +229,7 @@ public final class Template {
    * @return the file location (if any) of the source code for this {@code Template}
    */
   public Optional&lt;String&gt; getPath() {
-<span class="fc" id="L233">    return Optional.ofNullable(location.path());</span>
+<span class="fc" id="L232">    return Optional.ofNullable(location.path());</span>
   }
 
   /**
@@ -241,7 +240,7 @@ public final class Template {
    * @return the names of all variables in this {@code Template}
    */
   public Set&lt;String&gt; getVariables() {
-<span class="fc" id="L244">    return varIndices.keySet();</span>
+<span class="fc" id="L243">    return varIndices.keySet();</span>
   }
 
   /**
@@ -253,7 +252,7 @@ public final class Template {
    *     specified name
    */
   public boolean hasVariable(String name) {
-<span class="fc" id="L256">    return Check.notNull(name).ok(varIndices::containsKey);</span>
+<span class="fc" id="L255">    return Check.notNull(name).ok(varIndices::containsKey);</span>
   }
 
   /**
@@ -265,7 +264,7 @@ public final class Template {
    * @return the total number of variables in this {@code Template}
    */
   public int countVariables() {
-<span class="nc" id="L268">    return (int) parts.stream().filter(VariablePart.class::isInstance).count();</span>
+<span class="nc" id="L267">    return (int) parts.stream().filter(VariablePart.class::isInstance).count();</span>
   }
 
   private List&lt;Template&gt; nestedTemplates;
@@ -277,15 +276,15 @@ public final class Template {
    * @return all templates nested inside this {@code Template}
    */
   public List&lt;Template&gt; getNestedTemplates() {
-<span class="fc bfc" id="L280" title="All 2 branches covered.">    if (nestedTemplates == null) {</span>
-<span class="fc" id="L281">      return nestedTemplates = tmplIndices.values()</span>
-<span class="fc" id="L282">          .stream()</span>
-<span class="fc" id="L283">          .map(parts::get)</span>
-<span class="fc" id="L284">          .map(NestedTemplatePart.class::cast)</span>
-<span class="fc" id="L285">          .map(NestedTemplatePart::getTemplate)</span>
-<span class="fc" id="L286">          .collect(toUnmodifiableList());</span>
+<span class="fc bfc" id="L279" title="All 2 branches covered.">    if (nestedTemplates == null) {</span>
+<span class="fc" id="L280">      return nestedTemplates = tmplIndices.values()</span>
+<span class="fc" id="L281">          .stream()</span>
+<span class="fc" id="L282">          .map(parts::get)</span>
+<span class="fc" id="L283">          .map(NestedTemplatePart.class::cast)</span>
+<span class="fc" id="L284">          .map(NestedTemplatePart::getTemplate)</span>
+<span class="fc" id="L285">          .collect(toUnmodifiableList());</span>
     }
-<span class="fc" id="L288">    return nestedTemplates;</span>
+<span class="fc" id="L287">    return nestedTemplates;</span>
   }
 
   /**
@@ -295,7 +294,7 @@ public final class Template {
    * @return the names of all nested templates
    */
   public Set&lt;String&gt; getNestedTemplateNames() {
-<span class="fc" id="L298">    return tmplIndices.keySet();</span>
+<span class="fc" id="L297">    return tmplIndices.keySet();</span>
   }
 
   /**
@@ -307,7 +306,7 @@ public final class Template {
    *     the specified name
    */
   public boolean hasNestedTemplate(String name) {
-<span class="nc" id="L310">    return Check.notNull(name).ok(varIndices::containsKey);</span>
+<span class="nc" id="L309">    return Check.notNull(name).ok(varIndices::containsKey);</span>
   }
 
   /**
@@ -317,7 +316,7 @@ public final class Template {
    * @return the number of nested templates
    */
   public int countNestedTemplates() {
-<span class="fc" id="L320">    return tmplIndices.size();</span>
+<span class="fc" id="L319">    return tmplIndices.size();</span>
   }
 
   /**
@@ -329,9 +328,9 @@ public final class Template {
    * @return the {@code Template} with the specified name
    */
   public Template getNestedTemplate(String name) {
-<span class="fc" id="L332">    Check.notNull(name).is(keyIn(), tmplIndices, ERR_NO_SUCH_TEMPLATE);</span>
-<span class="fc" id="L333">    int partIndex = tmplIndices.get(name);</span>
-<span class="fc" id="L334">    return ((NestedTemplatePart) parts.get(partIndex)).getTemplate();</span>
+<span class="fc" id="L331">    Check.notNull(name).is(keyIn(), tmplIndices, ERR_NO_SUCH_TEMPLATE);</span>
+<span class="fc" id="L332">    int partIndex = tmplIndices.get(name);</span>
+<span class="fc" id="L333">    return ((NestedTemplatePart) parts.get(partIndex)).getTemplate();</span>
   }
 
   /**
@@ -341,7 +340,7 @@ public final class Template {
    * @return the names of all variables and nested templates in this {@code Template}
    */
   public List&lt;String&gt; getNames() {
-<span class="fc" id="L344">    return names;</span>
+<span class="fc" id="L343">    return names;</span>
   }
 
   /**
@@ -351,7 +350,7 @@ public final class Template {
    * @return whether this is a text-only template
    */
   public boolean isTextOnly() {
-<span class="fc" id="L354">    return names.isEmpty();</span>
+<span class="fc" id="L353">    return names.isEmpty();</span>
   }
 
   /**
@@ -367,7 +366,7 @@ public final class Template {
    * @see StringifierRegistry#STANDARD_STRINGIFIERS
    */
   public RenderSession newRenderSession() {
-<span class="fc" id="L370">    return new SessionConfig(this).newRenderSession();</span>
+<span class="fc" id="L369">    return new SessionConfig(this).newRenderSession();</span>
   }
 
   /**
@@ -382,8 +381,8 @@ public final class Template {
    * @return a new {@code RenderSession}
    */
   public RenderSession newRenderSession(StringifierRegistry stringifiers) {
-<span class="fc" id="L385">    Check.notNull(stringifiers, MTag.STRINGIFIERS);</span>
-<span class="fc" id="L386">    return new SessionConfig(this, stringifiers).newRenderSession();</span>
+<span class="fc" id="L384">    Check.notNull(stringifiers, MTag.STRINGIFIERS);</span>
+<span class="fc" id="L385">    return new SessionConfig(this, stringifiers).newRenderSession();</span>
   }
 
   /**
@@ -397,8 +396,8 @@ public final class Template {
    * @return a new {@code RenderSession}
    */
   public RenderSession newRenderSession(AccessorRegistry accessors) {
-<span class="nc" id="L400">    Check.notNull(accessors, MTag.ACCESSORS);</span>
-<span class="nc" id="L401">    return new SessionConfig(this, accessors).newRenderSession();</span>
+<span class="nc" id="L399">    Check.notNull(accessors, MTag.ACCESSORS);</span>
+<span class="nc" id="L400">    return new SessionConfig(this, accessors).newRenderSession();</span>
   }
 
   /**
@@ -415,30 +414,30 @@ public final class Template {
    */
   public RenderSession newRenderSession(AccessorRegistry accessors,
       StringifierRegistry stringifiers) {
-<span class="nc" id="L418">    Check.notNull(accessors, MTag.ACCESSORS);</span>
-<span class="nc" id="L419">    Check.notNull(stringifiers, MTag.STRINGIFIERS);</span>
-<span class="nc" id="L420">    return new SessionConfig(this, accessors, stringifiers).newRenderSession();</span>
+<span class="nc" id="L417">    Check.notNull(accessors, MTag.ACCESSORS);</span>
+<span class="nc" id="L418">    Check.notNull(stringifiers, MTag.STRINGIFIERS);</span>
+<span class="nc" id="L419">    return new SessionConfig(this, accessors, stringifiers).newRenderSession();</span>
   }
 
   @Override
   public boolean equals(Object obj) {
-<span class="pc bpc" id="L425" title="1 of 2 branches missed.">    if (this == obj) {</span>
-<span class="nc" id="L426">      return true;</span>
+<span class="fc bfc" id="L424" title="All 2 branches covered.">    if (this == obj) {</span>
+<span class="fc" id="L425">      return true;</span>
     }
-<span class="pc bpc" id="L428" title="1 of 2 branches missed.">    if (obj instanceof Template other) {</span>
-<span class="nc bnc" id="L429" title="All 2 branches missed.">      if (location.isString()) {</span>
-<span class="nc bnc" id="L430" title="All 2 branches missed.">        return parent != null</span>
-<span class="nc bnc" id="L431" title="All 2 branches missed.">            &amp;&amp; getRootTemplate().equals(other.getRootTemplate())</span>
-<span class="nc bnc" id="L432" title="All 2 branches missed.">            &amp;&amp; getFQName(this).equals(getFQName(other));</span>
+<span class="fc bfc" id="L427" title="All 2 branches covered.">    if (obj instanceof Template other) {</span>
+<span class="pc bpc" id="L428" title="1 of 2 branches missed.">      if (location.isString()) {</span>
+<span class="fc bfc" id="L429" title="All 2 branches covered.">        return parent != null</span>
+<span class="pc bpc" id="L430" title="1 of 2 branches missed.">            &amp;&amp; getRootTemplate().equals(other.getRootTemplate())</span>
+<span class="pc bpc" id="L431" title="1 of 2 branches missed.">            &amp;&amp; getFQName(this).equals(getFQName(other));</span>
       }
-<span class="nc" id="L434">      return location.equals(other.location);</span>
+<span class="nc" id="L433">      return location.equals(other.location);</span>
     }
-<span class="fc" id="L436">    return false;</span>
+<span class="fc" id="L435">    return false;</span>
   }
 
   @Override
   public int hashCode() {
-<span class="fc" id="L441">    return location.hashCode();</span>
+<span class="fc" id="L440">    return location.hashCode();</span>
   }
 
   /**
@@ -449,7 +448,7 @@ public final class Template {
    */
   @Override
   public String toString() {
-<span class="nc" id="L452">    return implode(parts, &quot;&quot;);</span>
+<span class="nc" id="L451">    return implode(parts, &quot;&quot;);</span>
   }
 
   /* +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
@@ -457,63 +456,63 @@ public final class Template {
   /* +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
 
   List&lt;Part&gt; getParts() {
-<span class="fc" id="L460">    return parts;</span>
+<span class="fc" id="L459">    return parts;</span>
   }
 
   @SuppressWarnings(&quot;unchecked&quot;)
   &lt;T extends Part&gt; T getPart(int index) {
-<span class="fc" id="L465">    return (T) Check.that(index).is(indexOf(), parts).mapToObj(parts::get);</span>
+<span class="fc" id="L464">    return (T) Check.that(index).is(indexOf(), parts).mapToObj(parts::get);</span>
   }
 
   Map&lt;String, IntList&gt; getVarPartIndices() {
-<span class="fc" id="L469">    return varIndices;</span>
+<span class="fc" id="L468">    return varIndices;</span>
   }
 
   Map&lt;String, Integer&gt; getTemplatePartIndices() {
-<span class="nc" id="L473">    return tmplIndices;</span>
+<span class="nc" id="L472">    return tmplIndices;</span>
   }
 
   IntList getTextPartIndices() {
-<span class="nc" id="L477">    return textIndices;</span>
+<span class="nc" id="L476">    return textIndices;</span>
   }
 
   private static Map&lt;String, IntList&gt; getVarIndices(List&lt;Part&gt; parts) {
-<span class="fc" id="L481">    Map&lt;String, IntList&gt; indices = new LinkedHashMap&lt;&gt;();</span>
-<span class="fc bfc" id="L482" title="All 2 branches covered.">    for (int i = 0; i &lt; parts.size(); ++i) {</span>
-<span class="fc bfc" id="L483" title="All 2 branches covered.">      if (parts.get(i) instanceof VariablePart vp) {</span>
-<span class="fc" id="L484">        indices.computeIfAbsent(vp.getName(), k -&gt; new IntArrayList()).add(i);</span>
+<span class="fc" id="L480">    Map&lt;String, IntList&gt; indices = new LinkedHashMap&lt;&gt;();</span>
+<span class="fc bfc" id="L481" title="All 2 branches covered.">    for (int i = 0; i &lt; parts.size(); ++i) {</span>
+<span class="fc bfc" id="L482" title="All 2 branches covered.">      if (parts.get(i) instanceof VariablePart vp) {</span>
+<span class="fc" id="L483">        indices.computeIfAbsent(vp.getName(), k -&gt; new IntArrayList()).add(i);</span>
       }
     }
-<span class="fc" id="L487">    indices.entrySet().forEach(e -&gt; e.setValue(IntList.copyOf(e.getValue())));</span>
-<span class="fc" id="L488">    return Collections.unmodifiableMap(indices);</span>
+<span class="fc" id="L486">    indices.entrySet().forEach(e -&gt; e.setValue(IntList.copyOf(e.getValue())));</span>
+<span class="fc" id="L487">    return Collections.unmodifiableMap(indices);</span>
   }
 
   private static Map&lt;String, Integer&gt; getTmplIndices(List&lt;Part&gt; parts) {
-<span class="fc" id="L492">    Map&lt;String, Integer&gt; indices = new LinkedHashMap&lt;&gt;();</span>
-<span class="fc bfc" id="L493" title="All 2 branches covered.">    for (int i = 0; i &lt; parts.size(); ++i) {</span>
-<span class="fc bfc" id="L494" title="All 2 branches covered.">      if (parts.get(i) instanceof NestedTemplatePart ntp) {</span>
-<span class="fc" id="L495">        indices.put(ntp.getName(), i);</span>
+<span class="fc" id="L491">    Map&lt;String, Integer&gt; indices = new LinkedHashMap&lt;&gt;();</span>
+<span class="fc bfc" id="L492" title="All 2 branches covered.">    for (int i = 0; i &lt; parts.size(); ++i) {</span>
+<span class="fc bfc" id="L493" title="All 2 branches covered.">      if (parts.get(i) instanceof NestedTemplatePart ntp) {</span>
+<span class="fc" id="L494">        indices.put(ntp.getName(), i);</span>
       }
     }
-<span class="fc" id="L498">    return Collections.unmodifiableMap(indices);</span>
+<span class="fc" id="L497">    return Collections.unmodifiableMap(indices);</span>
   }
 
   private static List&lt;String&gt; getNames(List&lt;Part&gt; parts) {
-<span class="fc" id="L502">    return parts.stream()</span>
-<span class="fc" id="L503">        .filter(NamedPart.class::isInstance)</span>
-<span class="fc" id="L504">        .map(NamedPart.class::cast)</span>
-<span class="fc" id="L505">        .map(NamedPart::getName)</span>
-<span class="fc" id="L506">        .collect(toUnmodifiableList());</span>
+<span class="fc" id="L501">    return parts.stream()</span>
+<span class="fc" id="L502">        .filter(NamedPart.class::isInstance)</span>
+<span class="fc" id="L503">        .map(NamedPart.class::cast)</span>
+<span class="fc" id="L504">        .map(NamedPart::getName)</span>
+<span class="fc" id="L505">        .collect(toUnmodifiableList());</span>
   }
 
   private static IntList getTextIndices(List&lt;Part&gt; parts) {
-<span class="fc" id="L510">    IntArrayList indices = new IntArrayList();</span>
-<span class="fc bfc" id="L511" title="All 2 branches covered.">    for (int i = 0; i &lt; parts.size(); ++i) {</span>
-<span class="fc bfc" id="L512" title="All 2 branches covered.">      if (parts.get(i).getClass() == TextPart.class) {</span>
-<span class="fc" id="L513">        indices.add(i);</span>
+<span class="fc" id="L509">    IntArrayList indices = new IntArrayList();</span>
+<span class="fc bfc" id="L510" title="All 2 branches covered.">    for (int i = 0; i &lt; parts.size(); ++i) {</span>
+<span class="fc bfc" id="L511" title="All 2 branches covered.">      if (parts.get(i).getClass() == TextPart.class) {</span>
+<span class="fc" id="L512">        indices.add(i);</span>
       }
     }
-<span class="fc" id="L516">    return IntList.copyOf(indices);</span>
+<span class="fc" id="L515">    return IntList.copyOf(indices);</span>
   }
 
 }

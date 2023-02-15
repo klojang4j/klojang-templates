@@ -12,22 +12,23 @@ import static org.klojang.templates.x.Messages.ERR_NO_SUCH_VARGROUP;
  * A {@code VarGroup} lets you group template variables across one or more templates.
  * This enables you to
  * {@linkplain StringifierRegistry.Builder#registerByGroup(Stringifier, String...)
- * assign} a shared stringifier to them. Variables can be added to a variable group
- * by using a group name prefix. For example: {@code ~%html:firstName%} or
+ * assign} a shared {@link Stringifier} to them. Variables can be added to a variable
+ * group by using a group name prefix. For example: {@code ~%html:firstName%} or
  * {@code ~%js:firstName%} or {@code ~%myDateFormat:birthDate%}. The first two
- * examples use the predefined {@link #HTML} and {@link #JS} groups, which provide
- * HTML-escaping and Ecmascript-escaping, respectively. The third example is a custom
- * group that you can define using the {@link StringifierRegistry} class. Variable
- * groups can also be assigned <i>ad hoc</i> using
- * {@link RenderSession#set(String, Object, VarGroup)}.
+ * examples use the predefined {@link #HTML} and {@link #JS} variable groups, which
+ * provide HTML-escaping and ECMASScript-escaping, respectively. The third example is
+ * a custom variable group that you can define using the {@link StringifierRegistry}
+ * class. Variable groups can also be assigned <i>ad hoc</i> using
+ * {@link RenderSession#set(String, Object, VarGroup) RenderSession.set(varName,
+ * value, varGroup}.
  *
  * <p>Note that variable groups are assigned at the variable <i>occurrence</i>
  * level. For example, a template may contain multiple instances of a variable named
- * {@code firstName}. For the occurrences inside a &lt;script&gt; tag you might want
- * to use the "js" prefix, for the others the "html" prefix (or no prefix at all).
- * Therefore stringifiers associated with a variable group take the highest
- * precedence when deciding which stringifier to use, even higher (perhaps
- * paradoxically) than stringifiers associated with a variable.
+ * {@code firstName}. For occurrences inside a &lt;script&gt; tag you might want to
+ * use the "js" prefix, for the others the "html" prefix (or no prefix at all).
+ * Therefore, stringifiers associated with a variable group take the highest
+ * precedence, even higher (perhaps paradoxically) than stringifiers associated with
+ * a variable.
  *
  * @author Ayco Holleman
  */

@@ -33,51 +33,6 @@ import static org.klojang.check.CommonChecks.numerical;
 
   /**
    * &lt;p&gt;System Property:
-   * {@code org.klojang.templates.varStart}&lt;br&gt;Environment Variable:
-   * {@code KJT_VAR_START}&lt;br&gt;Default Value: {@code ~%}.
-   *
-   * &lt;p&gt;Specifies the character sequence at the start of a template
-   * variable.
-   */
-<span class="fc" id="L42">  VAR_START(&quot;org.klojang.templates.varStart&quot;, &quot;KJT_VAR_START&quot;, &quot;~%&quot;),</span>
-
-  /**
-   * &lt;p&gt;System Property:
-   * {@code org.klojang.templates.varEnd}&lt;br&gt;Environment Variable:
-   * {@code KJT_VAR_END}&lt;br&gt;Default Value: {@code %}.
-   *
-   * &lt;p&gt;Specifies the character sequence at the end of a template variable.
-   */
-<span class="fc" id="L51">  VAR_END(&quot;org.klojang.templates.varEnd&quot;, &quot;KJT_VAR_END&quot;, &quot;%&quot;),</span>
-
-  /**
-   * &lt;p&gt;System Property:
-   * {@code org.klojang.templates.tmplStart}&lt;br&gt;Environment Variable:
-   * {@code KJT_TMPL_START}&lt;br&gt;Default Value: {@code ~%%}.
-   *
-   * &lt;p&gt;Specifies the character sequence at the start of a template tag. The
-   * character sequence is used for included templates
-   * ({@code ~%%include:/path/to/foo.html%}), for the start tag of inline templates
-   * ({@code ~%%begin:foo%}) &lt;b&gt;and&lt;/b&gt; for the end tag of inline templates
-   * ({@code ~%%end:foo%}).
-   */
-<span class="fc" id="L64">  TMPL_START(&quot;org.klojang.templates.tmplStart&quot;, &quot;KJT_TMPL_START&quot;, &quot;~%%&quot;),</span>
-
-  /**
-   * &lt;p&gt;System Property:
-   * {@code org.klojang.templates.tmplStart}&lt;br&gt;Environment Variable:
-   * {@code KJT_TMPL_END}&lt;br&gt;Default Value: {@code %}.
-   *
-   * &lt;p&gt;Specifies the character sequence at the end of a template tag. The
-   * character sequence is used for included templates
-   * ({@code ~%%include:/path/to/foo.html%}), for the start tag of inline templates
-   * ({@code ~%%begin:foo%}) &lt;b&gt;and&lt;/b&gt; for the end tag of inline templates
-   * ({@code ~%%end:foo%}).
-   */
-<span class="fc" id="L77">  TMPL_END(&quot;org.klojang.templates.tmplEnd&quot;, &quot;KJT_TMPL_END&quot;, &quot;%&quot;),</span>
-
-  /**
-   * &lt;p&gt;System Property:
    * {@code org.klojang.templates.useBeanAccessor}&lt;br&gt;Environment Variable:
    * {@code KJT_USE_BEAN_ACCESSOR}&lt;br&gt;Default Value: {@code false}.
    *
@@ -94,7 +49,7 @@ import static org.klojang.check.CommonChecks.numerical;
    * using the {@code BeanAccessor} class as the fallback {@code Accessor}
    * implementation. See also {@link AccessorRegistry}.
    */
-<span class="fc" id="L97">  USE_BEAN_ACCESSOR(&quot;org.klojang.templates.useBeanAccessor&quot;,</span>
+<span class="fc" id="L52">  USE_BEAN_ACCESSOR(&quot;org.klojang.templates.useBeanAccessor&quot;,</span>
       &quot;KJT_USE_BEAN_ACCESSOR&quot;,
       &quot;false&quot;);
 
@@ -102,11 +57,11 @@ import static org.klojang.check.CommonChecks.numerical;
   private final String envvar;
   private final String dfault;
 
-<span class="fc" id="L105">  Setting(String sysprop, String envvar, String dfault) {</span>
-<span class="fc" id="L106">    this.sysprop = sysprop;</span>
-<span class="fc" id="L107">    this.envvar = envvar;</span>
-<span class="fc" id="L108">    this.dfault = dfault;</span>
-<span class="fc" id="L109">  }</span>
+<span class="fc" id="L60">  Setting(String sysprop, String envvar, String dfault) {</span>
+<span class="fc" id="L61">    this.sysprop = sysprop;</span>
+<span class="fc" id="L62">    this.envvar = envvar;</span>
+<span class="fc" id="L63">    this.dfault = dfault;</span>
+<span class="fc" id="L64">  }</span>
 
   /**
    * Returns the value of the system property or its default value if not specified.
@@ -115,10 +70,10 @@ import static org.klojang.check.CommonChecks.numerical;
    */
   public String get() {
     String env;
-<span class="pc bpc" id="L118" title="1 of 2 branches missed.">    if ((env = System.getenv(envvar)) != null) {</span>
-<span class="nc" id="L119">      return env;</span>
+<span class="pc bpc" id="L73" title="1 of 2 branches missed.">    if ((env = System.getenv(envvar)) != null) {</span>
+<span class="nc" id="L74">      return env;</span>
     }
-<span class="fc" id="L121">    return System.getProperty(sysprop, dfault);</span>
+<span class="fc" id="L76">    return System.getProperty(sysprop, dfault);</span>
   }
 
   /**
@@ -129,7 +84,7 @@ import static org.klojang.check.CommonChecks.numerical;
    *     not specified
    */
   public int getInt() {
-<span class="fc" id="L132">    return Check.that(get()).is(numerical(), int.class).ok(Integer::parseInt);</span>
+<span class="fc" id="L87">    return Check.that(get()).is(numerical(), int.class).ok(Integer::parseInt);</span>
   }
 
   /**
@@ -140,7 +95,7 @@ import static org.klojang.check.CommonChecks.numerical;
    *     value if not specified
    */
   public boolean getBoolean() {
-<span class="fc" id="L143">    return Check.that(get(), sysprop).is(Bool::isConvertible).ok(Bool::from);</span>
+<span class="fc" id="L98">    return Check.that(get(), sysprop).is(Bool::isConvertible).ok(Bool::from);</span>
   }
 
   /**
@@ -149,7 +104,7 @@ import static org.klojang.check.CommonChecks.numerical;
    * @return the name of the system property associated with this enum constant
    */
   public String property() {
-<span class="fc" id="L152">    return sysprop;</span>
+<span class="fc" id="L107">    return sysprop;</span>
   }
 
   /**
@@ -159,7 +114,7 @@ import static org.klojang.check.CommonChecks.numerical;
    * @return the name of the environment variable associated with this enum constant
    */
   public String envVar() {
-<span class="nc" id="L162">    return sysprop.replace('.', '_').toUpperCase();</span>
+<span class="nc" id="L117">    return sysprop.replace('.', '_').toUpperCase();</span>
   }
 
   /**
@@ -168,7 +123,7 @@ import static org.klojang.check.CommonChecks.numerical;
    * @return the default value for the system property
    */
   public String defaultValue() {
-<span class="nc" id="L171">    return dfault;</span>
+<span class="nc" id="L126">    return dfault;</span>
   }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

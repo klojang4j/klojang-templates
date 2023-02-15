@@ -18,8 +18,8 @@ class StringifierId {
 <span class="fc" id="L18">  }</span>
 
   StringifierId(String varName) {
-<span class="nc" id="L21">    this(null, null, varName);</span>
-<span class="nc" id="L22">  }</span>
+<span class="fc" id="L21">    this(null, null, varName);</span>
+<span class="fc" id="L22">  }</span>
 
 <span class="fc" id="L24">  StringifierId(VarGroup varGroup, Template template, String varName) {</span>
 <span class="fc" id="L25">    this.varGroup = varGroup;</span>
@@ -44,7 +44,7 @@ class StringifierId {
 <span class="fc" id="L44">    StringifierId other = (StringifierId) obj;</span>
 <span class="fc bfc" id="L45" title="All 4 branches covered.">    return Objects.equals(template, other.template)</span>
         &amp;&amp; varGroup == other.varGroup
-<span class="pc bpc" id="L47" title="1 of 2 branches missed.">        &amp;&amp; Objects.equals(varName, other.varName);</span>
+<span class="fc bfc" id="L47" title="All 2 branches covered.">        &amp;&amp; Objects.equals(varName, other.varName);</span>
   }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

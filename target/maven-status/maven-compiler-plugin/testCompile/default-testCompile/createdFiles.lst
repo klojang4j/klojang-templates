@@ -6,3 +6,4 @@ org/klojang/templates/name/CamelCaseToSnakeLowerCaseTest.class
 org/klojang/templates/name/SnakeCaseToCamelCaseTest.class
 org/klojang/templates/x/parse/EscapeTypeTest.class
 org/klojang/templates/TemplateUtilsTest.class
+org/klojang/templates/StringifierRegistryTest.class

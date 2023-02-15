@@ -91,10 +91,10 @@ public final class StringifierRegistry {
    */
   public static class Builder {
 
-    private static final String ERR_VAR_ASSIGNED = "Stringifier already set for variable \"%s\"";
-    private static final String ERR_GROUP_ASSIGNED = "Stringifier already set for group \"%s\"";
-    private static final String ERR_TYPE_ASSIGNED = "Stringifier already set for type \"%s\"";
-    private static final String ERR_TYPE_SET = "Data type already set for variable \"%s\"";
+    private static final String ERR_VAR_ASSIGNED = "Stringifier already set for variable \"${arg}\"";
+    private static final String ERR_GROUP_ASSIGNED = "Stringifier already set for group \"${arg}\"";
+    private static final String ERR_TYPE_ASSIGNED = "Stringifier already set for type \"${arg}\"";
+    private static final String ERR_TYPE_SET = "Data type already set for variable \"${arg}\"";
 
     private Stringifier defStringifier = Stringifier.DEFAULT;
 
@@ -105,7 +105,8 @@ public final class StringifierRegistry {
 
     private Builder(boolean std) {
       if (std) {
-        StandardStringifiers.get()
+        StandardStringifiers
+            .get()
             .forEach((k, v) -> stringifiers.put(new StringifierId(k), v));
       }
     }
@@ -151,11 +152,11 @@ public final class StringifierRegistry {
         Template template,
         String... varNames) {
       Check.notNull(stringifier, MTag.STRINGIFIER);
-      Check.notNull(template, "template");
-      Check.that(varNames, "varNames").is(deepNotEmpty());
+      Check.notNull(template, MTag.TEMPLATE);
+      Check.that(varNames, Tag.VARARGS).is(deepNotNull());
       for (String name : varNames) {
         Template tmpl = TemplateUtils.getContainingTemplate(template, name);
-        Check.that(name).is(in(), tmpl.getVariables(), ERR_NO_SUCH_VARIABLE, name);
+        Check.that(name).is(in(), tmpl.getVariables(), ERR_NO_SUCH_VARIABLE);
         Check.that(new StringifierId(template, name))
             .isNot(keyIn(), stringifiers, ERR_VAR_ASSIGNED)
             .then(id -> stringifiers.put(id, stringifier));
@@ -210,17 +211,16 @@ public final class StringifierRegistry {
         String nestedTemplateName,
         String... varNames) {
       Check.notNull(stringifier, MTag.STRINGIFIER);
-      Check.notNull(rootTemplate, "template");
-      Check.notNull(varNames, "varNames");
+      Check.notNull(rootTemplate, MTag.TEMPLATE);
+      Check.notNull(varNames, Tag.VARARGS);
       Template tmpl =
           nestedTemplateName == null || nestedTemplateName.equals(ROOT_TEMPLATE_NAME)
               ? rootTemplate
               : getNestedTemplate(rootTemplate, nestedTemplateName);
       boolean all = varNames.length == 0;
-      String[] names;
       if (all) {
         for (String name : tmpl.getVariables()) {
-          Check.that(new StringifierId(rootTemplate, name))
+          Check.that(new StringifierId(tmpl, name))
               .isNot(keyIn(), stringifiers, ERR_VAR_ASSIGNED)
               .then(id -> stringifiers.put(id, stringifier));
         }
@@ -228,7 +228,7 @@ public final class StringifierRegistry {
         for (String name : varNames) {
           Check.notNull(name, "variable name")
               .is(in(), rootTemplate.getVariables(), ERR_NO_SUCH_VARIABLE, name);
-          Check.that(new StringifierId(rootTemplate, name))
+          Check.that(new StringifierId(tmpl, name))
               .isNot(keyIn(), stringifiers, ERR_VAR_ASSIGNED)
               .then(id -> stringifiers.put(id, stringifier));
         }

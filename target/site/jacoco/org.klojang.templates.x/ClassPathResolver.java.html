@@ -19,7 +19,7 @@ public final class ClassPathResolver implements PathResolver {
   }
 
   @Override
-  public InputStream resolvePath(String path) {
+  public InputStream resolve(String path) {
 <span class="fc" id="L23">    return clazz.getResourceAsStream(path);</span>
   }
 
