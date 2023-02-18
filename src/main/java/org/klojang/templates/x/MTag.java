@@ -13,15 +13,17 @@ public final class MTag {
 
   public static final String REPEATS = "repeats";
 
+  public static final String ACCESSOR = "accessor";
+
   public static final String ACCESSORS = "accessors";
 
   public static final String STRINGIFIER = "stringifier";
 
   public static final String STRINGIFIERS = "stringifiers";
 
-  public static final String TEMPLATE = "template";
-
   public static final String SEPARATOR = "separator";
+
+  public static final String TEMPLATE = "template";
 
   public static final String PREFIX = "prefix";
 

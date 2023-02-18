@@ -8,10 +8,7 @@ import org.klojang.util.collection.IntList;
 
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Stream;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -378,6 +375,10 @@ public final class RenderSession {
     Check.on(frozenSession(), state.isFrozen()).is(no());
     if (sourceData == UNDEFINED) {
       return this;
+    } else if (sourceData instanceof Optional<?> opt) {
+      return opt.isPresent()
+          ? populate(nestedTemplateName, opt.get(), varGroup, names)
+          : this;
     }
     Template t = getNestedTemplate(nestedTemplateName);
     List<?> data = listify(sourceData);
@@ -390,11 +391,11 @@ public final class RenderSession {
 
   private RenderSession repeat(Template t,
       List<?> data,
-      VarGroup defGroup,
+      VarGroup varGroup,
       String... names) {
     RenderSession[] sessions = state.getOrCreateChildSessions(t, data.size());
     for (int i = 0; i < sessions.length; ++i) {
-      sessions[i].insert(data.get(i), defGroup, names);
+      sessions[i].insert(data.get(i), varGroup, names);
     }
     return this;
   }
@@ -661,6 +662,8 @@ public final class RenderSession {
       // static HTML. Expensive way to render static HTML, but no
       // reason not to support it.
       return this;
+    } else if (sourceData instanceof Optional<?> opt) {
+      return opt.isPresent() ? insert(opt.get(), varGroup, names) : this;
     }
     processVars(sourceData, varGroup, names);
     processTmpls(sourceData, varGroup, names);
@@ -683,6 +686,7 @@ public final class RenderSession {
         try {
           value = acc.access(data, varName);
         } catch (RuntimeException e) {
+          e.printStackTrace();
           throw accessException(config.getTemplate(), varName, e, data, acc);
         }
         if (value != UNDEFINED) {
@@ -718,15 +722,16 @@ public final class RenderSession {
    * {@link StringifierRegistry stringifiers} from the parent session (i.e.
    * <i>this</i> {@code RenderSession}). If this is the first time the nested
    * template is processed, a single child session will be created for it. This can
-   * be used as illustrated in the following example (assuming the presence of a
-   * nested template named {@code employees}):
+   * be used as follows:
    *
    * <blockquote><pre>{@code
+   * Template template = Template.fromResource(getClass(), "/templates/company.html");
+   * RenderSession session = template.newRenderSession();
    * session.in("employees").set("firstName", "john").set("lastName", "Smith");
    * }</pre></blockquote>
    *
-   * <p>Note that just calling the {@code in} method already has the effect of the
-   * template becoming visible.
+   * <p>Note that just calling the {@code in()} method already has the effect that
+   * the boilerplate text in the nested template becomes visible.
    *
    * @param nestedTemplateName the nested template for which to create the child
    *     session

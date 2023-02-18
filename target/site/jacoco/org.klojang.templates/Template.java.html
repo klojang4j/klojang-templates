@@ -396,8 +396,8 @@ public final class Template {
    * @return a new {@code RenderSession}
    */
   public RenderSession newRenderSession(AccessorRegistry accessors) {
-<span class="nc" id="L399">    Check.notNull(accessors, MTag.ACCESSORS);</span>
-<span class="nc" id="L400">    return new SessionConfig(this, accessors).newRenderSession();</span>
+<span class="fc" id="L399">    Check.notNull(accessors, MTag.ACCESSORS);</span>
+<span class="fc" id="L400">    return new SessionConfig(this, accessors).newRenderSession();</span>
   }
 
   /**

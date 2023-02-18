@@ -15,18 +15,18 @@ public final class BeanAccessor&lt;T&gt; implements Accessor&lt;T&gt; {
 <span class="nc" id="L15">    this.nm = nm;</span>
 <span class="nc" id="L16">  }</span>
 
-<span class="nc" id="L18">  public BeanAccessor(BeanReader&lt;T&gt; beanReader, NameMapper nm) {</span>
-<span class="nc" id="L19">    this.br = beanReader;</span>
-<span class="nc" id="L20">    this.nm = nm;</span>
-<span class="nc" id="L21">  }</span>
+<span class="fc" id="L18">  public BeanAccessor(BeanReader&lt;T&gt; beanReader, NameMapper nm) {</span>
+<span class="fc" id="L19">    this.br = beanReader;</span>
+<span class="fc" id="L20">    this.nm = nm;</span>
+<span class="fc" id="L21">  }</span>
 
   @Override
   public Object access(T data, String name) throws RenderException {
-<span class="nc bnc" id="L25" title="All 2 branches missed.">    String prop = nm == null ? name : nm.map(name);</span>
-<span class="nc bnc" id="L26" title="All 2 branches missed.">    if (br.canRead(prop)) {</span>
-<span class="nc" id="L27">      return br.read(data, prop);</span>
+<span class="pc bpc" id="L25" title="1 of 2 branches missed.">    String prop = nm == null ? name : nm.map(name);</span>
+<span class="fc bfc" id="L26" title="All 2 branches covered.">    if (br.canRead(prop)) {</span>
+<span class="fc" id="L27">      return br.read(data, prop);</span>
     }
-<span class="nc" id="L29">    return UNDEFINED;</span>
+<span class="fc" id="L29">    return UNDEFINED;</span>
   }
 
 }

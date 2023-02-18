@@ -5,7 +5,6 @@ import org.klojang.collections.TypeMap;
 import org.klojang.invoke.BeanReader;
 import org.klojang.invoke.BeanReaderBuilder;
 import org.klojang.path.PathWalker;
-import org.klojang.templates.x.acc.ArrayAccessor;
 import org.klojang.templates.x.acc.BeanAccessor;
 import org.klojang.templates.x.acc.MapAccessor;
 import org.klojang.templates.x.acc.PathAccessor;
@@ -16,50 +15,49 @@ import java.util.Map;
 import java.util.Optional;
 
 import static java.util.Collections.emptyMap;
+import static org.klojang.check.CommonChecks.keyIn;
+import static org.klojang.check.CommonChecks.no;
+import static org.klojang.check.Tag.TYPE;
+import static org.klojang.templates.x.MTag.ACCESSOR;
+import static org.klojang.templates.x.MTag.TEMPLATE;
 
 /**
- * <p>A registry of {@link Accessor accessors}, used by a {@link RenderSession} to
- * extract values from model objects. When using a {@code RenderSession} to
- * {@linkplain RenderSession#insert(Object, String...) insert} an object into a
- * {@link Template}, the {@code RenderSession} will ask the {@code AccessorRegistry}
- * to look up an {@code Accessor} for that particular type of object. The
- * {@code AccessorRegistry} defined by the {@link #STANDARD_ACCESSORS} constant may
- * very well contain all the accessors you will ever need. In other words, you may
- * never have to actually implement an {@code Accessor} yourself.
+ * <p>A registry of {@linkplain Accessor accessors}. Accessors are used by the
+ * {@link RenderSession} to extract values from model objects. The
+ * {@link #STANDARD_ACCESSORS} {@code AccessorRegistry} may very well contain all the
+ * accessors you will ever need for your application. In other words, you may never
+ * have to actually implement an {@code Accessor} yourself. Note that you only
+ * interact with Klojang Templates via entire accessor registries, not via individual
+ * accessors.
  *
  * <p>Any {@code AccessorRegistry}, including the ones you build yourself and
- * including the {@code STANDARD_ACCESSORS} {@code AccessorRegistry}, comes with a
- * standard set of predefined, internally maintained accessors. For example there are
- * {@code Accessor} implementation for maps, records and JavaBeans. These accessors
- * are not exposed via the API as you are only communicating with Klojang Templates
- * via accessor registries, not via individual accessors. However, you can check the
- * source code for inspiration, should you need to write enhanced versions of them.
- * You might, for example, want to provide your own {@code MapAccessor}.
+ * including the {@code STANDARD_ACCESSORS}, comes with a set of predefined,
+ * internally maintained, and non-exposed accessors. For example there are
+ * {@code Accessor} implementation for maps, records and JavaBeans.
  *
  * <p>This is how the {@code AccessorRegistry} decides which accessor to hand out to
  * the {@code RenderSession} for a particular type of object:
  *
  * <ol>
- *   <li>If you have {@link Builder#register(Class, Accessor) registered} your own
- *       {@code Accessor} for that particular type of object, then that is the
+ *   <li>If you have {@linkplain Builder#register(Class, Accessor) registered} your
+ *       own {@code Accessor} for that particular type of object, then that is the
  *       {@code Accessor} that is going to be used.
  *   <li>If the object is an {@link Optional}, then a (non-exposed)
  *       {@code OptionalAccessor} is going to be used, which will typically defer to
  *       the appropriate {@code Accessor} for the object <i>within</i> the
- *       {@code Optional} Optionals are typically returned from (for example) the
+ *       {@code Optional}. Optionals are typically returned from (for example) the
  *       ubiquitous {@code dao.findById(id)} method and in Klojang it is perfectly
  *       legitimate to {@link RenderSession#insert(Object, String...) insert} an
  *       {@code Optional} into a template.
- *   <li>If the object is a {@code Map}, a (non-exposed) {@code MapAccessor} is
- *       going to be used. (You could easily create an enhanced version yourself,
- *       tailored to your particular needs. Check the source code.)
- *   <li>Otherwise a {@code PathAccessor} is going to be used (however, see
- *       {@link Setting#USE_BEAN_ACCESSOR}). This is a very versatile accessor that
- *       can access almost any type of object as well as deeply nested objects. It
- *       is internally backed by a {@link PathWalker}.
+ *   <li>If the object is a {@code Map}, a (non-exposed) {@code MapAccessor} is going
+ *       to be used. (You could easily create and register one yourself, tailored to
+ *       your particular needs.)
+ *   <li>Otherwise a {@code PathAccessor} is going to be used. This is a very
+ *       versatile accessor that can read almost any type of object. It is internally
+ *       backed by a {@link PathWalker}.
  * </ol>
  *
- * <p>Note that the {@link PathWalker} class does not use reflection to read bean
+ * <p>Note that the {@code PathAccessor} class does not use reflection to read bean
  * properties, but it <i>does</i> use reflection to figure out what those properties
  * are in the first place. Thus, if you use this accessor from within a Java 9+
  * module, you will have to open up the module for reflection. Alternatively, you
@@ -86,14 +84,13 @@ import static java.util.Collections.emptyMap;
  * <p>A slightly less verbose, but still fully reflection-free alternative is to use
  * a {@link BeanReaderBuilder}:
  *
- *
  * <blockquote><pre>{@code
  * AccessorRegistry reg = AccessorRegistry
  *   .configure()
  *   .register(BeanReaderBuilder.forClass(Person.class)
- *    .withInt("id")
- *    .withString("firstName", "lastName")
- *    .with(LocalDate.class, "birthDate"))
+ *      .withInt("id")
+ *      .withString("firstName", "lastName")
+ *      .with(LocalDate.class, "birthDate"))
  *   .freeze();
  * RenderSession session = template.newRenderSession(reg);
  * }</pre></blockquote>
@@ -101,7 +98,7 @@ import static java.util.Collections.emptyMap;
  * @author Ayco Holleman
  * @see Setting#USE_BEAN_ACCESSOR
  */
-public class AccessorRegistry {
+public final class AccessorRegistry {
 
   /**
    * An {@code AccessorRegistry} that should be sufficient for most use cases. It
@@ -130,7 +127,16 @@ public class AccessorRegistry {
    *
    * @author Ayco Holleman
    */
-  public static class Builder {
+  public static final class Builder {
+
+    private static final String MAPPER_ALREADY_SET =
+        "name mapper already set for template ${0}";
+
+    private static final String TEMPLATE_ALREADY_SET =
+        "template ${0} already has accessor for ${1}";
+
+    private static final String TYPE_ALREADY_SET =
+        "${arg} has already been associated with an accessor";
 
     private NameMapper defMapper = NameMapper.AS_IS;
     private final Map<Class<?>, Map<Template, Accessor<?>>> accs = new HashMap<>();
@@ -139,13 +145,13 @@ public class AccessorRegistry {
     private Builder() {}
 
     /**
-     * Sets the default {@code NameMapper} used to map template variable names to
-     * JavaBean properties (or {@code Map} keys). If no default {@code NameMapper} is
-     * specified, the {@link NameMapper#AS_IS AS_IS} name mapper will be the default
-     * name mapper.
+     * Sets the default {@code NameMapper} used to map template variables to JavaBean
+     * properties and/or {@code Map} keys. If no default {@code NameMapper} is
+     * specified, template variables will be mapped as-is to JavaBean properties
+     * and/or {@code Map} keys.
      *
-     * @param nameMapper The name mapper
-     * @return This {@code Builder} instance
+     * @param nameMapper the name mapper
+     * @return this {@code Builder} instance
      */
     public Builder setDefaultNameMapper(NameMapper nameMapper) {
       defMapper = Check.notNull(nameMapper).ok();
@@ -155,13 +161,14 @@ public class AccessorRegistry {
     /**
      * Sets the {@code NameMapper} to be used for the specified template.
      *
-     * @param template The template for which to use the specified name mapper
-     * @param nameMapper The name mapper
-     * @return This {@code Builder} instance
+     * @param template the template for which to use the specified name mapper
+     * @param nameMapper the name mapper
+     * @return this {@code Builder} instance
      */
     public Builder setNameMapper(Template template, NameMapper nameMapper) {
-      Check.notNull(template, "template");
-      Check.notNull(nameMapper, "nameMapper");
+      Check.notNull(template, TEMPLATE)
+          .isNot(keyIn(), mappers, MAPPER_ALREADY_SET, template.getName());
+      Check.notNull(nameMapper, "name mapper");
       mappers.put(template, nameMapper);
       return this;
     }
@@ -169,77 +176,132 @@ public class AccessorRegistry {
     /**
      * Sets the {@code Accessor} to be used for objects of the specified type.
      *
-     * @param <T> The type of the objects for which to use the {@code Accessor}
-     * @param forType The {@code Class} object corresponding to the type
-     * @param accessor The {@code Accessor}
-     * @return This {@code Builder} instance
+     * @param <T> the type of the objects for which to use the {@code Accessor}
+     * @param forType the {@code Class} object corresponding to the type
+     * @param accessor the {@code Accessor}
+     * @return this {@code Builder} instance
      */
-    public <T> Builder register(Class<T> forType, Accessor<? extends T> accessor) {
-      accs.computeIfAbsent(forType, k -> new HashMap<>()).put(null, accessor);
-      return this;
+    public <T> Builder register(Class<T> forType, Accessor<T> accessor) {
+      Check.notNull(forType, TYPE);
+      Check.notNull(accessor, ACCESSOR);
+      return register0(forType, null, accessor);
     }
 
     /**
-     * Sets the {@code Accessor} to be used for the bean class managed by the
-     * specified {@code BeanReaderBuilder}. This method will call
-     * {@link BeanReaderBuilder#build() build()} on the {@code BeanReaderBuilder} to
-     * obtain a {@link BeanReader}, which is then wrapped into an internally defined
-     * (non-exposed) {@code BeanAccessor} instance. The {@code BeanAccessor} will use
-     * the {@link NameMapper} set through
-     * {@link #setDefaultNameMapper(NameMapper) setDefaultNameMapper()}, or
-     * {@link NameMapper#AS_IS NameMapper.AS_IS} if no default name mapper has been
-     * set yet. Use this method if you prefer 100% reflection-free bean reading.
-     *
-     * @param brb the {@code BeanReaderBuilder}
-     * @param <T> the type of the beans
-     * @return This {@code Builder} instance
-     */
-    public <T> Builder register(BeanReaderBuilder<T> brb) {
-      return register(brb, defMapper);
-    }
-
-    /**
-     * Sets the {@code Accessor} to be used for the bean class managed by the
-     * specified {@code BeanReaderBuilder}. This method will call
-     * {@link BeanReaderBuilder#build() build()} on the {@code BeanReaderBuilder} to
-     * obtain a {@link BeanReader}, which is then wrapped into an internally defined
-     * (non-exposed) {@code BeanAccessor} instance. Use this method if you prefer
-     * 100% reflection-free bean reading.
-     *
-     * @param brb the {@code BeanReaderBuilder}
-     * @param nameMapper the {@code NameMapper} to be used to map template
-     *     variables to bean properties
-     * @param <T> the type of the beans
-     * @return This {@code Builder} instance
-     */
-    public <T> Builder register(BeanReaderBuilder<T> brb, NameMapper nameMapper) {
-      BeanReader<T> br = brb.build();
-      accs.computeIfAbsent(br.getBeanClass(),
-          k -> new HashMap<>()).put(null, new BeanAccessor<>(br, nameMapper));
-      return this;
-    }
-
-    /**
-     * Sets the {@code Accessor} to be used for objects of the specified type,
+     * Sets the {@code Accessor} to be used for objects of the specified type, when
      * destined for the specified template.
      *
-     * @param <T> The type of the objects for which to use the {@code Accessor}
-     * @param forType The {@code Class} object corresponding to the type
-     * @param template The template for which to use the {@code Accessor}
-     * @param accessor The {@code Accessor}
-     * @return This {@code Builder} instance
+     * @param <T> the type of the objects for which to use the {@code Accessor}
+     * @param forType the {@code Class} object corresponding to the type
+     * @param template the template for which to use the {@code Accessor}
+     * @param accessor the {@code Accessor}
+     * @return this {@code Builder} instance
      */
     public <T> Builder register(Class<T> forType,
         Template template,
-        Accessor<? super T> accessor) {
-      accs.computeIfAbsent(forType, k -> new HashMap<>()).put(template, accessor);
+        Accessor<T> accessor) {
+      Check.notNull(forType, TYPE);
+      Check.notNull(template, TEMPLATE);
+      Check.notNull(accessor, ACCESSOR);
+      return register0(forType, template, accessor);
+    }
+
+    private <T> Builder register0(Class<T> clazz,
+        Template tmpl,
+        Accessor<T> acc) {
+      Map<Template, Accessor<?>> map = accs.get(clazz);
+      if (map == null) {
+        accs.put(clazz, map = new HashMap<>());
+      } else if (tmpl == null) {
+        // allowed - template-agnostic accessor
+        Check.that(map.containsKey(null)).is(no(),
+            TYPE_ALREADY_SET, clazz);
+      } else {
+        Check.that(map.containsKey(tmpl)).is(no(),
+            TEMPLATE_ALREADY_SET, tmpl.getName(), clazz);
+      }
+      map.put(tmpl, acc);
       return this;
     }
 
     /**
-     * Returns a
+     * Wraps the specified {@link BeanReader} into an internally defined
+     * (non-exposed) {@code BeanAccessor} instance, used to access beans of the type
+     * targeted by the {@code BeanReader}. Use this method if you prefer 100%
+     * reflection-free bean reading. See {@link BeanReader#forClass(Class)}.
      *
-     * @return
+     * @param br the {@code BeanReader}
+     * @param <T> the type of the beans
+     * @return this {@code Builder} instance
+     */
+    public <T> Builder register(BeanReader<T> br) {
+      return register(br, defMapper);
+    }
+
+    /**
+     * Wraps the specified {@link BeanReader} into an internally defined
+     * (non-exposed) {@code BeanAccessor} instance, used to access beans of the type
+     * targeted by the {@code BeanReader}. Use this method if you prefer 100%
+     * reflection-free bean reading. See {@link BeanReader#forClass(Class)}.
+     *
+     * @param beanReader the {@code BeanReader}
+     * @param template the template for which to use the accessor (may be a root
+     *     template or a nested template)
+     * @param <T> the type of the beans
+     * @return this {@code Builder} instance
+     */
+    public <T> Builder register(BeanReader<T> beanReader,
+        Template template) {
+      return register(beanReader, template, defMapper);
+    }
+
+    /**
+     * Wraps the specified {@link BeanReader} into an internally defined
+     * (non-exposed) {@code BeanAccessor} instance, used to access beans of the type
+     * targeted by the {@code BeanReader}. Use this method if you prefer 100%
+     * reflection-free bean reading. See {@link BeanReader#forClass(Class)}.
+     *
+     * @param br the {@code BeanReader}
+     * @param nameMapper the {@code NameMapper} to be used to map template
+     *     variables to bean properties
+     * @param <T> the type of the beans
+     * @return this {@code Builder} instance
+     */
+    public <T> Builder register(BeanReader<T> br, NameMapper nameMapper) {
+      Check.notNull(br, "BeanReader");
+      Check.notNull(nameMapper, "name mapper");
+      return register0(br.getBeanClass(), null, new BeanAccessor<>(br, nameMapper));
+    }
+
+    /**
+     * Wraps the specified {@link BeanReader} into an internally defined
+     * (non-exposed) {@code BeanAccessor} instance, used to access beans of the type
+     * targeted by the {@code BeanReader}. Use this method if you prefer 100%
+     * reflection-free bean reading. See {@link BeanReader#forClass(Class)}.
+     *
+     * @param beanReader the {@code BeanReader}
+     * @param template the template for which to use the accessor (may be a root
+     *     template or a nested template)
+     * @param nameMapper the {@code NameMapper} to be used to map template
+     *     variables to bean properties
+     * @param <T> the type of the beans
+     * @return this {@code Builder} instance
+     */
+    public <T> Builder register(BeanReader<T> beanReader,
+        Template template,
+        NameMapper nameMapper) {
+      Check.notNull(beanReader, "BeanReader");
+      Check.notNull(template, TEMPLATE);
+      Check.notNull(nameMapper, "name mapper");
+      return register0(beanReader.getBeanClass(),
+          template,
+          new BeanAccessor<>(beanReader, nameMapper));
+    }
+
+    /**
+     * Returns an {@code AccessorRegistry} with the configured accessors.
+     *
+     * @return an {@code AccessorRegistry} with the configured accessors
      */
     public AccessorRegistry freeze() {
       return new AccessorRegistry(accs, defMapper, mappers);
@@ -249,6 +311,13 @@ public class AccessorRegistry {
 
   /* +++++++++++++++++++++[ END BUILDER CLASS ]++++++++++++++++++ */
 
+  /**
+   * Returns a {@code Builder} object that lets you configure an
+   * {@code AccessorRegistry}.
+   *
+   * @return a {@code Builder} object that lets you configure an
+   *     {@code AccessorRegistry}
+   */
   public static Builder configure() {
     return new Builder();
   }
@@ -279,13 +348,9 @@ public class AccessorRegistry {
     }
     if (acc == null) {
       NameMapper nm = mappers.getOrDefault(template, defMapper);
-      if (type == Optional.class) {
-        return new OptionalAccessor<>(this, template);
-      } else if (ClassMethods.isSubtype(type, Map.class)) {
+      if (ClassMethods.isSubtype(type, Map.class)) {
         acc = new MapAccessor(nm);
-      } else if (ClassMethods.isSubtype(type, Object[].class)) {
-        acc = ArrayAccessor.getInstance(template);
-      } else if (useBeanAccessor) {
+       } else if (useBeanAccessor) {
         acc = new BeanAccessor<>(type, nm);
       } else {
         acc = new PathAccessor(nm);
