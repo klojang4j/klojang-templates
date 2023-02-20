@@ -12,7 +12,6 @@ import org.klojang.util.ClassMethods;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 import static java.util.Collections.emptyMap;
 import static org.klojang.check.CommonChecks.keyIn;
@@ -24,31 +23,24 @@ import static org.klojang.templates.x.MTag.TEMPLATE;
 /**
  * &lt;p&gt;A registry of {@linkplain Accessor accessors}. Accessors are used by the
  * {@link RenderSession} to extract values from model objects. The
- * {@link #STANDARD_ACCESSORS} {@code AccessorRegistry} may very well contain all the
- * accessors you will ever need for your application. In other words, you may never
- * have to actually implement an {@code Accessor} yourself. Note that you only
- * interact with Klojang Templates via entire accessor registries, not via individual
- * accessors.
+ * {@link #STANDARD_ACCESSORS} constant is a ready-made {@code AccessorRegistry} that
+ * may contain all the accessors you will ever need for your application. In other
+ * words, you may never have to actually implement an {@code Accessor} yourself. Note
+ * that you only interact with Klojang Templates via entire accessor registries, not
+ * via individual accessors.
  *
  * &lt;p&gt;Any {@code AccessorRegistry}, including the ones you build yourself and
  * including the {@code STANDARD_ACCESSORS}, comes with a set of predefined,
  * internally maintained, and non-exposed accessors. For example there are
  * {@code Accessor} implementation for maps, records and JavaBeans.
  *
- * &lt;p&gt;This is how the {@code AccessorRegistry} decides which accessor to hand out to
+ * &lt;p&gt;This is how an {@code AccessorRegistry} decides which accessor to hand out to
  * the {@code RenderSession} for a particular type of object:
  *
  * &lt;ol&gt;
- *   &lt;li&gt;If you have {@linkplain Builder#register(Class, Accessor) registered} your
+ *   &lt;li&gt;If you have {@linkplain Builder#register(Accessor, Class) registered} your
  *       own {@code Accessor} for that particular type of object, then that is the
  *       {@code Accessor} that is going to be used.
- *   &lt;li&gt;If the object is an {@link Optional}, then a (non-exposed)
- *       {@code OptionalAccessor} is going to be used, which will typically defer to
- *       the appropriate {@code Accessor} for the object &lt;i&gt;within&lt;/i&gt; the
- *       {@code Optional}. Optionals are typically returned from (for example) the
- *       ubiquitous {@code dao.findById(id)} method and in Klojang it is perfectly
- *       legitimate to {@link RenderSession#insert(Object, String...) insert} an
- *       {@code Optional} into a template.
  *   &lt;li&gt;If the object is a {@code Map}, a (non-exposed) {@code MapAccessor} is going
  *       to be used. (You could easily create and register one yourself, tailored to
  *       your particular needs.)
@@ -65,14 +57,12 @@ import static org.klojang.templates.x.MTag.TEMPLATE;
  *
  * &lt;blockquote&gt;&lt;pre&gt;{@code
  * Accessor&lt;Person&gt; personAccessor =
- *   (person, property) -&gt; {
- *     switch(property) {
+ *   (person, property) -&gt; switch(property) {
  *       case &quot;id&quot; : return person.getId();
  *       case &quot;firstName&quot; : return person.getFirstName();
  *       case &quot;lastName&quot; : return person.getLastName();
  *       case &quot;birthDate&quot; : return person.getBirthDate();
  *       default : return Accessor.UNDEFINED;
- *     }
  *   };
  * AccessorRegistry reg = AccessorRegistry
  *   .configure()
@@ -85,17 +75,21 @@ import static org.klojang.templates.x.MTag.TEMPLATE;
  * a {@link BeanReaderBuilder}:
  *
  * &lt;blockquote&gt;&lt;pre&gt;{@code
+ * // forClass returns a BeanReaderBuilder
+ * BeanReader br = BeanReader.forClass(Person.class)
+ *    .withInt(&quot;id&quot;)
+ *    .withString(&quot;firstName&quot;, &quot;lastName&quot;)
+ *    .with(LocalDate.class, &quot;birthDate&quot;))
+ *    .build();
  * AccessorRegistry reg = AccessorRegistry
  *   .configure()
- *   .register(BeanReaderBuilder.forClass(Person.class)
- *      .withInt(&quot;id&quot;)
- *      .withString(&quot;firstName&quot;, &quot;lastName&quot;)
- *      .with(LocalDate.class, &quot;birthDate&quot;))
+ *   .register(br)
  *   .freeze();
  * RenderSession session = template.newRenderSession(reg);
  * }&lt;/pre&gt;&lt;/blockquote&gt;
  *
  * @author Ayco Holleman
+ * @see Template#newRenderSession(AccessorRegistry)
  * @see Setting#USE_BEAN_ACCESSOR
  */
 public final class AccessorRegistry {
@@ -105,19 +99,19 @@ public final class AccessorRegistry {
    * assumes that the names you use in your templates can be mapped as-is to your
    * model objects.
    */
-<span class="fc" id="L108">  public static final AccessorRegistry STANDARD_ACCESSORS = configure().freeze();</span>
+<span class="fc" id="L102">  public static final AccessorRegistry STANDARD_ACCESSORS = configure().freeze();</span>
 
   /**
    * Returns an {@code AccessorRegistry} that should be sufficient for most use
    * cases. It allows you to specify one global {@link NameMapper} for mapping the
    * names used in your templates to the names used in your model objects.
    *
-   * @param nameMapper the {@code NameMapper} to use when accessing model
-   *     objects
+   * @param nameMapper the {@code NameMapper} to be used to map template
+   *     variables to bean properties and/or map keys.
    * @return an {@code AccessorRegistry} the should sufficient for most use cases
    */
   public static AccessorRegistry standard(NameMapper nameMapper) {
-<span class="nc" id="L120">    return configure().setDefaultNameMapper(nameMapper).freeze();</span>
+<span class="fc" id="L114">    return configure().setDefaultNameMapper(nameMapper).freeze();</span>
   }
 
   /* ++++++++++++++++++++[ BEGIN BUILDER CLASS ]+++++++++++++++++ */
@@ -129,6 +123,8 @@ public final class AccessorRegistry {
    */
   public static final class Builder {
 
+    private static final String NAME_MAPPER = &quot;name mapper&quot;;
+
     private static final String MAPPER_ALREADY_SET =
         &quot;name mapper already set for template ${0}&quot;;
 
@@ -138,24 +134,23 @@ public final class AccessorRegistry {
     private static final String TYPE_ALREADY_SET =
         &quot;${arg} has already been associated with an accessor&quot;;
 
-<span class="fc" id="L141">    private NameMapper defMapper = NameMapper.AS_IS;</span>
-<span class="fc" id="L142">    private final Map&lt;Class&lt;?&gt;, Map&lt;Template, Accessor&lt;?&gt;&gt;&gt; accs = new HashMap&lt;&gt;();</span>
-<span class="fc" id="L143">    private final Map&lt;Template, NameMapper&gt; mappers = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L137">    private NameMapper defMapper = NameMapper.AS_IS;</span>
+<span class="fc" id="L138">    private final Map&lt;Class&lt;?&gt;, Map&lt;Template, Accessor&lt;?&gt;&gt;&gt; accs = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L139">    private final Map&lt;Template, NameMapper&gt; mappers = new HashMap&lt;&gt;();</span>
 
-<span class="fc" id="L145">    private Builder() {}</span>
+<span class="fc" id="L141">    private Builder() {}</span>
 
     /**
-     * Sets the default {@code NameMapper} used to map template variables to JavaBean
-     * properties and/or {@code Map} keys. If no default {@code NameMapper} is
-     * specified, template variables will be mapped as-is to JavaBean properties
-     * and/or {@code Map} keys.
+     * Sets the default {@code NameMapper} used to map template variables to bean
+     * properties and/or map keys. If no default {@code NameMapper} is specified,
+     * template variables will be mapped as-is to bean properties and/or map keys.
      *
      * @param nameMapper the name mapper
      * @return this {@code Builder} instance
      */
     public Builder setDefaultNameMapper(NameMapper nameMapper) {
-<span class="nc" id="L157">      defMapper = Check.notNull(nameMapper).ok();</span>
-<span class="nc" id="L158">      return this;</span>
+<span class="fc" id="L152">      defMapper = Check.notNull(nameMapper).ok();</span>
+<span class="fc" id="L153">      return this;</span>
     }
 
     /**
@@ -166,62 +161,43 @@ public final class AccessorRegistry {
      * @return this {@code Builder} instance
      */
     public Builder setNameMapper(Template template, NameMapper nameMapper) {
-<span class="nc" id="L169">      Check.notNull(template, TEMPLATE)</span>
-<span class="nc" id="L170">          .isNot(keyIn(), mappers, MAPPER_ALREADY_SET, template.getName());</span>
-<span class="nc" id="L171">      Check.notNull(nameMapper, &quot;name mapper&quot;);</span>
-<span class="nc" id="L172">      mappers.put(template, nameMapper);</span>
-<span class="nc" id="L173">      return this;</span>
+<span class="fc" id="L164">      Check.notNull(template, TEMPLATE)</span>
+<span class="fc" id="L165">          .isNot(keyIn(), mappers, MAPPER_ALREADY_SET, template.getName());</span>
+<span class="fc" id="L166">      Check.notNull(nameMapper, NAME_MAPPER);</span>
+<span class="fc" id="L167">      mappers.put(template, nameMapper);</span>
+<span class="fc" id="L168">      return this;</span>
     }
 
     /**
      * Sets the {@code Accessor} to be used for objects of the specified type.
      *
      * @param &lt;T&gt; the type of the objects for which to use the {@code Accessor}
-     * @param forType the {@code Class} object corresponding to the type
      * @param accessor the {@code Accessor}
+     * @param forType the {@code Class} object corresponding to the type
      * @return this {@code Builder} instance
      */
-    public &lt;T&gt; Builder register(Class&lt;T&gt; forType, Accessor&lt;T&gt; accessor) {
-<span class="fc" id="L185">      Check.notNull(forType, TYPE);</span>
-<span class="fc" id="L186">      Check.notNull(accessor, ACCESSOR);</span>
-<span class="fc" id="L187">      return register0(forType, null, accessor);</span>
+    public &lt;T&gt; Builder register(Accessor&lt;T&gt; accessor, Class&lt;T&gt; forType) {
+<span class="fc" id="L180">      Check.notNull(accessor, ACCESSOR);</span>
+<span class="fc" id="L181">      Check.notNull(forType, TYPE);</span>
+<span class="fc" id="L182">      return register0(accessor, forType, null);</span>
     }
 
     /**
      * Sets the {@code Accessor} to be used for objects of the specified type, when
-     * destined for the specified template.
+     * inserted into the specified template.
      *
      * @param &lt;T&gt; the type of the objects for which to use the {@code Accessor}
+     * @param accessor the {@code Accessor}
      * @param forType the {@code Class} object corresponding to the type
      * @param template the template for which to use the {@code Accessor}
-     * @param accessor the {@code Accessor}
      * @return this {@code Builder} instance
      */
-    public &lt;T&gt; Builder register(Class&lt;T&gt; forType,
-        Template template,
-        Accessor&lt;T&gt; accessor) {
-<span class="fc" id="L203">      Check.notNull(forType, TYPE);</span>
-<span class="fc" id="L204">      Check.notNull(template, TEMPLATE);</span>
-<span class="fc" id="L205">      Check.notNull(accessor, ACCESSOR);</span>
-<span class="fc" id="L206">      return register0(forType, template, accessor);</span>
-    }
-
-    private &lt;T&gt; Builder register0(Class&lt;T&gt; clazz,
-        Template tmpl,
-        Accessor&lt;T&gt; acc) {
-<span class="fc" id="L212">      Map&lt;Template, Accessor&lt;?&gt;&gt; map = accs.get(clazz);</span>
-<span class="fc bfc" id="L213" title="All 2 branches covered.">      if (map == null) {</span>
-<span class="fc" id="L214">        accs.put(clazz, map = new HashMap&lt;&gt;());</span>
-<span class="fc bfc" id="L215" title="All 2 branches covered.">      } else if (tmpl == null) {</span>
-        // allowed - template-agnostic accessor
-<span class="fc" id="L217">        Check.that(map.containsKey(null)).is(no(),</span>
-            TYPE_ALREADY_SET, clazz);
-      } else {
-<span class="fc" id="L220">        Check.that(map.containsKey(tmpl)).is(no(),</span>
-<span class="fc" id="L221">            TEMPLATE_ALREADY_SET, tmpl.getName(), clazz);</span>
-      }
-<span class="fc" id="L223">      map.put(tmpl, acc);</span>
-<span class="fc" id="L224">      return this;</span>
+    public &lt;T&gt; Builder register(Accessor&lt;T&gt; accessor, Class&lt;T&gt; forType,
+        Template template) {
+<span class="fc" id="L197">      Check.notNull(forType, TYPE);</span>
+<span class="fc" id="L198">      Check.notNull(template, TEMPLATE);</span>
+<span class="fc" id="L199">      Check.notNull(accessor, ACCESSOR);</span>
+<span class="fc" id="L200">      return register0(accessor, forType, template);</span>
     }
 
     /**
@@ -235,7 +211,7 @@ public final class AccessorRegistry {
      * @return this {@code Builder} instance
      */
     public &lt;T&gt; Builder register(BeanReader&lt;T&gt; br) {
-<span class="fc" id="L238">      return register(br, defMapper);</span>
+<span class="fc" id="L214">      return register(br, defMapper);</span>
     }
 
     /**
@@ -252,7 +228,7 @@ public final class AccessorRegistry {
      */
     public &lt;T&gt; Builder register(BeanReader&lt;T&gt; beanReader,
         Template template) {
-<span class="nc" id="L255">      return register(beanReader, template, defMapper);</span>
+<span class="fc" id="L231">      return register(beanReader, template, defMapper);</span>
     }
 
     /**
@@ -268,9 +244,9 @@ public final class AccessorRegistry {
      * @return this {@code Builder} instance
      */
     public &lt;T&gt; Builder register(BeanReader&lt;T&gt; br, NameMapper nameMapper) {
-<span class="fc" id="L271">      Check.notNull(br, &quot;BeanReader&quot;);</span>
-<span class="fc" id="L272">      Check.notNull(nameMapper, &quot;name mapper&quot;);</span>
-<span class="fc" id="L273">      return register0(br.getBeanClass(), null, new BeanAccessor&lt;&gt;(br, nameMapper));</span>
+<span class="fc" id="L247">      Check.notNull(br, &quot;BeanReader&quot;);</span>
+<span class="fc" id="L248">      Check.notNull(nameMapper, NAME_MAPPER);</span>
+<span class="fc" id="L249">      return register0(new BeanAccessor&lt;&gt;(br, nameMapper), br.getBeanClass(), null);</span>
     }
 
     /**
@@ -290,12 +266,13 @@ public final class AccessorRegistry {
     public &lt;T&gt; Builder register(BeanReader&lt;T&gt; beanReader,
         Template template,
         NameMapper nameMapper) {
-<span class="fc" id="L293">      Check.notNull(beanReader, &quot;BeanReader&quot;);</span>
-<span class="fc" id="L294">      Check.notNull(template, TEMPLATE);</span>
-<span class="fc" id="L295">      Check.notNull(nameMapper, &quot;name mapper&quot;);</span>
-<span class="fc" id="L296">      return register0(beanReader.getBeanClass(),</span>
-          template,
-          new BeanAccessor&lt;&gt;(beanReader, nameMapper));
+<span class="fc" id="L269">      Check.notNull(beanReader, &quot;BeanReader&quot;);</span>
+<span class="fc" id="L270">      Check.notNull(template, TEMPLATE);</span>
+<span class="fc" id="L271">      Check.notNull(nameMapper, NAME_MAPPER);</span>
+<span class="fc" id="L272">      return register0(new BeanAccessor&lt;&gt;(beanReader, nameMapper),</span>
+<span class="fc" id="L273">          beanReader.getBeanClass(),</span>
+          template
+      );
     }
 
     /**
@@ -304,7 +281,23 @@ public final class AccessorRegistry {
      * @return an {@code AccessorRegistry} with the configured accessors
      */
     public AccessorRegistry freeze() {
-<span class="fc" id="L307">      return new AccessorRegistry(accs, defMapper, mappers);</span>
+<span class="fc" id="L284">      return new AccessorRegistry(accs, defMapper, mappers);</span>
+    }
+
+    private &lt;T&gt; Builder register0(Accessor&lt;T&gt; acc, Class&lt;T&gt; clazz, Template tmpl) {
+<span class="fc" id="L288">      Map&lt;Template, Accessor&lt;?&gt;&gt; map = accs.get(clazz);</span>
+<span class="fc bfc" id="L289" title="All 2 branches covered.">      if (map == null) {</span>
+<span class="fc" id="L290">        accs.put(clazz, map = new HashMap&lt;&gt;());</span>
+<span class="fc bfc" id="L291" title="All 2 branches covered.">      } else if (tmpl == null) {</span>
+        // allowed - template-agnostic accessor
+<span class="fc" id="L293">        Check.that(map.containsKey(null)).is(no(),</span>
+            TYPE_ALREADY_SET, clazz);
+      } else {
+<span class="fc" id="L296">        Check.that(map.containsKey(tmpl)).is(no(),</span>
+<span class="fc" id="L297">            TEMPLATE_ALREADY_SET, tmpl.getName(), clazz);</span>
+      }
+<span class="fc" id="L299">      map.put(tmpl, acc);</span>
+<span class="fc" id="L300">      return this;</span>
     }
 
   }
@@ -319,10 +312,10 @@ public final class AccessorRegistry {
    *     {@code AccessorRegistry}
    */
   public static Builder configure() {
-<span class="fc" id="L322">    return new Builder();</span>
+<span class="fc" id="L315">    return new Builder();</span>
   }
 
-<span class="fc" id="L325">  private final boolean useBeanAccessor = Setting.USE_BEAN_ACCESSOR.getBoolean();</span>
+<span class="fc" id="L318">  private final boolean useBeanAccessor = Setting.USE_BEAN_ACCESSOR.getBoolean();</span>
 
   private final Map&lt;Class&lt;?&gt;, Map&lt;Template, Accessor&lt;?&gt;&gt;&gt; accs;
   private final NameMapper defMapper;
@@ -330,33 +323,34 @@ public final class AccessorRegistry {
 
   private AccessorRegistry(Map&lt;Class&lt;?&gt;, Map&lt;Template, Accessor&lt;?&gt;&gt;&gt; accs,
       NameMapper defMapper,
-<span class="fc" id="L333">      Map&lt;Template, NameMapper&gt; mappers) {</span>
-<span class="fc bfc" id="L334" title="All 2 branches covered.">    this.accs = accs.isEmpty() ? emptyMap() : TypeMap.fixedTypeMap(accs);</span>
-<span class="fc" id="L335">    this.defMapper = defMapper;</span>
-<span class="fc" id="L336">    this.mappers = Map.copyOf(mappers);</span>
-<span class="fc" id="L337">  }</span>
+<span class="fc" id="L326">      Map&lt;Template, NameMapper&gt; mappers) {</span>
+<span class="fc bfc" id="L327" title="All 2 branches covered.">    this.accs = accs.isEmpty() ? emptyMap() : TypeMap.fixedTypeMap(accs);</span>
+<span class="fc" id="L328">    this.defMapper = defMapper;</span>
+<span class="fc" id="L329">    this.mappers = Map.copyOf(mappers);</span>
+<span class="fc" id="L330">  }</span>
 
   Accessor&lt;?&gt; getAccessor(Object obj, Template template) {
-<span class="fc" id="L340">    Class&lt;?&gt; type = obj.getClass();</span>
-<span class="fc" id="L341">    Map&lt;Template, Accessor&lt;?&gt;&gt; m = accs.get(type);</span>
-<span class="fc" id="L342">    Accessor&lt;?&gt; acc = null;</span>
-<span class="fc bfc" id="L343" title="All 2 branches covered.">    if (m != null) {</span>
-<span class="fc" id="L344">      acc = m.get(template);</span>
-<span class="fc bfc" id="L345" title="All 2 branches covered.">      if (acc == null) {</span>
-<span class="fc" id="L346">        acc = m.get(null);</span>
+<span class="fc" id="L333">    Class&lt;?&gt; type = obj.getClass();</span>
+<span class="fc" id="L334">    Map&lt;Template, Accessor&lt;?&gt;&gt; m = accs.get(type);</span>
+<span class="fc" id="L335">    Accessor&lt;?&gt; acc = null;</span>
+<span class="fc bfc" id="L336" title="All 2 branches covered.">    if (m != null) {</span>
+<span class="fc" id="L337">      acc = m.get(template);</span>
+<span class="fc bfc" id="L338" title="All 2 branches covered.">      if (acc == null) {</span>
+<span class="fc" id="L339">        acc = m.get(null);</span>
       }
     }
-<span class="fc bfc" id="L349" title="All 2 branches covered.">    if (acc == null) {</span>
-<span class="fc" id="L350">      NameMapper nm = mappers.getOrDefault(template, defMapper);</span>
-<span class="pc bpc" id="L351" title="1 of 2 branches missed.">      if (ClassMethods.isSubtype(type, Map.class)) {</span>
-<span class="fc" id="L352">        acc = new MapAccessor(nm);</span>
-<span class="nc bnc" id="L353" title="All 2 branches missed.">       } else if (useBeanAccessor) {</span>
-<span class="nc" id="L354">        acc = new BeanAccessor&lt;&gt;(type, nm);</span>
-      } else {
-<span class="nc" id="L356">        acc = new PathAccessor(nm);</span>
-      }
+<span class="fc bfc" id="L342" title="All 2 branches covered.">    if (acc == null) {</span>
+<span class="fc" id="L343">      NameMapper nm = mappers.getOrDefault(template, defMapper);</span>
+<span class="fc" id="L344">      acc = new PathAccessor(nm);</span>
+//      if (ClassMethods.isSubtype(type, Map.class)) {
+//        acc = new MapAccessor(nm);
+//      } else if (useBeanAccessor) {
+//        acc = new BeanAccessor&lt;&gt;(type, nm);
+//      } else {
+//        acc = new PathAccessor(nm);
+//      }
     }
-<span class="fc" id="L359">    return acc;</span>
+<span class="fc" id="L353">    return acc;</span>
   }
 
 }

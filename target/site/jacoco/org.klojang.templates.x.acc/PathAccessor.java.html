@@ -13,16 +13,16 @@ public final class PathAccessor implements Accessor&lt;Object&gt; {
 
   private final NameMapper nm;
 
-<span class="nc" id="L16">  public PathAccessor(NameMapper nm) {</span>
-<span class="nc" id="L17">    this.nm = nm;</span>
-<span class="nc" id="L18">  }</span>
+<span class="fc" id="L16">  public PathAccessor(NameMapper nm) {</span>
+<span class="fc" id="L17">    this.nm = nm;</span>
+<span class="fc" id="L18">  }</span>
 
   @Override
   public Object access(Object data, String property) throws RenderException {
-<span class="nc bnc" id="L22" title="All 2 branches missed.">    String path = nm == null ? property : nm.map(property);</span>
-<span class="nc" id="L23">    PathWalker pw = new PathWalker(asList(Path.from(path)), false);</span>
+<span class="pc bpc" id="L22" title="1 of 2 branches missed.">    String path = nm == null ? property : nm.map(property);</span>
+<span class="fc" id="L23">    PathWalker pw = new PathWalker(asList(Path.from(path)), false);</span>
     try {
-<span class="nc" id="L25">      return pw.read(data);</span>
+<span class="fc" id="L25">      return pw.read(data);</span>
 <span class="nc" id="L26">    } catch (PathWalkerException e) {</span>
 <span class="nc bnc" id="L27" title="All 2 branches missed.">      return switch (e.getErrorCode()) {</span>
 <span class="nc" id="L28">        case NO_SUCH_KEY, NO_SUCH_PROPERTY -&gt; UNDEFINED;</span>

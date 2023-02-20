@@ -2,8 +2,9 @@ package org.klojang.templates;
 
 import org.junit.jupiter.api.Test;
 import org.klojang.invoke.BeanReader;
-import org.klojang.invoke.BeanReaderBuilder;
+import org.klojang.path.util.MapBuilder;
 
+import java.util.Map;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -96,14 +97,14 @@ public class AccessorRegistryTest {
     Template t = Template.fromString(src);
     AccessorRegistry ar = AccessorRegistry.configure()
         .register(br)
-        .register(Person.class, t.getNestedTemplate("foo"), acc)
+        .register(acc, Person.class, t.getNestedTemplate("foo"))
         .freeze();
     RenderSession rs = t.newRenderSession(ar);
     rs.insert(new Person(10, "John"));
     rs.populate("foo", new Person(12, "Mark"));
     String out = rs.render();
     out = out.replaceAll("\\s+", " ").strip();
-     assertEquals("id: 10 name: John; id: [12] name: [Mark]", out);
+    assertEquals("id: 10 name: John; id: [12] name: [Mark]", out);
   }
 
   @Test
@@ -118,7 +119,7 @@ public class AccessorRegistryTest {
         """;
     Template t = Template.fromString(src);
     AccessorRegistry ar = AccessorRegistry.configure()
-        .register(Person.class, acc)
+        .register(acc, Person.class)
         .register(br, t, String::toLowerCase)
         .freeze();
     RenderSession rs = t.newRenderSession(ar);
@@ -141,7 +142,7 @@ public class AccessorRegistryTest {
         """;
     Template t = Template.fromString(src);
     AccessorRegistry ar = AccessorRegistry.configure()
-        .register(Person.class, acc)
+        .register(acc, Person.class)
         .register(br, t, String::toLowerCase)
         .freeze();
     RenderSession rs = t.newRenderSession(ar);
@@ -152,7 +153,6 @@ public class AccessorRegistryTest {
     //System.out.println(out);
     assertEquals("id: name: ; id: [12] name: [Mark]", out);
   }
-
 
   @Test
   public void test05() throws ParseException {
@@ -166,7 +166,7 @@ public class AccessorRegistryTest {
         """;
     Template t = Template.fromString(src);
     AccessorRegistry ar = AccessorRegistry.configure()
-        .register(Person.class, t, acc)
+        .register(acc, Person.class, t)
         .register(br)
         .freeze();
     RenderSession rs = t.newRenderSession(ar);
@@ -177,5 +177,143 @@ public class AccessorRegistryTest {
     assertEquals("id: [10] name: [John];", out);
   }
 
+  @Test
+  public void test06() throws ParseException {
+    String src = """
+        id: ~%bar.id%
+        name: ~%bar.name%;
+        ~%%begin:foo%
+          id: ~%teapot.id%
+          name: ~%teapot.name%
+        ~%%end:foo%
+        """;
+    Template t = Template.fromString(src);
+    AccessorRegistry ar = AccessorRegistry.configure()
+        .register(acc, Person.class, t)
+        .register(br)
+        .freeze();
+    RenderSession rs = t.newRenderSession(ar);
+    Map<String, Object> map = MapBuilder.begin()
+        .in("bar")
+        .set("id", 9)
+        .set("name", "Mary")
+        .jump("foo.teapot")
+        .set("id", "10")
+        .set("name", "John")
+        .createMap();
+    rs.insert(map);
+    String out = rs.render();
+    out = out.replaceAll("\\s+", " ").strip();
+    assertEquals("id: 9 name: Mary; id: 10 name: John", out);
+  }
+
+  @Test
+  public void test07() throws ParseException {
+    String src = """
+        id: ~%bar.id%
+        name: ~%bar.name%;
+        ~%%begin:foo%
+          id: ~%teapot.id%
+          name: ~%teapot.name%
+        ~%%end:foo%
+        """;
+    Template t = Template.fromString(src);
+    AccessorRegistry ar = AccessorRegistry.configure()
+        .register(acc, Person.class, t)
+        .register(br)
+        .freeze();
+    RenderSession rs = t.newRenderSession(ar);
+    Map<String, Object> map = MapBuilder.begin()
+        .in("bar")
+        .set("id", 9)
+        .set("name", "Mary")
+        .jump("foo.teapot")
+        .set("id", "10")
+        .set("name", "John")
+        .createMap();
+    rs.insert(map, "bar.id");
+    String out = rs.render();
+    out = out.replaceAll("\\s+", " ").strip();
+    assertEquals("id: 9 name: ;", out);
+  }
+
+  @Test
+  public void test08() throws ParseException {
+    String src = """
+        id: ~%bar.id%
+        name: ~%bar.name%;
+        ~%%begin:foo%
+          id: ~%teapot.id%
+          name: ~%teapot.name%
+        ~%%end:foo%
+        """;
+    Template t = Template.fromString(src);
+    AccessorRegistry ar = AccessorRegistry.configure()
+        .register(acc, Person.class)
+        .register(br, t)
+        .freeze();
+    RenderSession rs = t.newRenderSession(ar);
+    Map<String, Object> map = MapBuilder.begin()
+        .in("bar")
+        .set("id", 9)
+        .set("name", "Mary")
+        .jump("foo.teapot")
+        .set("id", "10")
+        .set("name", "John")
+        .createMap();
+    rs.insert(map, "foo", "teapot.id", "teapot.name");
+    String out = rs.render();
+    out = out.replaceAll("\\s+", " ").strip();
+    assertEquals("id: name: ; id: 10 name: John", out);
+  }
+
+  @Test
+  public void test09() throws ParseException {
+    AccessorRegistry ar = AccessorRegistry.configure()
+        .setDefaultNameMapper(String::toLowerCase)
+        .freeze();
+    String src = """
+        id: ~%ID%
+        name: ~%NAME%
+        """;
+    Template t = Template.fromString(src);
+    RenderSession rs = t.newRenderSession(ar);
+    rs.insert(new Person(10, "John"));
+    String out = rs.render();
+    out = out.replaceAll("\\s+", " ").strip();
+    assertEquals("id: 10 name: John", out);
+  }
+
+  @Test
+  public void test10() throws ParseException {
+    String src = """
+        id: ~%ID%
+        name: ~%NAME%
+        """;
+    Template t = Template.fromString(src);
+    AccessorRegistry ar = AccessorRegistry.configure()
+        .setNameMapper(t, String::toLowerCase)
+        .freeze();
+    RenderSession rs = t.newRenderSession(ar);
+    rs.insert(new Person(10, "John"));
+    String out = rs.render();
+    out = out.replaceAll("\\s+", " ").strip();
+    assertEquals("id: 10 name: John", out);
+  }
+
+  @Test
+  public void test11() throws ParseException {
+    String src = """
+        id: ~%ID%
+        name: ~%NAME%
+        """;
+    Template t = Template.fromString(src);
+    AccessorRegistry ar = AccessorRegistry.standard(String::toLowerCase);
+    RenderSession rs = t.newRenderSession(ar);
+    rs.insert(new Person(10, "John"));
+    String out = rs.render();
+    out = out.replaceAll("\\s+", " ").strip();
+    assertEquals("id: 10 name: John", out);
+  }
 
 }

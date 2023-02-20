@@ -18,7 +18,6 @@ org/klojang/templates/name/SnakeCaseToCamelCase.class
 org/klojang/templates/TemplateLocation.class
 org/klojang/templates/AccessorRegistry.class
 org/klojang/templates/PathResolutionException.class
-org/klojang/templates/x/acc/NullAccessor.class
 org/klojang/templates/RenderException.class
 org/klojang/templates/Regex.class
 org/klojang/templates/ParseException.class
@@ -37,7 +36,6 @@ org/klojang/templates/StringifierId.class
 org/klojang/templates/package-info.class
 org/klojang/templates/x/acc/PathAccessor.class
 org/klojang/templates/NameMapper.class
-org/klojang/templates/x/acc/ArrayAccessor.class
 org/klojang/templates/name/CamelCaseToWordCase.class
 org/klojang/templates/ParseError.class
 org/klojang/templates/RenderableImpl.class
@@ -57,7 +55,6 @@ org/klojang/templates/name/WordCaseToSnakeUpperCase.class
 org/klojang/templates/AbstractPart.class
 org/klojang/templates/UnparsedPart.class
 org/klojang/templates/name/package-info.class
-org/klojang/templates/OptionalAccessor.class
 org/klojang/templates/name/CamelCaseToSnakeLowerCase.class
 org/klojang/templates/Accessor.class
 org/klojang/templates/x/acc/BeanAccessor.class

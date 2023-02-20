@@ -1,9 +1,7 @@
 package org.klojang.templates;
 
 import org.klojang.check.Check;
-import org.klojang.check.Tag;
 import org.klojang.collections.TypeMap;
-import org.klojang.templates.x.MTag;
 import org.klojang.templates.x.Private;
 import org.klojang.templates.x.StandardStringifiers;
 import org.klojang.util.Tuple2;
@@ -14,8 +12,12 @@ import java.util.List;
 import java.util.Map;
 
 import static org.klojang.check.CommonChecks.*;
+import static org.klojang.check.Tag.TYPE;
+import static org.klojang.check.Tag.VARARGS;
 import static org.klojang.templates.Template.ROOT_TEMPLATE_NAME;
 import static org.klojang.templates.TemplateUtils.getNestedTemplate;
+import static org.klojang.templates.x.MTag.STRINGIFIER;
+import static org.klojang.templates.x.MTag.TEMPLATE;
 import static org.klojang.templates.x.Messages.ERR_NO_SUCH_VARIABLE;
 import static org.klojang.util.StringMethods.*;
 
@@ -151,9 +153,9 @@ public final class StringifierRegistry {
     public Builder register(Stringifier stringifier,
         Template template,
         String... varNames) {
-      Check.notNull(stringifier, MTag.STRINGIFIER);
-      Check.notNull(template, MTag.TEMPLATE);
-      Check.that(varNames, Tag.VARARGS).is(deepNotNull());
+      Check.notNull(stringifier, STRINGIFIER);
+      Check.notNull(template, TEMPLATE);
+      Check.that(varNames, VARARGS).is(deepNotNull());
       for (String name : varNames) {
         Template tmpl = TemplateUtils.getContainingTemplate(template, name);
         Check.that(name).is(in(), tmpl.getVariables(), ERR_NO_SUCH_VARIABLE);
@@ -210,9 +212,9 @@ public final class StringifierRegistry {
         Template rootTemplate,
         String nestedTemplateName,
         String... varNames) {
-      Check.notNull(stringifier, MTag.STRINGIFIER);
-      Check.notNull(rootTemplate, MTag.TEMPLATE);
-      Check.notNull(varNames, Tag.VARARGS);
+      Check.notNull(stringifier, STRINGIFIER);
+      Check.notNull(rootTemplate, TEMPLATE);
+      Check.notNull(varNames, VARARGS);
       Template tmpl =
           nestedTemplateName == null || nestedTemplateName.equals(ROOT_TEMPLATE_NAME)
               ? rootTemplate
@@ -248,8 +250,8 @@ public final class StringifierRegistry {
      * @return this {@code Builder}
      */
     public Builder registerByGroup(Stringifier stringifier, String... groupNames) {
-      Check.notNull(stringifier, MTag.STRINGIFIER);
-      Check.that(groupNames, Tag.VARARGS).isNot(empty());
+      Check.notNull(stringifier, STRINGIFIER);
+      Check.that(groupNames, VARARGS).isNot(empty());
       for (String name : groupNames) {
         Check.that(name, "group name").isNot(empty());
         VarGroup varGroup = VarGroup.createPrivileged(Private.of(name));
@@ -273,7 +275,7 @@ public final class StringifierRegistry {
      * @return this {@code Builder}
      */
     public Builder registerByName(Stringifier stringifier, String... varNames) {
-      Check.notNull(stringifier, MTag.STRINGIFIER);
+      Check.notNull(stringifier, STRINGIFIER);
       Check.that(varNames, "varNames").isNot(empty());
       for (String var : varNames) {
         Check.that(var, "variable name").isNot(empty());
@@ -305,10 +307,10 @@ public final class StringifierRegistry {
      * @return this {@code Builder}
      */
     public Builder registerByType(Stringifier stringifier, Class<?>... types) {
-      Check.notNull(stringifier, MTag.STRINGIFIER);
+      Check.notNull(stringifier, STRINGIFIER);
       Check.that(types, "types").isNot(empty());
       for (Class<?> t : types) {
-        Check.notNull(t, "type")
+        Check.notNull(t, TYPE)
             .isNot(keyIn(), typeStringifiers, ERR_TYPE_ASSIGNED, t.getName())
             .then(x -> typeStringifiers.put(x, stringifier));
       }
@@ -330,8 +332,8 @@ public final class StringifierRegistry {
     public Builder setVariableType(Class<?> type,
         Template template,
         String... varNames) {
-      Check.notNull(type, "type");
-      Check.notNull(template, "template");
+      Check.notNull(type, TYPE);
+      Check.notNull(template, TEMPLATE);
       Check.that(varNames, "varNames").isNot(empty());
       for (String var : varNames) {
         Check.that(var, "variable name").isNot(empty());

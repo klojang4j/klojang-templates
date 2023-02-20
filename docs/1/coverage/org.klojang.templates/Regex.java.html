@@ -1,8 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Regex.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Klojang Templates</a> &gt; <a href="index.source.html" class="el_package">org.klojang.templates</a> &gt; <span class="el_source">Regex.java</span></div><h1>Regex.java</h1><pre class="source lang-java linenums">package org.klojang.templates;
 
-import org.klojang.templates.RenderSession;
-import org.klojang.templates.VarGroup;
-
 import java.util.regex.Pattern;
 
 import static java.util.regex.Pattern.compile;
@@ -15,7 +12,7 @@ import static java.util.regex.Pattern.compile;
  * Klojang template should look like. This class could also be useful for tool
  * makers (e.g. when writing a syntax highlighting plugin).
  */
-<span class="nc" id="L18">public final class Regex {</span>
+<span class="nc" id="L15">public final class Regex {</span>
 
   private static final int MULTILINE = Pattern.MULTILINE | Pattern.DOTALL;
 
@@ -119,9 +116,9 @@ import static java.util.regex.Pattern.compile;
       + &quot;~%%end:\\1%&quot;;
 
   // Used only for syntax error reporting:
-  static final String REGEX_INLINE_TEMPLATE_BEGIN = &quot;~%%begin:&quot; + REGEX_NAME + &quot;%&quot;;
+  static final String REGEX_INLINE_TEMPLATE_BEGIN = &quot;~%%begin:&quot; + REGEX_PATH + &quot;%&quot;;
 
-  static final String REGEX_INLINE_TEMPLATE_END = &quot;~%%end:&quot; + REGEX_NAME + &quot;%&quot;;
+  static final String REGEX_INLINE_TEMPLATE_END = &quot;~%%end:&quot; + REGEX_PATH + &quot;%&quot;;
 
   /**
    * Regular expression for an inline template block that is placed between HTML
@@ -142,7 +139,7 @@ import static java.util.regex.Pattern.compile;
    * percentage signs in a row.
    */
   public static final String REGEX_INCLUDE_PATH
-      = &quot;([a-zA-Z0-9_~:;/?#!$&amp;%,@+.=\\-\\[\\]\\(\\)]+?)&quot;;
+      = &quot;([a-zA-Z0-9_~:;/?#!$&amp;%,@+.=\\-\\[\\]()]+?)&quot;;
 
   /**
    * Regular expression for included templates. This is the basic pattern:
@@ -191,54 +188,54 @@ import static java.util.regex.Pattern.compile;
   /**
    * The compiled version of {@link #REGEX_VARIABLE}.
    */
-<span class="fc" id="L194">  public static final Pattern VARIABLE = compile(REGEX_VARIABLE);</span>
+<span class="fc" id="L191">  public static final Pattern VARIABLE = compile(REGEX_VARIABLE);</span>
 
   /**
    * The compiled version of {@link #REGEX_CMT_VARIABLE}.
    */
-<span class="fc" id="L199">  public static final Pattern CMT_VARIABLE = compile(REGEX_CMT_VARIABLE);</span>
+<span class="fc" id="L196">  public static final Pattern CMT_VARIABLE = compile(REGEX_CMT_VARIABLE);</span>
 
   /**
    * The compiled version of {@link #REGEX_INLINE_TEMPLATE}.
    */
-<span class="fc" id="L204">  public static final Pattern INLINE_TEMPLATE</span>
-<span class="fc" id="L205">      = compile(REGEX_INLINE_TEMPLATE, MULTILINE);</span>
+<span class="fc" id="L201">  public static final Pattern INLINE_TEMPLATE</span>
+<span class="fc" id="L202">      = compile(REGEX_INLINE_TEMPLATE, MULTILINE);</span>
 
   // Only used for syntax error reporting
-<span class="fc" id="L208">  static final Pattern INLINE_TEMPLATE_BEGIN = compile(</span>
+<span class="fc" id="L205">  static final Pattern INLINE_TEMPLATE_BEGIN = compile(</span>
       REGEX_INLINE_TEMPLATE_BEGIN);
 
-<span class="fc" id="L211">  static final Pattern INLINE_TEMPLATE_END = compile(REGEX_INLINE_TEMPLATE_END);</span>
+<span class="fc" id="L208">  static final Pattern INLINE_TEMPLATE_END = compile(REGEX_INLINE_TEMPLATE_END);</span>
 
   /**
    * The compiled version of {@link #REGEX_INLINE_TEMPLATE}.
    */
-<span class="fc" id="L216">  public static final Pattern CMT_INLINE_TEMPLATE</span>
-<span class="fc" id="L217">      = compile(REGEX_CMT_INLINE_TEMPLATE, MULTILINE);</span>
+<span class="fc" id="L213">  public static final Pattern CMT_INLINE_TEMPLATE</span>
+<span class="fc" id="L214">      = compile(REGEX_CMT_INLINE_TEMPLATE, MULTILINE);</span>
 
   /**
    * The compiled version of {@link #REGEX_INLINE_TEMPLATE}.
    */
-<span class="fc" id="L222">  public static final Pattern INCLUDED_TEMPLATE = compile(REGEX_INCLUDED_TEMPLATE);</span>
+<span class="fc" id="L219">  public static final Pattern INCLUDED_TEMPLATE = compile(REGEX_INCLUDED_TEMPLATE);</span>
 
   /**
    * The compiled version of {@link #CMT_INCLUDED_TEMPLATE}.
    */
-<span class="fc" id="L227">  public static final Pattern CMT_INCLUDED_TEMPLATE</span>
-<span class="fc" id="L228">      = compile(CMT_REGEX_INCLUDED_TEMPLATE);</span>
+<span class="fc" id="L224">  public static final Pattern CMT_INCLUDED_TEMPLATE</span>
+<span class="fc" id="L225">      = compile(CMT_REGEX_INCLUDED_TEMPLATE);</span>
 
   // Only used for syntax error reporting
-<span class="fc" id="L231">  static final Pattern DITCH_TAG = compile(REGEX_DITCH_TAG, MULTILINE);</span>
+<span class="fc" id="L228">  static final Pattern DITCH_TAG = compile(REGEX_DITCH_TAG, MULTILINE);</span>
 
   /**
    * The compiled version of {@link #REGEX_DITCH_BLOCK}.
    */
-<span class="fc" id="L236">  public static final Pattern DITCH_BLOCK = compile(REGEX_DITCH_BLOCK, MULTILINE);</span>
+<span class="fc" id="L233">  public static final Pattern DITCH_BLOCK = compile(REGEX_DITCH_BLOCK, MULTILINE);</span>
 
   /**
    * The compiled version of {@link #REGEX_PLACEHOLDER}.
    */
-<span class="fc" id="L241">  public static final Pattern PLACEHOLDER = compile(REGEX_PLACEHOLDER, MULTILINE);</span>
+<span class="fc" id="L238">  public static final Pattern PLACEHOLDER = compile(REGEX_PLACEHOLDER, MULTILINE);</span>
 
   static final String PLACEHOLDER_START_END = &quot;&lt;!--%--&gt;&quot;;
 
@@ -246,15 +243,15 @@ import static java.util.regex.Pattern.compile;
    * Prints the regular expressions.
    */
   public static void printAll() {
-<span class="fc" id="L249">    System.out.println(&quot;VARIABLE ................: &quot; + VARIABLE);</span>
-<span class="fc" id="L250">    System.out.println(&quot;CMT_VARIABLE ............: &quot; + CMT_VARIABLE);</span>
-<span class="fc" id="L251">    System.out.println(&quot;INLINE_TEMPLATE .........: &quot; + INLINE_TEMPLATE);</span>
-<span class="fc" id="L252">    System.out.println(&quot;CMT_INLINE_TEMPLATE .....: &quot; + CMT_INLINE_TEMPLATE);</span>
-<span class="fc" id="L253">    System.out.println(&quot;INCLUDED_TEMPLATE .......: &quot; + INCLUDED_TEMPLATE);</span>
-<span class="fc" id="L254">    System.out.println(&quot;CMT_INCLUDED_TEMPLATE ...: &quot; + CMT_INCLUDED_TEMPLATE);</span>
-<span class="fc" id="L255">    System.out.println(&quot;DITCH_BLOCK .............: &quot; + DITCH_BLOCK);</span>
-<span class="fc" id="L256">    System.out.println(&quot;PLACEHOLDER .............: &quot; + PLACEHOLDER);</span>
-<span class="fc" id="L257">  }</span>
+<span class="fc" id="L246">    System.out.println(&quot;VARIABLE ................: &quot; + VARIABLE);</span>
+<span class="fc" id="L247">    System.out.println(&quot;CMT_VARIABLE ............: &quot; + CMT_VARIABLE);</span>
+<span class="fc" id="L248">    System.out.println(&quot;INLINE_TEMPLATE .........: &quot; + INLINE_TEMPLATE);</span>
+<span class="fc" id="L249">    System.out.println(&quot;CMT_INLINE_TEMPLATE .....: &quot; + CMT_INLINE_TEMPLATE);</span>
+<span class="fc" id="L250">    System.out.println(&quot;INCLUDED_TEMPLATE .......: &quot; + INCLUDED_TEMPLATE);</span>
+<span class="fc" id="L251">    System.out.println(&quot;CMT_INCLUDED_TEMPLATE ...: &quot; + CMT_INCLUDED_TEMPLATE);</span>
+<span class="fc" id="L252">    System.out.println(&quot;DITCH_BLOCK .............: &quot; + DITCH_BLOCK);</span>
+<span class="fc" id="L253">    System.out.println(&quot;PLACEHOLDER .............: &quot; + PLACEHOLDER);</span>
+<span class="fc" id="L254">  }</span>
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

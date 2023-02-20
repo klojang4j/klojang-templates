@@ -1,8 +1,5 @@
 package org.klojang.templates;
 
-import org.klojang.templates.RenderSession;
-import org.klojang.templates.VarGroup;
-
 import java.util.regex.Pattern;
 
 import static java.util.regex.Pattern.compile;
@@ -119,9 +116,9 @@ public final class Regex {
       + "~%%end:\\1%";
 
   // Used only for syntax error reporting:
-  static final String REGEX_INLINE_TEMPLATE_BEGIN = "~%%begin:" + REGEX_NAME + "%";
+  static final String REGEX_INLINE_TEMPLATE_BEGIN = "~%%begin:" + REGEX_PATH + "%";
 
-  static final String REGEX_INLINE_TEMPLATE_END = "~%%end:" + REGEX_NAME + "%";
+  static final String REGEX_INLINE_TEMPLATE_END = "~%%end:" + REGEX_PATH + "%";
 
   /**
    * Regular expression for an inline template block that is placed between HTML
@@ -142,7 +139,7 @@ public final class Regex {
    * percentage signs in a row.
    */
   public static final String REGEX_INCLUDE_PATH
-      = "([a-zA-Z0-9_~:;/?#!$&%,@+.=\\-\\[\\]\\(\\)]+?)";
+      = "([a-zA-Z0-9_~:;/?#!$&%,@+.=\\-\\[\\]()]+?)";
 
   /**
    * Regular expression for included templates. This is the basic pattern:

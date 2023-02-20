@@ -30,8 +30,6 @@
 /home/ayco/git-repos/klojang/klojang-templates/src/main/java/org/klojang/templates/x/MTag.java
 /home/ayco/git-repos/klojang/klojang-templates/src/main/java/org/klojang/templates/name/SnakeCaseToWordCase.java
 /home/ayco/git-repos/klojang/klojang-templates/src/main/java/org/klojang/templates/UnparsedPart.java
-/home/ayco/git-repos/klojang/klojang-templates/src/main/java/org/klojang/templates/x/acc/NullAccessor.java
-/home/ayco/git-repos/klojang/klojang-templates/src/main/java/org/klojang/templates/OptionalAccessor.java
 /home/ayco/git-repos/klojang/klojang-templates/src/main/java/org/klojang/templates/StringifierId.java
 /home/ayco/git-repos/klojang/klojang-templates/src/main/java/org/klojang/templates/x/Messages.java
 /home/ayco/git-repos/klojang/klojang-templates/src/main/java/org/klojang/templates/VarGroup.java
@@ -43,7 +41,6 @@
 /home/ayco/git-repos/klojang/klojang-templates/src/main/java/org/klojang/templates/x/ClassPathResolver.java
 /home/ayco/git-repos/klojang/klojang-templates/src/main/java/org/klojang/templates/Setting.java
 /home/ayco/git-repos/klojang/klojang-templates/src/main/java/org/klojang/templates/x/FilePathResolver.java
-/home/ayco/git-repos/klojang/klojang-templates/src/main/java/org/klojang/templates/x/acc/ArrayAccessor.java
 /home/ayco/git-repos/klojang/klojang-templates/src/main/java/org/klojang/templates/RenderState.java
 /home/ayco/git-repos/klojang/klojang-templates/src/main/java/org/klojang/templates/Part.java
 /home/ayco/git-repos/klojang/klojang-templates/src/main/java/org/klojang/templates/VariablePart.java

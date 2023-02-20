@@ -12,7 +12,6 @@ import org.klojang.util.ClassMethods;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 import static java.util.Collections.emptyMap;
 import static org.klojang.check.CommonChecks.keyIn;
@@ -24,31 +23,24 @@ import static org.klojang.templates.x.MTag.TEMPLATE;
 /**
  * <p>A registry of {@linkplain Accessor accessors}. Accessors are used by the
  * {@link RenderSession} to extract values from model objects. The
- * {@link #STANDARD_ACCESSORS} {@code AccessorRegistry} may very well contain all the
- * accessors you will ever need for your application. In other words, you may never
- * have to actually implement an {@code Accessor} yourself. Note that you only
- * interact with Klojang Templates via entire accessor registries, not via individual
- * accessors.
+ * {@link #STANDARD_ACCESSORS} constant is a ready-made {@code AccessorRegistry} that
+ * may contain all the accessors you will ever need for your application. In other
+ * words, you may never have to actually implement an {@code Accessor} yourself. Note
+ * that you only interact with Klojang Templates via entire accessor registries, not
+ * via individual accessors.
  *
  * <p>Any {@code AccessorRegistry}, including the ones you build yourself and
  * including the {@code STANDARD_ACCESSORS}, comes with a set of predefined,
  * internally maintained, and non-exposed accessors. For example there are
  * {@code Accessor} implementation for maps, records and JavaBeans.
  *
- * <p>This is how the {@code AccessorRegistry} decides which accessor to hand out to
+ * <p>This is how an {@code AccessorRegistry} decides which accessor to hand out to
  * the {@code RenderSession} for a particular type of object:
  *
  * <ol>
- *   <li>If you have {@linkplain Builder#register(Class, Accessor) registered} your
+ *   <li>If you have {@linkplain Builder#register(Accessor, Class) registered} your
  *       own {@code Accessor} for that particular type of object, then that is the
  *       {@code Accessor} that is going to be used.
- *   <li>If the object is an {@link Optional}, then a (non-exposed)
- *       {@code OptionalAccessor} is going to be used, which will typically defer to
- *       the appropriate {@code Accessor} for the object <i>within</i> the
- *       {@code Optional}. Optionals are typically returned from (for example) the
- *       ubiquitous {@code dao.findById(id)} method and in Klojang it is perfectly
- *       legitimate to {@link RenderSession#insert(Object, String...) insert} an
- *       {@code Optional} into a template.
  *   <li>If the object is a {@code Map}, a (non-exposed) {@code MapAccessor} is going
  *       to be used. (You could easily create and register one yourself, tailored to
  *       your particular needs.)
@@ -65,14 +57,12 @@ import static org.klojang.templates.x.MTag.TEMPLATE;
  *
  * <blockquote><pre>{@code
  * Accessor<Person> personAccessor =
- *   (person, property) -> {
- *     switch(property) {
+ *   (person, property) -> switch(property) {
  *       case "id" : return person.getId();
  *       case "firstName" : return person.getFirstName();
  *       case "lastName" : return person.getLastName();
  *       case "birthDate" : return person.getBirthDate();
  *       default : return Accessor.UNDEFINED;
- *     }
  *   };
  * AccessorRegistry reg = AccessorRegistry
  *   .configure()
@@ -85,17 +75,21 @@ import static org.klojang.templates.x.MTag.TEMPLATE;
  * a {@link BeanReaderBuilder}:
  *
  * <blockquote><pre>{@code
+ * // forClass returns a BeanReaderBuilder
+ * BeanReader br = BeanReader.forClass(Person.class)
+ *    .withInt("id")
+ *    .withString("firstName", "lastName")
+ *    .with(LocalDate.class, "birthDate"))
+ *    .build();
  * AccessorRegistry reg = AccessorRegistry
  *   .configure()
- *   .register(BeanReaderBuilder.forClass(Person.class)
- *      .withInt("id")
- *      .withString("firstName", "lastName")
- *      .with(LocalDate.class, "birthDate"))
+ *   .register(br)
  *   .freeze();
  * RenderSession session = template.newRenderSession(reg);
  * }</pre></blockquote>
  *
  * @author Ayco Holleman
+ * @see Template#newRenderSession(AccessorRegistry)
  * @see Setting#USE_BEAN_ACCESSOR
  */
 public final class AccessorRegistry {
@@ -112,8 +106,8 @@ public final class AccessorRegistry {
    * cases. It allows you to specify one global {@link NameMapper} for mapping the
    * names used in your templates to the names used in your model objects.
    *
-   * @param nameMapper the {@code NameMapper} to use when accessing model
-   *     objects
+   * @param nameMapper the {@code NameMapper} to be used to map template
+   *     variables to bean properties and/or map keys.
    * @return an {@code AccessorRegistry} the should sufficient for most use cases
    */
   public static AccessorRegistry standard(NameMapper nameMapper) {
@@ -128,6 +122,8 @@ public final class AccessorRegistry {
    * @author Ayco Holleman
    */
   public static final class Builder {
+
+    private static final String NAME_MAPPER = "name mapper";
 
     private static final String MAPPER_ALREADY_SET =
         "name mapper already set for template ${0}";
@@ -145,10 +141,9 @@ public final class AccessorRegistry {
     private Builder() {}
 
     /**
-     * Sets the default {@code NameMapper} used to map template variables to JavaBean
-     * properties and/or {@code Map} keys. If no default {@code NameMapper} is
-     * specified, template variables will be mapped as-is to JavaBean properties
-     * and/or {@code Map} keys.
+     * Sets the default {@code NameMapper} used to map template variables to bean
+     * properties and/or map keys. If no default {@code NameMapper} is specified,
+     * template variables will be mapped as-is to bean properties and/or map keys.
      *
      * @param nameMapper the name mapper
      * @return this {@code Builder} instance
@@ -168,7 +163,7 @@ public final class AccessorRegistry {
     public Builder setNameMapper(Template template, NameMapper nameMapper) {
       Check.notNull(template, TEMPLATE)
           .isNot(keyIn(), mappers, MAPPER_ALREADY_SET, template.getName());
-      Check.notNull(nameMapper, "name mapper");
+      Check.notNull(nameMapper, NAME_MAPPER);
       mappers.put(template, nameMapper);
       return this;
     }
@@ -177,51 +172,32 @@ public final class AccessorRegistry {
      * Sets the {@code Accessor} to be used for objects of the specified type.
      *
      * @param <T> the type of the objects for which to use the {@code Accessor}
-     * @param forType the {@code Class} object corresponding to the type
      * @param accessor the {@code Accessor}
+     * @param forType the {@code Class} object corresponding to the type
      * @return this {@code Builder} instance
      */
-    public <T> Builder register(Class<T> forType, Accessor<T> accessor) {
-      Check.notNull(forType, TYPE);
+    public <T> Builder register(Accessor<T> accessor, Class<T> forType) {
       Check.notNull(accessor, ACCESSOR);
-      return register0(forType, null, accessor);
+      Check.notNull(forType, TYPE);
+      return register0(accessor, forType, null);
     }
 
     /**
      * Sets the {@code Accessor} to be used for objects of the specified type, when
-     * destined for the specified template.
+     * inserted into the specified template.
      *
      * @param <T> the type of the objects for which to use the {@code Accessor}
+     * @param accessor the {@code Accessor}
      * @param forType the {@code Class} object corresponding to the type
      * @param template the template for which to use the {@code Accessor}
-     * @param accessor the {@code Accessor}
      * @return this {@code Builder} instance
      */
-    public <T> Builder register(Class<T> forType,
-        Template template,
-        Accessor<T> accessor) {
+    public <T> Builder register(Accessor<T> accessor, Class<T> forType,
+        Template template) {
       Check.notNull(forType, TYPE);
       Check.notNull(template, TEMPLATE);
       Check.notNull(accessor, ACCESSOR);
-      return register0(forType, template, accessor);
-    }
-
-    private <T> Builder register0(Class<T> clazz,
-        Template tmpl,
-        Accessor<T> acc) {
-      Map<Template, Accessor<?>> map = accs.get(clazz);
-      if (map == null) {
-        accs.put(clazz, map = new HashMap<>());
-      } else if (tmpl == null) {
-        // allowed - template-agnostic accessor
-        Check.that(map.containsKey(null)).is(no(),
-            TYPE_ALREADY_SET, clazz);
-      } else {
-        Check.that(map.containsKey(tmpl)).is(no(),
-            TEMPLATE_ALREADY_SET, tmpl.getName(), clazz);
-      }
-      map.put(tmpl, acc);
-      return this;
+      return register0(accessor, forType, template);
     }
 
     /**
@@ -269,8 +245,8 @@ public final class AccessorRegistry {
      */
     public <T> Builder register(BeanReader<T> br, NameMapper nameMapper) {
       Check.notNull(br, "BeanReader");
-      Check.notNull(nameMapper, "name mapper");
-      return register0(br.getBeanClass(), null, new BeanAccessor<>(br, nameMapper));
+      Check.notNull(nameMapper, NAME_MAPPER);
+      return register0(new BeanAccessor<>(br, nameMapper), br.getBeanClass(), null);
     }
 
     /**
@@ -292,10 +268,11 @@ public final class AccessorRegistry {
         NameMapper nameMapper) {
       Check.notNull(beanReader, "BeanReader");
       Check.notNull(template, TEMPLATE);
-      Check.notNull(nameMapper, "name mapper");
-      return register0(beanReader.getBeanClass(),
-          template,
-          new BeanAccessor<>(beanReader, nameMapper));
+      Check.notNull(nameMapper, NAME_MAPPER);
+      return register0(new BeanAccessor<>(beanReader, nameMapper),
+          beanReader.getBeanClass(),
+          template
+      );
     }
 
     /**
@@ -305,6 +282,22 @@ public final class AccessorRegistry {
      */
     public AccessorRegistry freeze() {
       return new AccessorRegistry(accs, defMapper, mappers);
+    }
+
+    private <T> Builder register0(Accessor<T> acc, Class<T> clazz, Template tmpl) {
+      Map<Template, Accessor<?>> map = accs.get(clazz);
+      if (map == null) {
+        accs.put(clazz, map = new HashMap<>());
+      } else if (tmpl == null) {
+        // allowed - template-agnostic accessor
+        Check.that(map.containsKey(null)).is(no(),
+            TYPE_ALREADY_SET, clazz);
+      } else {
+        Check.that(map.containsKey(tmpl)).is(no(),
+            TEMPLATE_ALREADY_SET, tmpl.getName(), clazz);
+      }
+      map.put(tmpl, acc);
+      return this;
     }
 
   }
@@ -348,13 +341,14 @@ public final class AccessorRegistry {
     }
     if (acc == null) {
       NameMapper nm = mappers.getOrDefault(template, defMapper);
-      if (ClassMethods.isSubtype(type, Map.class)) {
-        acc = new MapAccessor(nm);
-       } else if (useBeanAccessor) {
-        acc = new BeanAccessor<>(type, nm);
-      } else {
-        acc = new PathAccessor(nm);
-      }
+      acc = new PathAccessor(nm);
+//      if (ClassMethods.isSubtype(type, Map.class)) {
+//        acc = new MapAccessor(nm);
+//      } else if (useBeanAccessor) {
+//        acc = new BeanAccessor<>(type, nm);
+//      } else {
+//        acc = new PathAccessor(nm);
+//      }
     }
     return acc;
   }
