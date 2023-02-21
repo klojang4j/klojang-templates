@@ -1,11 +1,11 @@
 package org.klojang.templates.name;
 
 import org.klojang.check.Check;
-import org.klojang.check.Tag;
 import org.klojang.templates.NameMapper;
 
 import static java.lang.Character.*;
 import static org.klojang.check.CommonChecks.emptyString;
+import static org.klojang.util.StringMethods.trim;
 
 /**
  * Converts camel case identifiers to snake case identifiers. For example
@@ -18,33 +18,41 @@ public class CamelCaseToSnakeLowerCase implements NameMapper {
   /**
    * Returns an instance of {@code CamelCaseToSnakeLowerCase}.
    *
-   * @return An instance of {@code CamelCaseToSnakeLowerCase}
+   * @return an instance of {@code CamelCaseToSnakeLowerCase}
    */
   public static CamelCaseToSnakeLowerCase camelCaseToSnakeLowerCase() {
     return new CamelCaseToSnakeLowerCase();
   }
 
+  /**
+   * Maps a camel case name to an all-lowercase snake case name. Any leading and
+   * trailing underscores in the name are ignored.
+   *
+   * @param name a camel case name
+   * @return an all-lowercase snake case name
+   */
   @Override
   public String map(String name) {
-    Check.that(name, Tag.NAME).isNot(emptyString());
-    int maxLen = (int) Math.ceil(name.length() * 1.5F);
+    String in = Check.that(trim(name, "_\t\r\n"))
+        .isNot(emptyString(), "cannot map \"%s\"", name).ok();
+    int maxLen = (int) Math.ceil(in.length() * 1.5F);
     char[] out = new char[maxLen];
-    out[0] = isUpperCase(name.charAt(0)) ? toLowerCase(name.charAt(0)) : name.charAt(
-        0);
+    out[0] = toLowerCase(in.charAt(0));
     int j = 1;
-    for (int i = 1; i < name.length(); ++i) {
-      if (isUpperCase(name.charAt(i))) {
-        if ((i != (name.length() - 1)) && isLowerCase(name.charAt(i + 1))) {
+    for (int i = 1; i < in.length(); ++i) {
+      char c = in.charAt(i);
+      if (isUpperCase(c)) {
+        if ((i != (in.length() - 1)) && isLowerCase(in.charAt(i + 1))) {
           out[j++] = '_';
-          out[j++] = toLowerCase(name.charAt(i));
-        } else if (isLowerCase(name.charAt(i - 1))) {
+          out[j++] = toLowerCase(c);
+        } else if (isLowerCase(in.charAt(i - 1))) {
           out[j++] = '_';
-          out[j++] = toLowerCase(name.charAt(i));
+          out[j++] = toLowerCase(c);
         } else {
-          out[j++] = toLowerCase(name.charAt(i));
+          out[j++] = toLowerCase(c);
         }
       } else {
-        out[j++] = name.charAt(i);
+        out[j++] = c;
       }
     }
     return new String(out, 0, j);

@@ -5,26 +5,26 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public class CamelCaseToSnakeLowerCaseTest {
+public class WordCaseToSnakeUpperCaseTest {
 
   @Test
   public void test00() {
-    assertEquals("this_is_a_column_name", map("thisIsAColumnName"));
+    assertEquals("THIS_IS_A_COLUMN_NAME", map("ThisIsAColumnName"));
   }
 
   @Test
   public void test01() {
-    assertEquals("this", map("this"));
+    assertEquals("THIS", map("This"));
   }
 
   @Test
   public void test02() {
-    assertEquals("this_is", map("_thisIs"));
+    assertEquals("THIS_IS", map("_ThisIs"));
   }
 
   @Test
   public void test03() {
-    assertEquals("t", map("t"));
+    assertEquals("T", map("T"));
   }
 
   @Test
@@ -33,7 +33,7 @@ public class CamelCaseToSnakeLowerCaseTest {
   }
 
   private static String map(String name) {
-    return new CamelCaseToSnakeLowerCase().map(name);
+    return new WordCaseToSnakeUpperCase().map(name);
   }
 
 }

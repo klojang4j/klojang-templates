@@ -13,21 +13,27 @@ import static org.klojang.check.CommonChecks.emptyString;
  *
  * @author Ayco Holleman
  */
-<span class="nc" id="L16">public class CamelCaseToWordCase implements NameMapper {</span>
+<span class="fc" id="L16">public class CamelCaseToWordCase implements NameMapper {</span>
 
   /**
    * Returns an instance of {@code CamelCaseToWordCase}.
    *
-   * @return An instance of {@code CamelCaseToWordCase}
+   * @return an instance of {@code CamelCaseToWordCase}
    */
   public static CamelCaseToWordCase camelCaseToWordCase() {
 <span class="nc" id="L24">    return new CamelCaseToWordCase();</span>
   }
 
+  /**
+   * Maps a camel case name to a word case name.
+   *
+   * @param name a word case name
+   * @return a camel case name
+   */
   @Override
   public String map(String name) {
-<span class="nc" id="L29">    Check.that(name, Tag.NAME).isNot(emptyString());</span>
-<span class="nc" id="L30">    return toUpperCase(name.charAt(0)) + name.substring(1);</span>
+<span class="fc" id="L35">    Check.that(name, Tag.NAME).isNot(emptyString());</span>
+<span class="fc" id="L36">    return toUpperCase(name.charAt(0)) + name.substring(1);</span>
   }
 
 }

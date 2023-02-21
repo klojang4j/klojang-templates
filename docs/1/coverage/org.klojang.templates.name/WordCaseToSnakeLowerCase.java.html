@@ -2,26 +2,36 @@
 
 import org.klojang.templates.NameMapper;
 
+import static org.klojang.templates.name.CamelCaseToSnakeLowerCase.camelCaseToSnakeLowerCase;
+
 /**
- * Converts camel case identifiers to snake case identifiers. For example {@code MyBloodyValentine}
- * becomes {@code my_bloody_valentine}.
+ * Converts word case identifiers to snake case identifiers. For example
+ * {@code MyBloodyValentine} becomes {@code my_bloody_valentine}.
  *
  * @author Ayco Holleman
  */
-<span class="nc" id="L11">public class WordCaseToSnakeLowerCase implements NameMapper {</span>
+<span class="fc" id="L13">public class WordCaseToSnakeLowerCase implements NameMapper {</span>
 
   /**
    * Returns an instance of {@code WordCaseToSnakeLowerCase}.
    *
-   * @return An instance of {@code WordCaseToSnakeLowerCase}
+   * @return an instance of {@code WordCaseToSnakeLowerCase}
    */
   public static WordCaseToSnakeLowerCase wordCaseToSnakeLowerCase() {
-<span class="nc" id="L19">    return new WordCaseToSnakeLowerCase();</span>
+<span class="nc" id="L21">    return new WordCaseToSnakeLowerCase();</span>
   }
 
+  /**
+   * Maps a word case name to an all-lowercase snake case name. Any leading and
+   * trailing underscores in the name are ignored.
+   *
+   * @param name a word case name
+   * @return an all-lowercase snake case name
+   */
   @Override
   public String map(String name) {
-<span class="nc" id="L24">    return new CamelCaseToSnakeLowerCase().map(name);</span>
+<span class="fc" id="L33">    return camelCaseToSnakeLowerCase().map(name);</span>
   }
+
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

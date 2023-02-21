@@ -7,6 +7,7 @@ import org.klojang.templates.NameMapper;
 import static java.lang.Character.toLowerCase;
 import static java.lang.Character.toUpperCase;
 import static org.klojang.check.CommonChecks.emptyString;
+import static org.klojang.util.StringMethods.trim;
 
 /**
  * Converts snake case identifiers to word case identifiers. For example
@@ -22,21 +23,29 @@ public class SnakeCaseToWordCase implements NameMapper {
   /**
    * Returns an instance of {@code SnakeCaseToWordCase}.
    *
-   * @return An instance of {@code SnakeCaseToWordCase}
+   * @return an instance of {@code SnakeCaseToWordCase}
    */
   public static SnakeCaseToWordCase snakeCaseToWordCase() {
     return new SnakeCaseToWordCase();
   }
 
+  /**
+   * Maps a snake case name to a word case name. Any leading and trailing
+   * underscores in the name are ignored.
+   *
+   * @param name a word case name
+   * @return a camel case name
+   */
   @Override
   public String map(String name) {
-    Check.that(name, Tag.NAME).isNot(emptyString());
-    char[] out = new char[name.length()];
-    out[0] = toUpperCase(name.charAt(0));
+    String in = Check.that(trim(name, "_\t\r\n"))
+        .isNot(emptyString(), "cannot map \"%s\"", name).ok();
+    char[] out = new char[in.length()];
+    out[0] = toUpperCase(in.charAt(0));
     boolean nextWord = false;
     int j = 1;
-    for (int i = 1; i < name.length(); ++i) {
-      char c = name.charAt(i);
+    for (int i = 1; i < in.length(); ++i) {
+      char c = in.charAt(i);
       if (c == '_') {
         nextWord = true;
       } else {

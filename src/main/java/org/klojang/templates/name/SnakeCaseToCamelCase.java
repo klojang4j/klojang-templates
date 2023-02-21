@@ -1,12 +1,10 @@
 package org.klojang.templates.name;
 
 import org.klojang.check.Check;
-import org.klojang.check.Tag;
 import org.klojang.templates.NameMapper;
 
 import static java.lang.Character.toLowerCase;
 import static java.lang.Character.toUpperCase;
-import static org.klojang.check.CommonChecks.empty;
 import static org.klojang.check.CommonChecks.emptyString;
 import static org.klojang.util.StringMethods.trim;
 
@@ -24,17 +22,23 @@ public class SnakeCaseToCamelCase implements NameMapper {
   /**
    * Returns an instance of {@code SnakeCaseToCamelCase}.
    *
-   * @return An instance of {@code SnakeCaseToCamelCase}
+   * @return an instance of {@code SnakeCaseToCamelCase}
    */
   public static SnakeCaseToCamelCase snakeCaseToCamelCase() {
     return new SnakeCaseToCamelCase();
   }
 
+  /**
+   * Maps a snake case name to a camel case name. Any leading and trailing
+   * underscores in the name are ignored.
+   *
+   * @param name a snake case name
+   * @return a camel case name
+   */
   @Override
   public String map(String name) {
-    Check.that(name, Tag.NAME).isNot(emptyString());
-    String in = trim(name, " _\t\r\n");
-    Check.that(in).isNot(empty(), "Cannot map \"%s\"", name);
+    String in = Check.that(trim(name, "_\t\r\n"))
+        .isNot(emptyString(), "cannot map \"%s\"", name).ok();
     char[] out = new char[in.length()];
     out[0] = toLowerCase(in.charAt(0));
     boolean nextWord = false;

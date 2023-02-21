@@ -25,7 +25,6 @@ org/klojang/templates/TemplateCache.class
 org/klojang/templates/Setting.class
 org/klojang/templates/x/Private.class
 org/klojang/templates/StringifierRegistry.class
-org/klojang/templates/name/WordCaseToCameCase.class
 org/klojang/templates/PathResolver.class
 org/klojang/templates/Stringifier.class
 org/klojang/templates/x/MTag.class
@@ -41,6 +40,7 @@ org/klojang/templates/ParseError.class
 org/klojang/templates/RenderableImpl.class
 org/klojang/templates/NestedTemplatePart.class
 org/klojang/templates/TemplateUtils.class
+org/klojang/templates/name/WordCaseToCamelCase.class
 org/klojang/templates/IncludedTemplatePart.class
 org/klojang/templates/Renderable.class
 org/klojang/templates/x/acc/MapAccessor.class

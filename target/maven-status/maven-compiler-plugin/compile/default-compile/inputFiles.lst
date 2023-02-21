@@ -1,5 +1,4 @@
 /home/ayco/git-repos/klojang/klojang-templates/src/main/java/module-info.java
-/home/ayco/git-repos/klojang/klojang-templates/src/main/java/org/klojang/templates/name/WordCaseToCameCase.java
 /home/ayco/git-repos/klojang/klojang-templates/src/main/java/org/klojang/templates/name/CamelCaseToWordCase.java
 /home/ayco/git-repos/klojang/klojang-templates/src/main/java/org/klojang/templates/name/WordCaseToSnakeUpperCase.java
 /home/ayco/git-repos/klojang/klojang-templates/src/main/java/org/klojang/templates/Regex.java
@@ -33,6 +32,7 @@
 /home/ayco/git-repos/klojang/klojang-templates/src/main/java/org/klojang/templates/StringifierId.java
 /home/ayco/git-repos/klojang/klojang-templates/src/main/java/org/klojang/templates/x/Messages.java
 /home/ayco/git-repos/klojang/klojang-templates/src/main/java/org/klojang/templates/VarGroup.java
+/home/ayco/git-repos/klojang/klojang-templates/src/main/java/org/klojang/templates/name/WordCaseToCamelCase.java
 /home/ayco/git-repos/klojang/klojang-templates/src/main/java/org/klojang/templates/IncludedTemplatePart.java
 /home/ayco/git-repos/klojang/klojang-templates/src/main/java/org/klojang/templates/x/StandardStringifiers.java
 /home/ayco/git-repos/klojang/klojang-templates/src/main/java/org/klojang/templates/SessionConfig.java

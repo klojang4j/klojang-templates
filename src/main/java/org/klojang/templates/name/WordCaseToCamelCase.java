@@ -13,17 +13,23 @@ import static org.klojang.check.CommonChecks.emptyString;
  *
  * @author Ayco Holleman
  */
-public class WordCaseToCameCase implements NameMapper {
+public class WordCaseToCamelCase implements NameMapper {
 
   /**
    * Returns an instance of {@code WordCaseToCameCase}.
    *
-   * @return An instance of {@code WordCaseToCameCase}
+   * @return an instance of {@code WordCaseToCameCase}
    */
-  public static WordCaseToCameCase wordCaseToCameCase() {
-    return new WordCaseToCameCase();
+  public static WordCaseToCamelCase wordCaseToCameCase() {
+    return new WordCaseToCamelCase();
   }
 
+  /**
+   * Maps a word case name to a camel case name.
+   *
+   * @param name a word case name
+   * @return a camel case name
+   */
   @Override
   public String map(String name) {
     Check.that(name, Tag.NAME).isNot(emptyString());

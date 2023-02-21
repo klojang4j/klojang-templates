@@ -5,36 +5,36 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public class SnakeCaseToCamelCaseTest {
+public class SnakeCaseToWordCaseTest {
 
   @Test
   public void test00() {
-    assertEquals("thisIsAColumnName", map("this_is_a_column_name"));
+    assertEquals("ThisIsAColumnName", map("this_is_a_column_name"));
   }
 
   @Test
   public void test01() {
-    assertEquals("thisIsAColumnName", map("this__is_a_column__name"));
+    assertEquals("ThisIsAColumnName", map("this__is_a_column__name"));
   }
 
   @Test
   public void test02() {
-    assertEquals("this", map("this"));
+    assertEquals("This", map("this"));
   }
 
   @Test
   public void test03() {
-    assertEquals("thisIsAColumnName", map("THIS_IS_A_COLUMN_NAME"));
+    assertEquals("ThisIsAColumnName", map("THIS_IS_A_COLUMN_NAME"));
   }
 
   @Test
   public void test04() {
-    assertEquals("thisIsAColumnName", map("This__Is_A_Column__Name"));
+    assertEquals("ThisIsAColumnName", map("This__Is_A_Column__Name"));
   }
 
   @Test
   public void test05() {
-    assertEquals("t", map("T"));
+    assertEquals("T", map("T"));
   }
 
   @Test()
@@ -54,6 +54,6 @@ public class SnakeCaseToCamelCaseTest {
 
 
   private static String map(String name) {
-    return new SnakeCaseToCamelCase().map(name);
+    return new SnakeCaseToWordCase().map(name);
   }
 }

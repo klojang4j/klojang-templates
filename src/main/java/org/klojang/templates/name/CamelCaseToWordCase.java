@@ -18,12 +18,18 @@ public class CamelCaseToWordCase implements NameMapper {
   /**
    * Returns an instance of {@code CamelCaseToWordCase}.
    *
-   * @return An instance of {@code CamelCaseToWordCase}
+   * @return an instance of {@code CamelCaseToWordCase}
    */
   public static CamelCaseToWordCase camelCaseToWordCase() {
     return new CamelCaseToWordCase();
   }
 
+  /**
+   * Maps a camel case name to a word case name.
+   *
+   * @param name a word case name
+   * @return a camel case name
+   */
   @Override
   public String map(String name) {
     Check.that(name, Tag.NAME).isNot(emptyString());
