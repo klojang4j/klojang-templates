@@ -37,8 +37,8 @@ final class RenderableImpl implements Renderable {
   @Override
   public String toString() {
 <span class="nc" id="L39">    Template t = state.getSessionConfig().template();</span>
-<span class="nc bnc" id="L40" title="All 2 branches missed.">    if (t.getPath().isPresent()) {</span>
-<span class="nc" id="L41">      return concat(Renderable.class.getName(), &quot;[source=&quot;, t.getPath().get(), &quot;]&quot;);</span>
+<span class="nc bnc" id="L40" title="All 2 branches missed.">    if (t.path().isPresent()) {</span>
+<span class="nc" id="L41">      return concat(Renderable.class.getName(), &quot;[source=&quot;, t.path().get(), &quot;]&quot;);</span>
     }
 <span class="nc" id="L43">    return concat(Renderable.class.getName(), &quot;[template=&quot;, t.getName(), &quot;]&quot;);</span>
   }

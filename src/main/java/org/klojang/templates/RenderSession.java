@@ -236,7 +236,7 @@ public final class RenderSession {
       String suffix) {
     Check.on(frozenSession(), state.isFrozen()).is(no());
     Template t = config.template();
-    Check.that(t).is(Template::hasVariable, varName, noSuchVariable(t, varName));
+    Check.that(varName).is(keyIn(), t.variables(), noSuchVariable(t, varName));
     Check.that(state.isSet(varName)).is(no(), alreadySet(t, varName));
     IntList indices = t.variables().get(varName);
     if (values.isEmpty()) {
@@ -307,7 +307,7 @@ public final class RenderSession {
     Check.notNull(varName, VAR_NAME);
     Check.notNull(renderable, "renderable");
     Template t = config.template();
-    Check.that(t).is(Template::hasVariable, varName, noSuchVariable(t, varName));
+    Check.that(varName).is(keyIn(), t.variables(), noSuchVariable(t, varName));
     Check.that(state.isSet(varName)).is(no(), alreadySet(t, varName));
     t.variables().get(varName).forEach(i -> state.setVar(i, renderable));
     return this;
@@ -835,15 +835,16 @@ public final class RenderSession {
   }
 
   private String stringify(Stringifier stringifier, String varName, Object value) {
+    String s;
     try {
-      String s = stringifier.toString(value);
-      if (s == null) {
-        throw stringifierReturnedNull(config.template(), varName);
-      }
-      return s;
+      s = stringifier.toString(value);
     } catch (NullPointerException e) {
       throw stringifierNotNullResistant(config.template(), varName);
     }
+    if (s == null) {
+      throw stringifierReturnedNull(config.template(), varName);
+    }
+    return s;
   }
 
 }

@@ -18,9 +18,7 @@ public interface Stringifier {
    *
    * @see StringifierRegistry.Builder
    */
-  public static final Stringifier DEFAULT = x -> x == null
-      ? StringMethods.EMPTY_STRING
-      : x.toString();
+  Stringifier DEFAULT = x -> x == null ? StringMethods.EMPTY_STRING : x.toString();
 
   /**
    * Stringifies the specified value. Stringifier implementations <i>must</i> be able

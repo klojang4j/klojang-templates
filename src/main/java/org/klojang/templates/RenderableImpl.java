@@ -37,8 +37,8 @@ final class RenderableImpl implements Renderable {
   @Override
   public String toString() {
     Template t = state.getSessionConfig().template();
-    if (t.getPath().isPresent()) {
-      return concat(Renderable.class.getName(), "[source=", t.getPath().get(), "]");
+    if (t.path().isPresent()) {
+      return concat(Renderable.class.getName(), "[source=", t.path().get(), "]");
     }
     return concat(Renderable.class.getName(), "[template=", t.getName(), "]");
   }

@@ -236,7 +236,7 @@ public final class RenderSession {
       String suffix) {
 <span class="fc" id="L237">    Check.on(frozenSession(), state.isFrozen()).is(no());</span>
 <span class="fc" id="L238">    Template t = config.template();</span>
-<span class="fc" id="L239">    Check.that(t).is(Template::hasVariable, varName, noSuchVariable(t, varName));</span>
+<span class="fc" id="L239">    Check.that(varName).is(keyIn(), t.variables(), noSuchVariable(t, varName));</span>
 <span class="fc" id="L240">    Check.that(state.isSet(varName)).is(no(), alreadySet(t, varName));</span>
 <span class="fc" id="L241">    IntList indices = t.variables().get(varName);</span>
 <span class="fc bfc" id="L242" title="All 2 branches covered.">    if (values.isEmpty()) {</span>
@@ -307,7 +307,7 @@ public final class RenderSession {
 <span class="fc" id="L307">    Check.notNull(varName, VAR_NAME);</span>
 <span class="fc" id="L308">    Check.notNull(renderable, &quot;renderable&quot;);</span>
 <span class="fc" id="L309">    Template t = config.template();</span>
-<span class="fc" id="L310">    Check.that(t).is(Template::hasVariable, varName, noSuchVariable(t, varName));</span>
+<span class="fc" id="L310">    Check.that(varName).is(keyIn(), t.variables(), noSuchVariable(t, varName));</span>
 <span class="fc" id="L311">    Check.that(state.isSet(varName)).is(no(), alreadySet(t, varName));</span>
 <span class="fc" id="L312">    t.variables().get(varName).forEach(i -&gt; state.setVar(i, renderable));</span>
 <span class="fc" id="L313">    return this;</span>
@@ -835,15 +835,16 @@ public final class RenderSession {
   }
 
   private String stringify(Stringifier stringifier, String varName, Object value) {
+    String s;
     try {
-<span class="fc" id="L839">      String s = stringifier.toString(value);</span>
-<span class="pc bpc" id="L840" title="1 of 2 branches missed.">      if (s == null) {</span>
-<span class="nc" id="L841">        throw stringifierReturnedNull(config.template(), varName);</span>
-      }
-<span class="fc" id="L843">      return s;</span>
-<span class="nc" id="L844">    } catch (NullPointerException e) {</span>
-<span class="nc" id="L845">      throw stringifierNotNullResistant(config.template(), varName);</span>
+<span class="fc" id="L840">      s = stringifier.toString(value);</span>
+<span class="nc" id="L841">    } catch (NullPointerException e) {</span>
+<span class="nc" id="L842">      throw stringifierNotNullResistant(config.template(), varName);</span>
+<span class="fc" id="L843">    }</span>
+<span class="pc bpc" id="L844" title="1 of 2 branches missed.">    if (s == null) {</span>
+<span class="nc" id="L845">      throw stringifierReturnedNull(config.template(), varName);</span>
     }
+<span class="fc" id="L847">    return s;</span>
   }
 
 }

@@ -42,13 +42,13 @@ public class TemplateTest {
         </body></html>
         """;
     Template tmpl = Template.fromString(getClass(), src);
-    assertEquals(Optional.empty(), tmpl.getPath());
+    assertEquals(Optional.empty(), tmpl.path());
     Template nested = tmpl.getNestedTemplate("main");
-    assertEquals(Optional.empty(), nested.getPath());
+    assertEquals(Optional.empty(), nested.path());
     nested = nested.getNestedTemplate("contents_a");
-    assertEquals(Optional.of("include-01.html"), nested.getPath());
+    assertEquals(Optional.of("include-01.html"), nested.path());
     nested = tmpl.getNestedTemplate("contents_b");
-    assertEquals(Optional.of("include-01.html"), nested.getPath());
+    assertEquals(Optional.of("include-01.html"), nested.path());
   }
 
 }

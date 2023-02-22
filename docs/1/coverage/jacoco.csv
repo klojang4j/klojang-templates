@@ -19,7 +19,7 @@ Klojang Templates,org.klojang.templates,TemplateLocation,10,56,0,2,3,10,1,10,1,9
 Klojang Templates,org.klojang.templates,RenderException,221,59,2,0,26,19,15,8,14,8
 Klojang Templates,org.klojang.templates,SessionConfig,3,60,0,0,0,11,1,9,1,9
 Klojang Templates,org.klojang.templates,ParseException,7,10,0,0,3,4,1,2,1,2
-Klojang Templates,org.klojang.templates,Stringifier,2,8,1,1,1,2,1,2,0,2
+Klojang Templates,org.klojang.templates,Stringifier,2,8,1,1,0,1,1,2,0,2
 Klojang Templates,org.klojang.templates,PathResolutionException,5,0,0,0,2,0,1,0,1,0
 Klojang Templates,org.klojang.templates,InlineTemplatePart,25,5,0,0,9,2,1,1,1,1
 Klojang Templates,org.klojang.templates,Parser,39,832,10,62,7,158,8,50,0,22
@@ -29,7 +29,7 @@ Klojang Templates,org.klojang.templates,Accessor,0,5,0,0,0,1,0,1,0,1
 Klojang Templates,org.klojang.templates,UnparsedPart,3,10,0,0,1,4,1,2,1,2
 Klojang Templates,org.klojang.templates,PartsPrinter,0,325,0,18,0,72,0,18,0,9
 Klojang Templates,org.klojang.templates,AccessorRegistry,0,78,0,8,0,20,0,9,0,5
-Klojang Templates,org.klojang.templates,RenderSession,114,1189,8,72,23,206,14,71,6,39
+Klojang Templates,org.klojang.templates,RenderSession,114,1192,8,72,23,207,14,71,6,39
 Klojang Templates,org.klojang.templates,TextPart,0,13,0,0,0,5,0,3,0,3
 Klojang Templates,org.klojang.templates,TemplateCache,112,112,19,11,21,28,14,6,0,5
 Klojang Templates,org.klojang.templates,BadStringifierException,36,0,0,0,6,0,3,0,3,0
@@ -48,4 +48,4 @@ Klojang Templates,org.klojang.templates,StringifierRegistry,8,213,5,27,2,49,5,16
 Klojang Templates,org.klojang.templates,AbstractPart,0,16,0,0,0,7,0,4,0,4
 Klojang Templates,org.klojang.templates,RenderableImpl,178,141,16,16,32,34,13,13,5,5
 Klojang Templates,org.klojang.templates,IncludedTemplatePart,40,13,2,0,5,3,2,2,1,2
-Klojang Templates,org.klojang.templates,Template,117,435,3,29,19,95,10,44,7,31
+Klojang Templates,org.klojang.templates,Template,152,383,9,19,26,84,14,38,9,29

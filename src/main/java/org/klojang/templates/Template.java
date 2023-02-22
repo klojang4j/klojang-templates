@@ -15,7 +15,6 @@ import java.util.*;
 
 import static java.util.stream.Collectors.toUnmodifiableList;
 import static org.klojang.check.CommonChecks.*;
-import static org.klojang.templates.TemplateUtils.getFQName;
 import static org.klojang.templates.x.Messages.ERR_NO_SUCH_TEMPLATE;
 import static org.klojang.util.CollectionMethods.implode;
 
@@ -228,7 +227,7 @@ public final class Template {
    *
    * @return the file location (if any) of the source code for this {@code Template}
    */
-  public Optional<String> getPath() {
+  public Optional<String> path() {
     return Optional.ofNullable(location.path());
   }
 
@@ -419,22 +418,31 @@ public final class Template {
     return new SessionConfig(this, accessors, stringifiers).newRenderSession();
   }
 
+  /**
+   * Determines whether this template is equal to the specified object. Two templates
+   * are equals if they were created from the same {@linkplain #path() path} and
+   * {@link PathResolver}. {@code Template} instances that were created
+   * {@linkplain #fromString(String) from a string} are never equal to any other
+   * {@code Template} instance (except themselves).
+   *
+   * @param obj the object to compare this template with
+   * @return whether this template is equal to the specified object
+   */
   @Override
   public boolean equals(Object obj) {
     if (this == obj) {
       return true;
     }
-    if (obj instanceof Template other) {
-      if (location.isString()) {
-        return parent != null
-            && getRootTemplate().equals(other.getRootTemplate())
-            && getFQName(this).equals(getFQName(other));
-      }
-      return location.equals(other.location);
-    }
-    return false;
+    return !location.isString()
+        && obj instanceof Template other
+        && location.equals(other.location);
   }
 
+  /**
+   * Returns the hash code of this {@code Template}.
+   *
+   * @return the hash code of this {@code Template}
+   */
   @Override
   public int hashCode() {
     return location.hashCode();
