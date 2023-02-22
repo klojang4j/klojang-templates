@@ -464,19 +464,11 @@ public final class Template {
     return (T) Check.that(index).is(indexOf(), parts).mapToObj(parts::get);
   }
 
-  Map<String, IntList> getVarPartIndices() {
+  Map<String, IntList> variables() {
     return varIndices;
   }
 
-  Map<String, Integer> getTemplatePartIndices() {
-    return tmplIndices;
-  }
-
-  IntList getTextPartIndices() {
-    return textIndices;
-  }
-
-  private static Map<String, IntList> getVarIndices(List<Part> parts) {
+    private static Map<String, IntList> getVarIndices(List<Part> parts) {
     Map<String, IntList> indices = new LinkedHashMap<>();
     for (int i = 0; i < parts.size(); ++i) {
       if (parts.get(i) instanceof VariablePart vp) {

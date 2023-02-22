@@ -36,7 +36,7 @@ final class RenderableImpl implements Renderable {
 
   @Override
   public String toString() {
-<span class="nc" id="L39">    Template t = state.getSessionConfig().getTemplate();</span>
+<span class="nc" id="L39">    Template t = state.getSessionConfig().template();</span>
 <span class="nc bnc" id="L40" title="All 2 branches missed.">    if (t.getPath().isPresent()) {</span>
 <span class="nc" id="L41">      return concat(Renderable.class.getName(), &quot;[source=&quot;, t.getPath().get(), &quot;]&quot;);</span>
     }
@@ -44,7 +44,7 @@ final class RenderableImpl implements Renderable {
   }
 
   private void render(RenderState state0, PrintStream ps) {
-<span class="fc" id="L47">    List&lt;Part&gt; parts = state0.getSessionConfig().getTemplate().getParts();</span>
+<span class="fc" id="L47">    List&lt;Part&gt; parts = state0.getSessionConfig().template().getParts();</span>
 <span class="fc bfc" id="L48" title="All 2 branches covered.">    for (int i = 0; i &lt; parts.size(); ++i) {</span>
 <span class="fc" id="L49">      Part part = parts.get(i);</span>
 <span class="fc bfc" id="L50" title="All 2 branches covered.">      if (part.getClass() == TextPart.class) {</span>
@@ -81,7 +81,7 @@ final class RenderableImpl implements Renderable {
 <span class="fc" id="L81">  }</span>
 
   private void render(RenderState state0, StringBuilder sb) {
-<span class="nc" id="L84">    List&lt;Part&gt; parts = state0.getSessionConfig().getTemplate().getParts();</span>
+<span class="nc" id="L84">    List&lt;Part&gt; parts = state0.getSessionConfig().template().getParts();</span>
 <span class="nc bnc" id="L85" title="All 2 branches missed.">    for (int i = 0; i &lt; parts.size(); ++i) {</span>
 <span class="nc" id="L86">      Part part = parts.get(i);</span>
 <span class="nc bnc" id="L87" title="All 2 branches missed.">      if (part.getClass() == TextPart.class) {</span>

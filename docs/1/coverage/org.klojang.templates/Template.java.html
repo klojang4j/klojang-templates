@@ -464,55 +464,47 @@ public final class Template {
 <span class="fc" id="L464">    return (T) Check.that(index).is(indexOf(), parts).mapToObj(parts::get);</span>
   }
 
-  Map&lt;String, IntList&gt; getVarPartIndices() {
+  Map&lt;String, IntList&gt; variables() {
 <span class="fc" id="L468">    return varIndices;</span>
   }
 
-  Map&lt;String, Integer&gt; getTemplatePartIndices() {
-<span class="nc" id="L472">    return tmplIndices;</span>
-  }
-
-  IntList getTextPartIndices() {
-<span class="nc" id="L476">    return textIndices;</span>
-  }
-
-  private static Map&lt;String, IntList&gt; getVarIndices(List&lt;Part&gt; parts) {
-<span class="fc" id="L480">    Map&lt;String, IntList&gt; indices = new LinkedHashMap&lt;&gt;();</span>
-<span class="fc bfc" id="L481" title="All 2 branches covered.">    for (int i = 0; i &lt; parts.size(); ++i) {</span>
-<span class="fc bfc" id="L482" title="All 2 branches covered.">      if (parts.get(i) instanceof VariablePart vp) {</span>
-<span class="fc" id="L483">        indices.computeIfAbsent(vp.getName(), k -&gt; new IntArrayList()).add(i);</span>
+    private static Map&lt;String, IntList&gt; getVarIndices(List&lt;Part&gt; parts) {
+<span class="fc" id="L472">    Map&lt;String, IntList&gt; indices = new LinkedHashMap&lt;&gt;();</span>
+<span class="fc bfc" id="L473" title="All 2 branches covered.">    for (int i = 0; i &lt; parts.size(); ++i) {</span>
+<span class="fc bfc" id="L474" title="All 2 branches covered.">      if (parts.get(i) instanceof VariablePart vp) {</span>
+<span class="fc" id="L475">        indices.computeIfAbsent(vp.getName(), k -&gt; new IntArrayList()).add(i);</span>
       }
     }
-<span class="fc" id="L486">    indices.entrySet().forEach(e -&gt; e.setValue(IntList.copyOf(e.getValue())));</span>
-<span class="fc" id="L487">    return Collections.unmodifiableMap(indices);</span>
+<span class="fc" id="L478">    indices.entrySet().forEach(e -&gt; e.setValue(IntList.copyOf(e.getValue())));</span>
+<span class="fc" id="L479">    return Collections.unmodifiableMap(indices);</span>
   }
 
   private static Map&lt;String, Integer&gt; getTmplIndices(List&lt;Part&gt; parts) {
-<span class="fc" id="L491">    Map&lt;String, Integer&gt; indices = new LinkedHashMap&lt;&gt;();</span>
-<span class="fc bfc" id="L492" title="All 2 branches covered.">    for (int i = 0; i &lt; parts.size(); ++i) {</span>
-<span class="fc bfc" id="L493" title="All 2 branches covered.">      if (parts.get(i) instanceof NestedTemplatePart ntp) {</span>
-<span class="fc" id="L494">        indices.put(ntp.getName(), i);</span>
+<span class="fc" id="L483">    Map&lt;String, Integer&gt; indices = new LinkedHashMap&lt;&gt;();</span>
+<span class="fc bfc" id="L484" title="All 2 branches covered.">    for (int i = 0; i &lt; parts.size(); ++i) {</span>
+<span class="fc bfc" id="L485" title="All 2 branches covered.">      if (parts.get(i) instanceof NestedTemplatePart ntp) {</span>
+<span class="fc" id="L486">        indices.put(ntp.getName(), i);</span>
       }
     }
-<span class="fc" id="L497">    return Collections.unmodifiableMap(indices);</span>
+<span class="fc" id="L489">    return Collections.unmodifiableMap(indices);</span>
   }
 
   private static List&lt;String&gt; getNames(List&lt;Part&gt; parts) {
-<span class="fc" id="L501">    return parts.stream()</span>
-<span class="fc" id="L502">        .filter(NamedPart.class::isInstance)</span>
-<span class="fc" id="L503">        .map(NamedPart.class::cast)</span>
-<span class="fc" id="L504">        .map(NamedPart::getName)</span>
-<span class="fc" id="L505">        .collect(toUnmodifiableList());</span>
+<span class="fc" id="L493">    return parts.stream()</span>
+<span class="fc" id="L494">        .filter(NamedPart.class::isInstance)</span>
+<span class="fc" id="L495">        .map(NamedPart.class::cast)</span>
+<span class="fc" id="L496">        .map(NamedPart::getName)</span>
+<span class="fc" id="L497">        .collect(toUnmodifiableList());</span>
   }
 
   private static IntList getTextIndices(List&lt;Part&gt; parts) {
-<span class="fc" id="L509">    IntArrayList indices = new IntArrayList();</span>
-<span class="fc bfc" id="L510" title="All 2 branches covered.">    for (int i = 0; i &lt; parts.size(); ++i) {</span>
-<span class="fc bfc" id="L511" title="All 2 branches covered.">      if (parts.get(i).getClass() == TextPart.class) {</span>
-<span class="fc" id="L512">        indices.add(i);</span>
+<span class="fc" id="L501">    IntArrayList indices = new IntArrayList();</span>
+<span class="fc bfc" id="L502" title="All 2 branches covered.">    for (int i = 0; i &lt; parts.size(); ++i) {</span>
+<span class="fc bfc" id="L503" title="All 2 branches covered.">      if (parts.get(i).getClass() == TextPart.class) {</span>
+<span class="fc" id="L504">        indices.add(i);</span>
       }
     }
-<span class="fc" id="L515">    return IntList.copyOf(indices);</span>
+<span class="fc" id="L507">    return IntList.copyOf(indices);</span>
   }
 
 }

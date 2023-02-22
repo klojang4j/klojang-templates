@@ -21,10 +21,10 @@ final class RenderState {
 
   RenderState(SessionConfig config) {
     this.config = config;
-    int sz = config.getTemplate().countNestedTemplates();
+    int sz = config.template().countNestedTemplates();
     this.sessions = new IdentityHashMap<>(sz);
     this.varValues = new HashMap<>(sz);
-    this.todo = new HashSet<>(config.getTemplate().getVariables());
+    this.todo = new HashSet<>(config.template().getVariables());
   }
 
   SessionConfig getSessionConfig() {
@@ -48,7 +48,7 @@ final class RenderState {
       }
       sessions.put(t, children);
     } else if (children.length != repeats) {
-      throw repetitionMismatch(config.getTemplate(), children, repeats);
+      throw repetitionMismatch(config.template(), children, repeats);
     }
     return children;
   }
@@ -117,7 +117,7 @@ final class RenderState {
   }
 
   private static void collectUnsetVars(RenderState state0, ArrayList<String> names) {
-    Template t = state0.config.getTemplate();
+    Template t = state0.config.template();
     state0.todo.stream().map(var -> getFQName(t, var)).forEach(names::add);
     state0
         .sessions

@@ -36,7 +36,7 @@ final class RenderableImpl implements Renderable {
 
   @Override
   public String toString() {
-    Template t = state.getSessionConfig().getTemplate();
+    Template t = state.getSessionConfig().template();
     if (t.getPath().isPresent()) {
       return concat(Renderable.class.getName(), "[source=", t.getPath().get(), "]");
     }
@@ -44,7 +44,7 @@ final class RenderableImpl implements Renderable {
   }
 
   private void render(RenderState state0, PrintStream ps) {
-    List<Part> parts = state0.getSessionConfig().getTemplate().getParts();
+    List<Part> parts = state0.getSessionConfig().template().getParts();
     for (int i = 0; i < parts.size(); ++i) {
       Part part = parts.get(i);
       if (part.getClass() == TextPart.class) {
@@ -81,7 +81,7 @@ final class RenderableImpl implements Renderable {
   }
 
   private void render(RenderState state0, StringBuilder sb) {
-    List<Part> parts = state0.getSessionConfig().getTemplate().getParts();
+    List<Part> parts = state0.getSessionConfig().template().getParts();
     for (int i = 0; i < parts.size(); ++i) {
       Part part = parts.get(i);
       if (part.getClass() == TextPart.class) {

@@ -235,10 +235,10 @@ public final class RenderSession {
       String separator,
       String suffix) {
     Check.on(frozenSession(), state.isFrozen()).is(no());
-    Template t = config.getTemplate();
+    Template t = config.template();
     Check.that(t).is(Template::hasVariable, varName, noSuchVariable(t, varName));
     Check.that(state.isSet(varName)).is(no(), alreadySet(t, varName));
-    IntList indices = t.getVarPartIndices().get(varName);
+    IntList indices = t.variables().get(varName);
     if (values.isEmpty()) {
       indices.forEach(i -> state.setVar(i, EMPTY_STRING_ARRAY));
     } else {
@@ -259,12 +259,12 @@ public final class RenderSession {
       String prefix,
       String separator,
       String suffix) {
-    VariablePart part = config.getTemplate().getPart(partIndex);
+    VariablePart part = config.template().getPart(partIndex);
     VarGroup group = part.getVarGroup().orElse(varGroup);
     // Get first non-null element in list, so that we'll
     // find the most specific stringifier
     Object any = findFirst(values, notNull());
-    StringifierRegistry sf = config.getStringifiers();
+    StringifierRegistry sf = config.stringifiers();
     Stringifier stringifier = sf.getStringifier(part, group, any);
     String[] stringified = new String[values.size()];
     if (prefix == null && separator == null && suffix == null) {
@@ -306,10 +306,10 @@ public final class RenderSession {
     Check.on(frozenSession(), state.isFrozen()).is(no());
     Check.notNull(varName, VAR_NAME);
     Check.notNull(renderable, "renderable");
-    Template t = config.getTemplate();
+    Template t = config.template();
     Check.that(t).is(Template::hasVariable, varName, noSuchVariable(t, varName));
     Check.that(state.isSet(varName)).is(no(), alreadySet(t, varName));
-    t.getVarPartIndices().get(varName).forEach(i -> state.setVar(i, renderable));
+    t.variables().get(varName).forEach(i -> state.setVar(i, renderable));
     return this;
   }
 
@@ -447,7 +447,7 @@ public final class RenderSession {
     Check.that(repeats, MTag.REPEATS).is(gte(), 0);
     Check.notNull(nestedTemplateNames, Tag.VARARGS);
     if (nestedTemplateNames.length == 0) {
-      for (Template t : config.getTemplate().getNestedTemplates()) {
+      for (Template t : config.template().getNestedTemplates()) {
         Check.on(isTextOnly(t), t.isTextOnly()).is(yes());
         if (!state.isProcessed(t)) {
           show(repeats, t);
@@ -482,7 +482,7 @@ public final class RenderSession {
     Check.on(frozenSession(), state.isFrozen()).is(no());
     Check.notNull(nestedTemplateNames);
     if (nestedTemplateNames.length == 0) {
-      for (Template t : config.getTemplate().getNestedTemplates()) {
+      for (Template t : config.template().getNestedTemplates()) {
         if (!state.isDisabled(t) && TemplateUtils.getVarsPerTemplate(t).isEmpty()) {
           showRecursive(this, t);
         }
@@ -656,7 +656,7 @@ public final class RenderSession {
     if (sourceData == UNDEFINED) {
       return this;
     } else if (sourceData == null) {
-      Template t = config.getTemplate();
+      Template t = config.template();
       Check.on(isTextOnly(t), t.isTextOnly()).is(yes());
       // If we get past this check, the entire template is in fact
       // static HTML. Expensive way to render static HTML, but no
@@ -674,9 +674,9 @@ public final class RenderSession {
   private <T> void processVars(T data, VarGroup defGroup, String[] names) {
     Set<String> varNames;
     if (isEmpty(names)) {
-      varNames = config.getTemplate().getVariables();
+      varNames = config.template().getVariables();
     } else {
-      varNames = new HashSet<>(config.getTemplate().getVariables());
+      varNames = new HashSet<>(config.template().getVariables());
       varNames.retainAll(List.of(names));
     }
     Accessor<T> acc = (Accessor<T>) config.getAccessor(data);
@@ -687,7 +687,7 @@ public final class RenderSession {
           value = acc.access(data, varName);
         } catch (RuntimeException e) {
           e.printStackTrace();
-          throw accessException(config.getTemplate(), varName, e, data, acc);
+          throw accessException(config.template(), varName, e, data, acc);
         }
         if (value != UNDEFINED) {
           setVar(varName, listify(value), defGroup, null, null, null);
@@ -700,9 +700,9 @@ public final class RenderSession {
   private <T> void processTmpls(T data, VarGroup varGroup, String[] names) {
     Set<String> tmplNames;
     if (isEmpty(names)) {
-      tmplNames = config.getTemplate().getNestedTemplateNames();
+      tmplNames = config.template().getNestedTemplateNames();
     } else {
-      tmplNames = new HashSet<>(config.getTemplate().getNestedTemplateNames());
+      tmplNames = new HashSet<>(config.template().getNestedTemplateNames());
       tmplNames.retainAll(List.of(names));
     }
     Accessor<T> acc = (Accessor<T>) config.getAccessor(data);
@@ -818,7 +818,7 @@ public final class RenderSession {
   public String toString() {
     return concat(getClass().getSimpleName(),
         "[template=",
-        getFQName(config.getTemplate()),
+        getFQName(config.template()),
         "]");
   }
 
@@ -828,7 +828,7 @@ public final class RenderSession {
 
   private Template getNestedTemplate(String name) {
     Check.notNull(name, MTag.TEMPLATE_NAME);
-    Template t = config.getTemplate();
+    Template t = config.template();
     return Check.that(name)
         .is(elementOf(), t.getNestedTemplateNames(), noSuchTemplate(t, name))
         .ok(t::getNestedTemplate);
@@ -838,11 +838,11 @@ public final class RenderSession {
     try {
       String s = stringifier.toString(value);
       if (s == null) {
-        throw stringifierReturnedNull(config.getTemplate(), varName);
+        throw stringifierReturnedNull(config.template(), varName);
       }
       return s;
     } catch (NullPointerException e) {
-      throw stringifierNotNullResistant(config.getTemplate(), varName);
+      throw stringifierNotNullResistant(config.template(), varName);
     }
   }
 

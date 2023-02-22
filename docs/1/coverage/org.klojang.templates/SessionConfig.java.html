@@ -3,53 +3,34 @@
 import static org.klojang.templates.AccessorRegistry.STANDARD_ACCESSORS;
 import static org.klojang.templates.StringifierRegistry.STANDARD_STRINGIFIERS;
 
-class SessionConfig {
-
-  private final Template template;
-  private final AccessorRegistry accessors;
-  private final StringifierRegistry stringifiers;
+<span class="pc" id="L6">record SessionConfig(Template template,</span>
+    AccessorRegistry accessors,
+    StringifierRegistry stringifiers) {
 
   SessionConfig(Template template) {
-<span class="fc" id="L13">    this(template, STANDARD_ACCESSORS, STANDARD_STRINGIFIERS);</span>
-<span class="fc" id="L14">  }</span>
+<span class="fc" id="L11">    this(template, STANDARD_ACCESSORS, STANDARD_STRINGIFIERS);</span>
+<span class="fc" id="L12">  }</span>
 
   SessionConfig(Template template, StringifierRegistry stringifiers) {
-<span class="fc" id="L17">    this(template, STANDARD_ACCESSORS, stringifiers);</span>
-<span class="fc" id="L18">  }</span>
+<span class="fc" id="L15">    this(template, STANDARD_ACCESSORS, stringifiers);</span>
+<span class="fc" id="L16">  }</span>
 
   SessionConfig(Template template, AccessorRegistry accessors) {
-<span class="fc" id="L21">    this(template, accessors, STANDARD_STRINGIFIERS);</span>
-<span class="fc" id="L22">  }</span>
-
-<span class="fc" id="L24">  SessionConfig(Template template, AccessorRegistry accessors, StringifierRegistry stringifiers) {</span>
-<span class="fc" id="L25">    this.template = template;</span>
-<span class="fc" id="L26">    this.accessors = accessors;</span>
-<span class="fc" id="L27">    this.stringifiers = stringifiers;</span>
-<span class="fc" id="L28">  }</span>
+<span class="fc" id="L19">    this(template, accessors, STANDARD_STRINGIFIERS);</span>
+<span class="fc" id="L20">  }</span>
 
   RenderSession newRenderSession() {
-<span class="fc" id="L31">    return new RenderSession(this);</span>
-  }
-
-  Template getTemplate() {
-<span class="fc" id="L35">    return template;</span>
-  }
-
-  AccessorRegistry getAccessors() {
-<span class="nc" id="L39">    return accessors;</span>
-  }
-
-  StringifierRegistry getStringifiers() {
-<span class="fc" id="L43">    return stringifiers;</span>
+<span class="fc" id="L23">    return new RenderSession(this);</span>
   }
 
   Accessor&lt;?&gt; getAccessor(Object sourceData) {
-<span class="fc" id="L47">    return accessors.getAccessor(sourceData, template);</span>
+<span class="fc" id="L27">    return accessors.getAccessor(sourceData, template);</span>
   }
 
   RenderSession newChildSession(Template nested) {
-<span class="fc" id="L51">    SessionConfig config = new SessionConfig(nested, accessors, stringifiers);</span>
-<span class="fc" id="L52">    return config.newRenderSession();</span>
+<span class="fc" id="L31">    SessionConfig config = new SessionConfig(nested, accessors, stringifiers);</span>
+<span class="fc" id="L32">    return config.newRenderSession();</span>
   }
+
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
