@@ -1,4 +1,0 @@
---patch-module
-org.klojang.templates=_
---add-reads
-org.klojang.templates=ALL-UNNAMED
