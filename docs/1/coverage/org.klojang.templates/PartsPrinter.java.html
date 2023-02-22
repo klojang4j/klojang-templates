@@ -39,7 +39,7 @@ final class PartsPrinter {
 <span class="fc" id="L39">      out.println();</span>
 <span class="fc" id="L40">      printDivider(out);</span>
     }
-<span class="fc bfc" id="L42" title="All 2 branches covered.">    for (Part p : t.getParts()) {</span>
+<span class="fc bfc" id="L42" title="All 2 branches covered.">    for (Part p : t.parts()) {</span>
 <span class="fc bfc" id="L43" title="All 2 branches covered.">      if (p instanceof VariablePart) {</span>
 <span class="fc" id="L44">        printCell(out, t.getName(), w0);</span>
 <span class="fc" id="L45">        printCell(out, &quot;VARIABLE&quot;, w1);</span>
@@ -90,7 +90,7 @@ final class PartsPrinter {
 
   private static int getMaxTmplName(Template t) {
 <span class="fc" id="L92">    int i = Math.max(HDR_TEMPLATE.length(), t.getName().length());</span>
-<span class="fc bfc" id="L93" title="All 2 branches covered.">    for (Part p : t.getParts()) {</span>
+<span class="fc bfc" id="L93" title="All 2 branches covered.">    for (Part p : t.parts()) {</span>
 <span class="fc bfc" id="L94" title="All 2 branches covered.">      if (p instanceof NestedTemplatePart ntp) {</span>
 <span class="fc" id="L95">        i = Math.max(i, ntp.getTemplate().getName().length());</span>
 <span class="fc" id="L96">        i = Math.max(i, getMaxTmplName(ntp.getTemplate()));</span>
@@ -101,7 +101,7 @@ final class PartsPrinter {
 
   private static int getMaxVarName(Template t) {
 <span class="fc" id="L103">    int i = HDR_PART_NAME.length();</span>
-<span class="fc bfc" id="L104" title="All 2 branches covered.">    for (Part p : t.getParts()) {</span>
+<span class="fc bfc" id="L104" title="All 2 branches covered.">    for (Part p : t.parts()) {</span>
 <span class="fc bfc" id="L105" title="All 2 branches covered.">      if (p instanceof VariablePart vp) {</span>
 <span class="fc" id="L106">        i = Math.max(i, vp.getName().length());</span>
 <span class="fc bfc" id="L107" title="All 2 branches covered.">      } else if (p instanceof NestedTemplatePart ntp) {</span>

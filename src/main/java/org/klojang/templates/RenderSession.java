@@ -259,7 +259,7 @@ public final class RenderSession {
       String prefix,
       String separator,
       String suffix) {
-    VariablePart part = config.template().getPart(partIndex);
+    VariablePart part = (VariablePart) config.template().parts().get(partIndex);
     VarGroup group = part.getVarGroup().orElse(varGroup);
     // Get first non-null element in list, so that we'll
     // find the most specific stringifier

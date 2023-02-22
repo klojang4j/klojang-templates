@@ -177,7 +177,7 @@ public class ParserTest {
     assertTrue(parts.get(0) instanceof InlineTemplatePart);
     InlineTemplatePart itp = (InlineTemplatePart) parts.get(0);
     assertEquals("__foo-bar-00__", itp.getName());
-    assertEquals(0, itp.getTemplate().getParts().size());
+    assertEquals(0, itp.getTemplate().parts().size());
   }
 
   @Test
@@ -189,9 +189,9 @@ public class ParserTest {
     assertTrue(parts.get(0) instanceof InlineTemplatePart);
     InlineTemplatePart itp = (InlineTemplatePart) parts.get(0);
     assertEquals("21", itp.getName());
-    assertEquals(1, itp.getTemplate().getParts().size());
-    assertTrue(itp.getTemplate().getParts().get(0) instanceof TextPart);
-    assertEquals(" FOO ", itp.getTemplate().getParts().get(0).toString());
+    assertEquals(1, itp.getTemplate().parts().size());
+    assertTrue(itp.getTemplate().parts().get(0) instanceof TextPart);
+    assertEquals(" FOO ", itp.getTemplate().parts().get(0).toString());
   }
 
   @Test

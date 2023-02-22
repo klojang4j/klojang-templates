@@ -455,20 +455,18 @@ public final class Template {
   /* ++++++++++++++++++++++ END OF PUBLIC INTERFACE ++++++++++++++++++++++ */
   /* +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
 
-  List<Part> getParts() {
+  List<Part> parts() {
     return parts;
   }
 
-  @SuppressWarnings("unchecked")
-  <T extends Part> T getPart(int index) {
-    return (T) Check.that(index).is(indexOf(), parts).mapToObj(parts::get);
-  }
-
+  /*
+   * Maps variable names to the indices of the parts that contain them
+   */
   Map<String, IntList> variables() {
     return varIndices;
   }
 
-    private static Map<String, IntList> getVarIndices(List<Part> parts) {
+  private static Map<String, IntList> getVarIndices(List<Part> parts) {
     Map<String, IntList> indices = new LinkedHashMap<>();
     for (int i = 0; i < parts.size(); ++i) {
       if (parts.get(i) instanceof VariablePart vp) {

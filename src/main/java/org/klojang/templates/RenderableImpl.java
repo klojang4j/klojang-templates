@@ -44,7 +44,7 @@ final class RenderableImpl implements Renderable {
   }
 
   private void render(RenderState state0, PrintStream ps) {
-    List<Part> parts = state0.getSessionConfig().template().getParts();
+    List<Part> parts = state0.getSessionConfig().template().parts();
     for (int i = 0; i < parts.size(); ++i) {
       Part part = parts.get(i);
       if (part.getClass() == TextPart.class) {
@@ -68,7 +68,7 @@ final class RenderableImpl implements Renderable {
             // The RenderSession[] array will contain only null values
             // and we just want to know its length to determine the
             // number of repetitions
-            String text = ((TextPart) t.getParts().get(0)).getText();
+            String text = ((TextPart) t.parts().get(0)).getText();
             IntStream.range(0, sessions.length).forEach(x -> ps.append(text));
           } else {
             stream(sessions)
@@ -81,7 +81,7 @@ final class RenderableImpl implements Renderable {
   }
 
   private void render(RenderState state0, StringBuilder sb) {
-    List<Part> parts = state0.getSessionConfig().template().getParts();
+    List<Part> parts = state0.getSessionConfig().template().parts();
     for (int i = 0; i < parts.size(); ++i) {
       Part part = parts.get(i);
       if (part.getClass() == TextPart.class) {
@@ -102,7 +102,7 @@ final class RenderableImpl implements Renderable {
         if (sessions != null) {
           Template t = ntp.getTemplate();
           if (t.isTextOnly()) {
-            String text = ((TextPart) t.getParts().get(0)).getText();
+            String text = ((TextPart) t.parts().get(0)).getText();
             IntStream.range(0, sessions.length).forEach(x -> sb.append(text));
           } else {
             stream(sessions)

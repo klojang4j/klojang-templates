@@ -44,7 +44,7 @@ final class RenderableImpl implements Renderable {
   }
 
   private void render(RenderState state0, PrintStream ps) {
-<span class="fc" id="L47">    List&lt;Part&gt; parts = state0.getSessionConfig().template().getParts();</span>
+<span class="fc" id="L47">    List&lt;Part&gt; parts = state0.getSessionConfig().template().parts();</span>
 <span class="fc bfc" id="L48" title="All 2 branches covered.">    for (int i = 0; i &lt; parts.size(); ++i) {</span>
 <span class="fc" id="L49">      Part part = parts.get(i);</span>
 <span class="fc bfc" id="L50" title="All 2 branches covered.">      if (part.getClass() == TextPart.class) {</span>
@@ -68,7 +68,7 @@ final class RenderableImpl implements Renderable {
             // The RenderSession[] array will contain only null values
             // and we just want to know its length to determine the
             // number of repetitions
-<span class="fc" id="L71">            String text = ((TextPart) t.getParts().get(0)).getText();</span>
+<span class="fc" id="L71">            String text = ((TextPart) t.parts().get(0)).getText();</span>
 <span class="fc" id="L72">            IntStream.range(0, sessions.length).forEach(x -&gt; ps.append(text));</span>
 <span class="fc" id="L73">          } else {</span>
 <span class="fc" id="L74">            stream(sessions)</span>
@@ -81,7 +81,7 @@ final class RenderableImpl implements Renderable {
 <span class="fc" id="L81">  }</span>
 
   private void render(RenderState state0, StringBuilder sb) {
-<span class="nc" id="L84">    List&lt;Part&gt; parts = state0.getSessionConfig().template().getParts();</span>
+<span class="nc" id="L84">    List&lt;Part&gt; parts = state0.getSessionConfig().template().parts();</span>
 <span class="nc bnc" id="L85" title="All 2 branches missed.">    for (int i = 0; i &lt; parts.size(); ++i) {</span>
 <span class="nc" id="L86">      Part part = parts.get(i);</span>
 <span class="nc bnc" id="L87" title="All 2 branches missed.">      if (part.getClass() == TextPart.class) {</span>
@@ -102,7 +102,7 @@ final class RenderableImpl implements Renderable {
 <span class="nc bnc" id="L102" title="All 2 branches missed.">        if (sessions != null) {</span>
 <span class="nc" id="L103">          Template t = ntp.getTemplate();</span>
 <span class="nc bnc" id="L104" title="All 2 branches missed.">          if (t.isTextOnly()) {</span>
-<span class="nc" id="L105">            String text = ((TextPart) t.getParts().get(0)).getText();</span>
+<span class="nc" id="L105">            String text = ((TextPart) t.parts().get(0)).getText();</span>
 <span class="nc" id="L106">            IntStream.range(0, sessions.length).forEach(x -&gt; sb.append(text));</span>
 <span class="nc" id="L107">          } else {</span>
 <span class="nc" id="L108">            stream(sessions)</span>

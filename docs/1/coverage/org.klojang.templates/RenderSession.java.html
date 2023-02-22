@@ -259,7 +259,7 @@ public final class RenderSession {
       String prefix,
       String separator,
       String suffix) {
-<span class="fc" id="L262">    VariablePart part = config.template().getPart(partIndex);</span>
+<span class="fc" id="L262">    VariablePart part = (VariablePart) config.template().parts().get(partIndex);</span>
 <span class="fc" id="L263">    VarGroup group = part.getVarGroup().orElse(varGroup);</span>
     // Get first non-null element in list, so that we'll
     // find the most specific stringifier
