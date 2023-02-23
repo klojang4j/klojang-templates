@@ -85,9 +85,11 @@ public final class Template {
    * Parses the specified resource into a {@code Template} instance. Templates
    * created from a classpath resource are always cached. Thus, calling this method
    * multiple times with the same {@code clazz} and {@code path} arguments will
-   * always return the same instance.
+   * always return the same instance. Make sure the provided class is publicly
+   * accessible, otherwise Klojang Templates cannot use it to open an
+   * {@code InputStream} to the resource.
    *
-   * @param clazz any {@code Class} object that provides access to the template
+   * @param clazz a {@code Class} object that provides access to the template
    *     file by calling {@code getResourceAsStream} on it
    * @param path the location of the template file
    * @return a {@code Template} instance
@@ -96,7 +98,7 @@ public final class Template {
   public static Template fromResource(Class<?> clazz, String path)
       throws ParseException {
     Check.notNull(clazz, Tag.CLASS);
-    Check.notNull(path).is(resourceOf(), clazz);
+    Check.that(path).has(clazz::getResource, notNull(), "No such resource: ${arg}");
     PathResolver resolver = new ClassPathResolver(clazz);
     TemplateLocation location = new TemplateLocation(path, resolver);
     return TemplateCache.INSTANCE.get(location, ROOT_TEMPLATE_NAME);
@@ -225,16 +227,17 @@ public final class Template {
    * the {@code fromXXX()} methods, the return value depends on whether it was
    * {@code fromString()} or one of the other {@code fromXXX()} methods.
    *
-   * @return the file location (if any) of the source code for this {@code Template}
+   * @return the path to the source code for this {@code Template}
    */
   public Optional<String> path() {
     return Optional.ofNullable(location.path());
   }
 
   /**
-   * Returns the names of all variables in this {@code Template} (non-recursive), in
-   * order of their first appearance in the template. The returned {@code Set} is
-   * unmodifiable.
+   * Returns the names of the variables in this {@code Template}, in order of their
+   * first appearance in the template. The returned set only contains the names of
+   * variables that reside <i>directly</i> inside this {@code Template}. Variables
+   * inside nested templates are ignored. The returned {@code Set} is unmodifiable.
    *
    * @return the names of all variables in this {@code Template}
    */
@@ -243,8 +246,9 @@ public final class Template {
   }
 
   /**
-   * Returns {@code true} if this {@code Template} contains a variable with the
-   * specified name.
+   * Returns {@code true} if this {@code Template} <i>directly</i> contains a
+   * variable with the specified name. Variables inside nested templates are not
+   * considered.
    *
    * @param name the name of the variable
    * @return {@code true} if  this {@code Template} contains a variable with the
@@ -257,8 +261,8 @@ public final class Template {
   /**
    * Returns the total number of variables in this {@code Template}. Note that one
    * variable name may occur multiple times within the same template. This method
-   * does not count the number of <i>unique</i> variable names (which would be
-   * {@link #getVariables() getVariables().size()}).
+   * does not count the number of <i>unique</i> variable names. To get that number,
+   * call {@link #getVariables() getVariables().size()}.
    *
    * @return the total number of variables in this {@code Template}
    */
@@ -305,7 +309,7 @@ public final class Template {
    *     the specified name
    */
   public boolean hasNestedTemplate(String name) {
-    return Check.notNull(name).ok(varIndices::containsKey);
+    return Check.notNull(name).ok(tmplIndices::containsKey);
   }
 
   /**
