@@ -15,16 +15,13 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Collections.singletonMap;
 import static org.klojang.check.CommonChecks.*;
 import static org.klojang.check.CommonProperties.size;
-import static org.klojang.check.Tag.VALUES;
 import static org.klojang.templates.Accessor.UNDEFINED;
 import static org.klojang.templates.RenderErrorCode.*;
 import static org.klojang.templates.TemplateUtils.getFQName;
-import static org.klojang.templates.x.MTag.*;
-import static org.klojang.util.ArrayMethods.EMPTY_STRING_ARRAY;
-import static org.klojang.util.CollectionMethods.findFirst;
+import static org.klojang.templates.x.MTag.VAR_GROUP;
+import static org.klojang.templates.x.MTag.VAR_NAME;
 import static org.klojang.util.CollectionMethods.listify;
 import static org.klojang.util.ObjectMethods.isEmpty;
-import static org.klojang.util.ObjectMethods.n2e;
 import static org.klojang.util.StringMethods.concat;
 
 /**
@@ -79,7 +76,7 @@ public final class RenderSession {
       // we'll accept that value and process it as documented, namely: not.
       return this;
     }
-    return setVar(varName, listify(value), null, null, null, null);
+    return setVar(varName, value, null);
   }
 
   /**
@@ -103,187 +100,31 @@ public final class RenderSession {
    * @see StringifierRegistry.Builder#registerByGroup(Stringifier, String...)
    */
   public RenderSession set(String varName, Object value, VarGroup varGroup) {
-    Check.notNull(varName, VAR_NAME).and(varGroup, VAR_GROUP).is(notNull());
+    Check.notNull(varName, VAR_NAME);
+    Check.notNull(varGroup, VAR_GROUP);
     if (value == UNDEFINED) {
       return this;
     }
-    return setVar(varName, listify(value), varGroup, null, null, null);
+    return setVar(varName, value, varGroup);
   }
 
-  /**
-   * Sets the specified variable to the concatenation of the values within the
-   * specified {@code List}. If the {@code List} is empty, the variable will not be
-   * rendered at all (that is, the variable will be replaced with an empty string).
-   *
-   * @param varName the name of the template variable
-   * @param values the string values to concatenate
-   * @return this {@code RenderSession}
-   */
-  public RenderSession setList(String varName, List<?> values) {
-    Check.that(varName, VAR_NAME).is(notNull()).and(values, VALUES).is(notNull());
-    return setVar(varName, values, null, null, null, null);
-  }
-
-  /**
-   * Sets the specified variable to the concatenation of the values within the
-   * specified {@code List}. The values in the {@code List} are first stringified and
-   * then concatenated. If the {@code List} is empty, the variable will not be
-   * rendered at all (that is, the variable will be replaced with an empty string).
-   *
-   * @param varName the name of the template variable
-   * @param values the string values to concatenate
-   * @param varGroup the variable group to assign the variable to if the variable
-   *     has no group name prefix
-   * @return this {@code RenderSession}
-   */
-  public RenderSession setList(String varName, List<?> values, VarGroup varGroup) {
-    Check.that(varName, VAR_NAME).is(notNull())
-        .and(values, VALUES).is(notNull())
-        .and(varGroup, VAR_GROUP).is(notNull());
-    return setVar(varName, values, varGroup, null, null, null);
-  }
-
-  /**
-   * Sets the specified variable to the concatenation of the values within the
-   * specified {@code List}, separating them using the specified separator string.
-   *
-   * @param varName the name of the template variable
-   * @param values the string values to concatenate
-   * @param separator the suffix to use for each string
-   * @return this {@code RenderSession}
-   * @see #setList(String, List, VarGroup, String, String, String)
-   */
-  public RenderSession setList(String varName, List<?> values, String separator) {
-    Check.that(varName, VAR_NAME).is(notNull())
-        .and(values, VALUES).is(notNull())
-        .and(separator, SEPARATOR).is(notNull());
-    return setVar(varName, values, null, null, separator, null);
-  }
-
-  /**
-   * Sets the specified variable to the concatenation of the values within the
-   * specified {@code List}, separating them using the specified separator string.
-   *
-   * @param varName the name of the template variable
-   * @param values the string values to concatenate
-   * @param varGroup the variable group to assign the variable to if the variable
-   *     has no group name prefix.
-   * @param separator the suffix to use for each string
-   * @return this {@code RenderSession}
-   * @see #setList(String, List, VarGroup, String, String, String)
-   */
-  public RenderSession setList(String varName,
-      List<?> values,
-      VarGroup varGroup,
-      String separator) {
-    Check.that(varName, VAR_NAME).is(notNull())
-        .and(values, VALUES).is(notNull())
-        .and(varGroup, VAR_GROUP).is(notNull())
-        .and(separator, SEPARATOR).is(notNull());
-    return setVar(varName, values, varGroup, null, separator, null);
-  }
-
-  /**
-   * Sets the specified variable to the concatenation of the values within the
-   * specified {@code List}. For example:
-   *
-   * <blockquote><pre>{@code
-   * renderSession.set("myVar", List.of("<", "foo", ">"), VarGroup.HTML, "<tr><td>", "</td><td>", "</td></tr>");
-   * }</pre></blockquote>
-   *
-   * <p>will be rendered as:
-   *
-   * <blockquote><pre>{@code
-   * <tr><td>&lt;</td><td>foo</td><td>&gt;</td></tr>
-   * }</pre></blockquote>
-   *
-   * <p>The prefix, suffix and separator will not be escaped. If the {@code List} is
-   * empty, the variable, prefix, suffix and separator will not be rendered at all.
-   *
-   * @param varName the name of the template variable
-   * @param values the values to concatenate
-   * @param varGroup the variable group to assign the variable to if the variable
-   *     has no group name prefix.
-   * @param prefix the prefix to the first value.
-   * @param separator the separator between the values.
-   * @param suffix the suffix to the last value.
-   * @return this {@code RenderSession}
-   */
-  public RenderSession setList(String varName,
-      List<?> values,
-      VarGroup varGroup,
-      String prefix,
-      String separator,
-      String suffix) {
-    Check.that(varName, VAR_NAME).is(notNull())
-        .and(values, VALUES).is(notNull())
-        .and(varGroup, VAR_GROUP).is(notNull())
-        .and(prefix, PREFIX).is(notNull())
-        .and(separator, SEPARATOR).is(notNull())
-        .and(suffix, SUFFIX).is(notNull());
-    return setVar(varName, values, varGroup, prefix, separator, suffix);
-  }
-
-  private RenderSession setVar(String varName,
-      List<?> values,
-      VarGroup varGroup,
-      String prefix,
-      String separator,
-      String suffix) {
+  private RenderSession setVar(String varName, Object value, VarGroup varGroup) {
     Template t = config.template();
     Check.that(varName).is(keyIn(), t.variables(),
         NO_SUCH_VARIABLE.getExceptionSupplier(getFQName(t, varName)));
     IntList indices = t.variables().get(varName);
-    if (values.isEmpty()) {
-      indices.forEach(i -> state.setVar(i, EMPTY_STRING_ARRAY));
-    } else {
-      indices.forEachThrowing(i -> setVar(i,
-          values,
-          varGroup,
-          prefix,
-          separator,
-          suffix));
-    }
+    indices.forEachThrowing(i -> setVar(i, value, varGroup));
     state.done(varName);
     return this;
   }
 
-  private void setVar(int partIndex,
-      List<?> values,
-      VarGroup varGroup,
-      String prefix,
-      String separator,
-      String suffix) {
+  private void setVar(int partIndex, Object value, VarGroup varGroup) {
     VariablePart part = (VariablePart) config.template().parts().get(partIndex);
     VarGroup group = part.getVarGroup().orElse(varGroup);
-    // Get first non-null element in list, so that we'll
-    // find the most specific stringifier
-    Object any = findFirst(values, notNull());
-    StringifierRegistry sf = config.stringifiers();
-    Stringifier stringifier = sf.getStringifier(part, group, any);
-    String[] stringified = new String[values.size()];
-    if (prefix == null && separator == null && suffix == null) {
-      for (int i = 0; i < values.size(); ++i) {
-        stringified[i] = stringify(stringifier, part.getName(), values.get(i));
-      }
-    } else {
-      prefix = n2e(prefix);
-      separator = n2e(separator);
-      suffix = n2e(suffix);
-      for (int i = 0; i < values.size(); ++i) {
-        String s = stringify(stringifier, part.getName(), values.get(i));
-        if (i == 0) {
-          s = prefix + s;
-        }
-        if (i == values.size() - 1) {
-          s = s + suffix;
-        } else {
-          s = s + separator;
-        }
-        stringified[i] = s;
-      }
-    }
-    state.setVar(partIndex, stringified);
+    StringifierRegistry reg = config.stringifiers();
+    Stringifier stringifier = reg.getStringifier(part, group, value);
+    String strval = stringifier.stringify(value);
+    state.setVar(partIndex, strval);
   }
 
   /* METHODS FOR POPULATING A SINGLE NESTED TEMPLATE */
@@ -663,7 +504,7 @@ public final class RenderSession {
               .getException(getFQName(config.template(), varName), e);
         }
         if (value != UNDEFINED) {
-          setVar(varName, listify(value), defGroup, null, null, null);
+          setVar(varName, value, defGroup);
         }
       }
     }

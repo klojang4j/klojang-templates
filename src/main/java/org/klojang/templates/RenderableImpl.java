@@ -4,7 +4,6 @@ import org.klojang.check.Check;
 
 import java.io.OutputStream;
 import java.io.PrintStream;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.IntStream;
 
@@ -53,11 +52,7 @@ final class RenderableImpl implements Renderable {
       } else if (part.getClass() == VariablePart.class) {
         if (state0.getVar(i) != null) {
           Object val = state0.getVar(i);
-          if (val.getClass() == String[].class) {
-            Arrays.stream((String[]) state0.getVar(i)).forEach(ps::append);
-          } else { // Renderable.class
-            ((Renderable) val).render(ps);
-          }
+          ps.append(val.toString());
         }
       } else /* TemplatePart */ {
         NestedTemplatePart ntp = (NestedTemplatePart) part;
@@ -90,11 +85,7 @@ final class RenderableImpl implements Renderable {
       } else if (part.getClass() == VariablePart.class) {
         if (state0.getVar(i) != null) {
           Object val = state0.getVar(i);
-          if (val.getClass() == String[].class) {
-            Arrays.stream((String[]) state0.getVar(i)).forEach(sb::append);
-          } else { // Renderable.class
-            ((Renderable) val).render(sb);
-          }
+          sb.append(val);
         }
       } else /* TemplatePart */ {
         NestedTemplatePart ntp = (NestedTemplatePart) part;

@@ -77,11 +77,7 @@ final class RenderState {
     return varValues.get(partIndex);
   }
 
-  void setVar(int partIndex, String[] value) {
-    varValues.put(partIndex, value);
-  }
-
-  void setVar(int partIndex, Renderable value) {
+  void setVar(int partIndex, Object value) {
     varValues.put(partIndex, value);
   }
 

@@ -77,85 +77,81 @@ final class RenderState {
 <span class="fc" id="L77">    return varValues.get(partIndex);</span>
   }
 
-  void setVar(int partIndex, String[] value) {
+  void setVar(int partIndex, Object value) {
 <span class="fc" id="L81">    varValues.put(partIndex, value);</span>
 <span class="fc" id="L82">  }</span>
 
-  void setVar(int partIndex, Renderable value) {
-<span class="nc" id="L85">    varValues.put(partIndex, value);</span>
-<span class="nc" id="L86">  }</span>
-
   boolean isSet(String var) {
-<span class="pc bpc" id="L89" title="1 of 2 branches missed.">    return !todo.contains(var);</span>
+<span class="pc bpc" id="L85" title="1 of 2 branches missed.">    return !todo.contains(var);</span>
   }
 
   void done(String var) {
-<span class="fc" id="L93">    todo.remove(var);</span>
-<span class="fc" id="L94">  }</span>
+<span class="fc" id="L89">    todo.remove(var);</span>
+<span class="fc" id="L90">  }</span>
 
   boolean isFrozen() {
-<span class="nc" id="L97">    return frozen;</span>
+<span class="nc" id="L93">    return frozen;</span>
   }
 
   void freeze() {
-<span class="fc" id="L101">    deepFreeze(this);</span>
-<span class="fc" id="L102">  }</span>
+<span class="fc" id="L97">    deepFreeze(this);</span>
+<span class="fc" id="L98">  }</span>
 
   private static void deepFreeze(RenderState state0) {
-<span class="fc" id="L105">    state0.frozen = true;</span>
-<span class="fc" id="L106">    state0</span>
+<span class="fc" id="L101">    state0.frozen = true;</span>
+<span class="fc" id="L102">    state0</span>
         .sessions
-<span class="fc" id="L108">        .values()</span>
-<span class="fc" id="L109">        .stream()</span>
-<span class="fc" id="L110">        .flatMap(Arrays::stream)</span>
-<span class="fc" id="L111">        .filter(notNull()) // text-only null sessions - don't need freezing anyhow</span>
-<span class="fc" id="L112">        .map(RenderSession::getState)</span>
-<span class="fc" id="L113">        .forEach(RenderState::deepFreeze);</span>
-<span class="fc" id="L114">  }</span>
+<span class="fc" id="L104">        .values()</span>
+<span class="fc" id="L105">        .stream()</span>
+<span class="fc" id="L106">        .flatMap(Arrays::stream)</span>
+<span class="fc" id="L107">        .filter(notNull()) // text-only null sessions - don't need freezing anyhow</span>
+<span class="fc" id="L108">        .map(RenderSession::getState)</span>
+<span class="fc" id="L109">        .forEach(RenderState::deepFreeze);</span>
+<span class="fc" id="L110">  }</span>
 
   List&lt;String&gt; getUnsetVars() {
-<span class="nc" id="L117">    ArrayList&lt;String&gt; names = new ArrayList&lt;&gt;();</span>
-<span class="nc" id="L118">    collectUnsetVars(this, names);</span>
-<span class="nc" id="L119">    return names;</span>
+<span class="nc" id="L113">    ArrayList&lt;String&gt; names = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L114">    collectUnsetVars(this, names);</span>
+<span class="nc" id="L115">    return names;</span>
   }
 
   private static void collectUnsetVars(RenderState state0, ArrayList&lt;String&gt; names) {
-<span class="nc" id="L123">    Template t = state0.config.template();</span>
-<span class="nc" id="L124">    state0.todo.stream().map(var -&gt; getFQName(t, var)).forEach(names::add);</span>
-<span class="nc" id="L125">    state0</span>
+<span class="nc" id="L119">    Template t = state0.config.template();</span>
+<span class="nc" id="L120">    state0.todo.stream().map(var -&gt; getFQName(t, var)).forEach(names::add);</span>
+<span class="nc" id="L121">    state0</span>
         .sessions
-<span class="nc" id="L127">        .values()</span>
-<span class="nc" id="L128">        .stream()</span>
-<span class="nc" id="L129">        .flatMap(Arrays::stream)</span>
-<span class="nc" id="L130">        .map(RenderSession::getState)</span>
-<span class="nc" id="L131">        .forEach(state -&gt; collectUnsetVars(state, names));</span>
-<span class="nc" id="L132">  }</span>
+<span class="nc" id="L123">        .values()</span>
+<span class="nc" id="L124">        .stream()</span>
+<span class="nc" id="L125">        .flatMap(Arrays::stream)</span>
+<span class="nc" id="L126">        .map(RenderSession::getState)</span>
+<span class="nc" id="L127">        .forEach(state -&gt; collectUnsetVars(state, names));</span>
+<span class="nc" id="L128">  }</span>
 
   boolean isFullyPopulated() {
-<span class="nc" id="L135">    return ready(this);</span>
+<span class="nc" id="L131">    return ready(this);</span>
   }
 
   private static boolean ready(RenderState state0) {
-<span class="nc bnc" id="L139" title="All 2 branches missed.">    if (state0.todo.size() &gt; 0) {</span>
-<span class="nc" id="L140">      return false;</span>
+<span class="nc bnc" id="L135" title="All 2 branches missed.">    if (state0.todo.size() &gt; 0) {</span>
+<span class="nc" id="L136">      return false;</span>
     }
-<span class="nc" id="L142">    return state0</span>
+<span class="nc" id="L138">    return state0</span>
         .sessions
-<span class="nc" id="L144">        .values()</span>
-<span class="nc" id="L145">        .stream()</span>
-<span class="nc" id="L146">        .flatMap(Arrays::stream)</span>
-<span class="nc" id="L147">        .map(RenderSession::getState)</span>
-<span class="nc" id="L148">        .allMatch(RenderState::ready);</span>
+<span class="nc" id="L140">        .values()</span>
+<span class="nc" id="L141">        .stream()</span>
+<span class="nc" id="L142">        .flatMap(Arrays::stream)</span>
+<span class="nc" id="L143">        .map(RenderSession::getState)</span>
+<span class="nc" id="L144">        .allMatch(RenderState::ready);</span>
   }
 
   private static RenderSession[] createTextOnlySessions(int repeats) {
-<span class="nc bnc" id="L152" title="All 3 branches missed.">    switch (repeats) {</span>
+<span class="nc bnc" id="L148" title="All 3 branches missed.">    switch (repeats) {</span>
       case 0:
-<span class="nc" id="L154">        return ZERO_SESSIONS;</span>
+<span class="nc" id="L150">        return ZERO_SESSIONS;</span>
       case 1:
-<span class="nc" id="L156">        return ONE_SESSION;</span>
+<span class="nc" id="L152">        return ONE_SESSION;</span>
       default:
-<span class="nc" id="L158">        return new RenderSession[repeats];</span>
+<span class="nc" id="L154">        return new RenderSession[repeats];</span>
     }
   }
 
