@@ -1,11 +1,7 @@
 package org.klojang.templates;
 
-import org.klojang.check.Check;
-
 import java.util.*;
 
-import static org.klojang.check.CommonChecks.eq;
-import static org.klojang.check.CommonProperties.length;
 import static org.klojang.templates.RenderErrorCode.REPETITION_MISMATCH;
 import static org.klojang.templates.TemplateUtils.getFQName;
 import static org.klojang.util.ObjectMethods.ifNotNull;
@@ -13,7 +9,6 @@ import static org.klojang.util.ObjectMethods.ifNotNull;
 final class RenderState {
 
   private static final RenderSession[] ZERO_SESSIONS = new RenderSession[0];
-  private static final RenderSession[] ONE_SESSION = new RenderSession[1];
 
   private final SessionConfig config;
   private final Set<String> todo; // variables that have not been set yet
@@ -49,9 +44,10 @@ final class RenderState {
       }
       sessions.put(t, children);
     }
-    return Check.that(children).has(length(), eq(), repeats,
-        REPETITION_MISMATCH.getExceptionSupplier(
-            children.length, getFQName(t), repeats)).ok();
+    if (repeats != children.length) {
+      throw REPETITION_MISMATCH.getException(children.length, getFQName(t), repeats);
+    }
+    return children;
   }
 
   boolean isProcessed(Template template) {
@@ -82,12 +78,6 @@ final class RenderState {
     todo.remove(var);
   }
 
-  List<String> getUnsetVars() {
-    ArrayList<String> names = new ArrayList<>();
-    collectUnsetVars(this, names);
-    return names;
-  }
-
   private static void collectUnsetVars(RenderState state0, ArrayList<String> names) {
     Template t = state0.config.template();
     state0.todo.stream().map(var -> getFQName(t, var)).forEach(names::add);
@@ -115,17 +105,6 @@ final class RenderState {
         .flatMap(Arrays::stream)
         .map(RenderSession::getState)
         .allMatch(RenderState::ready);
-  }
-
-  private static RenderSession[] createTextOnlySessions(int repeats) {
-    switch (repeats) {
-      case 0:
-        return ZERO_SESSIONS;
-      case 1:
-        return ONE_SESSION;
-      default:
-        return new RenderSession[repeats];
-    }
   }
 
 }

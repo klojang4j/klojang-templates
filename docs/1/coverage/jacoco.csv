@@ -41,7 +41,7 @@ Klojang Templates,org.klojang.templates,NameMapper,0,5,0,0,0,1,0,2,0,2
 Klojang Templates,org.klojang.templates,Setting,12,73,1,1,3,13,3,6,2,6
 Klojang Templates,org.klojang.templates,TemplateUtils,6,349,0,22,2,72,1,26,1,15
 Klojang Templates,org.klojang.templates,StringifierId,4,84,3,9,2,18,3,9,0,6
-Klojang Templates,org.klojang.templates,RenderState,89,161,10,7,26,30,15,14,8,12
+Klojang Templates,org.klojang.templates,RenderState,92,135,8,8,20,28,12,14,6,12
 Klojang Templates,org.klojang.templates,NestedTemplatePart,4,14,0,0,1,5,1,3,1,3
 Klojang Templates,org.klojang.templates,StringifierRegistry,18,213,5,27,2,49,5,16,0,5
 Klojang Templates,org.klojang.templates,AbstractPart,0,16,0,0,0,7,0,4,0,4
