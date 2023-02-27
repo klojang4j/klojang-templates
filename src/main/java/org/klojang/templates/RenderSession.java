@@ -17,9 +17,7 @@ import static org.klojang.check.CommonChecks.*;
 import static org.klojang.check.CommonProperties.size;
 import static org.klojang.check.Tag.VALUES;
 import static org.klojang.templates.Accessor.UNDEFINED;
-import static org.klojang.templates.BadStringifierException.stringifierNotNullResistant;
-import static org.klojang.templates.BadStringifierException.stringifierReturnedNull;
-import static org.klojang.templates.RenderException.*;
+import static org.klojang.templates.RenderErrorCode.*;
 import static org.klojang.templates.TemplateUtils.getFQName;
 import static org.klojang.templates.x.MTag.*;
 import static org.klojang.util.ArrayMethods.EMPTY_STRING_ARRAY;
@@ -75,7 +73,6 @@ public final class RenderSession {
    * @return this {@code RenderSession}
    */
   public RenderSession set(String varName, Object value) {
-    Check.on(frozenSession(), state.isFrozen()).is(no());
     Check.notNull(varName, VAR_NAME);
     if (value == UNDEFINED) {
       // Specifying UNDEFINED really misses the point of that constant, but
@@ -106,7 +103,6 @@ public final class RenderSession {
    * @see StringifierRegistry.Builder#registerByGroup(Stringifier, String...)
    */
   public RenderSession set(String varName, Object value, VarGroup varGroup) {
-    Check.on(frozenSession(), state.isFrozen()).is(no());
     Check.notNull(varName, VAR_NAME).and(varGroup, VAR_GROUP).is(notNull());
     if (value == UNDEFINED) {
       return this;
@@ -234,10 +230,9 @@ public final class RenderSession {
       String prefix,
       String separator,
       String suffix) {
-    Check.on(frozenSession(), state.isFrozen()).is(no());
     Template t = config.template();
-    Check.that(varName).is(keyIn(), t.variables(), noSuchVariable(t, varName));
-    Check.that(state.isSet(varName)).is(no(), alreadySet(t, varName));
+    Check.that(varName).is(keyIn(), t.variables(),
+        NO_SUCH_VARIABLE.getExceptionSupplier(getFQName(t, varName)));
     IntList indices = t.variables().get(varName);
     if (values.isEmpty()) {
       indices.forEach(i -> state.setVar(i, EMPTY_STRING_ARRAY));
@@ -289,28 +284,6 @@ public final class RenderSession {
       }
     }
     state.setVar(partIndex, stringified);
-  }
-
-  /**
-   * Sets the specified variable to the entire output of the specified
-   * {@code Renderable}. This allows you to create and populate a template for an
-   * HTML snippet once, and then repeatedly (for each render session of the current
-   * template) "paste" its output into the current template. See
-   * {@link #createRenderable()}.
-   *
-   * @param varName the template variable to set
-   * @param renderable the {@code Renderable}
-   * @return this {@code RenderSession}
-   */
-  public RenderSession paste(String varName, Renderable renderable) {
-    Check.on(frozenSession(), state.isFrozen()).is(no());
-    Check.notNull(varName, VAR_NAME);
-    Check.notNull(renderable, "renderable");
-    Template t = config.template();
-    Check.that(varName).is(keyIn(), t.variables(), noSuchVariable(t, varName));
-    Check.that(state.isSet(varName)).is(no(), alreadySet(t, varName));
-    t.variables().get(varName).forEach(i -> state.setVar(i, renderable));
-    return this;
   }
 
   /* METHODS FOR POPULATING A SINGLE NESTED TEMPLATE */
@@ -372,7 +345,6 @@ public final class RenderSession {
       Object sourceData,
       VarGroup varGroup,
       String... names) {
-    Check.on(frozenSession(), state.isFrozen()).is(no());
     if (sourceData == UNDEFINED) {
       return this;
     } else if (sourceData instanceof Optional<?> opt) {
@@ -385,7 +357,7 @@ public final class RenderSession {
     if (t.isTextOnly()) {
       return show(data.size(), t);
     }
-    Check.on(missingSourceData(t), data).is(deepNotNull());
+    Check.that(data, "source data").is(deepNotNull());
     return repeat(t, data, varGroup, names);
   }
 
@@ -443,12 +415,12 @@ public final class RenderSession {
    * @return this {@code RenderSession}
    */
   public RenderSession show(int repeats, String... nestedTemplateNames) {
-    Check.on(frozenSession(), state.isFrozen()).is(no());
     Check.that(repeats, MTag.REPEATS).is(gte(), 0);
     Check.notNull(nestedTemplateNames, Tag.VARARGS);
     if (nestedTemplateNames.length == 0) {
       for (Template t : config.template().getNestedTemplates()) {
-        Check.on(isTextOnly(t), t.isTextOnly()).is(yes());
+        Check.that(t.isTextOnly())
+            .is(yes(), NOT_TEXT_ONLY.getExceptionSupplier(t.getName()));
         if (!state.isProcessed(t)) {
           show(repeats, t);
         }
@@ -456,7 +428,8 @@ public final class RenderSession {
     } else {
       for (String name : nestedTemplateNames) {
         Template t = getNestedTemplate(name);
-        Check.on(isTextOnly(t), t.isTextOnly()).is(yes());
+        Check.that(t.isTextOnly())
+            .is(yes(), NOT_TEXT_ONLY.getExceptionSupplier(t.getName()));
         show(repeats, t);
       }
     }
@@ -479,7 +452,6 @@ public final class RenderSession {
    * @return this {@code RenderSession}
    */
   public RenderSession showRecursive(String... nestedTemplateNames) {
-    Check.on(frozenSession(), state.isFrozen()).is(no());
     Check.notNull(nestedTemplateNames);
     if (nestedTemplateNames.length == 0) {
       for (Template t : config.template().getNestedTemplates()) {
@@ -490,7 +462,8 @@ public final class RenderSession {
     } else {
       for (String name : nestedTemplateNames) {
         Template t = getNestedTemplate(name);
-        Check.on(isTextOnly(t), t.getVariables()).has(size(), zero());
+        Check.that(t.getVariables())
+            .has(size(), zero(), NOT_TEXT_ONLY.getExceptionSupplier(t.getName()));
         showRecursive(this, t);
       }
     }
@@ -540,11 +513,11 @@ public final class RenderSession {
   public RenderSession populate1(String nestedTemplateName,
       Object value,
       VarGroup varGroup) {
-    Check.on(frozenSession(), state.isFrozen()).is(no());
     Template t = getNestedTemplate(nestedTemplateName);
-    Check.on(isOneVarTemplate(t), t)
-        .has(tmpl -> tmpl.getVariables().size(), eq(), 1)
-        .has(Template::countNestedTemplates, eq(), 0);
+    Check.that(t.getVariables()).has(size(), eq(), 1,
+        NOT_ONE_VAR_TEMPLATE.getExceptionSupplier(t.getName()));
+    Check.that(t.getNestedTemplates()).has(size(), zero(),
+        NOT_ONE_VAR_TEMPLATE.getExceptionSupplier(t.getName()));
     String var = t.getVariables().iterator().next();
     List<?> values = Stream.of(value).map(v -> singletonMap(var, v)).toList();
     RenderSession[] sessions = state.getOrCreateChildSessions(t, values.size());
@@ -586,12 +559,12 @@ public final class RenderSession {
   public <T, U> RenderSession populate2(String nestedTemplateName,
       List<AnyTuple2<T, U>> tuples,
       VarGroup varGroup) {
-    Check.on(frozenSession(), state.isFrozen()).is(no());
     Check.that(tuples, Tag.LIST).is(deepNotNull());
     Template t = getNestedTemplate(nestedTemplateName);
-    Check.on(isTwoVarTemplate(t), t)
-        .has(tmpl -> tmpl.getVariables().size(), eq(), 2)
-        .has(Template::countNestedTemplates, eq(), 0);
+    Check.that(t.getVariables()).has(size(), eq(), 2,
+        NOT_TWO_VAR_TEMPLATE.getExceptionSupplier(t.getName()));
+    Check.that(t.getNestedTemplates()).has(size(), zero(),
+        NOT_TWO_VAR_TEMPLATE.getExceptionSupplier(t.getName()));
     String[] vars = t.getVariables().toArray(new String[2]);
     List<Map<String, Object>> data = tuples.stream()
         .map(tuple -> Map.of(vars[0], tuple.first(), vars[1], tuple.second()))
@@ -652,12 +625,12 @@ public final class RenderSession {
   public RenderSession insert(Object sourceData,
       VarGroup varGroup,
       String... names) {
-    Check.on(frozenSession(), state.isFrozen()).is(no());
     if (sourceData == UNDEFINED) {
       return this;
     } else if (sourceData == null) {
       Template t = config.template();
-      Check.on(isTextOnly(t), t.isTextOnly()).is(yes());
+      Check.that(t.isTextOnly())
+          .is(yes(), NOT_TEXT_ONLY.getExceptionSupplier(t.getName()));
       // If we get past this check, the entire template is in fact
       // static HTML. Expensive way to render static HTML, but no
       // reason not to support it.
@@ -686,8 +659,8 @@ public final class RenderSession {
         try {
           value = acc.access(data, varName);
         } catch (RuntimeException e) {
-          e.printStackTrace();
-          throw accessException(config.template(), varName, e, data, acc);
+          throw ACCESS_EXCEPTION
+              .getException(getFQName(config.template(), varName), e);
         }
         if (value != UNDEFINED) {
           setVar(varName, listify(value), defGroup, null, null, null);
@@ -738,7 +711,6 @@ public final class RenderSession {
    * @return A child session that you can (and should) populate yourself
    */
   public RenderSession in(String nestedTemplateName) {
-    Check.on(frozenSession(), state.isFrozen()).is(no());
     Template t = getNestedTemplate(nestedTemplateName);
     return state.getOrCreateChildSession(t);
   }
@@ -752,10 +724,10 @@ public final class RenderSession {
    * @return A {@code List} of child sessions
    */
   public List<RenderSession> getChildSessions(String nestedTemplateName) {
-    Check.on(frozenSession(), state.isFrozen()).is(no());
     Template t = getNestedTemplate(nestedTemplateName);
     RenderSession[] sessions = state.getChildSessions(t);
-    Check.on(noChildSessionsYet(t), t).is(notNull());
+    Check.that(t).is(notNull(),
+        NO_CHILD_SESSIONS_YET.getExceptionSupplier(t.getName()));
     return List.of(sessions);
   }
 
@@ -829,8 +801,8 @@ public final class RenderSession {
   private Template getNestedTemplate(String name) {
     Check.notNull(name, MTag.TEMPLATE_NAME);
     Template t = config.template();
-    return Check.that(name)
-        .is(elementOf(), t.getNestedTemplateNames(), noSuchTemplate(t, name))
+    return Check.that(name).is(elementOf(), t.getNestedTemplateNames(),
+            NO_SUCH_TEMPLATE.getExceptionSupplier(getFQName(t, name)))
         .ok(t::getNestedTemplate);
   }
 
@@ -839,12 +811,11 @@ public final class RenderSession {
     try {
       s = stringifier.toString(value);
     } catch (NullPointerException e) {
-      throw stringifierNotNullResistant(config.template(), varName);
+      throw STRINGIFIER_NOT_NULL_RESISTENT
+          .getException(getFQName(config.template(), varName));
     }
-    if (s == null) {
-      throw stringifierReturnedNull(config.template(), varName);
-    }
-    return s;
+    return Check.that(s).is(notNull(), STRINGIFIER_RETURNED_NULL
+        .getExceptionSupplier(getFQName(config.template(), varName))).ok();
   }
 
 }

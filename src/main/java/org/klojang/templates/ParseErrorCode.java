@@ -1,11 +1,8 @@
 package org.klojang.templates;
 
-import org.klojang.check.Check;
-import org.klojang.check.IntCheck;
-import org.klojang.check.ObjectCheck;
 import org.klojang.util.StringMethods;
 
-import java.util.function.Function;
+import java.util.function.Supplier;
 
 import static org.klojang.util.ArrayMethods.prefix;
 
@@ -14,9 +11,24 @@ import static org.klojang.util.ArrayMethods.prefix;
  * template.
  *
  * @author Ayco Holleman
- * @see ParseException#getError()
+ * @see ParseException#getErrorCode()
  */
-public enum ParseError {
+public enum ParseErrorCode {
+
+  /**
+   * The template contained two or more nested templates with the same name.
+   */
+  DUPLICATE_TMPL_NAME("Duplicate template name \"%s\""),
+
+  /**
+   * The template contained a nested template with an illegal name.
+   */
+  ILLEGAL_TMPL_NAME("Illegal name for template: \"%s\""),
+
+  /**
+   * The template contained a variable with the same name as a nested template.
+   */
+  VAR_NAME_WITH_TMPL_NAME("Variable cannot have same name as template: \"%s\""),
 
   /**
    * The path specified in an included template
@@ -25,17 +37,7 @@ public enum ParseError {
    *
    * @see org.klojang.templates.PathResolver#isValidPath(String)
    */
-  INVALID_INCLUDE_PATH("Invalid include path: %s"),
-
-  /**
-   * The template contained two or more nested templates with the same name.
-   */
-  DUPLICATE_TMPL_NAME("Duplicate template name \"%s\""),
-
-  /**
-   * The template contained a variable with the same name as a nested template.
-   */
-  VAR_NAME_WITH_TMPL_NAME("Variable cannot have same name as template: \"%s\""),
+  INVALID_INCLUDE_PATH("Invalid include path: %s. %s"),
 
   /**
    * The character sequence {@code ~%%begin:} was found, but no terminating
@@ -77,47 +79,34 @@ public enum ParseError {
    * A placeholder block was not closed. (There was an uneven number of
    * {@code <!--%-->} tokens.)
    */
-  PLACEHOLDER_NOT_CLOSED("Placeholder not closed"),
-
-  /**
-   * An unexpected exception occurred while parsing the template.
-   */
-  UNEXPECTED("Unexpected error while parsing template");
+  PLACEHOLDER_NOT_CLOSED("Placeholder not closed");
 
   private static final String ERR_BASE = "Error at line %d, column %d. ";
 
   private final String format;
 
-  ParseError(String format) {
-    this.format = ERR_BASE + format;
+  ParseErrorCode(String format) {
+    this.format = format;
   }
 
-  public String asMessage(String src, int pos, Object... args) {
+  // No line and column number included in exception message
+  ParseException getTracelessException(Object... msgArgs) {
+    return new ParseException(this, String.format(format, msgArgs));
+  }
+
+  ParseException getException(String src, int pos, Object... args) {
+    return new ParseException(this, createMessage(src, pos, args));
+  }
+
+  Supplier<ParseException> getExceptionSupplier(String src,
+      int pos,
+      Object... msgArgs) {
+    return () -> getException(src, pos, msgArgs);
+  }
+
+  private String createMessage(String src, int pos, Object... args) {
     int[] x = StringMethods.getLineAndColumn(src, pos);
-    return String.format(format, prefix(args, x[0] + 1, x[1] + 1));
+    return String.format(ERR_BASE + format, prefix(args, x[0] + 1, x[1] + 1));
   }
 
-  public ParseException asException(String src, int pos, Object... args) {
-    return new ParseException(this, asMessage(src, pos, args));
-  }
-
-  public Function<String, ParseException> asExceptionProvider(String src,
-      int pos,
-      Object... args) {
-    return s -> asException(src, pos, args);
-  }
-
-  public IntCheck<ParseException> checkInt(int arg,
-      String src,
-      int pos,
-      Object... args) {
-    return Check.on(asExceptionProvider(src, pos, args), arg);
-  }
-
-  public <T> ObjectCheck<T, ParseException> check(T arg,
-      String src,
-      int pos,
-      Object... args) {
-    return Check.on(asExceptionProvider(src, pos, args), arg);
-  }
 }

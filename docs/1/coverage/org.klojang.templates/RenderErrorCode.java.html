@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>RenderErrorCode.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Klojang Templates</a> &gt; <a href="index.source.html" class="el_package">org.klojang.templates</a> &gt; <span class="el_source">RenderErrorCode.java</span></div><h1>RenderErrorCode.java</h1><pre class="source lang-java linenums">package org.klojang.templates;
+
+import java.util.function.Supplier;
+
+<span class="fc" id="L5">public enum RenderErrorCode {</span>
+
+  /**
+   * A non-existent variable name was specified while populating a template.
+   */
+<span class="fc" id="L10">  NO_SUCH_VARIABLE(&quot;No such variable: %s&quot;),</span>
+
+  /**
+   * A non-existent nested template name was specified while populating a template.
+   */
+<span class="fc" id="L15">  NO_SUCH_TEMPLATE(&quot;No such nested template: %s&quot;),</span>
+
+  /**
+   * The child sessions for a nested template were requested, but the nested template
+   * had not been populated yet.
+   *
+   * @see RenderSession#getChildSessions(String)
+   */
+<span class="fc" id="L23">  NO_CHILD_SESSIONS_YET(&quot;No child sessions yet for template %s&quot;),</span>
+
+  /**
+   * An error occurred while retrieving the value for a template variable.
+   */
+<span class="fc" id="L28">  ACCESS_EXCEPTION(&quot;Error while retrieving value for %s: %s&quot;),</span>
+
+  /**
+   * One or more template variables were placed in a
+   * {@linkplain VarGroup variable group} for which no {@link Stringifier} was
+   * defined.
+   */
+<span class="fc" id="L35">  VAR_GROUP_WITHOUT_STRINGIFIER(</span>
+      &quot;Error while processing ~%%1$s:%2$s%: no stringifier associated with variable group \&quot;%1$s\&quot;&quot;),
+
+  /**
+   * {@code RenderSession.show()} was called on a nested template, but it was not a
+   * text-only template.
+   */
+<span class="fc" id="L42">  NOT_TEXT_ONLY(&quot;Not a text-only template: %s&quot;),</span>
+
+  /**
+   * {@code RenderSession.populate1()} was called on a nested template, but it was
+   * not a template with exactly one variable and zero doubly-nested templates.
+   */
+<span class="fc" id="L48">  NOT_ONE_VAR_TEMPLATE(&quot;Not a one-variable template: %s&quot;),</span>
+
+  /**
+   * {@code RenderSession.populate2()} was called on a nested template, but it was
+   * not a template with exactly two variables and zero doubly-nested templates.
+   */
+<span class="fc" id="L54">  NOT_TWO_VAR_TEMPLATE(&quot;Not a two-variable template: %s&quot;),</span>
+
+  /**
+   * A stringifier's {@link Stringifier#toString(Object)} method returned
+   * {@code null}, which it should never do.
+   */
+<span class="fc" id="L60">  STRINGIFIER_RETURNED_NULL(&quot;Stringifier for %s must not return null&quot;),</span>
+
+  /**
+   * A stringifier's {@link Stringifier#toString(Object)} method threw a
+   * {@code NullPointerException}, stringifiers &lt;i&gt;must&lt;/i&gt; be capable of
+   * stringifying {@code null}.
+   */
+<span class="fc" id="L67">  STRINGIFIER_NOT_NULL_RESISTENT(&quot;Stringifier for %s threw NullPointerException&quot;),</span>
+
+  /**
+   * A nested template was populated in multiple passes, but with a different number
+   * of source data objects.
+   */
+<span class="fc" id="L73">  REPETITION_MISMATCH(&quot;Error while populating %s. When populating a nested template &quot;</span>
+      + &quot;in multiple passes you must always provide the same number of source data &quot;
+      + &quot;objects. Received %d source data object(s) in first round. Now got %d.&quot;);
+
+  private String format;
+
+<span class="fc" id="L79">  RenderErrorCode(String format) {</span>
+<span class="fc" id="L80">    this.format = format;</span>
+<span class="fc" id="L81">  }</span>
+
+  RenderException getException(Object... msgArgs) {
+<span class="nc" id="L84">    return new RenderException(this, String.format(format, msgArgs));</span>
+  }
+
+  Supplier&lt;RenderException&gt; getExceptionSupplier(Object... msgArgs) {
+<span class="pc" id="L88">    return () -&gt; getException(this, msgArgs);</span>
+  }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

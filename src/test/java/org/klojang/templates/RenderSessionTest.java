@@ -164,19 +164,6 @@ public class RenderSessionTest {
     assertEquals("[]", out);
   }
 
-  @Test
-  public void paste() throws ParseException {
-    Renderable renderable = Template.fromString("<td>~%foo%</td><td>~%bar%</td>")
-        .newRenderSession()
-        .set("foo", "foo")
-        .set("bar", "bar")
-        .createRenderable();
-    String out = Template.fromString("<tr>~%foo%</tr>")
-        .newRenderSession()
-        .paste("foo", renderable)
-        .render();
-    assertEquals("<tr><td>foo</td><td>bar</td></tr>", out);
-  }
 
   @Test
   public void populate01() throws ParseException {

@@ -1,4 +1,4 @@
-package org.klojang.templates.x.parse;
+package org.klojang.templates;
 
 import org.apache.http.client.utils.URIBuilder;
 import org.junit.jupiter.api.Test;
@@ -9,7 +9,7 @@ import static org.apache.commons.text.StringEscapeUtils.escapeEcmaScript;
 import static org.apache.commons.text.StringEscapeUtils.escapeHtml4;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class EscapeTypeTest {
+public class EscapeTest {
 
   @Test
   public void test00() {

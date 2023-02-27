@@ -2,8 +2,6 @@ package org.klojang.templates;
 
 import org.klojang.check.Check;
 import org.klojang.convert.Bool;
-import org.klojang.templates.x.acc.BeanAccessor;
-import org.klojang.templates.x.acc.PathAccessor;
 
 import static org.klojang.check.CommonChecks.numerical;
 

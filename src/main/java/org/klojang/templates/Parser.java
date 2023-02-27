@@ -1,5 +1,6 @@
 package org.klojang.templates;
 
+import org.klojang.check.Check;
 import org.klojang.check.fallible.FallibleBiFunction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,8 +10,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static org.klojang.check.CommonChecks.*;
+import static org.klojang.templates.ParseErrorCode.*;
 import static org.klojang.templates.Template.ROOT_TEMPLATE_NAME;
-import static org.klojang.templates.ParseError.*;
 import static org.klojang.util.StringMethods.EMPTY_STRING;
 
 final class Parser {
@@ -24,7 +25,7 @@ final class Parser {
   private final TemplateLocation location;
   private final String src;
 
-  Parser(TemplateLocation location, String name) throws PathResolutionException {
+  Parser(TemplateLocation location, String name) throws ParseException {
     this(location, name, location.read());
   }
 
@@ -70,8 +71,7 @@ final class Parser {
     return out;
   }
 
-  private static List<Part> purgeDitchBlocks(List<Part> parts)
-      throws ParseException {
+  private static List<Part> purgeDitchBlocks(List<Part> parts) {
     List<Part> out = new ArrayList<>();
     // There will always be just 1 part, and it will always be
     // an UnparsedPart. Nevertheless, let's act as if we don't
@@ -86,8 +86,7 @@ final class Parser {
     return out;
   }
 
-  private static List<Part> purgeDitchBlocksInPart(UnparsedPart unparsed)
-      throws ParseException {
+  private static List<Part> purgeDitchBlocksInPart(UnparsedPart unparsed) {
     String src = unparsed.text();
     Matcher m = Regex.DITCH_BLOCK.matcher(src);
     if (!m.find()) {
@@ -125,10 +124,10 @@ final class Parser {
       }
       String name = m.group(1);
       String mySrc = m.group(2);
-      DUPLICATE_TMPL_NAME
-          .check(name, src, offset + m.start(1), name)
-          .isNot(in(), names)
-          .isNot(equalTo(), ROOT_TEMPLATE_NAME);
+      Check.that(name).isNot(equalTo(), ROOT_TEMPLATE_NAME,
+          ILLEGAL_TMPL_NAME.getExceptionSupplier(src, offset + m.start(1), name));
+      Check.that(name).isNot(in(), names,
+          DUPLICATE_TMPL_NAME.getExceptionSupplier(src, offset + m.start(1), name));
       names.add(name);
       // No path is associated with an inline template, but it inherits the
       // PathResolver of the template in which it is nested
@@ -163,13 +162,13 @@ final class Parser {
       if (name == null) {
         name = IncludedTemplatePart.basename(path);
       }
-      DUPLICATE_TMPL_NAME
-          .check(name, src, offset + m.start(2), name)
-          .isNot(in(), names)
-          .isNot(equalTo(), ROOT_TEMPLATE_NAME);
+      Check.that(name).isNot(equalTo(), ROOT_TEMPLATE_NAME,
+          ILLEGAL_TMPL_NAME.getExceptionSupplier(src, offset + m.start(1), name));
+      Check.that(name).isNot(in(), names,
+          DUPLICATE_TMPL_NAME.getExceptionSupplier(src, offset + m.start(1), name));
       TemplateLocation loc = new TemplateLocation(path, location.resolver());
       if (loc.isInvalid()) {
-        throw INVALID_INCLUDE_PATH.asException(src, offset + m.start(3), path);
+        throw INVALID_INCLUDE_PATH.getException(src, offset + m.start(3), path);
       }
       names.add(name);
       Template nested = TemplateCache.INSTANCE.get(loc, name);
@@ -202,8 +201,8 @@ final class Parser {
       }
       String prefix = m.group(2);
       String name = m.group(3);
-      VAR_NAME_WITH_TMPL_NAME
-          .check(name, src, offset + m.start(3), name).isNot(in(), names);
+      Check.that(name).isNot(in(), names, VAR_NAME_WITH_TMPL_NAME
+          .getExceptionSupplier(src, offset + m.start(3), name));
       parts.add(new VariablePart(prefix, name, offset + m.start()));
       end = m.end();
     } while (m.find());
@@ -230,7 +229,7 @@ final class Parser {
           if (text.contains(Regex.PLACEHOLDER_START_END)) {
             int idx = p.start()
                 + unparsed.text().indexOf(Regex.PLACEHOLDER_START_END);
-            throw PLACEHOLDER_NOT_CLOSED.asException(text, idx);
+            throw PLACEHOLDER_NOT_CLOSED.getException(text, idx);
           }
           out.add(new TextPart(text, p.start()));
         }
@@ -246,22 +245,25 @@ final class Parser {
     int off = unparsed.start();
     Matcher m = Regex.INLINE_TEMPLATE_BEGIN.matcher(str);
     if (m.find()) {
-      throw MISSING_END_TAG.asException(src, off + m.start(), m.group(1));
+      throw MISSING_END_TAG.getException(src, off + m.start(), m.group(1));
     }
     m = Regex.INLINE_TEMPLATE_END.matcher(str);
     if (m.find()) {
-      throw DANGLING_END_TAG.asException(src, off + m.start(), m.group(1));
+      throw DANGLING_END_TAG.getException(src, off + m.start(), m.group(1));
     }
     m = Regex.DITCH_TAG.matcher(str);
     if (m.find()) {
-      throw DITCH_BLOCK_NOT_CLOSED.asException(src, off + m.start());
+      throw DITCH_BLOCK_NOT_CLOSED.getException(src, off + m.start());
     }
     int idx = str.indexOf("~%%begin:");
-    BEGIN_TAG_NOT_TERMINATED.checkInt(idx, src, off + idx).is(eq(), -1);
+    Check.that(idx).is(eq(), -1,
+        BEGIN_TAG_NOT_TERMINATED.getExceptionSupplier(src, off + idx));
     idx = str.indexOf("~%%end:");
-    END_TAG_NOT_TERMINATED.checkInt(idx, src, off + idx).is(eq(), -1);
+    Check.that(idx).is(eq(), -1,
+        END_TAG_NOT_TERMINATED.getExceptionSupplier(src, off + idx));
     idx = str.indexOf("~%%include:");
-    INCLUDE_TAG_NOT_TERMINATED.checkInt(idx, src, off + idx).is(eq(), -1);
+    Check.that(idx).is(eq(), -1,
+        INCLUDE_TAG_NOT_TERMINATED.getExceptionSupplier(src, off + idx));
   }
 
   private static Matcher match(Pattern pattern, UnparsedPart unparsed) {
@@ -275,7 +277,7 @@ final class Parser {
 
   private static void logParsing(String name, TemplateLocation location) {
     if (LOG.isTraceEnabled()) {
-      if (name == ROOT_TEMPLATE_NAME) {
+      if (name.equals(ROOT_TEMPLATE_NAME)) {
         LOG.trace("Parsing root template");
       } else if (location.isString()) {
         LOG.trace("Parsing inline template \"{}\"", name);

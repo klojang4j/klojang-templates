@@ -286,7 +286,7 @@ public class ParserTest {
     try {
       Template.fromString(src);
     } catch (ParseException e) {
-      assertEquals(ParseError.DITCH_BLOCK_NOT_CLOSED, e.getError());
+      assertEquals(ParseErrorCode.DITCH_BLOCK_NOT_CLOSED, e.getErrorCode());
     }
   }
 
@@ -300,7 +300,7 @@ public class ParserTest {
     try {
       Template.fromString(src);
     } catch (ParseException e) {
-      assertEquals(ParseError.MISSING_END_TAG, e.getError());
+      assertEquals(ParseErrorCode.MISSING_END_TAG, e.getErrorCode());
     }
   }
 
@@ -314,7 +314,7 @@ public class ParserTest {
     try {
       Template.fromString(src);
     } catch (ParseException e) {
-      assertEquals(ParseError.MISSING_END_TAG, e.getError());
+      assertEquals(ParseErrorCode.MISSING_END_TAG, e.getErrorCode());
     }
   }
 
@@ -329,7 +329,7 @@ public class ParserTest {
     try {
       Template.fromString(src);
     } catch (ParseException e) {
-      assertEquals(ParseError.DANGLING_END_TAG, e.getError());
+      assertEquals(ParseErrorCode.DANGLING_END_TAG, e.getErrorCode());
     }
   }
 
@@ -342,7 +342,7 @@ public class ParserTest {
     try {
       Template.fromString(src);
     } catch (ParseException e) {
-      assertEquals(ParseError.BEGIN_TAG_NOT_TERMINATED, e.getError());
+      assertEquals(ParseErrorCode.BEGIN_TAG_NOT_TERMINATED, e.getErrorCode());
     }
   }
 
@@ -357,7 +357,7 @@ public class ParserTest {
     try {
       Template.fromString(src);
     } catch (ParseException e) {
-      assertEquals(ParseError.END_TAG_NOT_TERMINATED, e.getError());
+      assertEquals(ParseErrorCode.END_TAG_NOT_TERMINATED, e.getErrorCode());
     }
   }
 
@@ -372,7 +372,7 @@ public class ParserTest {
     try {
       Template.fromString(src);
     } catch (ParseException e) {
-      assertEquals(ParseError.INCLUDE_TAG_NOT_TERMINATED, e.getError());
+      assertEquals(ParseErrorCode.INCLUDE_TAG_NOT_TERMINATED, e.getErrorCode());
     }
   }
 
@@ -391,7 +391,7 @@ public class ParserTest {
     try {
       Template.fromString(src);
     } catch (ParseException e) {
-      assertEquals(ParseError.DUPLICATE_TMPL_NAME, e.getError());
+      assertEquals(ParseErrorCode.DUPLICATE_TMPL_NAME, e.getErrorCode());
     }
   }
 
@@ -408,7 +408,7 @@ public class ParserTest {
     try {
       Template.fromString(src);
     } catch (ParseException e) {
-      assertEquals(ParseError.VAR_NAME_WITH_TMPL_NAME, e.getError());
+      assertEquals(ParseErrorCode.VAR_NAME_WITH_TMPL_NAME, e.getErrorCode());
     }
   }
 
@@ -425,7 +425,7 @@ public class ParserTest {
     try {
       Template.fromString(src);
     } catch (ParseException e) {
-      assertEquals(ParseError.VAR_NAME_WITH_TMPL_NAME, e.getError());
+      assertEquals(ParseErrorCode.VAR_NAME_WITH_TMPL_NAME, e.getErrorCode());
     }
   }
 
@@ -435,7 +435,7 @@ public class ParserTest {
     try {
       Template.fromString(src);
     } catch (ParseException e) {
-      assertEquals(ParseError.DITCH_BLOCK_NOT_CLOSED, e.getError());
+      assertEquals(ParseErrorCode.DITCH_BLOCK_NOT_CLOSED, e.getErrorCode());
     }
   }
 
@@ -449,7 +449,7 @@ public class ParserTest {
     try {
       Template.fromString(src);
     } catch (ParseException e) {
-      assertEquals(ParseError.PLACEHOLDER_NOT_CLOSED, e.getError());
+      assertEquals(ParseErrorCode.PLACEHOLDER_NOT_CLOSED, e.getErrorCode());
     }
   }
 
@@ -459,7 +459,7 @@ public class ParserTest {
     try {
       Template t = Template.fromString(src);
     } catch (ParseException e) {
-      assertEquals(ParseError.PLACEHOLDER_NOT_CLOSED, e.getError());
+      assertEquals(ParseErrorCode.PLACEHOLDER_NOT_CLOSED, e.getErrorCode());
     }
   }
 

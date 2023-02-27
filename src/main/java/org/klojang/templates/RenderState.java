@@ -1,9 +1,13 @@
 package org.klojang.templates;
 
+import org.klojang.check.Check;
+
 import java.util.*;
 
+import static org.klojang.check.CommonChecks.eq;
 import static org.klojang.check.CommonChecks.notNull;
-import static org.klojang.templates.RenderException.repetitionMismatch;
+import static org.klojang.check.CommonProperties.length;
+import static org.klojang.templates.RenderErrorCode.REPETITION_MISMATCH;
 import static org.klojang.templates.TemplateUtils.getFQName;
 import static org.klojang.util.ObjectMethods.ifNotNull;
 
@@ -47,12 +51,11 @@ final class RenderState {
         }
       }
       sessions.put(t, children);
-    } else if (children.length != repeats) {
-      throw repetitionMismatch(config.template(), children, repeats);
     }
-    return children;
+    return Check.that(children).has(length(), eq(), repeats,
+        REPETITION_MISMATCH.getExceptionSupplier(
+            children.length, getFQName(t), repeats)).ok();
   }
-
 
   boolean isProcessed(Template template) {
     return sessions.get(template) != null;

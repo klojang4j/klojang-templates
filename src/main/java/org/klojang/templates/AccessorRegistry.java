@@ -5,10 +5,6 @@ import org.klojang.collections.TypeMap;
 import org.klojang.invoke.BeanReader;
 import org.klojang.invoke.BeanReaderBuilder;
 import org.klojang.path.PathWalker;
-import org.klojang.templates.x.acc.BeanAccessor;
-import org.klojang.templates.x.acc.MapAccessor;
-import org.klojang.templates.x.acc.PathAccessor;
-import org.klojang.util.ClassMethods;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -342,13 +338,6 @@ public final class AccessorRegistry {
     if (acc == null) {
       NameMapper nm = mappers.getOrDefault(template, defMapper);
       acc = new PathAccessor(nm);
-//      if (ClassMethods.isSubtype(type, Map.class)) {
-//        acc = new MapAccessor(nm);
-//      } else if (useBeanAccessor) {
-//        acc = new BeanAccessor<>(type, nm);
-//      } else {
-//        acc = new PathAccessor(nm);
-//      }
     }
     return acc;
   }

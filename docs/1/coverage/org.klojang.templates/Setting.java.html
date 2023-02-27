@@ -2,8 +2,6 @@
 
 import org.klojang.check.Check;
 import org.klojang.convert.Bool;
-import org.klojang.templates.x.acc.BeanAccessor;
-import org.klojang.templates.x.acc.PathAccessor;
 
 import static org.klojang.check.CommonChecks.numerical;
 
@@ -14,7 +12,7 @@ import static org.klojang.check.CommonChecks.numerical;
  *
  * @author Ayco Holleman
  */
-<span class="fc" id="L17">public enum Setting {</span>
+<span class="fc" id="L15">public enum Setting {</span>
 
   /**
    * &lt;p&gt;System Property: {@code org.klojang.templates.cacheSize}&lt;br&gt;Environment
@@ -29,7 +27,7 @@ import static org.klojang.check.CommonChecks.numerical;
    * re-parsed every time you press the refresh button in the browser.
    * &lt;/p&gt;
    */
-<span class="fc" id="L32">  TMPL_CACHE_SIZE(&quot;org.klojang.templates.cacheSize&quot;, &quot;KJT_CACHE_SIZE&quot;, &quot;-1&quot;),</span>
+<span class="fc" id="L30">  TMPL_CACHE_SIZE(&quot;org.klojang.templates.cacheSize&quot;, &quot;KJT_CACHE_SIZE&quot;, &quot;-1&quot;),</span>
 
   /**
    * &lt;p&gt;System Property:
@@ -49,7 +47,7 @@ import static org.klojang.check.CommonChecks.numerical;
    * using the {@code BeanAccessor} class as the fallback {@code Accessor}
    * implementation. See also {@link AccessorRegistry}.
    */
-<span class="fc" id="L52">  USE_BEAN_ACCESSOR(&quot;org.klojang.templates.useBeanAccessor&quot;,</span>
+<span class="fc" id="L50">  USE_BEAN_ACCESSOR(&quot;org.klojang.templates.useBeanAccessor&quot;,</span>
       &quot;KJT_USE_BEAN_ACCESSOR&quot;,
       &quot;false&quot;);
 
@@ -57,11 +55,11 @@ import static org.klojang.check.CommonChecks.numerical;
   private final String envvar;
   private final String dfault;
 
-<span class="fc" id="L60">  Setting(String sysprop, String envvar, String dfault) {</span>
-<span class="fc" id="L61">    this.sysprop = sysprop;</span>
-<span class="fc" id="L62">    this.envvar = envvar;</span>
-<span class="fc" id="L63">    this.dfault = dfault;</span>
-<span class="fc" id="L64">  }</span>
+<span class="fc" id="L58">  Setting(String sysprop, String envvar, String dfault) {</span>
+<span class="fc" id="L59">    this.sysprop = sysprop;</span>
+<span class="fc" id="L60">    this.envvar = envvar;</span>
+<span class="fc" id="L61">    this.dfault = dfault;</span>
+<span class="fc" id="L62">  }</span>
 
   /**
    * Returns the value of the system property or its default value if not specified.
@@ -70,10 +68,10 @@ import static org.klojang.check.CommonChecks.numerical;
    */
   public String get() {
     String env;
-<span class="pc bpc" id="L73" title="1 of 2 branches missed.">    if ((env = System.getenv(envvar)) != null) {</span>
-<span class="nc" id="L74">      return env;</span>
+<span class="pc bpc" id="L71" title="1 of 2 branches missed.">    if ((env = System.getenv(envvar)) != null) {</span>
+<span class="nc" id="L72">      return env;</span>
     }
-<span class="fc" id="L76">    return System.getProperty(sysprop, dfault);</span>
+<span class="fc" id="L74">    return System.getProperty(sysprop, dfault);</span>
   }
 
   /**
@@ -84,7 +82,7 @@ import static org.klojang.check.CommonChecks.numerical;
    *     not specified
    */
   public int getInt() {
-<span class="fc" id="L87">    return Check.that(get()).is(numerical(), int.class).ok(Integer::parseInt);</span>
+<span class="fc" id="L85">    return Check.that(get()).is(numerical(), int.class).ok(Integer::parseInt);</span>
   }
 
   /**
@@ -95,7 +93,7 @@ import static org.klojang.check.CommonChecks.numerical;
    *     value if not specified
    */
   public boolean getBoolean() {
-<span class="fc" id="L98">    return Check.that(get(), sysprop).is(Bool::isConvertible).ok(Bool::from);</span>
+<span class="fc" id="L96">    return Check.that(get(), sysprop).is(Bool::isConvertible).ok(Bool::from);</span>
   }
 
   /**
@@ -104,7 +102,7 @@ import static org.klojang.check.CommonChecks.numerical;
    * @return the name of the system property associated with this enum constant
    */
   public String property() {
-<span class="fc" id="L107">    return sysprop;</span>
+<span class="fc" id="L105">    return sysprop;</span>
   }
 
   /**
@@ -114,7 +112,7 @@ import static org.klojang.check.CommonChecks.numerical;
    * @return the name of the environment variable associated with this enum constant
    */
   public String envVar() {
-<span class="nc" id="L117">    return sysprop.replace('.', '_').toUpperCase();</span>
+<span class="nc" id="L115">    return sysprop.replace('.', '_').toUpperCase();</span>
   }
 
   /**
@@ -123,7 +121,7 @@ import static org.klojang.check.CommonChecks.numerical;
    * @return the default value for the system property
    */
   public String defaultValue() {
-<span class="nc" id="L126">    return dfault;</span>
+<span class="nc" id="L124">    return dfault;</span>
   }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

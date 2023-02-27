@@ -5,26 +5,21 @@ package org.klojang.templates;
  *
  * @author Ayco Holleman
  */
-public class ParseException extends Exception {
+public final class ParseException extends Exception {
 
-  private final ParseError error;
+  private final ParseErrorCode error;
 
-  ParseException(String message) {
-    super(message);
-    this.error = ParseError.UNEXPECTED;
-  }
-
-  ParseException(ParseError error, String message) {
+  ParseException(ParseErrorCode error, String message) {
     super(message);
     this.error = error;
   }
 
   /**
-   * Returns a {@link ParseError} constant identifying the error.
+   * Returns a {@link ParseErrorCode} constant identifying the error.
    *
    * @return a {@code ParseError} constant identifying the error.
    */
-  public ParseError getError() {
+  public ParseErrorCode getErrorCode() {
     return error;
   }
 

@@ -5,6 +5,7 @@ import org.klojang.util.IOMethods;
 import java.io.IOException;
 import java.io.InputStream;
 
+import static org.klojang.templates.ParseErrorCode.INVALID_INCLUDE_PATH;
 import static org.klojang.templates.PathResolver.INVALID_PATH;
 
 record TemplateLocation(String path, PathResolver resolver) {
@@ -23,11 +24,11 @@ record TemplateLocation(String path, PathResolver resolver) {
     return resolver.isValidPath(path).equals(INVALID_PATH);
   }
 
-  String read() throws PathResolutionException {
+  String read() throws ParseException {
     try (InputStream in = resolver.resolve(path)) {
       return IOMethods.getContents(in);
     } catch (IOException e) {
-      throw new PathResolutionException(path);
+      throw INVALID_INCLUDE_PATH.getTracelessException(path, e);
     }
   }
 

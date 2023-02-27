@@ -14,6 +14,7 @@ import java.util.Map;
 import static org.klojang.check.CommonChecks.*;
 import static org.klojang.check.Tag.TYPE;
 import static org.klojang.check.Tag.VARARGS;
+import static org.klojang.templates.RenderErrorCode.VAR_GROUP_WITHOUT_STRINGIFIER;
 import static org.klojang.templates.Template.ROOT_TEMPLATE_NAME;
 import static org.klojang.templates.TemplateUtils.getNestedTemplate;
 import static org.klojang.templates.x.MTag.STRINGIFIER;
@@ -460,7 +461,7 @@ public final class StringifierRegistry {
       if (null != (sf = stringifiers.get(id))) {
         return sf;
       }
-      throw RenderException.noStringifierForGroup(part, varGroup);
+      throw VAR_GROUP_WITHOUT_STRINGIFIER.getException(part.getName(), varGroup);
     }
     Template tmpl = part.getParentTemplate();
     String var = part.getName();

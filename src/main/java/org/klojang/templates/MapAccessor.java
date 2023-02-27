@@ -1,4 +1,4 @@
-package org.klojang.templates.x.acc;
+package org.klojang.templates;
 
 import org.klojang.templates.Accessor;
 import org.klojang.templates.NameMapper;
