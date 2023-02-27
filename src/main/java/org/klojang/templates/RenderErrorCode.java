@@ -2,6 +2,13 @@ package org.klojang.templates;
 
 import java.util.function.Supplier;
 
+/**
+ * Symbolic constants for errors that may occur while populating or rendering a
+ * template.
+ *
+ * @author Ayco Holleman
+ * @see RenderException#getErrorCode()
+ */
 public enum RenderErrorCode {
 
   /**
@@ -54,14 +61,14 @@ public enum RenderErrorCode {
   NOT_TWO_VAR_TEMPLATE("Not a two-variable template: %s"),
 
   /**
-   * A stringifier's {@link Stringifier#toString(Object)} method returned
+   * A stringifier's {@link Stringifier#stringify(Object) stringify} method returned
    * {@code null}, which it should never do.
    */
   STRINGIFIER_RETURNED_NULL("Stringifier for %s must not return null"),
 
   /**
-   * A stringifier's {@link Stringifier#toString(Object)} method threw a
-   * {@code NullPointerException}, stringifiers <i>must</i> be capable of
+   * A stringifier's {@link Stringifier#stringify(Object) stringify} method threw a
+   * {@code NullPointerException}, but stringifiers <i>must</i> be capable of
    * stringifying {@code null}.
    */
   STRINGIFIER_NOT_NULL_RESISTENT("Stringifier for %s threw NullPointerException"),

@@ -3,7 +3,9 @@
 import org.klojang.util.StringMethods;
 
 /**
- * Stringifies the values provided by the data access layer.
+ * A {@code Stringifier} is responsible for stringifying the values provided by the
+ * data access layer. Note that escaping (e.g. HTML) is also considered to be form of
+ * stringifying, albeit from string to string.
  *
  * @author Ayco Holleman
  * @see StringifierRegistry
@@ -18,18 +20,18 @@ public interface Stringifier {
    *
    * @see StringifierRegistry.Builder
    */
-<span class="pc bpc" id="L21" title="1 of 2 branches missed.">  Stringifier DEFAULT = x -&gt; x == null ? StringMethods.EMPTY_STRING : x.toString();</span>
+<span class="pc bpc" id="L23" title="1 of 2 branches missed.">  Stringifier DEFAULT = x -&gt; x == null ? StringMethods.EMPTY_STRING : x.toString();</span>
 
   /**
    * Stringifies the specified value. Stringifier implementations &lt;i&gt;must&lt;/i&gt; be able
    * to handle null values and they &lt;i&gt;must never&lt;/i&gt; return null. A
-   * {@link BadStringifierException} is thrown if
+   * {@link RenderException} is thrown if they do
    *
-   * @param value The value to be stringified
-   * @return A string representation of the value
+   * @param value the value to be stringified
+   * @return a string representation of the value
    * @throws RenderException
    */
-  String toString(Object value) throws RenderException;
+  String stringify(Object value) throws RenderException;
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

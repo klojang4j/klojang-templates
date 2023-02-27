@@ -809,7 +809,7 @@ public final class RenderSession {
   private String stringify(Stringifier stringifier, String varName, Object value) {
     String s;
     try {
-      s = stringifier.toString(value);
+      s = stringifier.stringify(value);
     } catch (NullPointerException e) {
       throw STRINGIFIER_NOT_NULL_RESISTENT
           .getException(getFQName(config.template(), varName));

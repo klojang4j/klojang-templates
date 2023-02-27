@@ -809,7 +809,7 @@ public final class RenderSession {
   private String stringify(Stringifier stringifier, String varName, Object value) {
     String s;
     try {
-<span class="fc" id="L812">      s = stringifier.toString(value);</span>
+<span class="fc" id="L812">      s = stringifier.stringify(value);</span>
 <span class="nc" id="L813">    } catch (NullPointerException e) {</span>
 <span class="nc" id="L814">      throw STRINGIFIER_NOT_NULL_RESISTENT</span>
 <span class="nc" id="L815">          .getException(getFQName(config.template(), varName));</span>
