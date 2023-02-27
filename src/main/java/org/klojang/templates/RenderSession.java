@@ -22,7 +22,6 @@ import static org.klojang.templates.x.MTag.VAR_GROUP;
 import static org.klojang.templates.x.MTag.VAR_NAME;
 import static org.klojang.util.CollectionMethods.listify;
 import static org.klojang.util.ObjectMethods.isEmpty;
-import static org.klojang.util.StringMethods.concat;
 
 /**
  * A {@code RenderSession} lets you populate a template and then render it. You
@@ -123,7 +122,7 @@ public final class RenderSession {
     VarGroup group = part.getVarGroup().orElse(varGroup);
     StringifierRegistry reg = config.stringifiers();
     Stringifier stringifier = reg.getStringifier(part, group, value);
-    String strval = stringifier.stringify(value);
+    String strval = stringify(stringifier, part.getName(), value);
     state.setVar(partIndex, strval);
   }
 
@@ -575,9 +574,8 @@ public final class RenderSession {
   /* RENDER METHODS */
 
   /**
-   * Returns {@code true} if the template is fully populated. That is, all template
-   * variables (nested or not) have been. Note that you may not <i>want</i> the
-   * template to be fully populated.
+   * Returns {@code true} if the template is fully populated. Note that you may not
+   * <i>want</i> the template to be fully populated.
    *
    * @return {@code true} if the template is fully populated
    */
@@ -586,53 +584,38 @@ public final class RenderSession {
   }
 
   /**
-   * Returns a {@code Renderable} instance that allows you to render the current
-   * template over and over again. See {@link #paste(String, Renderable)}.
+   * Renders the template.
    *
-   * @return A {@code Renderable} instance allows you to render the current template
-   */
-  public Renderable createRenderable() {
-    state.freeze();
-    return new RenderableImpl(state);
-  }
-
-  /**
-   * Writes the render result to the specified {@code OutputStream}. Shortcut for
-   * {@code createRenderable().render(out)}.
-   *
-   * @param out the output stream to which to write the render result
+   * @param out the output stream to which to write the populated template
    */
   public void render(OutputStream out) {
-    createRenderable().render(out);
+    new Renderer(state).render(out);
   }
 
   /**
-   * Appends the render result to the specified {@code StringBuilder}. Shortcut for
-   * {@code createRenderable().render(sb)}.
+   * Renders the template.
    *
-   * @param sb the {@code StringBuilder} to which to append the render result
+   * @param sb the {@code StringBuilder} to which to write the populated
+   *     template
    */
   public void render(StringBuilder sb) {
-    createRenderable().render(sb);
+    new Renderer(state).render(sb);
   }
 
   /**
-   * Returns the render result as a UTF-8 encoded {@code String}.
+   * Renders the template.
    *
-   * @return the render result
+   * @return the populated template (UTF8-encoded)
    */
   public String render() {
     ByteArrayOutputStream out = new ByteArrayOutputStream(1024);
-    createRenderable().render(out);
+    new Renderer(state).render(out);
     return out.toString(UTF_8);
   }
 
   @Override
   public String toString() {
-    return concat(getClass().getSimpleName(),
-        "[template=",
-        getFQName(config.template()),
-        "]");
+    return String.format("RenderSession[template=%s]", getFQName(config.template()));
   }
 
   RenderState getState() {

@@ -10,15 +10,14 @@ import java.util.stream.IntStream;
 import static java.util.Arrays.stream;
 import static org.klojang.util.StringMethods.concat;
 
-final class RenderableImpl implements Renderable {
+final class Renderer {
 
   private final RenderState state;
 
-  RenderableImpl(RenderState state) {
+  Renderer(RenderState state) {
     this.state = state;
   }
 
-  @Override
   public void render(OutputStream out) {
     Check.notNull(out);
     PrintStream ps = out instanceof PrintStream
@@ -27,7 +26,6 @@ final class RenderableImpl implements Renderable {
     render(state, ps);
   }
 
-  @Override
   public void render(StringBuilder sb) {
     Check.notNull(sb);
     render(state, sb);
@@ -37,9 +35,9 @@ final class RenderableImpl implements Renderable {
   public String toString() {
     Template t = state.getSessionConfig().template();
     if (t.path().isPresent()) {
-      return concat(Renderable.class.getName(), "[source=", t.path().get(), "]");
+      return concat(Renderer.class.getName(), "[source=", t.path().get(), "]");
     }
-    return concat(Renderable.class.getName(), "[template=", t.getName(), "]");
+    return concat(Renderer.class.getName(), "[template=", t.getName(), "]");
   }
 
   private void render(RenderState state0, PrintStream ps) {

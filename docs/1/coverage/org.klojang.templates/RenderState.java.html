@@ -5,7 +5,6 @@ import org.klojang.check.Check;
 import java.util.*;
 
 import static org.klojang.check.CommonChecks.eq;
-import static org.klojang.check.CommonChecks.notNull;
 import static org.klojang.check.CommonProperties.length;
 import static org.klojang.templates.RenderErrorCode.REPETITION_MISMATCH;
 import static org.klojang.templates.TemplateUtils.getFQName;
@@ -13,145 +12,119 @@ import static org.klojang.util.ObjectMethods.ifNotNull;
 
 final class RenderState {
 
-<span class="fc" id="L16">  private static final RenderSession[] ZERO_SESSIONS = new RenderSession[0];</span>
-<span class="fc" id="L17">  private static final RenderSession[] ONE_SESSION = new RenderSession[1];</span>
+<span class="fc" id="L15">  private static final RenderSession[] ZERO_SESSIONS = new RenderSession[0];</span>
+<span class="fc" id="L16">  private static final RenderSession[] ONE_SESSION = new RenderSession[1];</span>
 
   private final SessionConfig config;
   private final Set&lt;String&gt; todo; // variables that have not been set yet
   private final Map&lt;Template, RenderSession[]&gt; sessions;
   private final Map&lt;Integer, Object&gt; varValues;
 
-  private boolean frozen;
-
-<span class="fc" id="L26">  RenderState(SessionConfig config) {</span>
-<span class="fc" id="L27">    this.config = config;</span>
-<span class="fc" id="L28">    int sz = config.template().countNestedTemplates();</span>
-<span class="fc" id="L29">    this.sessions = new IdentityHashMap&lt;&gt;(sz);</span>
-<span class="fc" id="L30">    this.varValues = new HashMap&lt;&gt;(sz);</span>
-<span class="fc" id="L31">    this.todo = new HashSet&lt;&gt;(config.template().getVariables());</span>
-<span class="fc" id="L32">  }</span>
+<span class="fc" id="L23">  RenderState(SessionConfig config) {</span>
+<span class="fc" id="L24">    this.config = config;</span>
+<span class="fc" id="L25">    int sz = config.template().countNestedTemplates();</span>
+<span class="fc" id="L26">    this.sessions = new IdentityHashMap&lt;&gt;(sz);</span>
+<span class="fc" id="L27">    this.varValues = new HashMap&lt;&gt;(sz);</span>
+<span class="fc" id="L28">    this.todo = new HashSet&lt;&gt;(config.template().getVariables());</span>
+<span class="fc" id="L29">  }</span>
 
   SessionConfig getSessionConfig() {
-<span class="fc" id="L35">    return config;</span>
+<span class="fc" id="L32">    return config;</span>
   }
 
   RenderSession getOrCreateChildSession(Template t) {
-<span class="fc" id="L39">    return getOrCreateChildSessions(t, 1)[0];</span>
+<span class="fc" id="L36">    return getOrCreateChildSessions(t, 1)[0];</span>
   }
 
   RenderSession[] getOrCreateChildSessions(Template t, int repeats) {
-<span class="fc" id="L43">    RenderSession[] children = sessions.get(t);</span>
-<span class="fc bfc" id="L44" title="All 2 branches covered.">    if (children == null) {</span>
-<span class="pc bpc" id="L45" title="1 of 2 branches missed.">      if (repeats == 0) {</span>
-<span class="nc" id="L46">        children = ZERO_SESSIONS;</span>
+<span class="fc" id="L40">    RenderSession[] children = sessions.get(t);</span>
+<span class="fc bfc" id="L41" title="All 2 branches covered.">    if (children == null) {</span>
+<span class="pc bpc" id="L42" title="1 of 2 branches missed.">      if (repeats == 0) {</span>
+<span class="nc" id="L43">        children = ZERO_SESSIONS;</span>
       } else {
-<span class="fc" id="L48">        children = new RenderSession[repeats];</span>
-<span class="fc bfc" id="L49" title="All 2 branches covered.">        for (int i = 0; i &lt; repeats; ++i) {</span>
-<span class="fc" id="L50">          children[i] = config.newChildSession(t);</span>
+<span class="fc" id="L45">        children = new RenderSession[repeats];</span>
+<span class="fc bfc" id="L46" title="All 2 branches covered.">        for (int i = 0; i &lt; repeats; ++i) {</span>
+<span class="fc" id="L47">          children[i] = config.newChildSession(t);</span>
         }
       }
-<span class="fc" id="L53">      sessions.put(t, children);</span>
+<span class="fc" id="L50">      sessions.put(t, children);</span>
     }
-<span class="fc" id="L55">    return Check.that(children).has(length(), eq(), repeats,</span>
-<span class="fc" id="L56">        REPETITION_MISMATCH.getExceptionSupplier(</span>
-<span class="fc" id="L57">            children.length, getFQName(t), repeats)).ok();</span>
+<span class="fc" id="L52">    return Check.that(children).has(length(), eq(), repeats,</span>
+<span class="fc" id="L53">        REPETITION_MISMATCH.getExceptionSupplier(</span>
+<span class="fc" id="L54">            children.length, getFQName(t), repeats)).ok();</span>
   }
 
   boolean isProcessed(Template template) {
-<span class="pc bpc" id="L61" title="1 of 2 branches missed.">    return sessions.get(template) != null;</span>
-  }
-
-  boolean isEnabled(Template template) {
-<span class="nc bnc" id="L65" title="All 2 branches missed.">    return ifNotNull(sessions.get(template), x -&gt; x.length &gt; 0, false);</span>
+<span class="pc bpc" id="L58" title="1 of 2 branches missed.">    return sessions.get(template) != null;</span>
   }
 
   boolean isDisabled(Template template) {
-<span class="pc bnc" id="L69" title="All 2 branches missed.">    return ifNotNull(sessions.get(template), x -&gt; x.length == 0, false);</span>
+<span class="pc bnc" id="L62" title="All 2 branches missed.">    return ifNotNull(sessions.get(template), x -&gt; x.length == 0, false);</span>
   }
 
   RenderSession[] getChildSessions(Template template) {
-<span class="fc" id="L73">    return sessions.get(template);</span>
+<span class="fc" id="L66">    return sessions.get(template);</span>
   }
 
   Object getVar(int partIndex) {
-<span class="fc" id="L77">    return varValues.get(partIndex);</span>
+<span class="fc" id="L70">    return varValues.get(partIndex);</span>
   }
 
   void setVar(int partIndex, Object value) {
-<span class="fc" id="L81">    varValues.put(partIndex, value);</span>
-<span class="fc" id="L82">  }</span>
+<span class="fc" id="L74">    varValues.put(partIndex, value);</span>
+<span class="fc" id="L75">  }</span>
 
   boolean isSet(String var) {
-<span class="pc bpc" id="L85" title="1 of 2 branches missed.">    return !todo.contains(var);</span>
+<span class="pc bpc" id="L78" title="1 of 2 branches missed.">    return !todo.contains(var);</span>
   }
 
   void done(String var) {
-<span class="fc" id="L89">    todo.remove(var);</span>
-<span class="fc" id="L90">  }</span>
-
-  boolean isFrozen() {
-<span class="nc" id="L93">    return frozen;</span>
-  }
-
-  void freeze() {
-<span class="fc" id="L97">    deepFreeze(this);</span>
-<span class="fc" id="L98">  }</span>
-
-  private static void deepFreeze(RenderState state0) {
-<span class="fc" id="L101">    state0.frozen = true;</span>
-<span class="fc" id="L102">    state0</span>
-        .sessions
-<span class="fc" id="L104">        .values()</span>
-<span class="fc" id="L105">        .stream()</span>
-<span class="fc" id="L106">        .flatMap(Arrays::stream)</span>
-<span class="fc" id="L107">        .filter(notNull()) // text-only null sessions - don't need freezing anyhow</span>
-<span class="fc" id="L108">        .map(RenderSession::getState)</span>
-<span class="fc" id="L109">        .forEach(RenderState::deepFreeze);</span>
-<span class="fc" id="L110">  }</span>
+<span class="fc" id="L82">    todo.remove(var);</span>
+<span class="fc" id="L83">  }</span>
 
   List&lt;String&gt; getUnsetVars() {
-<span class="nc" id="L113">    ArrayList&lt;String&gt; names = new ArrayList&lt;&gt;();</span>
-<span class="nc" id="L114">    collectUnsetVars(this, names);</span>
-<span class="nc" id="L115">    return names;</span>
+<span class="nc" id="L86">    ArrayList&lt;String&gt; names = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L87">    collectUnsetVars(this, names);</span>
+<span class="nc" id="L88">    return names;</span>
   }
 
   private static void collectUnsetVars(RenderState state0, ArrayList&lt;String&gt; names) {
-<span class="nc" id="L119">    Template t = state0.config.template();</span>
-<span class="nc" id="L120">    state0.todo.stream().map(var -&gt; getFQName(t, var)).forEach(names::add);</span>
-<span class="nc" id="L121">    state0</span>
+<span class="nc" id="L92">    Template t = state0.config.template();</span>
+<span class="nc" id="L93">    state0.todo.stream().map(var -&gt; getFQName(t, var)).forEach(names::add);</span>
+<span class="nc" id="L94">    state0</span>
         .sessions
-<span class="nc" id="L123">        .values()</span>
-<span class="nc" id="L124">        .stream()</span>
-<span class="nc" id="L125">        .flatMap(Arrays::stream)</span>
-<span class="nc" id="L126">        .map(RenderSession::getState)</span>
-<span class="nc" id="L127">        .forEach(state -&gt; collectUnsetVars(state, names));</span>
-<span class="nc" id="L128">  }</span>
+<span class="nc" id="L96">        .values()</span>
+<span class="nc" id="L97">        .stream()</span>
+<span class="nc" id="L98">        .flatMap(Arrays::stream)</span>
+<span class="nc" id="L99">        .map(RenderSession::getState)</span>
+<span class="nc" id="L100">        .forEach(state -&gt; collectUnsetVars(state, names));</span>
+<span class="nc" id="L101">  }</span>
 
   boolean isFullyPopulated() {
-<span class="nc" id="L131">    return ready(this);</span>
+<span class="nc" id="L104">    return ready(this);</span>
   }
 
   private static boolean ready(RenderState state0) {
-<span class="nc bnc" id="L135" title="All 2 branches missed.">    if (state0.todo.size() &gt; 0) {</span>
-<span class="nc" id="L136">      return false;</span>
+<span class="nc bnc" id="L108" title="All 2 branches missed.">    if (state0.todo.size() &gt; 0) {</span>
+<span class="nc" id="L109">      return false;</span>
     }
-<span class="nc" id="L138">    return state0</span>
+<span class="nc" id="L111">    return state0</span>
         .sessions
-<span class="nc" id="L140">        .values()</span>
-<span class="nc" id="L141">        .stream()</span>
-<span class="nc" id="L142">        .flatMap(Arrays::stream)</span>
-<span class="nc" id="L143">        .map(RenderSession::getState)</span>
-<span class="nc" id="L144">        .allMatch(RenderState::ready);</span>
+<span class="nc" id="L113">        .values()</span>
+<span class="nc" id="L114">        .stream()</span>
+<span class="nc" id="L115">        .flatMap(Arrays::stream)</span>
+<span class="nc" id="L116">        .map(RenderSession::getState)</span>
+<span class="nc" id="L117">        .allMatch(RenderState::ready);</span>
   }
 
   private static RenderSession[] createTextOnlySessions(int repeats) {
-<span class="nc bnc" id="L148" title="All 3 branches missed.">    switch (repeats) {</span>
+<span class="nc bnc" id="L121" title="All 3 branches missed.">    switch (repeats) {</span>
       case 0:
-<span class="nc" id="L150">        return ZERO_SESSIONS;</span>
+<span class="nc" id="L123">        return ZERO_SESSIONS;</span>
       case 1:
-<span class="nc" id="L152">        return ONE_SESSION;</span>
+<span class="nc" id="L125">        return ONE_SESSION;</span>
       default:
-<span class="nc" id="L154">        return new RenderSession[repeats];</span>
+<span class="nc" id="L127">        return new RenderSession[repeats];</span>
     }
   }
 

@@ -5,7 +5,6 @@ import org.klojang.check.Check;
 import java.util.*;
 
 import static org.klojang.check.CommonChecks.eq;
-import static org.klojang.check.CommonChecks.notNull;
 import static org.klojang.check.CommonProperties.length;
 import static org.klojang.templates.RenderErrorCode.REPETITION_MISMATCH;
 import static org.klojang.templates.TemplateUtils.getFQName;
@@ -20,8 +19,6 @@ final class RenderState {
   private final Set<String> todo; // variables that have not been set yet
   private final Map<Template, RenderSession[]> sessions;
   private final Map<Integer, Object> varValues;
-
-  private boolean frozen;
 
   RenderState(SessionConfig config) {
     this.config = config;
@@ -61,10 +58,6 @@ final class RenderState {
     return sessions.get(template) != null;
   }
 
-  boolean isEnabled(Template template) {
-    return ifNotNull(sessions.get(template), x -> x.length > 0, false);
-  }
-
   boolean isDisabled(Template template) {
     return ifNotNull(sessions.get(template), x -> x.length == 0, false);
   }
@@ -87,26 +80,6 @@ final class RenderState {
 
   void done(String var) {
     todo.remove(var);
-  }
-
-  boolean isFrozen() {
-    return frozen;
-  }
-
-  void freeze() {
-    deepFreeze(this);
-  }
-
-  private static void deepFreeze(RenderState state0) {
-    state0.frozen = true;
-    state0
-        .sessions
-        .values()
-        .stream()
-        .flatMap(Arrays::stream)
-        .filter(notNull()) // text-only null sessions - don't need freezing anyhow
-        .map(RenderSession::getState)
-        .forEach(RenderState::deepFreeze);
   }
 
   List<String> getUnsetVars() {
