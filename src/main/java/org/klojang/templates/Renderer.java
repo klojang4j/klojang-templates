@@ -1,7 +1,5 @@
 package org.klojang.templates;
 
-import org.klojang.check.Check;
-
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.util.List;
@@ -19,7 +17,6 @@ final class Renderer {
   }
 
   public void render(OutputStream out) {
-    Check.notNull(out);
     PrintStream ps = out instanceof PrintStream
         ? (PrintStream) out
         : new PrintStream(out);
@@ -27,7 +24,6 @@ final class Renderer {
   }
 
   public void render(StringBuilder sb) {
-    Check.notNull(sb);
     render(state, sb);
   }
 
@@ -54,7 +50,7 @@ final class Renderer {
         }
       } else /* TemplatePart */ {
         NestedTemplatePart ntp = (NestedTemplatePart) part;
-        RenderSession[] sessions = state0.getChildSessions(ntp.getTemplate());
+        SoloSession[] sessions = state0.getChildSessions(ntp.getTemplate());
         if (sessions != null) {
           Template t = ntp.getTemplate();
           if (t.isTextOnly()) {
@@ -65,7 +61,7 @@ final class Renderer {
             IntStream.range(0, sessions.length).forEach(x -> ps.append(text));
           } else {
             stream(sessions)
-                .map(RenderSession::getState)
+                .map(SoloSession::getState)
                 .forEach(s -> render(s, ps));
           }
         }
@@ -87,7 +83,7 @@ final class Renderer {
         }
       } else /* TemplatePart */ {
         NestedTemplatePart ntp = (NestedTemplatePart) part;
-        RenderSession[] sessions = state0.getChildSessions(ntp.getTemplate());
+        SoloSession[] sessions = state0.getChildSessions(ntp.getTemplate());
         if (sessions != null) {
           Template t = ntp.getTemplate();
           if (t.isTextOnly()) {
@@ -95,7 +91,7 @@ final class Renderer {
             IntStream.range(0, sessions.length).forEach(x -> sb.append(text));
           } else {
             stream(sessions)
-                .map(RenderSession::getState)
+                .map(SoloSession::getState)
                 .forEach(s -> render(s, sb));
           }
         }

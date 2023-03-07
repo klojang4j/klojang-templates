@@ -19,7 +19,7 @@ import static org.klojang.templates.x.Messages.ERR_NO_SUCH_VARGROUP;
  * provide HTML-escaping and ECMASScript-escaping, respectively. The third example is
  * a custom variable group that you can define using the {@link StringifierRegistry}
  * class. Variable groups can also be assigned <i>ad hoc</i> using
- * {@link RenderSession#set(String, Object, VarGroup) RenderSession.set(varName,
+ * {@link SoloSession#set(String, Object, VarGroup) RenderSession.set(varName,
  * value, varGroup}.
  *
  * <p>Note that variable groups are assigned at the variable <i>occurrence</i>

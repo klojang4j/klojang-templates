@@ -25,11 +25,11 @@ public enum RenderErrorCode {
    * The child sessions for a nested template were requested, but the nested template
    * had not been populated yet.
    *
-   * @see RenderSession#getChildSessions(String)
+   * @see SoloSession#getChildSessions(String)
    */
   NO_CHILD_SESSIONS_YET("No child sessions yet for template %s"),
 
-  /**
+   /**
    * An error occurred while retrieving the value for a template variable.
    */
   ACCESS_EXCEPTION("Error while retrieving value for %s: %s"),
@@ -72,6 +72,11 @@ public enum RenderErrorCode {
    * stringifying {@code null}.
    */
   STRINGIFIER_NOT_NULL_RESISTENT("Stringifier for %s threw NullPointerException"),
+
+  /**
+   * A call to
+   */
+  REPETITIONS_FIXED("Number of repetitions already fixed for template %s"),
 
   /**
    * A nested template was populated in multiple passes, but with a different number

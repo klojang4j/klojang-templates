@@ -19,15 +19,15 @@ import static org.klojang.templates.StringifierRegistry.STANDARD_STRINGIFIERS;
 <span class="fc" id="L19">    this(template, accessors, STANDARD_STRINGIFIERS);</span>
 <span class="fc" id="L20">  }</span>
 
-  RenderSession newRenderSession() {
-<span class="fc" id="L23">    return new RenderSession(this);</span>
+  SoloSession newRenderSession() {
+<span class="fc" id="L23">    return new SoloSession(this);</span>
   }
 
   Accessor&lt;?&gt; getAccessor(Object sourceData) {
 <span class="fc" id="L27">    return accessors.getAccessor(sourceData, template);</span>
   }
 
-  RenderSession newChildSession(Template nested) {
+  SoloSession newChildSession(Template nested) {
 <span class="fc" id="L31">    SessionConfig config = new SessionConfig(nested, accessors, stringifiers);</span>
 <span class="fc" id="L32">    return config.newRenderSession();</span>
   }

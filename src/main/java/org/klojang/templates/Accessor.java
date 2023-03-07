@@ -3,7 +3,7 @@ package org.klojang.templates;
 /**
  * Defines a very general contract for name-based extraction of values from objects.
  * The extraction takes places based on the name of template variable. Just as
- * {@link Template} and {@link RenderSession} are the two central classes of Klojang
+ * {@link Template} and {@link SoloSession} are the two central classes of Klojang
  * Templates, so are {@link Accessor} and {@link Stringifier} the two central
  * interfaces of Klojang Templates. See {@link AccessorRegistry} for more
  * information.
@@ -25,8 +25,8 @@ public interface Accessor<T> {
    * exception and they <b>should not</b> return {@code null}. {@code null} is a
    * legitimate, "insertable" value (usually converted to an empty string). If an
    * {@code Accessor} returns {@code UNDEFINED} for a particular template variable,
-   * the {@link RenderSession} will skip setting that variable. This allows you to
-   * {@link RenderSession#insert(Object, String...) insert} another source data
+   * the {@link SoloSession} will skip setting that variable. This allows you to
+   * {@link SoloSession#insert(Object, String...) insert} another source data
    * object into the template that <i>does</i> have a value for the variable. (Note
    * that <i>once a template variable has been set, it cannot be set again</i> within
    * the same {@code RenderSession}.)

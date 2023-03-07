@@ -19,15 +19,15 @@ record SessionConfig(Template template,
     this(template, accessors, STANDARD_STRINGIFIERS);
   }
 
-  RenderSession newRenderSession() {
-    return new RenderSession(this);
+  SoloSession newRenderSession() {
+    return new SoloSession(this);
   }
 
   Accessor<?> getAccessor(Object sourceData) {
     return accessors.getAccessor(sourceData, template);
   }
 
-  RenderSession newChildSession(Template nested) {
+  SoloSession newChildSession(Template nested) {
     SessionConfig config = new SessionConfig(nested, accessors, stringifiers);
     return config.newRenderSession();
   }

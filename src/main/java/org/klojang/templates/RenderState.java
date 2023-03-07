@@ -1,18 +1,28 @@
 package org.klojang.templates;
 
+import org.klojang.check.Check;
+
 import java.util.*;
 
-import static org.klojang.templates.RenderErrorCode.REPETITION_MISMATCH;
+import static org.klojang.check.CommonChecks.NULL;
+import static org.klojang.templates.RenderErrorCode.*;
 import static org.klojang.templates.TemplateUtils.getFQName;
-import static org.klojang.util.ObjectMethods.ifNotNull;
 
 final class RenderState {
 
-  private static final RenderSession[] ZERO_SESSIONS = new RenderSession[0];
+  private static final SoloSession[] ZERO_SESSIONS = new SoloSession[0];
 
   private final SessionConfig config;
-  private final Set<String> todo; // variables that have not been set yet
-  private final Map<Template, RenderSession[]> sessions;
+
+  // variables that have not been set yet
+  private final Set<String> todo;
+
+  private final Map<Template, SoloSession[]> sessions;
+
+  // variable occurrence values. A variable may occur multiple times
+  // within the same template, and occurrences may have different values
+  // due to being escaped differently. The keys in the map are the
+  // indices of VarPart parts.
   private final Map<Integer, Object> varValues;
 
   RenderState(SessionConfig config) {
@@ -27,17 +37,33 @@ final class RenderState {
     return config;
   }
 
-  RenderSession getOrCreateChildSession(Template t) {
+  SoloSession[] createChildSessions(Template t, int repeats) {
+    SoloSession[] children = sessions.get(t);
+    Check.that(children).is(NULL(),
+        REPETITIONS_FIXED.getExceptionSupplier(t.getName()));
+    if (repeats == 0) {
+      children = ZERO_SESSIONS;
+    } else {
+      children = new SoloSession[repeats];
+      for (int i = 0; i < repeats; ++i) {
+        children[i] = config.newChildSession(t);
+      }
+    }
+    sessions.put(t, children);
+    return children;
+  }
+
+  SoloSession getOrCreateChildSession(Template t) {
     return getOrCreateChildSessions(t, 1)[0];
   }
 
-  RenderSession[] getOrCreateChildSessions(Template t, int repeats) {
-    RenderSession[] children = sessions.get(t);
+  SoloSession[] getOrCreateChildSessions(Template t, int repeats) {
+    SoloSession[] children = sessions.get(t);
     if (children == null) {
       if (repeats == 0) {
         children = ZERO_SESSIONS;
       } else {
-        children = new RenderSession[repeats];
+        children = new SoloSession[repeats];
         for (int i = 0; i < repeats; ++i) {
           children[i] = config.newChildSession(t);
         }
@@ -55,10 +81,10 @@ final class RenderState {
   }
 
   boolean isDisabled(Template template) {
-    return ifNotNull(sessions.get(template), x -> x.length == 0, false);
+    return isProcessed(template) && sessions.get(template).length == 0;
   }
 
-  RenderSession[] getChildSessions(Template template) {
+  SoloSession[] getChildSessions(Template template) {
     return sessions.get(template);
   }
 
@@ -86,7 +112,7 @@ final class RenderState {
         .values()
         .stream()
         .flatMap(Arrays::stream)
-        .map(RenderSession::getState)
+        .map(SoloSession::getState)
         .forEach(state -> collectUnsetVars(state, names));
   }
 
@@ -98,12 +124,15 @@ final class RenderState {
     if (state0.todo.size() > 0) {
       return false;
     }
+    if (state0.config.template().countNestedTemplates() > state0.sessions.size()) {
+      return false;
+    }
     return state0
         .sessions
         .values()
         .stream()
         .flatMap(Arrays::stream)
-        .map(RenderSession::getState)
+        .map(SoloSession::getState)
         .allMatch(RenderState::ready);
   }
 

@@ -35,7 +35,7 @@ import static org.klojang.check.CommonChecks.numerical;
    * {@code KJT_USE_BEAN_ACCESSOR}&lt;br&gt;Default Value: {@code false}.
    *
    * &lt;p&gt;Specifying {@code true} means that if a template is
-   * {@linkplain RenderSession#insert(Object, String...) populated} with an object
+   * {@linkplain SoloSession#insert(Object, String...) populated} with an object
    * for which no dedicated {@link Accessor} implementation exists, the
    * {@code RenderSession} will use a {@link BeanAccessor} rather than a
    * {@link PathAccessor} to extract values from it. A {@code PathAccessor} can

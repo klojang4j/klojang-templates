@@ -7,8 +7,7 @@ import org.klojang.util.AnyTuple2;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class RenderSessionTest {
 
@@ -368,7 +367,7 @@ public class RenderSessionTest {
         """;
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
-    rs.populate2("companies", List.of(AnyTuple2.of("Pig", "Pony")));
+    rs.populate2("companies", "Pig", "Pony");
     String out = rs.render();
     out = out.replaceAll("\\s+", "");
     //System.out.println(out);
@@ -387,8 +386,7 @@ public class RenderSessionTest {
         """;
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
-    rs.populate2("companies",
-        List.of(AnyTuple2.of("Pig", "Pony"), AnyTuple2.of("Horse", "Cat")));
+    rs.populate2("companies", "Pig", "Pony","Horse", "Cat");
     String out = rs.render();
     out = out.replaceAll("\\s+", "");
     //System.out.println(out);
@@ -543,6 +541,55 @@ public class RenderSessionTest {
     out = out.replaceAll("\\s+", "");
     //System.out.println(out);
     assertEquals("<html><body><p></p><p>tea</p><p>pot</p></body></html>", out);
+  }
+
+  @Test // render to StringBuilder, just to have that covered
+  public void render00() throws ParseException {
+    String src = """
+        <html><body>
+        <p>~%message%</p>
+        ~%%begin:foo%
+          <p>~%bar%</p>
+        ~%%end:foo%
+        </body></html>
+        """;
+    Map<String, Object> data = new MapBuilder()
+        .set("message", "hello")
+        .createMap();
+    data.put("foo", List.of(Map.of("bar", "tea"), Map.of("bar", "pot")));
+    Template tmpl = Template.fromString(src);
+    RenderSession rs = tmpl.newRenderSession();
+    rs.insert(data, "foo", "bar");
+    StringBuilder sb = new StringBuilder("hello");
+    rs.render(sb);
+    String out = sb.toString().replaceAll("\\s+", "");
+    //System.out.println(out);
+    assertEquals("hello<html><body><p></p><p>tea</p><p>pot</p></body></html>", out);
+  }
+
+  @Test
+  public void isFullyPopulated00() throws ParseException {
+    String src = """
+        <html><body>
+        <p>~%message%</p>
+        ~%%begin:foo%
+          <p>~%bar%</p>
+          <p>~%bozo%</p>
+        ~%%end:foo%
+        </body></html>
+        """;
+    Map<String, Object> data = new MapBuilder()
+        .set("message", "hello")
+        .createMap();
+    data.put("foo", List.of(Map.of("bar", "tea"), Map.of("bar", "pot")));
+    Template tmpl = Template.fromString(src);
+    RenderSession rs = tmpl.newRenderSession();
+    rs.set("message", "hi");
+    assertFalse(rs.isFullyPopulated());
+    rs.repeat("foo", 1).set("bar", "teapot");
+    assertFalse(rs.isFullyPopulated());
+    rs.in("foo").set("bozo","coffeepot");
+    assertTrue(rs.isFullyPopulated());
   }
 
 }

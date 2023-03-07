@@ -20,7 +20,7 @@ import static org.klojang.util.CollectionMethods.implode;
 
 /**
  * The {@code Template} class is responsible for loading and parsing templates and
- * functions as a factory for {@link RenderSession} objects that let you render them.
+ * functions as a factory for {@link SoloSession} objects that let you render them.
  * The {@code Template} class and the {@code RenderSession} class are the two central
  * classes of Klojang Templates. {@code Template} instances are unmodifiable,
  * expensive-to-create and heavy-weight objects. Generally though you should not

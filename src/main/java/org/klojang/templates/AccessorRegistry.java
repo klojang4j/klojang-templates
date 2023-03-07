@@ -18,7 +18,7 @@ import static org.klojang.templates.x.MTag.TEMPLATE;
 
 /**
  * <p>A registry of {@linkplain Accessor accessors}. Accessors are used by the
- * {@link RenderSession} to extract values from model objects. The
+ * {@link SoloSession} to extract values from model objects. The
  * {@link #STANDARD_ACCESSORS} constant is a ready-made {@code AccessorRegistry} that
  * may contain all the accessors you will ever need for your application. In other
  * words, you may never have to actually implement an {@code Accessor} yourself. Note

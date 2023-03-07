@@ -23,7 +23,7 @@ import static org.klojang.templates.x.Messages.ERR_NO_SUCH_VARIABLE;
 import static org.klojang.util.StringMethods.*;
 
 /**
- * A registry of {@link Stringifier stringifiers} used by the {@link RenderSession}
+ * A registry of {@link Stringifier stringifiers} used by the {@link SoloSession}
  * to stringify the values provided by the data access layer. In principle, each and
  * every template variable must be associated with a {@code Stringifier}. In
  * practice, it is unlikely you will define many variable-specific stringifiers, if
@@ -79,7 +79,7 @@ public final class StringifierRegistry {
    * A minimal {@code StringifierRegistry} instance. It contains stringifiers for the
    * predefined {@link VarGroup variable groups}. Variables not within these groups
    * are stringified using the {@linkplain Stringifier#DEFAULT default stringifier}.
-   * This is the {@code StringifierRegistry} a {@link RenderSession} will use if you
+   * This is the {@code StringifierRegistry} a {@link SoloSession} will use if you
    * called {@link Template#newRenderSession() Template.newRenderSession} without the
    * {@code StringifierRegistry} argument.
    */
