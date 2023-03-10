@@ -19,8 +19,8 @@ import static org.klojang.templates.x.Messages.ERR_NO_SUCH_VARGROUP;
  * provide HTML-escaping and ECMASScript-escaping, respectively. The third example is
  * a custom variable group that you can define using the {@link StringifierRegistry}
  * class. Variable groups can also be assigned <i>ad hoc</i> using
- * {@link SoloSession#set(String, Object, VarGroup) RenderSession.set(varName,
- * value, varGroup}.
+ * {@link SoloSession#set(String, Object, VarGroup) RenderSession.set(varName, value,
+ * varGroup}.
  *
  * <p>Note that variable groups are assigned at the variable <i>occurrence</i>
  * level. For example, a template may contain multiple instances of a variable named
@@ -127,6 +127,17 @@ public class VarGroup {
    * @return the name of this {@code VarGroup}
    */
   public String getName() {
+    return name;
+  }
+
+  /**
+   * Returns the name of this {@code VarGroup}, which is also the prefix to be used
+   * inside a template.
+   *
+   * @return the name of this {@code VarGroup}
+   */
+  @Override
+  public String toString() {
     return name;
   }
 

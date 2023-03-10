@@ -10,9 +10,9 @@ public final class RenderException extends RuntimeException {
   private final RenderErrorCode error;
 
   RenderException(RenderErrorCode error, String message) {
-<span class="nc" id="L13">    super(message);</span>
-<span class="nc" id="L14">    this.error = error;</span>
-<span class="nc" id="L15">  }</span>
+<span class="fc" id="L13">    super(message);</span>
+<span class="fc" id="L14">    this.error = error;</span>
+<span class="fc" id="L15">  }</span>
 
   /**
    * Returns a {@code RenderErrorCode} constant identifying the error.
@@ -20,7 +20,7 @@ public final class RenderException extends RuntimeException {
    * @return a {@code RenderErrorCode} constant identifying the error
    */
   public RenderErrorCode getErrorCode() {
-<span class="nc" id="L23">    return error;</span>
+<span class="fc" id="L23">    return error;</span>
   }
 
 }

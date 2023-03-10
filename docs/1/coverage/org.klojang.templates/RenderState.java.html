@@ -70,8 +70,8 @@ final class RenderState {
       }
 <span class="fc" id="L71">      sessions.put(t, children);</span>
     }
-<span class="pc bpc" id="L73" title="1 of 2 branches missed.">    if (repeats != children.length) {</span>
-<span class="nc" id="L74">      throw REPETITION_MISMATCH.getException(children.length, getFQName(t), repeats);</span>
+<span class="fc bfc" id="L73" title="All 2 branches covered.">    if (repeats != children.length) {</span>
+<span class="fc" id="L74">      throw REPETITION_MISMATCH.getException(getFQName(t), children.length, repeats);</span>
     }
 <span class="fc" id="L76">    return children;</span>
   }

@@ -68,7 +68,7 @@ final class SoloSession implements RenderSession {
 <span class="fc" id="L68">    VarGroup group = part.getVarGroup().orElse(varGroup);</span>
 <span class="fc" id="L69">    StringifierRegistry reg = config.stringifiers();</span>
 <span class="fc" id="L70">    Stringifier stringifier = reg.getStringifier(part, group, value);</span>
-<span class="fc" id="L71">    String strval = stringify(stringifier, part.getName(), value);</span>
+<span class="fc" id="L71">    String strval = stringify(stringifier, part.getName(), group, value);</span>
 <span class="fc" id="L72">    state.setVar(partIndex, strval);</span>
 <span class="fc" id="L73">  }</span>
 
@@ -277,9 +277,9 @@ final class SoloSession implements RenderSession {
         Object value;
         try {
 <span class="fc" id="L279">          value = acc.access(data, varName);</span>
-<span class="nc" id="L280">        } catch (RuntimeException e) {</span>
-<span class="nc" id="L281">          throw ACCESS_EXCEPTION.getException(</span>
-<span class="nc" id="L282">              getFQName(config.template(), varName), e);</span>
+<span class="fc" id="L280">        } catch (RuntimeException e) {</span>
+<span class="fc" id="L281">          throw ACCESS_EXCEPTION.getException(</span>
+<span class="fc" id="L282">              getFQName(config.template(), varName), e);</span>
 <span class="fc" id="L283">        }</span>
 <span class="fc bfc" id="L284" title="All 2 branches covered.">        if (value != UNDEFINED) {</span>
 <span class="fc" id="L285">          setVar(varName, value, defGroup);</span>
@@ -310,76 +310,76 @@ final class SoloSession implements RenderSession {
 
   @Override
   public List&lt;RenderSession&gt; getChildSessions(String nestedTemplateName) {
-<span class="nc" id="L313">    Template t = getNestedTemplate(nestedTemplateName);</span>
-<span class="nc" id="L314">    RenderSession[] sessions = state.getChildSessions(t);</span>
-<span class="nc" id="L315">    Check.that(t).is(notNull(),</span>
-<span class="nc" id="L316">        NO_CHILD_SESSIONS_YET.getExceptionSupplier(t.getName()));</span>
-<span class="nc" id="L317">    return List.of(sessions);</span>
+<span class="fc" id="L313">    Template t = getNestedTemplate(nestedTemplateName);</span>
+<span class="fc" id="L314">    RenderSession[] sessions = state.getChildSessions(t);</span>
+<span class="pc" id="L315">    return Check.that(sessions).is(notNull(),</span>
+<span class="pc" id="L316">        TEMPLATE_NOT_INSTANTIATED.getExceptionSupplier(t.getName())).ok(List::of);</span>
   }
 
   /* RENDER METHODS */
 
   @Override
   public boolean isFullyPopulated() {
-<span class="fc" id="L324">    return state.isFullyPopulated();</span>
+<span class="fc" id="L323">    return state.isFullyPopulated();</span>
   }
 
   @Override
   public void render(OutputStream out) {
-<span class="nc" id="L329">    Check.notNull(out).then(x -&gt; new Renderer(state).render(x));</span>
-<span class="nc" id="L330">  }</span>
+<span class="nc" id="L328">    Check.notNull(out).then(x -&gt; new Renderer(state).render(x));</span>
+<span class="nc" id="L329">  }</span>
 
   @Override
   public void render(StringBuilder sb) {
-<span class="fc" id="L334">    Check.notNull(sb).then(x -&gt; new Renderer(state).render(x));</span>
-<span class="fc" id="L335">  }</span>
+<span class="fc" id="L333">    Check.notNull(sb).then(x -&gt; new Renderer(state).render(x));</span>
+<span class="fc" id="L334">  }</span>
 
   @Override
   public String render() {
-<span class="fc" id="L339">    ByteArrayOutputStream out = new ByteArrayOutputStream(1024);</span>
-<span class="fc" id="L340">    new Renderer(state).render(out);</span>
-<span class="fc" id="L341">    return out.toString(UTF_8);</span>
+<span class="fc" id="L338">    ByteArrayOutputStream out = new ByteArrayOutputStream(1024);</span>
+<span class="fc" id="L339">    new Renderer(state).render(out);</span>
+<span class="fc" id="L340">    return out.toString(UTF_8);</span>
   }
 
   @Override
   public String toString() {
-<span class="nc" id="L346">    return String.format(&quot;RenderSession[template=%s]&quot;, getFQName(config.template()));</span>
+<span class="nc" id="L345">    return String.format(&quot;RenderSession[template=%s]&quot;, getFQName(config.template()));</span>
   }
 
   RenderState getState() {
-<span class="fc" id="L350">    return state;</span>
+<span class="fc" id="L349">    return state;</span>
   }
 
   private RenderSession populate(Template t,
       List&lt;?&gt; data,
       VarGroup varGroup,
       String... names) {
-<span class="fc" id="L357">    SoloSession[] sessions = state.getOrCreateChildSessions(t, data.size());</span>
-<span class="fc bfc" id="L358" title="All 2 branches covered.">    for (int i = 0; i &lt; sessions.length; ++i) {</span>
-<span class="fc" id="L359">      sessions[i].insert(data.get(i), varGroup, names);</span>
+<span class="fc" id="L356">    SoloSession[] sessions = state.getOrCreateChildSessions(t, data.size());</span>
+<span class="fc bfc" id="L357" title="All 2 branches covered.">    for (int i = 0; i &lt; sessions.length; ++i) {</span>
+<span class="fc" id="L358">      sessions[i].insert(data.get(i), varGroup, names);</span>
     }
-<span class="fc" id="L361">    return this;</span>
+<span class="fc" id="L360">    return this;</span>
   }
 
   private Template getNestedTemplate(String name) {
-<span class="fc" id="L365">    Check.notNull(name, MTag.TEMPLATE_NAME);</span>
-<span class="fc" id="L366">    Template t = config.template();</span>
-<span class="fc" id="L367">    return Check.that(name).is(elementOf(), t.getNestedTemplateNames(),</span>
-<span class="fc" id="L368">            NO_SUCH_TEMPLATE.getExceptionSupplier(getFQName(t, name)))</span>
-<span class="fc" id="L369">        .ok(t::getNestedTemplate);</span>
+<span class="fc" id="L364">    Check.notNull(name, MTag.TEMPLATE_NAME);</span>
+<span class="fc" id="L365">    Template t = config.template();</span>
+<span class="fc" id="L366">    return Check.that(name).is(elementOf(), t.getNestedTemplateNames(),</span>
+<span class="fc" id="L367">            NO_SUCH_TEMPLATE.getExceptionSupplier(getFQName(t, name)))</span>
+<span class="fc" id="L368">        .ok(t::getNestedTemplate);</span>
   }
 
-  private String stringify(Stringifier stringifier, String varName, Object value) {
+  private static String stringify(Stringifier stringifier,
+      String varName,
+      VarGroup varGroup,
+      Object value) {
     String s;
     try {
-<span class="fc" id="L375">      s = stringifier.stringify(value);</span>
-<span class="nc" id="L376">    } catch (NullPointerException e) {</span>
-<span class="nc" id="L377">      String fqn = getFQName(config.template(), varName);</span>
-<span class="nc" id="L378">      throw STRINGIFIER_NOT_NULL_RESISTENT.getException(fqn);</span>
-<span class="fc" id="L379">    }</span>
-<span class="pc bpc" id="L380" title="1 of 2 branches missed.">    if (s == null) {</span>
-<span class="nc" id="L381">      String fqn = getFQName(config.template(), varName);</span>
-<span class="nc" id="L382">      throw STRINGIFIER_RETURNED_NULL.getException(fqn);</span>
+<span class="fc" id="L377">      s = stringifier.stringify(value);</span>
+<span class="fc" id="L378">    } catch (NullPointerException e) {</span>
+<span class="fc" id="L379">      throw STRINGIFIER_NOT_NULL_RESISTENT.getException(varName, varGroup);</span>
+<span class="fc" id="L380">    }</span>
+<span class="fc bfc" id="L381" title="All 2 branches covered.">    if (s == null) {</span>
+<span class="fc" id="L382">      throw STRINGIFIER_RETURNED_NULL.getException(varName, varGroup);</span>
     }
 <span class="fc" id="L384">    return s;</span>
   }

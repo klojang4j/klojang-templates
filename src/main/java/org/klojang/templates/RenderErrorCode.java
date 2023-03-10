@@ -14,33 +14,25 @@ public enum RenderErrorCode {
   /**
    * A non-existent variable name was specified while populating a template.
    */
-  NO_SUCH_VARIABLE("No such variable: %s"),
+  NO_SUCH_VARIABLE("No such variable: \"%s\""),
 
   /**
    * A non-existent nested template name was specified while populating a template.
    */
-  NO_SUCH_TEMPLATE("No such nested template: %s"),
+  NO_SUCH_TEMPLATE("No such nested template: \"%s\""),
 
   /**
    * The child sessions for a nested template were requested, but the nested template
-   * had not been populated yet.
+   * had not been instantiated yet.
    *
    * @see SoloSession#getChildSessions(String)
    */
-  NO_CHILD_SESSIONS_YET("No child sessions yet for template %s"),
+  TEMPLATE_NOT_INSTANTIATED("Template %s not instantiated yet"),
 
-   /**
+  /**
    * An error occurred while retrieving the value for a template variable.
    */
   ACCESS_EXCEPTION("Error while retrieving value for %s: %s"),
-
-  /**
-   * One or more template variables were placed in a
-   * {@linkplain VarGroup variable group} for which no {@link Stringifier} was
-   * defined.
-   */
-  VAR_GROUP_WITHOUT_STRINGIFIER(
-      "Error while processing ~%%1$s:%2$s%: no stringifier associated with variable group \"%1$s\""),
 
   /**
    * {@code RenderSession.show()} was called on a nested template, but it was not a
@@ -64,17 +56,22 @@ public enum RenderErrorCode {
    * A stringifier's {@link Stringifier#stringify(Object) stringify} method returned
    * {@code null}, which it should never do.
    */
-  STRINGIFIER_RETURNED_NULL("Stringifier for %s must not return null"),
+  STRINGIFIER_RETURNED_NULL(
+      "Stringifier for variable %s in variable group %s returned null"),
 
   /**
    * A stringifier's {@link Stringifier#stringify(Object) stringify} method threw a
    * {@code NullPointerException}, but stringifiers <i>must</i> be capable of
    * stringifying {@code null}.
    */
-  STRINGIFIER_NOT_NULL_RESISTENT("Stringifier for %s threw NullPointerException"),
+  STRINGIFIER_NOT_NULL_RESISTENT(
+      "Stringifier for variable %s in variable group %s threw NullPointerException"),
 
   /**
-   * A call to
+   * A call to {@link RenderSession#repeat(String, int) repeat()} was made but the
+   * number of repetitions had already been fixed, either by a previous call to
+   * {@code repeat()}, or implicitly, via the
+   * {@link RenderSession#populate(String, Object, String...) popupate()} method.
    */
   REPETITIONS_FIXED("Number of repetitions already fixed for template %s"),
 
@@ -97,7 +94,7 @@ public enum RenderErrorCode {
   }
 
   Supplier<RenderException> getExceptionSupplier(Object... msgArgs) {
-    return () -> getException(this, msgArgs);
+    return () -> getException(msgArgs);
   }
 
 }

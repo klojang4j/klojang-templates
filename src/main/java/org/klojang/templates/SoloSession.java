@@ -68,7 +68,7 @@ final class SoloSession implements RenderSession {
     VarGroup group = part.getVarGroup().orElse(varGroup);
     StringifierRegistry reg = config.stringifiers();
     Stringifier stringifier = reg.getStringifier(part, group, value);
-    String strval = stringify(stringifier, part.getName(), value);
+    String strval = stringify(stringifier, part.getName(), group, value);
     state.setVar(partIndex, strval);
   }
 
@@ -312,9 +312,8 @@ final class SoloSession implements RenderSession {
   public List<RenderSession> getChildSessions(String nestedTemplateName) {
     Template t = getNestedTemplate(nestedTemplateName);
     RenderSession[] sessions = state.getChildSessions(t);
-    Check.that(t).is(notNull(),
-        NO_CHILD_SESSIONS_YET.getExceptionSupplier(t.getName()));
-    return List.of(sessions);
+    return Check.that(sessions).is(notNull(),
+        TEMPLATE_NOT_INSTANTIATED.getExceptionSupplier(t.getName())).ok(List::of);
   }
 
   /* RENDER METHODS */
@@ -369,17 +368,18 @@ final class SoloSession implements RenderSession {
         .ok(t::getNestedTemplate);
   }
 
-  private String stringify(Stringifier stringifier, String varName, Object value) {
+  private static String stringify(Stringifier stringifier,
+      String varName,
+      VarGroup varGroup,
+      Object value) {
     String s;
     try {
       s = stringifier.stringify(value);
     } catch (NullPointerException e) {
-      String fqn = getFQName(config.template(), varName);
-      throw STRINGIFIER_NOT_NULL_RESISTENT.getException(fqn);
+      throw STRINGIFIER_NOT_NULL_RESISTENT.getException(varName, varGroup);
     }
     if (s == null) {
-      String fqn = getFQName(config.template(), varName);
-      throw STRINGIFIER_RETURNED_NULL.getException(fqn);
+      throw STRINGIFIER_RETURNED_NULL.getException(varName, varGroup);
     }
     return s;
   }

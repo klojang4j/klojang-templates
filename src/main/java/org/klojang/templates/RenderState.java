@@ -71,7 +71,7 @@ final class RenderState {
       sessions.put(t, children);
     }
     if (repeats != children.length) {
-      throw REPETITION_MISMATCH.getException(children.length, getFQName(t), repeats);
+      throw REPETITION_MISMATCH.getException(getFQName(t), children.length, repeats);
     }
     return children;
   }

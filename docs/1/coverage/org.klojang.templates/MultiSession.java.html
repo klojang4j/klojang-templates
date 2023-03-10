@@ -130,36 +130,33 @@ final class MultiSession implements RenderSession {
   }
 
   @Override
-  public List&lt;RenderSession&gt; getChildSessions(String nestedTemplateName) {
-<span class="nc" id="L134">    return null;</span>
+  public boolean isFullyPopulated() {
+<span class="fc" id="L134">    return Arrays.stream(sessions).allMatch(RenderSession::isFullyPopulated);</span>
   }
 
   @Override
-  public boolean isFullyPopulated() {
-//    for(SoloSession s:sessions) {
-//      if(!s.isFullyPopulated()) {
-//        return false;
-//      }
-//    }
-//    return true;
-<span class="fc" id="L145">    return Arrays.stream(sessions).allMatch(RenderSession::isFullyPopulated);</span>
+  public List&lt;RenderSession&gt; getChildSessions(String nestedTemplateName) {
+<span class="nc" id="L139">    List&lt;RenderSession&gt; flat = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L140">    Arrays.stream(sessions).forEach(</span>
+<span class="nc" id="L141">        s -&gt; flat.addAll(s.getChildSessions(nestedTemplateName)));</span>
+<span class="nc" id="L142">    return flat;</span>
   }
 
   @Override
   public void render(OutputStream out) {
-<span class="nc" id="L150">    Arrays.stream(sessions).forEach(s -&gt; s.render(out));</span>
-<span class="nc" id="L151">  }</span>
+<span class="nc" id="L147">    Arrays.stream(sessions).forEach(s -&gt; s.render(out));</span>
+<span class="nc" id="L148">  }</span>
 
   @Override
   public void render(StringBuilder sb) {
-<span class="nc" id="L155">    Arrays.stream(sessions).forEach(s -&gt; s.render(sb));</span>
-<span class="nc" id="L156">  }</span>
+<span class="nc" id="L152">    Arrays.stream(sessions).forEach(s -&gt; s.render(sb));</span>
+<span class="nc" id="L153">  }</span>
 
   @Override
   public String render() {
-<span class="fc" id="L160">    StringBuilder sb = new StringBuilder(255);</span>
-<span class="fc" id="L161">    Arrays.stream(sessions).forEach(s -&gt; s.render(sb));</span>
-<span class="fc" id="L162">    return sb.toString();</span>
+<span class="fc" id="L157">    StringBuilder sb = new StringBuilder(255);</span>
+<span class="fc" id="L158">    Arrays.stream(sessions).forEach(s -&gt; s.render(sb));</span>
+<span class="fc" id="L159">    return sb.toString();</span>
   }
 
 }

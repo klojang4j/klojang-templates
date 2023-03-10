@@ -14,7 +14,6 @@ import java.util.Map;
 import static org.klojang.check.CommonChecks.*;
 import static org.klojang.check.Tag.TYPE;
 import static org.klojang.check.Tag.VARARGS;
-import static org.klojang.templates.RenderErrorCode.VAR_GROUP_WITHOUT_STRINGIFIER;
 import static org.klojang.templates.Template.ROOT_TEMPLATE_NAME;
 import static org.klojang.templates.TemplateUtils.getNestedTemplate;
 import static org.klojang.templates.x.MTag.STRINGIFIER;
@@ -23,8 +22,8 @@ import static org.klojang.templates.x.Messages.ERR_NO_SUCH_VARIABLE;
 import static org.klojang.util.StringMethods.*;
 
 /**
- * A registry of {@link Stringifier stringifiers} used by the {@link SoloSession}
- * to stringify the values provided by the data access layer. In principle, each and
+ * A registry of {@link Stringifier stringifiers} used by the {@link SoloSession} to
+ * stringify the values provided by the data access layer. In principle, each and
  * every template variable must be associated with a {@code Stringifier}. In
  * practice, it is unlikely you will define many variable-specific stringifiers, if
  * at all. If a variable's value can be stringified by calling {@code toString()} on
@@ -456,12 +455,14 @@ public final class StringifierRegistry {
       if (null != (sf = stringifiers.get(id))) {
         return sf;
       }
+      // else the inline group name prefix is not associated with
+      // a stringifier, which is pointless but allowed (in the future
+      // we might want to use variable groups for other purposes).
     } else if (varGroup != null) {
       id = new StringifierId(varGroup);
       if (null != (sf = stringifiers.get(id))) {
         return sf;
       }
-      throw VAR_GROUP_WITHOUT_STRINGIFIER.getException(part.getName(), varGroup);
     }
     Template tmpl = part.getParentTemplate();
     String var = part.getName();
