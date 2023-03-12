@@ -72,7 +72,71 @@ final class SoloSession implements RenderSession {
     state.setVar(partIndex, strval);
   }
 
-  /* METHODS FOR POPULATING A SINGLE NESTED TEMPLATE */
+  @Override
+  public RenderSession insert(Object sourceData,
+      VarGroup varGroup,
+      String... names) {
+    if (sourceData == UNDEFINED) {
+      return this;
+    } else if (sourceData == null) {
+      Template t = config.template();
+      Check.that(t.isTextOnly())
+          .is(yes(), NOT_TEXT_ONLY.getExceptionSupplier(t.getName()));
+      // If we get past this check, the entire template is in fact
+      // static HTML. Expensive way to render static HTML, but no
+      // reason not to support it.
+      return this;
+    } else if (sourceData instanceof Optional<?> opt) {
+      return opt.isPresent() ? insert(opt.get(), varGroup, names) : this;
+    }
+    processVars(sourceData, varGroup, names);
+    processTmpls(sourceData, varGroup, names);
+    return this;
+  }
+
+  @SuppressWarnings("unchecked")
+  private <T> void processVars(T data, VarGroup defGroup, String[] names) {
+    Set<String> varNames;
+    if (isEmpty(names)) {
+      varNames = config.template().getVariables();
+    } else {
+      varNames = new HashSet<>(config.template().getVariables());
+      varNames.retainAll(List.of(names));
+    }
+    Accessor<T> acc = (Accessor<T>) config.getAccessor(data);
+    for (String varName : varNames) {
+      if (!state.isSet(varName)) {
+        Object value;
+        try {
+          value = acc.access(data, varName);
+        } catch (RuntimeException e) {
+          throw ACCESS_EXCEPTION.getException(
+              getFQName(config.template(), varName), e);
+        }
+        if (value != UNDEFINED) {
+          setVar(varName, value, defGroup);
+        }
+      }
+    }
+  }
+
+  @SuppressWarnings("unchecked")
+  private <T> void processTmpls(T data, VarGroup varGroup, String[] names) {
+    Set<String> tmplNames;
+    if (isEmpty(names)) {
+      tmplNames = config.template().getNestedTemplateNames();
+    } else {
+      tmplNames = new HashSet<>(config.template().getNestedTemplateNames());
+      tmplNames.retainAll(List.of(names));
+    }
+    Accessor<T> acc = (Accessor<T>) config.getAccessor(data);
+    for (String name : tmplNames) {
+      Object nestedData = acc.access(data, name);
+      if (nestedData != UNDEFINED) {
+        populate(name, nestedData, varGroup, names);
+      }
+    }
+  }
 
   @Override
   public RenderSession populate(String nestedTemplateName,
@@ -204,8 +268,6 @@ final class SoloSession implements RenderSession {
     Template t = getNestedTemplate(nestedTemplateName);
     Check.that(t.getVariables()).has(size(), eq(), 1,
         NOT_ONE_VAR_TEMPLATE.getExceptionSupplier(t.getName()));
-    Check.that(t.getNestedTemplates()).has(size(), zero(),
-        NOT_ONE_VAR_TEMPLATE.getExceptionSupplier(t.getName()));
     String var = t.getVariables().iterator().next();
     List<?> data = Arrays.stream(values).map(v -> singletonMap(var, v)).toList();
     return populate(t, data, varGroup);
@@ -223,8 +285,6 @@ final class SoloSession implements RenderSession {
     Template t = getNestedTemplate(nestedTemplateName);
     Check.that(t.getVariables()).has(size(), eq(), 2,
         NOT_TWO_VAR_TEMPLATE.getExceptionSupplier(t.getName()));
-    Check.that(t.getNestedTemplates()).has(size(), zero(),
-        NOT_TWO_VAR_TEMPLATE.getExceptionSupplier(t.getName()));
     String[] vars = t.getVariables().toArray(String[]::new);
     List<Map<String, Object>> data = new ArrayList<>(values.length / 2);
     for (int i = 0; i < values.length; i += 2) {
@@ -238,72 +298,6 @@ final class SoloSession implements RenderSession {
   @Override
   public RenderSession insert(Object sourceData, String... names) {
     return insert(sourceData, null, names);
-  }
-
-  @Override
-  public RenderSession insert(Object sourceData,
-      VarGroup varGroup,
-      String... names) {
-    if (sourceData == UNDEFINED) {
-      return this;
-    } else if (sourceData == null) {
-      Template t = config.template();
-      Check.that(t.isTextOnly())
-          .is(yes(), NOT_TEXT_ONLY.getExceptionSupplier(t.getName()));
-      // If we get past this check, the entire template is in fact
-      // static HTML. Expensive way to render static HTML, but no
-      // reason not to support it.
-      return this;
-    } else if (sourceData instanceof Optional<?> opt) {
-      return opt.isPresent() ? insert(opt.get(), varGroup, names) : this;
-    }
-    processVars(sourceData, varGroup, names);
-    processTmpls(sourceData, varGroup, names);
-    return this;
-  }
-
-  @SuppressWarnings("unchecked")
-  private <T> void processVars(T data, VarGroup defGroup, String[] names) {
-    Set<String> varNames;
-    if (isEmpty(names)) {
-      varNames = config.template().getVariables();
-    } else {
-      varNames = new HashSet<>(config.template().getVariables());
-      varNames.retainAll(List.of(names));
-    }
-    Accessor<T> acc = (Accessor<T>) config.getAccessor(data);
-    for (String varName : varNames) {
-      if (!state.isSet(varName)) {
-        Object value;
-        try {
-          value = acc.access(data, varName);
-        } catch (RuntimeException e) {
-          throw ACCESS_EXCEPTION.getException(
-              getFQName(config.template(), varName), e);
-        }
-        if (value != UNDEFINED) {
-          setVar(varName, value, defGroup);
-        }
-      }
-    }
-  }
-
-  @SuppressWarnings("unchecked")
-  private <T> void processTmpls(T data, VarGroup varGroup, String[] names) {
-    Set<String> tmplNames;
-    if (isEmpty(names)) {
-      tmplNames = config.template().getNestedTemplateNames();
-    } else {
-      tmplNames = new HashSet<>(config.template().getNestedTemplateNames());
-      tmplNames.retainAll(List.of(names));
-    }
-    Accessor<T> acc = (Accessor<T>) config.getAccessor(data);
-    for (String name : tmplNames) {
-      Object nestedData = acc.access(data, name);
-      if (nestedData != UNDEFINED) {
-        populate(name, nestedData, varGroup, names);
-      }
-    }
   }
 
   /* MISCELLANEOUS METHODS */

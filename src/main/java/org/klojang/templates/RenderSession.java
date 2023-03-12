@@ -61,6 +61,57 @@ public sealed interface RenderSession permits SoloSession, MultiSession {
   RenderSession set(String varName, Object value, VarGroup varGroup);
 
   /**
+   * <p>Populates the template with values extracted from the specified source data
+   * object. For example, a template may display personal details and contain a
+   * {@code ~%firstName%}, {@code ~%lastName%} and {@code ~%birthDate%} variable. If
+   * you "insert" a {@code Person} object into the template with those same
+   * properties, their values will be transferred to the variables using the
+   * {@linkplain AccessorRegistry accessors} with which the {@code RenderSession} was
+   * created. Furthermore, if the template contains a nested template named
+   * "address", and the {@code Person} class also contains an {@code address}
+   * property referencing an {@code Address} object, then the {@code Address} object
+   * is going to be used to populate the "address" template. If the {@code address}
+   * property were in fact a {@code List} or array of {@code Address} objects, then
+   * the "address" template is going to be repeated for each element in the
+   * {@code List} or array.
+   *
+   * <p>Only template variables and nested templates whose name is in the provided
+   * {@code names} array will be populated (if possible) with values from the
+   * specified source data object. The {@code names} array is allowed to be
+   * {@code null} or empty, in which case an attempt is made to populate the entire
+   * template from the source data object.
+   *
+   * @param sourceData an object that provides data for all or some of the
+   *     template variables and nested templates
+   * @param names the names of the variables and nested templates that must be
+   *     populated. May be {@code null} or empty, in which case all variables and
+   *     nested templates will be checked to see if they can be populated from the
+   *     specified source data object
+   * @return this {@code RenderSession}
+   */
+  RenderSession insert(Object sourceData, String... names);
+
+  /**
+   * Populates the template with values from the specified source data object. Only
+   * template variables and nested templates whose name is in the provided
+   * {@code names} array will be populated (if possible) with values from the
+   * specified source data object. The {@code names} array is allowed to be
+   * {@code null} or empty, in which case an attempt is made to populate the entire
+   * template from the source data object.
+   *
+   * @param sourceData an object that provides data for all or some of the
+   *     template variables and nested templates
+   * @param varGroup the variable group to assign the template variables to if
+   *     they have no inline group name prefix. May be {@code null}.
+   * @param names the names of the variables and nested templates that must be
+   *     populated. May be {@code null} or empty, in which case all variables and
+   *     nested templates will be checked to see if they can be populated from the
+   *     specified source data object
+   * @return this {@code RenderSession}
+   */
+  RenderSession insert(Object sourceData, VarGroup varGroup, String... names);
+
+  /**
    * Populates a template nested inside the template being rendered by this
    * {@code RenderSession}. The template is populated with values retrieved from the
    * specified source data. Only variables and doubly-nested templates whose names
@@ -218,9 +269,8 @@ public sealed interface RenderSession permits SoloSession, MultiSession {
 
   /**
    * Convenience method for populating a nested template that contains exactly one
-   * variable and zero (doubly) nested templates. The variable may still occur
-   * multiple times within the template. The template is going to be repeated for
-   * each value in the varargs array.
+   * variable. The variable may still occur multiple times within the template. The
+   * template is going to be repeated for each value in the varargs array.
    *
    * @param nestedTemplateName the name of the nested template. <i>Must</i>
    *     contain exactly one variable
@@ -231,9 +281,8 @@ public sealed interface RenderSession permits SoloSession, MultiSession {
 
   /**
    * Convenience method for populating a nested template that contains exactly one
-   * variable and zero (doubly) nested templates. The variable may still occur
-   * multiple times within the template. The template is going to be repeated for
-   * each value in the varargs array.
+   * variable. The variable may still occur multiple times within the template. The
+   * template is going to be repeated for each value in the varargs array.
    *
    * @param nestedTemplateName the name of the nested template. <i>Must</i>
    *     contain exactly one variable
@@ -249,10 +298,10 @@ public sealed interface RenderSession permits SoloSession, MultiSession {
 
   /**
    * Convenience method for populating a nested template that contains exactly two
-   * variables and zero (doubly) nested templates. The provided varargs array must
-   * contain an even number of elements, alternating between a value for the first
-   * template variable and a value for the second one. The specified template is
-   * going to be repeated for each pair of values.
+   * variables. The provided varargs array must contain an even number of elements,
+   * alternating between a value for the first template variable and a value for the
+   * second one. The specified template is going to be repeated for each pair of
+   * values.
    *
    * @param nestedTemplateName the name of the nested template.
    * @param values an array of values, alternating between a value for the first
@@ -263,10 +312,10 @@ public sealed interface RenderSession permits SoloSession, MultiSession {
 
   /**
    * Convenience method for populating a nested template that contains exactly two
-   * variables and zero (doubly) nested templates. The provided varargs array must
-   * contain an even number of elements, alternating between a value for the first
-   * template variable and a value for the second one. The specified template is
-   * going to be repeated for each pair of values.
+   * variables. The provided varargs array must contain an even number of elements,
+   * alternating between a value for the first template variable and a value for the
+   * second one. The specified template is going to be repeated for each pair of
+   * values.
    *
    * @param nestedTemplateName the name of the nested template
    * @param varGroup the variable group to assign the variables to if they have
@@ -277,50 +326,6 @@ public sealed interface RenderSession permits SoloSession, MultiSession {
    */
   RenderSession populate2(String nestedTemplateName,
       VarGroup varGroup, Object... values);
-
-  /**
-   * Populates the template with values from the specified source data object. Only
-   * template variables and nested templates whose name is in the provided
-   * {@code names} array will be populated (if possible) with values from the
-   * specified source data object. The {@code names} array is allowed to be
-   * {@code null} or empty, in which case an attempt is made to populate the entire
-   * template from the source data object. The source data object may not suffice,
-   * and is not required to populate all variables and nested templates. You can call
-   * this and similar methods multiple times with different source data objects until
-   * you are ready to {@link #render(OutputStream) render} the template.
-   *
-   * @param sourceData an object that provides data for all or some of the
-   *     template variables and nested templates
-   * @param names the names of the variables and nested templates that must be
-   *     populated. May be {@code null} or empty, in which case all variables and
-   *     nested templates will be checked to see if they can be populated from the
-   *     specified source data object
-   * @return this {@code RenderSession}
-   */
-  RenderSession insert(Object sourceData, String... names);
-
-  /**
-   * Populates the template with values from the specified source data object. Only
-   * template variables and nested templates whose name is in the provided
-   * {@code names} array will be populated (if possible) with values from the
-   * specified source data object. The {@code names} array is allowed to be
-   * {@code null} or empty, in which case an attempt is made to populate the entire
-   * template from the source data object. The source data object may not suffice,
-   * and is not required to populate all variables and nested templates. You can call
-   * this and similar methods multiple times with different source data objects until
-   * you are ready to {@link #render(OutputStream) render} the template.
-   *
-   * @param sourceData an object that provides data for all or some of the
-   *     template variables and nested templates
-   * @param varGroup the variable group to assign the template variables to if
-   *     they have no inline group name prefix. May be {@code null}.
-   * @param names the names of the variables and nested templates that must be
-   *     populated. May be {@code null} or empty, in which case all variables and
-   *     nested templates will be checked to see if they can be populated from the
-   *     specified source data object
-   * @return this {@code RenderSession}
-   */
-  RenderSession insert(Object sourceData, VarGroup varGroup, String... names);
 
   /**
    * Returns the child sessions that have been created for the specified nested

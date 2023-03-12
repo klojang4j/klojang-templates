@@ -26,6 +26,22 @@ final class MultiSession implements RenderSession {
   }
 
   @Override
+  public RenderSession insert(Object sourceData, String... names) {
+    Arrays.stream(sessions).forEach(s -> s.insert(sourceData, names));
+    return this;
+  }
+
+  @Override
+  public RenderSession insert(Object sourceData,
+      VarGroup varGroup,
+      String... names) {
+    Arrays.stream(sessions).forEach(s -> s.insert(sourceData, varGroup, names));
+    return this;
+  }
+
+
+
+  @Override
   public RenderSession populate(String nestedTemplateName,
       Object data,
       String... names) {
@@ -112,20 +128,6 @@ final class MultiSession implements RenderSession {
       VarGroup varGroup, Object... values) {
     Arrays.stream(sessions).forEach(
         s -> s.populate2(nestedTemplateName, varGroup, values));
-    return this;
-  }
-
-  @Override
-  public RenderSession insert(Object sourceData, String... names) {
-    Arrays.stream(sessions).forEach(s -> s.insert(sourceData, names));
-    return this;
-  }
-
-  @Override
-  public RenderSession insert(Object sourceData,
-      VarGroup varGroup,
-      String... names) {
-    Arrays.stream(sessions).forEach(s -> s.insert(sourceData, varGroup, names));
     return this;
   }
 
