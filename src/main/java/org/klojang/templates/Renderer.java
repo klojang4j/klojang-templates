@@ -1,11 +1,14 @@
 package org.klojang.templates;
 
+import org.klojang.templates.x.Lazy;
+
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.util.List;
 import java.util.stream.IntStream;
 
 import static java.util.Arrays.stream;
+import static org.klojang.templates.RenderUtil.stringify;
 import static org.klojang.util.StringMethods.concat;
 
 final class Renderer {
@@ -40,13 +43,16 @@ final class Renderer {
     List<Part> parts = state0.getSessionConfig().template().parts();
     for (int i = 0; i < parts.size(); ++i) {
       Part part = parts.get(i);
-      if (part.getClass() == TextPart.class) {
-        TextPart tp = (TextPart) part;
+      if (part instanceof TextPart tp) {
         ps.append(tp.getText());
-      } else if (part.getClass() == VariablePart.class) {
+      } else if (part instanceof VariablePart vp) {
         if (state0.getVar(i) != null) {
           Object val = state0.getVar(i);
-          ps.append(val.toString());
+          if (val instanceof Lazy lazy) {
+            ps.append(eval(lazy, state0, vp));
+          } else {
+            ps.append(val.toString());
+          }
         }
       } else /* TemplatePart */ {
         NestedTemplatePart ntp = (NestedTemplatePart) part;
@@ -73,13 +79,16 @@ final class Renderer {
     List<Part> parts = state0.getSessionConfig().template().parts();
     for (int i = 0; i < parts.size(); ++i) {
       Part part = parts.get(i);
-      if (part.getClass() == TextPart.class) {
-        TextPart tp = (TextPart) part;
+      if (part instanceof TextPart tp) {
         sb.append(tp.getText());
-      } else if (part.getClass() == VariablePart.class) {
+      } else if (part instanceof VariablePart vp) {
         if (state0.getVar(i) != null) {
           Object val = state0.getVar(i);
-          sb.append(val);
+          if (val instanceof Lazy lazy) {
+            sb.append(eval(lazy, state0, vp));
+          } else {
+            sb.append(val);
+          }
         }
       } else /* TemplatePart */ {
         NestedTemplatePart ntp = (NestedTemplatePart) part;
@@ -97,6 +106,13 @@ final class Renderer {
         }
       }
     }
+  }
+
+  private static String eval(Lazy lazy, RenderState state, VariablePart part) {
+    StringifierRegistry reg = state.getSessionConfig().stringifiers();
+    Object val = lazy.value().get();
+    Stringifier stringifier = reg.getStringifier(part, lazy.varGroup(), val);
+    return stringify(stringifier, part.getName(), lazy.varGroup(), val);
   }
 
 }

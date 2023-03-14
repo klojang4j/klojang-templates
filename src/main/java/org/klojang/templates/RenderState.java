@@ -1,11 +1,8 @@
 package org.klojang.templates;
 
-import org.klojang.check.Check;
-
 import java.util.*;
 
-import static org.klojang.check.CommonChecks.NULL;
-import static org.klojang.templates.RenderErrorCode.*;
+import static org.klojang.templates.RenderErrorCode.REPETITION_MISMATCH;
 import static org.klojang.templates.TemplateUtils.getFQName;
 
 final class RenderState {
@@ -38,9 +35,7 @@ final class RenderState {
   }
 
   SoloSession[] createChildSessions(Template t, int repeats) {
-    SoloSession[] children = sessions.get(t);
-    Check.that(children).is(NULL(),
-        REPETITIONS_FIXED.getExceptionSupplier(t.getName()));
+    SoloSession[] children;
     if (repeats == 0) {
       children = ZERO_SESSIONS;
     } else {
@@ -51,10 +46,6 @@ final class RenderState {
     }
     sessions.put(t, children);
     return children;
-  }
-
-  SoloSession getOrCreateChildSession(Template t) {
-    return getOrCreateChildSessions(t, 1)[0];
   }
 
   SoloSession[] getOrCreateChildSessions(Template t, int repeats) {

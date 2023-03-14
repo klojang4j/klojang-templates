@@ -1,6 +1,7 @@
 package org.klojang.templates;
 
 import org.junit.jupiter.api.Test;
+import org.klojang.util.MutableInt;
 
 import java.util.Map;
 
@@ -58,6 +59,47 @@ public class MultiSessionTest {
             <p>Country: USA</p>
         """;
     assertEquals(nospace(expected), nospace(out));
+  }
+
+  @Test
+  public void setDelayed00() throws ParseException {
+    String src = "~%%begin:companies%~%name%~%name%~%%end:companies%";
+    Template tmpl = Template.fromString(src);
+    RenderSession rs = tmpl.newRenderSession();
+    MutableInt mi = new MutableInt();
+    String out = rs.repeat("companies", 2)
+        .setDelayed("name", () -> "foo" + mi.pp())
+        .render();
+    // System.out.println(out);
+    assertEquals("foo0foo1foo2foo3", out);
+  }
+
+  @Test
+  public void setDelayed01() throws ParseException {
+    String src = "~%%begin:companies%~%name%~%name%~%%end:companies%";
+    Template tmpl = Template.fromString(src);
+    RenderSession rs = tmpl.newRenderSession();
+    MutableInt mi = new MutableInt();
+    String out = rs.repeat("companies", 2)
+        .setDelayed("name", () -> ">" + mi.pp(), VarGroup.HTML)
+        .render();
+    // System.out.println(out);
+    assertEquals("&gt;0&gt;1&gt;2&gt;3", out);
+  }
+
+  @Test
+  public void setNested00() throws ParseException {
+    String src = """
+        ~%%begin:companies%
+             ~%%begin:departments%~%name%~%%end:departments%
+        ~%%end:companies%
+        """;
+    Template tmpl = Template.fromString(src);
+    RenderSession rs = tmpl.newRenderSession();
+    rs.setNested("companies.departments.name", i -> "foo", VarGroup.TEXT, true);
+    String out = rs.render();
+    System.out.println(out);
+    assertEquals("foo", nospace(out));
   }
 
   @Test

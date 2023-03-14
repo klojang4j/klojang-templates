@@ -2,12 +2,16 @@ package org.klojang.templates;
 
 import org.klojang.check.Check;
 import org.klojang.check.Tag;
+import org.klojang.path.Path;
+import org.klojang.templates.x.Lazy;
 import org.klojang.templates.x.MTag;
 import org.klojang.util.collection.IntList;
 
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
 import java.util.*;
+import java.util.function.IntFunction;
+import java.util.function.Supplier;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Collections.singletonMap;
@@ -37,9 +41,6 @@ final class SoloSession implements RenderSession {
   @Override
   public RenderSession set(String varName, Object value) {
     Check.notNull(varName, VAR_NAME);
-    if (value == UNDEFINED) {
-      return this; // RenderState remains unchanged
-    }
     return setVar(varName, value, null);
   }
 
@@ -47,19 +48,18 @@ final class SoloSession implements RenderSession {
   public RenderSession set(String varName, Object value, VarGroup varGroup) {
     Check.notNull(varName, VAR_NAME);
     Check.notNull(varGroup, VAR_GROUP);
-    if (value == UNDEFINED) {
-      return this;
-    }
     return setVar(varName, value, varGroup);
   }
 
   private RenderSession setVar(String varName, Object value, VarGroup varGroup) {
-    Template t = config.template();
-    Check.that(varName).is(keyIn(), t.variables(),
-        NO_SUCH_VARIABLE.getExceptionSupplier(getFQName(t, varName)));
-    IntList indices = t.variables().get(varName);
-    indices.forEachThrowing(i -> setVar(i, value, varGroup));
-    state.done(varName);
+    if (value != UNDEFINED) {
+      Template t = config.template();
+      Check.that(varName).is(keyIn(), t.variables(),
+          NO_SUCH_VARIABLE.getExceptionSupplier(getFQName(t, varName)));
+      IntList indices = t.variables().get(varName);
+      indices.forEachThrowing(i -> setVar(i, value, varGroup));
+      state.done(varName);
+    }
     return this;
   }
 
@@ -68,17 +68,98 @@ final class SoloSession implements RenderSession {
     VarGroup group = part.getVarGroup().orElse(varGroup);
     StringifierRegistry reg = config.stringifiers();
     Stringifier stringifier = reg.getStringifier(part, group, value);
-    String strval = stringify(stringifier, part.getName(), group, value);
+    String strval = RenderUtil.stringify(stringifier, part.getName(), group, value);
     state.setVar(partIndex, strval);
   }
 
   @Override
-  public RenderSession insert(Object sourceData,
+  public RenderSession setDelayed(String varName,
+      Supplier<Object> valueGenerator) {
+    return setDelayed(varName, valueGenerator, VarGroup.TEXT);
+  }
+
+  @Override
+  public RenderSession setDelayed(String varName,
+      Supplier<Object> valueGenerator,
+      VarGroup varGroup) {
+    Check.notNull(varName, VAR_NAME);
+    Check.notNull(valueGenerator, "valueGenerator");
+    Check.notNull(varGroup, VAR_GROUP);
+    Template t = config.template();
+    Check.that(varName).is(keyIn(), t.variables(),
+        NO_SUCH_VARIABLE.getExceptionSupplier(getFQName(t, varName)));
+    IntList indices = t.variables().get(varName);
+    indices.forEachThrowing(i -> {
+      VariablePart part = (VariablePart) config.template().parts().get(i);
+      VarGroup group = part.getVarGroup().orElse(varGroup);
+      state.setVar(i, new Lazy(valueGenerator, group));
+    });
+    state.done(varName);
+    return this;
+  }
+
+  public RenderSession setNested(String path, IntFunction<Object> valueGenerator) {
+    Check.notNull(path, Tag.PATH);
+    Check.notNull(valueGenerator, "valueGenerator");
+    Path p = Path.from(path);
+    Check.that(p).has(Path::size, gt(), 1, "Not a nested variable: ${arg}");
+    setNested(this, p, valueGenerator, null, true);
+    return this;
+  }
+
+  public RenderSession setNested(String path,
+      IntFunction<Object> valueGenerator,
+      VarGroup varGroup,
+      boolean force) {
+    Check.notNull(path, Tag.PATH);
+    Check.notNull(valueGenerator, "valueGenerator");
+    Path p = Path.from(path);
+    Check.that(p).has(Path::size, gt(), 1, "Not a nested variable: ${arg}");
+    setNested(this, p, valueGenerator, varGroup, force);
+    return this;
+  }
+
+  private static void setNested(
+      SoloSession session,
+      Path path,
+      IntFunction<Object> valueGenerator,
+      VarGroup varGroup,
+      boolean force) {
+    Template t = session.getNestedTemplate(path.segment(0));
+    SoloSession[] children = session.state.getChildSessions(t);
+    if (children == null) {
+      if (!force) {
+        return;
+      }
+      children = session.state.createChildSessions(t, 1);
+    }
+    if (path.size() == 2) {
+      for (int i = 0; i < children.length; ++i) {
+        children[i].setVar(path.segment(1), valueGenerator.apply(i), varGroup);
+      }
+    } else {
+      for (int i = 0; i < children.length; ++i) {
+        session.setNested(children[i],
+            path.shift(),
+            valueGenerator,
+            varGroup,
+            force);
+      }
+    }
+  }
+
+  @Override
+  public RenderSession insert(Object data, String... names) {
+    return insert(data, null, names);
+  }
+
+  @Override
+  public RenderSession insert(Object data,
       VarGroup varGroup,
       String... names) {
-    if (sourceData == UNDEFINED) {
+    if (data == UNDEFINED) {
       return this;
-    } else if (sourceData == null) {
+    } else if (data == null) {
       Template t = config.template();
       Check.that(t.isTextOnly())
           .is(yes(), NOT_TEXT_ONLY.getExceptionSupplier(t.getName()));
@@ -86,11 +167,11 @@ final class SoloSession implements RenderSession {
       // static HTML. Expensive way to render static HTML, but no
       // reason not to support it.
       return this;
-    } else if (sourceData instanceof Optional<?> opt) {
+    } else if (data instanceof Optional<?> opt) {
       return opt.isPresent() ? insert(opt.get(), varGroup, names) : this;
     }
-    processVars(sourceData, varGroup, names);
-    processTmpls(sourceData, varGroup, names);
+    processVars(data, varGroup, names);
+    processTmpls(data, varGroup, names);
     return this;
   }
 
@@ -169,6 +250,8 @@ final class SoloSession implements RenderSession {
   public RenderSession repeat(String nestedTemplateName, int times) {
     Check.that(times).isNot(negative());
     Template t = getNestedTemplate(nestedTemplateName);
+    Check.that(state.getChildSessions(t)).is(NULL(),
+        REPETITIONS_FIXED.getExceptionSupplier(nestedTemplateName));
     SoloSession[] sessions = state.createChildSessions(t, times);
     return new MultiSession(sessions);
   }
@@ -293,15 +376,6 @@ final class SoloSession implements RenderSession {
     return populate(t, data, varGroup);
   }
 
-  /* METHODS FOR POPULATING WHATEVER IS IN THE PROVIDED OBJECT */
-
-  @Override
-  public RenderSession insert(Object sourceData, String... names) {
-    return insert(sourceData, null, names);
-  }
-
-  /* MISCELLANEOUS METHODS */
-
   @Override
   public List<RenderSession> getChildSessions(String nestedTemplateName) {
     Template t = getNestedTemplate(nestedTemplateName);
@@ -360,22 +434,6 @@ final class SoloSession implements RenderSession {
     return Check.that(name).is(elementOf(), t.getNestedTemplateNames(),
             NO_SUCH_TEMPLATE.getExceptionSupplier(getFQName(t, name)))
         .ok(t::getNestedTemplate);
-  }
-
-  private static String stringify(Stringifier stringifier,
-      String varName,
-      VarGroup varGroup,
-      Object value) {
-    String s;
-    try {
-      s = stringifier.stringify(value);
-    } catch (NullPointerException e) {
-      throw STRINGIFIER_NOT_NULL_RESISTENT.getException(varName, varGroup);
-    }
-    if (s == null) {
-      throw STRINGIFIER_RETURNED_NULL.getException(varName, varGroup);
-    }
-    return s;
   }
 
 }

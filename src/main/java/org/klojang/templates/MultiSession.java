@@ -4,6 +4,8 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.IntFunction;
+import java.util.function.Supplier;
 
 final class MultiSession implements RenderSession {
 
@@ -26,20 +28,53 @@ final class MultiSession implements RenderSession {
   }
 
   @Override
-  public RenderSession insert(Object sourceData, String... names) {
-    Arrays.stream(sessions).forEach(s -> s.insert(sourceData, names));
+  public RenderSession setDelayed(String varName,
+      Supplier<Object> valueGenerator) {
+    Arrays.stream(sessions).forEach(s -> s.setDelayed(varName, valueGenerator));
     return this;
   }
 
   @Override
-  public RenderSession insert(Object sourceData,
-      VarGroup varGroup,
-      String... names) {
-    Arrays.stream(sessions).forEach(s -> s.insert(sourceData, varGroup, names));
+  public RenderSession setDelayed(String varName,
+      Supplier<Object> valueGenerator,
+      VarGroup varGroup) {
+    Arrays.stream(sessions).forEach(s -> s.setDelayed(varName,
+        valueGenerator,
+        varGroup));
     return this;
   }
 
+  @Override
+  public RenderSession setNested(String path, IntFunction<Object> valueGenerator) {
+    Arrays.stream(sessions).forEach(s -> s.setNested(path, valueGenerator));
+    return this;
+  }
 
+  @Override
+  public RenderSession setNested(String path,
+      IntFunction<Object> valueGenerator,
+      VarGroup varGroup,
+      boolean force) {
+    Arrays.stream(sessions).forEach(s -> s.setNested(path,
+        valueGenerator,
+        varGroup,
+        force));
+    return this;
+  }
+
+  @Override
+  public RenderSession insert(Object data, String... names) {
+    Arrays.stream(sessions).forEach(s -> s.insert(data, names));
+    return this;
+  }
+
+  @Override
+  public RenderSession insert(Object data,
+      VarGroup varGroup,
+      String... names) {
+    Arrays.stream(sessions).forEach(s -> s.insert(data, varGroup, names));
+    return this;
+  }
 
   @Override
   public RenderSession populate(String nestedTemplateName,

@@ -2,6 +2,8 @@ package org.klojang.templates;
 
 import java.io.OutputStream;
 import java.util.List;
+import java.util.function.IntFunction;
+import java.util.function.Supplier;
 
 /**
  * A {@code RenderSession} lets you populate a template and then render it. You
@@ -61,46 +63,119 @@ public sealed interface RenderSession permits SoloSession, MultiSession {
   RenderSession set(String varName, Object value, VarGroup varGroup);
 
   /**
-   * <p>Populates the template with values extracted from the specified source data
-   * object. For example, a template may display personal details and contain a
-   * {@code ~%firstName%}, {@code ~%lastName%} and {@code ~%birthDate%} variable. If
-   * you "insert" a {@code Person} object into the template with those same
-   * properties, their values will be transferred to the variables using the
+   * Sets the specified variable to the value produced by the specified
+   * {@code Supplier}. The supplier's {@code get()} method will be called when the
+   * template is actually {@linkplain #render(OutputStream) rendered}. This may be
+   * useful if you plain to render the template multiple times using the same
+   * {@code RenderSession}.
+   *
+   * @param varName the name of the variable to set
+   * @param valueGenerator the supplier of the value
+   * @return this {@code RenderSession}
+   */
+  RenderSession setDelayed(String varName, Supplier<Object> valueGenerator);
+
+  /**
+   * Sets the specified variable to the value produced by the specified
+   * {@code Supplier}. The supplier's {@code get()} method will be called when the
+   * template is actually {@linkplain #render(OutputStream) rendered}. This may be
+   * useful if you plain to render the template multiple times using the same
+   * {@code RenderSession}.
+   *
+   * @param varName the name of the variable to set
+   * @param valueGenerator the supplier of the value
+   * @param varGroup the variable group to assign the variable to if the variable
+   *     has no group name prefix.
+   * @return this {@code RenderSession}
+   */
+  RenderSession setDelayed(String varName,
+      Supplier<Object> valueGenerator,
+      VarGroup varGroup);
+
+  /**
+   * Equivalent to {@code setNested(path, valueGenerator, VarGroup.TEXT, true)}.
+   *
+   * @param path a path to a potentially deeply-nested variable
+   * @param valueGenerator a function which is given the array index of the
+   *     template instance for which to produce a value
+   * @return this {@code RenderSession}
+   */
+  RenderSession setNested(String path, IntFunction<Object> valueGenerator);
+
+  /**
+   * Sets the value of the specified variable. The variable must reside in a nested
+   * template, and it may be a deeply nested template. For example
+   * {@code setNested("companies.departments.employees.firstName", idx -> "John")}
+   * sets the {@code ~%firstName%} variable within the {@code employees} template
+   * within the {@code departments} template within the {@code companies} template
+   * within the template managed by this {@code RenderSession} to "John". Because the
+   * {@code employees} template may be repeating, the value for each instance is set
+   * via an {@link IntFunction}. The function is given the array index of the
+   * instance and produces the value for that particular instance. If {@code force}
+   * equals {@code false}, then the variable will only be set if the template
+   * containing it had already been made visible via other means, e.g. via
+   * {@link #repeat(String, int) repeat()} or
+   * {@link #populate(String, Object, String...) populate()}. Otherwise
+   * {@code setNested} will itself cause the template to become visible.
+   *
+   * @param path a path to a potentially deeply-nested variable
+   * @param valueGenerator a function which is given the array index of the
+   *     template instance for which to produce a value
+   * @param varGroup the variable group to assign the variable to if the variable
+   *     has no group name prefix.
+   * @param force if {@code}
+   * @return this {@code RenderSession}
+   */
+  RenderSession setNested(String path,
+      IntFunction<Object> valueGenerator,
+      VarGroup varGroup,
+      boolean force);
+
+  /**
+   * <p>Populates the template with values extracted from the specified object. For
+   * example, a "Personal Details" template may contain a {@code ~%firstName%},
+   * {@code ~%lastName%} and {@code ~%birthDate%} variable. If you "insert" a
+   * {@code Person} object into the template with those same properties, their values
+   * will be copied to the variables using the
    * {@linkplain AccessorRegistry accessors} with which the {@code RenderSession} was
-   * created. Furthermore, if the template contains a nested template named
-   * "address", and the {@code Person} class also contains an {@code address}
-   * property referencing an {@code Address} object, then the {@code Address} object
-   * is going to be used to populate the "address" template. If the {@code address}
-   * property were in fact a {@code List} or array of {@code Address} objects, then
-   * the "address" template is going to be repeated for each element in the
-   * {@code List} or array.
+   * created (see
+   * {@link Template#newRenderSession(AccessorRegistry)
+   * Template.newRenderSession()}). If the template also contains a nested template
+   * named "address", and the {@code Person} class contains an {@code address}
+   * property referencing an {@code Address} object, then the values in the
+   * {@code Address} object will be used to populate the "address" template. If the
+   * {@code address} property were a {@code List} or array of {@code Address}
+   * objects, then the "address" template will be repeated for each element in the
+   * {@code List} or array. In short: if the object reflects the structure of the
+   * template, the template almost literally becomes a "mold" into which to "sink"
+   * the object. (On the other hand: the object is not <i>required</i> to exactly
+   * match the structure of the template. The accessors will grab from it what they
+   * can and leave the rest alone.)
    *
    * <p>Only template variables and nested templates whose name is in the provided
-   * {@code names} array will be populated (if possible) with values from the
-   * specified source data object. The {@code names} array is allowed to be
+   * {@code names} array will be populated. The {@code names} array is allowed to be
    * {@code null} or empty, in which case an attempt is made to populate the entire
    * template from the source data object.
    *
-   * @param sourceData an object that provides data for all or some of the
-   *     template variables and nested templates
+   * @param data an object that provides data for all or some of the template
+   *     variables and nested templates
    * @param names the names of the variables and nested templates that must be
    *     populated. May be {@code null} or empty, in which case all variables and
    *     nested templates will be checked to see if they can be populated from the
    *     specified source data object
    * @return this {@code RenderSession}
    */
-  RenderSession insert(Object sourceData, String... names);
+  RenderSession insert(Object data, String... names);
 
   /**
    * Populates the template with values from the specified source data object. Only
    * template variables and nested templates whose name is in the provided
-   * {@code names} array will be populated (if possible) with values from the
-   * specified source data object. The {@code names} array is allowed to be
+   * {@code names} array will be populated. The {@code names} array is allowed to be
    * {@code null} or empty, in which case an attempt is made to populate the entire
    * template from the source data object.
    *
-   * @param sourceData an object that provides data for all or some of the
-   *     template variables and nested templates
+   * @param data an object that provides data for all or some of the template
+   *     variables and nested templates
    * @param varGroup the variable group to assign the template variables to if
    *     they have no inline group name prefix. May be {@code null}.
    * @param names the names of the variables and nested templates that must be
@@ -109,7 +184,7 @@ public sealed interface RenderSession permits SoloSession, MultiSession {
    *     specified source data object
    * @return this {@code RenderSession}
    */
-  RenderSession insert(Object sourceData, VarGroup varGroup, String... names);
+  RenderSession insert(Object data, VarGroup varGroup, String... names);
 
   /**
    * Populates a template nested inside the template being rendered by this
@@ -282,7 +357,12 @@ public sealed interface RenderSession permits SoloSession, MultiSession {
   /**
    * Convenience method for populating a nested template that contains exactly one
    * variable. The variable may still occur multiple times within the template. The
-   * template is going to be repeated for each value in the varargs array.
+   * template is going to be repeated for each value in the varargs array. Note that,
+   * contrary to the regular {@code populate()} method and the {@code insert()}
+   * method, the {@code populate1()} method does not use
+   * {@linkplain AccessorRegistry accessors} to extract values from the provided
+   * object(s). The provided object really <i>is</i> the value to which the variable
+   * is set.
    *
    * @param nestedTemplateName the name of the nested template. <i>Must</i>
    *     contain exactly one variable

@@ -1,6 +1,7 @@
 package org.klojang.templates;
 
 import org.junit.jupiter.api.Test;
+import org.klojang.util.MutableInt;
 
 import java.util.Map;
 
@@ -185,7 +186,7 @@ public class SoloSessionTest {
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
     rs.repeat("companies", 3).set("name", "Shell");
-    String out=rs.render();
+    String out = rs.render();
     //System.out.println(out);
     String expected = """
         <html><body>
@@ -195,8 +196,8 @@ public class SoloSessionTest {
     assertEquals(nospace(expected), nospace(out));
   }
 
-  //@Test
-  public void populate1000() throws ParseException {
+  @Test
+  public void setNested00() throws ParseException {
     String src = """
         <html><body>
         <p>~%greeting%</p>
@@ -216,15 +217,131 @@ public class SoloSessionTest {
         """;
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
-    rs.repeat("companies", 2)
-        .set("name", "Apple")
-        .set("profits", 103452.57)
-        .render();
+    rs.setNested("companies.departments.employees.firstName",
+        i -> "John",
+        VarGroup.TEXT, true);
+    rs.setNested("companies.departments.employees.lastName", i -> "Smith");
+    String out = rs.render();
+    //System.out.println(out);
+    String expected = """
+        <html><body>
+        <p></p>
+            <p>Name: </p>
+            <p>Profits: </p>
+                <p>Name: </p>
+                <p>Description: </p>
+                    <p>First name: John</p>
+                    <p>Last name: Smith</p>
+        </body></html>
+        """;
+    assertEquals(nospace(expected), nospace(out));
+  }
+
+  @Test
+  public void setNested01() throws ParseException {
+    String src = """
+        <html><body>
+         ~%%begin:companies%
+            <p>Name: ~%name%</p>
+            <p>Profits: ~%profits%</p>
+            ~%%begin:departments%
+                <p>Name: ~%name%</p>
+                <p>Description: ~%description%</p>
+                ~%%begin:employees%
+                    <p>First name: ~%firstName%</p>
+                    <p>Last name: ~%lastName%</p>
+                ~%%end:employees%
+            ~%%end:departments%
+        ~%%end:companies%
+        </body></html>
+        """;
+    Template tmpl = Template.fromString(src);
+    RenderSession rs = tmpl.newRenderSession();
+    rs.setNested("companies.departments.employees.firstName",
+        i -> "John",
+        VarGroup.TEXT, false);
+    String out = rs.render();
+    //System.out.println(out);
+    String expected = """
+        <html><body>
+         </body></html>
+        """;
+    assertEquals(nospace(expected), nospace(out));
+  }
+
+  @Test
+  public void setNested02() throws ParseException {
+    String src = """
+        <html><body>
+        <p>~%greeting%</p>
+        ~%%begin:companies%
+            <p>Name: ~%name%</p>
+            <p>Profits: ~%profits%</p>
+            ~%%begin:departments%
+                <p>Name: ~%name%</p>
+                <p>Description: ~%description%</p>
+                ~%%begin:employees%
+                    <p>First name: ~%firstName%</p>
+                    <p>Last name: ~%lastName%</p>
+                ~%%end:employees%
+            ~%%end:departments%
+        ~%%end:companies%
+        </body></html>
+        """;
+    Template tmpl = Template.fromString(src);
+    RenderSession rs = tmpl.newRenderSession();
+    rs.in("companies").in("departments").repeat("employees", 3);
+    rs.setNested("companies.departments.employees.firstName",
+        i -> "John" + i,
+        VarGroup.TEXT,
+        false);
+    rs.setNested("companies.departments.employees.lastName", i -> "Smith" + i);
+    String out = rs.render();
+    //System.out.println(out);
+    String expected = """
+        <html><body>
+        <p></p>
+            <p>Name: </p>
+            <p>Profits: </p>    
+                <p>Name: </p>
+                <p>Description: </p>        
+                    <p>First name: John0</p>
+                    <p>Last name: Smith0</p>       
+                    <p>First name: John1</p>
+                    <p>Last name: Smith1</p>        
+                    <p>First name: John2</p>
+                    <p>Last name: Smith2</p>
+        </body></html>
+        """;
+    assertEquals(nospace(expected), nospace(out));
+  }
+
+  @Test
+  public void setDelayed00() throws ParseException {
+    String src = "Hello ~%name%";
+    Template tmpl = Template.fromString(src);
+    RenderSession rs = tmpl.newRenderSession();
+    MutableInt mi = new MutableInt();
+    rs.setDelayed("name", () -> "John" + mi.pp());
+    assertEquals("Hello John0", rs.render());
+    assertEquals("Hello John1", rs.render());
+    assertEquals("Hello John2", rs.render());
+  }
+
+  @Test
+  public void setDelayed01() throws ParseException {
+    String src = "Hello ~%name%";
+    Template tmpl = Template.fromString(src);
+    RenderSession rs = tmpl.newRenderSession();
+    MutableInt mi = new MutableInt();
+    rs.setDelayed("name", () -> "> John" + mi.pp(), VarGroup.HTML);
+    assertEquals("Hello &gt; John0", rs.render());
+    assertEquals("Hello &gt; John1", rs.render());
+    assertEquals("Hello &gt; John2", rs.render());
   }
 
   private static String nospace(String s) {
     return s.replaceAll("\\s+", "");
   }
-
 
 }
