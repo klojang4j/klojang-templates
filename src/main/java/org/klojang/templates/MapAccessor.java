@@ -1,20 +1,16 @@
 package org.klojang.templates;
 
-import org.klojang.templates.Accessor;
-import org.klojang.templates.NameMapper;
-import org.klojang.templates.RenderException;
-
 import java.util.Map;
 
-public final class MapAccessor implements Accessor<Map<String, Object>> {
+final class MapAccessor implements Accessor<Map<String, Object>> {
 
   private final NameMapper nm;
 
-  public MapAccessor() {
+  MapAccessor() {
     this(null);
   }
 
-  public MapAccessor(NameMapper nm) {
+  MapAccessor(NameMapper nm) {
     this.nm = nm;
   }
 

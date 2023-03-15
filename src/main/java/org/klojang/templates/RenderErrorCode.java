@@ -54,7 +54,7 @@ public enum RenderErrorCode {
 
   /**
    * A stringifier's {@link Stringifier#stringify(Object) stringify} method returned
-   * {@code null}, which it should never do.
+   * {@code null}, but stringifiers must <i>never</i> return {@code null}.
    */
   STRINGIFIER_RETURNED_NULL(
       "Stringifier for variable %s in variable group %s returned null"),

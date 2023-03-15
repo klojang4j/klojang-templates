@@ -37,9 +37,6 @@ import static org.klojang.templates.x.MTag.TEMPLATE;
  *   <li>If you have {@linkplain Builder#register(Accessor, Class) registered} your
  *       own {@code Accessor} for that particular type of object, then that is the
  *       {@code Accessor} that is going to be used.
- *   <li>If the object is a {@code Map}, a (non-exposed) {@code MapAccessor} is going
- *       to be used. (You could easily create and register one yourself, tailored to
- *       your particular needs.)
  *   <li>Otherwise a {@code PathAccessor} is going to be used. This is a very
  *       versatile accessor that can read almost any type of object. It is internally
  *       backed by a {@link PathWalker}.
@@ -86,7 +83,6 @@ import static org.klojang.templates.x.MTag.TEMPLATE;
  *
  * @author Ayco Holleman
  * @see Template#newRenderSession(AccessorRegistry)
- * @see Setting#USE_BEAN_ACCESSOR
  */
 public final class AccessorRegistry {
 
@@ -310,8 +306,6 @@ public final class AccessorRegistry {
   public static Builder configure() {
     return new Builder();
   }
-
-  private final boolean useBeanAccessor = Setting.USE_BEAN_ACCESSOR.getBoolean();
 
   private final Map<Class<?>, Map<Template, Accessor<?>>> accs;
   private final NameMapper defMapper;

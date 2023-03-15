@@ -380,8 +380,8 @@ final class SoloSession implements RenderSession {
   public List&lt;RenderSession&gt; getChildSessions(String nestedTemplateName) {
 <span class="fc" id="L381">    Template t = getNestedTemplate(nestedTemplateName);</span>
 <span class="fc" id="L382">    RenderSession[] sessions = state.getChildSessions(t);</span>
-<span class="pc" id="L383">    return Check.that(sessions).is(notNull(),</span>
-<span class="pc" id="L384">        TEMPLATE_NOT_INSTANTIATED.getExceptionSupplier(t.getName())).ok(List::of);</span>
+<span class="fc" id="L383">    return Check.that(sessions).is(notNull(),</span>
+<span class="fc" id="L384">        TEMPLATE_NOT_INSTANTIATED.getExceptionSupplier(t.getName())).ok(List::of);</span>
   }
 
   /* RENDER METHODS */

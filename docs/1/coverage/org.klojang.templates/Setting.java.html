@@ -22,106 +22,70 @@ import static org.klojang.check.CommonChecks.numerical;
    * {@link Template} instances - used to reduce the overhead of parsing template
    * files. When the cache reaches the specified size, {@code Template} instances are
    * evicted on a least-recently-used basis. A value of -1 means the cache is allowed
-   * to grow to any size. A value of 0 disables caching. The latter is useful during
+   * to grow to any size. A value of 0 disables caching. This is useful during
    * development and/or debugging as the template file will be re-loaded and
    * re-parsed every time you press the refresh button in the browser.
    * &lt;/p&gt;
    */
-<span class="fc" id="L30">  TMPL_CACHE_SIZE(&quot;org.klojang.templates.cacheSize&quot;, &quot;KJT_CACHE_SIZE&quot;, &quot;-1&quot;),</span>
-
-  /**
-   * &lt;p&gt;System Property:
-   * {@code org.klojang.templates.useBeanAccessor}&lt;br&gt;Environment Variable:
-   * {@code KJT_USE_BEAN_ACCESSOR}&lt;br&gt;Default Value: {@code false}.
-   *
-   * &lt;p&gt;Specifying {@code true} means that if a template is
-   * {@linkplain SoloSession#insert(Object, String...) populated} with an object
-   * for which no dedicated {@link Accessor} implementation exists, the
-   * {@code RenderSession} will use a {@link BeanAccessor} rather than a
-   * {@link PathAccessor} to extract values from it. A {@code PathAccessor} can
-   * handle many more types than a {@code BeanAccessor} and it can access deeply
-   * nested objects. It is therefore a safer choice as a default. However, it is also
-   * slightly less efficient. Moreover, nested objects generally correspond to nested
-   * templates, where they appear as root-level objects. Your application may never
-   * ever have to access deeply nested values to populate a template. If so, consider
-   * using the {@code BeanAccessor} class as the fallback {@code Accessor}
-   * implementation. See also {@link AccessorRegistry}.
-   */
-<span class="fc" id="L50">  USE_BEAN_ACCESSOR(&quot;org.klojang.templates.useBeanAccessor&quot;,</span>
-      &quot;KJT_USE_BEAN_ACCESSOR&quot;,
-      &quot;false&quot;);
+<span class="fc" id="L30">  TMPL_CACHE_SIZE(&quot;org.klojang.templates.cacheSize&quot;, &quot;KJT_CACHE_SIZE&quot;, &quot;-1&quot;);</span>
 
   private final String sysprop;
   private final String envvar;
   private final String dfault;
 
-<span class="fc" id="L58">  Setting(String sysprop, String envvar, String dfault) {</span>
-<span class="fc" id="L59">    this.sysprop = sysprop;</span>
-<span class="fc" id="L60">    this.envvar = envvar;</span>
-<span class="fc" id="L61">    this.dfault = dfault;</span>
-<span class="fc" id="L62">  }</span>
+<span class="fc" id="L36">  Setting(String sysprop, String envvar, String dfault) {</span>
+<span class="fc" id="L37">    this.sysprop = sysprop;</span>
+<span class="fc" id="L38">    this.envvar = envvar;</span>
+<span class="fc" id="L39">    this.dfault = dfault;</span>
+<span class="fc" id="L40">  }</span>
 
   /**
-   * Returns the value of the system property or its default value if not specified.
+   * Returns the name of the system property for this setting.
    *
-   * @return the value of the system property or its default value if not specified
+   * @return the name of the system property for this setting
+   */
+  public String property() {
+<span class="fc" id="L48">    return sysprop;</span>
+  }
+
+  /**
+   * Returns the name of the environment variable for this setting.
+   *
+   * @return the name of the environment variable for this setting
+   */
+  public String envVar() {
+<span class="nc" id="L57">    return sysprop.replace('.', '_').toUpperCase();</span>
+  }
+
+  /**
+   * Returns the default value for this setting.
+   *
+   * @return the default value for this setting
+   */
+  public String defaultValue() {
+<span class="nc" id="L66">    return dfault;</span>
+  }
+
+  /**
+   * Returns the value of this setting or its default value if not specified.
+   *
+   * @return the value of this setting or its default value if not specified
    */
   public String get() {
     String env;
-<span class="pc bpc" id="L71" title="1 of 2 branches missed.">    if ((env = System.getenv(envvar)) != null) {</span>
-<span class="nc" id="L72">      return env;</span>
+<span class="pc bpc" id="L76" title="1 of 2 branches missed.">    if ((env = System.getenv(envvar)) != null) {</span>
+<span class="nc" id="L77">      return env;</span>
     }
-<span class="fc" id="L74">    return System.getProperty(sysprop, dfault);</span>
+<span class="fc" id="L79">    return System.getProperty(sysprop, dfault);</span>
   }
 
-  /**
-   * Returns the value of the system property as an integer or its default value if
-   * not specified.
-   *
-   * @return the value of the system property as an integer or its default value if
-   *     not specified
-   */
-  public int getInt() {
-<span class="fc" id="L85">    return Check.that(get()).is(numerical(), int.class).ok(Integer::parseInt);</span>
+  int getInt() {
+<span class="fc" id="L83">    return Check.that(get()).is(numerical(), int.class).ok(Integer::parseInt);</span>
   }
 
-  /**
-   * Returns the value of the system property as a {@code boolean} or its default
-   * value if not specified.
-   *
-   * @return the value of the system property as an {@code boolean} or its default
-   *     value if not specified
-   */
-  public boolean getBoolean() {
-<span class="fc" id="L96">    return Check.that(get(), sysprop).is(Bool::isConvertible).ok(Bool::from);</span>
+  boolean getBoolean() {
+<span class="nc" id="L87">    return Check.that(get(), sysprop).is(Bool::isConvertible).ok(Bool::from);</span>
   }
 
-  /**
-   * Returns the name of the system property associated with this enum constant.
-   *
-   * @return the name of the system property associated with this enum constant
-   */
-  public String property() {
-<span class="fc" id="L105">    return sysprop;</span>
   }
-
-  /**
-   * Returns the name of the environment variable associated with this enum
-   * constant.
-   *
-   * @return the name of the environment variable associated with this enum constant
-   */
-  public String envVar() {
-<span class="nc" id="L115">    return sysprop.replace('.', '_').toUpperCase();</span>
-  }
-
-  /**
-   * Returns the default value for the system property.
-   *
-   * @return the default value for the system property
-   */
-  public String defaultValue() {
-<span class="nc" id="L124">    return dfault;</span>
-  }
-}
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

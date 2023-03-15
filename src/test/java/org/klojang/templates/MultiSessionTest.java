@@ -96,10 +96,25 @@ public class MultiSessionTest {
         """;
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
-    rs.setNested("companies.departments.name", i -> "foo", VarGroup.TEXT, true);
+    rs.setNested("companies.departments.name", i -> "foo");
     String out = rs.render();
-    System.out.println(out);
+    //System.out.println(out);
     assertEquals("foo", nospace(out));
+  }
+
+  @Test
+  public void setNested01() throws ParseException {
+    String src = """
+        ~%%begin:companies%
+             ~%%begin:departments%~%name%~%%end:departments%
+        ~%%end:companies%
+        """;
+    Template tmpl = Template.fromString(src);
+    RenderSession rs = tmpl.newRenderSession();
+    rs.setNested("companies.departments.name", i -> "<", VarGroup.HTML, true);
+    String out = rs.render();
+    //System.out.println(out);
+    assertEquals("&lt;", nospace(out));
   }
 
   @Test
@@ -433,6 +448,17 @@ public class MultiSessionTest {
   }
 
   @Test
+  public void show04() throws ParseException {
+    String src = " ~%%begin:companies% Hello ~%%end:companies%";
+    Template tmpl = Template.fromString(src);
+    RenderSession rs = tmpl.newRenderSession();
+    String out = rs.show(3, "companies").render();
+    System.out.println(out);
+    String expected = "Hello Hello Hello";
+    assertEquals(nospace(expected), nospace(out));
+  }
+
+  @Test
   public void showRecursive00() throws ParseException {
     String src = """
         <html><body>
@@ -676,6 +702,24 @@ public class MultiSessionTest {
         <p>MacDonald\\&#39;s</p>
         """;
     assertEquals(nospace(expected), nospace(out));
+  }
+
+  @Test
+  public void getChildSessions00() throws ParseException {
+    String src = """
+        ~%%begin:companies%
+          ~%%begin:departments%
+            ~%%begin:employees%
+            ~%%end:employees%
+          ~%%end:departments%
+        ~%%end:companies%
+        """;
+    Template tmpl = Template.fromString(src);
+    RenderSession rs = tmpl.newRenderSession();
+    rs.repeat("companies", 2).repeat("departments", 3).repeat("employees", 4);
+    assertEquals(2, rs.getChildSessions("companies").size());
+    assertEquals(6, rs.in("companies").getChildSessions("departments").size());
+    assertEquals(24, rs.in("companies").in("departments").getChildSessions("employees").size());
   }
 
   private static String nospace(String s) {

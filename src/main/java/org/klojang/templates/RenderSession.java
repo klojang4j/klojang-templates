@@ -260,6 +260,25 @@ public sealed interface RenderSession permits SoloSession, MultiSession {
    * provide must be equal to {@code times}. Thus, if {@code times} equals three, you
    * must provide a list or array containing three source data objects.
    *
+   * <p>Beware of the exact effect of chaining calls to {@code repeat()}:
+   *
+   * <blockquote><pre>{@code
+   * String src = """
+   * ~%%begin:companies%
+   *        ~%%begin:departments%
+   *                ~%%begin:employees%
+   *                ~%%end:employees%
+   *        ~%%end:departments%
+   * ~%%end:companies%
+   * """;
+   * Template tmpl = Template.fromString(src);
+   * RenderSession rs = tmpl.newRenderSession();
+   * rs.repeat("companies", 2).repeat("departments", 3).repeat("employees", 4);
+   * assertEquals(2, rs.getChildSessions("companies").size());
+   * assertEquals(6, rs.in("companies").getChildSessions("departments").size());
+   * assertEquals(24, rs.in("companies").in("departments").getChildSessions("employees").size());
+   * }</pre></blockquote>
+   *
    * @param nestedTemplateName the name of the nested template
    * @param times the number of times the template will repeat itself
    * @return a {@code RenderSession} that works on all instances (repetitions) of the

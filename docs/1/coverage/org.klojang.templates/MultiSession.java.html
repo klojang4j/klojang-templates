@@ -173,10 +173,10 @@ final class MultiSession implements RenderSession {
 
   @Override
   public List&lt;RenderSession&gt; getChildSessions(String nestedTemplateName) {
-<span class="nc" id="L176">    List&lt;RenderSession&gt; flat = new ArrayList&lt;&gt;();</span>
-<span class="nc" id="L177">    Arrays.stream(sessions).forEach(</span>
-<span class="nc" id="L178">        s -&gt; flat.addAll(s.getChildSessions(nestedTemplateName)));</span>
-<span class="nc" id="L179">    return flat;</span>
+<span class="fc" id="L176">    List&lt;RenderSession&gt; flat = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L177">    Arrays.stream(sessions).forEach(</span>
+<span class="fc" id="L178">        s -&gt; flat.addAll(s.getChildSessions(nestedTemplateName)));</span>
+<span class="fc" id="L179">    return flat;</span>
   }
 
   @Override

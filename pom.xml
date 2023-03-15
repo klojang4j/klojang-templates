@@ -12,7 +12,7 @@
 
     <name>Klojang Templates</name>
     <description>
-        Web Templates for Java Programmers
+        Zero-Logic Templates for Java Programmers
     </description>
     <url>https://klojang4j.github.io/klojang-templates/</url>
 
@@ -85,11 +85,11 @@
         <!-- *** Check for updates: mvn versions:display-dependency-updates   *** -->
         <!-- *** Check dependencies: mvn dependency:analyze                   *** -->
         <!-- ==================================================================== -->
-        <klojang-check.version>2.1.0</klojang-check.version>
-        <klojang-util.version>1.1.1</klojang-util.version>
-        <klojang-collections.version>2.0.1</klojang-collections.version>
-        <klojang-convert.version>1.0.0</klojang-convert.version>
-        <klojang-invoke.version>1.0.0</klojang-invoke.version>
+        <klojang-check.version>2.1.1</klojang-check.version>
+        <klojang-util.version>1.1.2</klojang-util.version>
+        <klojang-collections.version>2.0.2</klojang-collections.version>
+        <klojang-convert.version>1.0.1</klojang-convert.version>
+        <klojang-invoke.version>1.0.1</klojang-invoke.version>
 
         <commons-text.version>1.10.0</commons-text.version>
         <apache-httpclient.version>4.5.14</apache-httpclient.version>
@@ -102,7 +102,7 @@
 
 
     <dependencies>
-       <dependency>
+        <dependency>
             <groupId>org.klojang</groupId>
             <artifactId>klojang-check</artifactId>
             <version>${klojang-check.version}</version>
@@ -414,21 +414,30 @@
                     </execution>
                 </executions>
             </plugin>
-            <!--plugin>
+            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
+                <version>${maven-javadoc-plugin.version}</version>
                 <executions>
                     <execution>
                         <id>attach-javadocs</id>
                         <configuration>
                             <windowtitle>Klojang Templates</windowtitle>
+                            <excludePackageNames>org.klojang.templates.x</excludePackageNames>
+                            <links>
+                                <link>https://klojang4j.github.io/klojang-check/2/api/</link>
+                                <link>https://klojang4j.github.io/klojang-util/1/api/</link>
+                                <link>https://klojang4j.github.io/klojang-convert/1/api/</link>
+                                <link>https://klojang4j.github.io/klojang-collections/2/api/</link>
+                                <link>https://klojang4j.github.io/klojang-invoke/1/api/</link>
+                            </links>
                         </configuration>
                         <goals>
                             <goal>jar</goal>
                         </goals>
                     </execution>
                 </executions>
-            </plugin-->
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-resources-plugin</artifactId>
