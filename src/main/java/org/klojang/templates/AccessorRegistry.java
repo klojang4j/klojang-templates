@@ -18,17 +18,12 @@ import static org.klojang.templates.x.MTag.TEMPLATE;
 
 /**
  * <p>A registry of {@linkplain Accessor accessors}. Accessors are used by the
- * {@link SoloSession} to extract values from model objects. The
+ * {@link RenderSession} to extract values from model objects. The
  * {@link #STANDARD_ACCESSORS} constant is a ready-made {@code AccessorRegistry} that
  * may contain all the accessors you will ever need for your application. In other
  * words, you may never have to actually implement an {@code Accessor} yourself. Note
  * that you only interact with Klojang Templates via entire accessor registries, not
  * via individual accessors.
- *
- * <p>Any {@code AccessorRegistry}, including the ones you build yourself and
- * including the {@code STANDARD_ACCESSORS}, comes with a set of predefined,
- * internally maintained, and non-exposed accessors. For example there are
- * {@code Accessor} implementation for maps, records and JavaBeans.
  *
  * <p>This is how an {@code AccessorRegistry} decides which accessor to hand out to
  * the {@code RenderSession} for a particular type of object:
@@ -37,9 +32,10 @@ import static org.klojang.templates.x.MTag.TEMPLATE;
  *   <li>If you have {@linkplain Builder#register(Accessor, Class) registered} your
  *       own {@code Accessor} for that particular type of object, then that is the
  *       {@code Accessor} that is going to be used.
- *   <li>Otherwise a {@code PathAccessor} is going to be used. This is a very
- *       versatile accessor that can read almost any type of object. It is internally
- *       backed by a {@link PathWalker}.
+ *   <li>Otherwise an internally defined, non-exposed {@code Accessor} implementation
+ *       will be used. This {@code Accessor} implementation is very versatile and can
+ *       read almost any type of object. It is internally backed by a
+ *       {@link PathWalker}.
  * </ol>
  *
  * <p>Note that the {@code PathAccessor} class does not use reflection to read bean

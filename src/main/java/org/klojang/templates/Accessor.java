@@ -1,15 +1,18 @@
 package org.klojang.templates;
 
 /**
- * Defines a very general contract for name-based extraction of values from objects.
- * The extraction takes places based on the name of template variable. Just as
- * {@link Template} and {@link SoloSession} are the two central classes of Klojang
- * Templates, so are {@link Accessor} and {@link Stringifier} the two central
- * interfaces of Klojang Templates. See {@link AccessorRegistry} for more
- * information.
+ * Accessors are used to extract values from objects. A {@link RenderSession} uses
+ * them to extract values from the objects passed to its
+ * {@link RenderSession#insert(Object, String...) insert()} and
+ * {@link RenderSession#populate(String, Object, String...) populate()} methods.
+ * Object access is name-based and requires some sort of mapping between template
+ * variables and named values (e.g. JavaBean properties or map keys). By default,
+ * Klojang Templates assumes an as-is mapping between the two, but you can inject
+ * {@linkplain NameMapper name mappers} for more sophisticated mappings.
  *
  * @param <T> the type of the source data object
  * @author Ayco Holleman
+ * @see AccessorRegistry
  */
 @FunctionalInterface
 public interface Accessor<T> {
@@ -17,19 +20,9 @@ public interface Accessor<T> {
   /**
    * The value that <b>should</b> be returned by the
    * {@link #access(Object, String) access()} method if a template variable cannot be
-   * mapped to an identifier in the source data. For example, if the template is
-   * populated from a {@code HashMap}, then the template variable must correspond to
-   * a map key (possibly indirectly, via a {@link NameMapper}). If the
-   * {@code HashMap} does not contain that key, the {@code access()} must return
-   * {@code UNDEFINED}. {@code Accessor} implementations <b>should not</b> throw an
-   * exception and they <b>should not</b> return {@code null}. {@code null} is a
-   * legitimate, "insertable" value (usually converted to an empty string). If an
-   * {@code Accessor} returns {@code UNDEFINED} for a particular template variable,
-   * the {@link SoloSession} will skip setting that variable. This allows you to
-   * {@link SoloSession#insert(Object, String...) insert} another source data
-   * object into the template that <i>does</i> have a value for the variable. (Note
-   * that <i>once a template variable has been set, it cannot be set again</i> within
-   * the same {@code RenderSession}.)
+   * mapped to a value in the source data object. {@code Accessor} implementations
+   * should not throw an exception and they should not return {@code null} in this
+   * case.
    */
   Object UNDEFINED = new Object();
 
@@ -44,8 +37,7 @@ public interface Accessor<T> {
    * @param property the name by which to retrieve the desired value from the
    *     data
    * @return the value
-   * @throws RenderException if an error occurs while extracting the value
    */
-  Object access(T data, String property) throws RenderException;
+  Object access(T data, String property);
 
 }
