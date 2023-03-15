@@ -8,9 +8,9 @@ import static java.util.regex.Pattern.compile;
  * Tokens and regular expressions used by the template parser to parse templates. For
  * all intents and purposes, this is an internal class. However, by making this class
  * and the constants defined in it public, the API documentation as a whole becomes
- * more self-contained as it is only the only class from which you can infer what a
- * Klojang template should look like. This class could also be useful for tool
- * makers (e.g. when writing a syntax highlighting plugin).
+ * more self-contained as it is only the only class from which you can infer what
+ * constructs can be used in a Klojang template. This class might also be useful for
+ * toolmakers (e.g. when writing a syntax highlighting plugin).
  */
 public final class Regex {
 
@@ -77,8 +77,8 @@ public final class Regex {
    * For example: {@code <!-- ~%firstName% -->}. This is rendered in exactly the same
    * way as {@code ~%firstName%}. That is: the entire string ("&lt;!-- ~%firstName%
    * --&gt;") is removed from the template and replaced with the value
-   * {@linkplain SoloSession#set(String, Object) provided} for {@code firstName}.
-   * The advantage of using HTML comments is that the raw, unprocessed template still
+   * {@linkplain SoloSession#set(String, Object) provided} for {@code firstName}. The
+   * advantage of using HTML comments is that the raw, unprocessed template still
    * renders nicely in a browser, without "odd" tilde-percent sequences spoiling the
    * HTML page. This works even better if you also provide a placeholder value, as in
    * the following example: {@code <!-- ~%firstName% -->John<!--%-->}. Here, again,
@@ -251,6 +251,10 @@ public final class Regex {
     System.out.println("CMT_INCLUDED_TEMPLATE ...: " + CMT_INCLUDED_TEMPLATE);
     System.out.println("DITCH_BLOCK .............: " + DITCH_BLOCK);
     System.out.println("PLACEHOLDER .............: " + PLACEHOLDER);
+  }
+
+  private Regex() {
+    throw new UnsupportedOperationException();
   }
 
 }

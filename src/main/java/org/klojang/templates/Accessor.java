@@ -18,26 +18,25 @@ package org.klojang.templates;
 public interface Accessor<T> {
 
   /**
-   * The value that <b>should</b> be returned by the
-   * {@link #access(Object, String) access()} method if a template variable cannot be
-   * mapped to a value in the source data object. {@code Accessor} implementations
-   * should not throw an exception and they should not return {@code null} in this
-   * case.
+   * The value that <b>should</b> be returned by accessors if a template variable
+   * cannot be mapped to a value in the source data object. {@code Accessor}
+   * implementations should not throw an exception and they should not return
+   * {@code null} in this case.
    */
   Object UNDEFINED = new Object();
 
   /**
-   * Returns the value of the specified property within the specified model object.
-   * The term "property" is somewhat misleading here, because the {@code data}
-   * argument can be anything a specific {@code Accessor} implementation decides to
-   * take care of. It could, for example, also be a {@code Map} and {@code property}
-   * would then (most likely) specify a map key.
+   * Returns the value identified by the specified name from the specified source
+   * data object. If the source data object is a {@code Map}, {@code name} would
+   * likely be a map key; if it is a JavaBean, {@code name} would likely be a bean
+   * property. However, it is up to individual {@code Accessor} implementation
+   * determine the type of objects they provide access to, and how names are to be
+   * interpreted.
    *
    * @param data the data to be accessed
-   * @param property the name by which to retrieve the desired value from the
-   *     data
+   * @param name the name by which to retrieve the desired value from the data
    * @return the value
    */
-  Object access(T data, String property);
+  Object access(T data, String name);
 
 }

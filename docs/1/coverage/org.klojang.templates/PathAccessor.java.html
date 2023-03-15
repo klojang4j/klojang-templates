@@ -16,15 +16,15 @@ final class PathAccessor implements Accessor&lt;Object&gt; {
 <span class="fc" id="L16">  }</span>
 
   @Override
-  public Object access(Object data, String property) throws RenderException {
-<span class="pc bpc" id="L20" title="1 of 2 branches missed.">    String path = nm == null ? property : nm.map(property);</span>
+  public Object access(Object data, String name) throws RenderException {
+<span class="pc bpc" id="L20" title="1 of 2 branches missed.">    String path = nm == null ? name : nm.map(name);</span>
 <span class="fc" id="L21">    PathWalker pw = new PathWalker(asList(Path.from(path)), false);</span>
     try {
 <span class="fc" id="L23">      return pw.read(data);</span>
 <span class="nc" id="L24">    } catch (PathWalkerException e) {</span>
 <span class="nc bnc" id="L25" title="All 2 branches missed.">      return switch (e.getErrorCode()) {</span>
 <span class="nc" id="L26">        case NO_SUCH_KEY, NO_SUCH_PROPERTY -&gt; UNDEFINED;</span>
-<span class="nc" id="L27">        default -&gt; throw ACCESS_EXCEPTION.getException(property, e.getMessage());</span>
+<span class="nc" id="L27">        default -&gt; throw ACCESS_EXCEPTION.getException(name, e.getMessage());</span>
       };
     }
   }

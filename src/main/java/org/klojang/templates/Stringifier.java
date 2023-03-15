@@ -3,20 +3,23 @@ package org.klojang.templates;
 import org.klojang.util.StringMethods;
 
 /**
- * A {@code Stringifier} is responsible for stringifying the values provided by the
- * data access layer. Note that escaping (e.g. HTML) is also considered to be form of
- * stringifying, albeit from string to string.
+ * A {@code Stringifier} is responsible for stringifying the values coming back from
+ * the data layer. Note that escaping (e.g. HTML) and formatting (e.g. dates) are
+ * considered to be forms of stringification.
  *
  * @author Ayco Holleman
  * @see StringifierRegistry
+ * @see VarGroup
  */
 @FunctionalInterface
 public interface Stringifier {
 
   /**
-   * Stringifies {@code null} to an empty string and any other value by calling
-   * {@code toString()} on it. It is the {@code Stringifier} that is used by default
-   * for all template variables.
+   * A stringifier that stringifies {@code null} to an empty string and any other
+   * value by calling {@code toString()} on it. This is the default stringifier for
+   * values coming back from the data layer, unless you
+   * {@linkplain StringifierRegistry.Builder#setDefaultStringifier(Stringifier)
+   * specify an alternative default stringifier}.
    *
    * @see StringifierRegistry.Builder
    */
@@ -25,12 +28,11 @@ public interface Stringifier {
   /**
    * Stringifies the specified value. Stringifier implementations <i>must</i> be able
    * to handle null values and they <i>must never</i> return null. A
-   * {@link RenderException} is thrown if they do
+   * {@link RenderException} is thrown if either requirement is not met.
    *
    * @param value the value to be stringified
    * @return a string representation of the value
-   * @throws RenderException
    */
-  String stringify(Object value) throws RenderException;
+  String stringify(Object value);
 
 }
