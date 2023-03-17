@@ -1,7 +1,7 @@
 package org.klojang.templates;
 
 /**
- * Accessors are used to extract values from objects. A {@link RenderSession} uses
+ * Accessors are used to extract values from objects. The {@link RenderSession} uses
  * them to extract values from the objects passed to its
  * {@link RenderSession#insert(Object, String...) insert()} and
  * {@link RenderSession#populate(String, Object, String...) populate()} methods.

@@ -22,52 +22,58 @@ import static org.klojang.templates.x.Messages.ERR_NO_SUCH_VARIABLE;
 import static org.klojang.util.StringMethods.*;
 
 /**
- * A registry of {@link Stringifier stringifiers} used by the {@link SoloSession} to
- * stringify the values provided by the data access layer. In principle, each and
- * every template variable must be associated with a {@code Stringifier}. In
- * practice, it is unlikely you will define many variable-specific stringifiers, if
- * at all. If a variable's value can be stringified by calling {@code toString()} on
- * it, or to an empty string if {@code null}, you don't need to specify a stringifier
- * for it because this is default behaviour. Also, variables with the same data type
- * will often have to be stringified in the same way. For example, you may want to
- * format all {@code int} values according to your country's locale. Type-dependent
- * stringifiers can be registered using
+ * A registry of {@linkplain Stringifier stringifiers} used by the
+ * {@link RenderSession} to stringify the values coming back from the data access
+ * layer. In principle, each and every template variable must be associated with a
+ * {@code Stringifier}. In practice, it is unlikely you will define many
+ * variable-specific stringifiers, if at all. If a variable's value can be
+ * stringified by calling {@code toString()} on it (or to an empty string if
+ * {@code null}), you don't need to specify a stringifier for it because this is the
+ * default behaviour. Also, variables with the same data type will often have to be
+ * stringified in the same way. For example, you may want to format all {@code int}
+ * values according to your country's locale. Type-specific stringifiers can be
+ * registered using
  * {@link Builder#registerByType(Stringifier, Class[]) registerByType()}. Only if a
  * template variable has very specific stringification requirements would you
  * {@linkplain Builder#register(Stringifier, Template, String...) register} a
  * variable-specific stringifier for it.
  *
- * <p>Type-dependent stringifiers are internally kept in a {@link TypeMap}. This
- * means that if the {@code RenderSession} requests a stringifier for some type, and
- * that type is not in the {@code TypeMap}, but one of its supertypes is, it will use
- * the stringifier associated with the super type. For example, if the registry
- * contains a {@code Number} stringifier and the {@code RenderSession} requests an
- * {@code Integer} stringifier, it will receive the {@code Number} stringifier
- * (unless of course you have also registered an {@code Integer} stringifier). This
- * saves you from having to register a stringifier for each and every subclass of
- * {@code Number} if they are all stringified identically.
+ * <p>Type-specific stringifiers are internally kept in a {@link TypeMap}. This
+ * means that if, for example, {@code Integer}, {@code Double} and {@code Double}
+ * values can all be formatted using the same stringifier, you only need to register
+ * the stringifier once: for type {@code Number}.
  *
- * <p>Note that escaping (e.g. HTML) and formatting (e.g. numbers) are also regarded
- * as a form of stringification, albeit from {@code String} to {@code String}. The
- * stringifiers associated with the {@link VarGroup standard variable groups} are in
- * fact all escape functions.
+ * <p>If you need to configure stringifiers, your code would broadly look like this:
+ *
+ * <blockquote><pre>{@code
+ * StringifierRegistry stringifiers = StringifierRegistry.configure()
+ *    .registerByTpe(new MyIntStringifier(), int.class)
+ *    .freeze();
+ * Template template = Template.fromResource(getClass(), "/path/to/foo.html");
+ * RenderSession session = template.newRenderSession(stringifiers);
+ * }</pre></blockquote>
  *
  * <p>This is how a {@link StringifierRegistry} decides which stringifier to hand
  * out for a variable in a template:
  *
  * <ol>
- *   <li>If a stringifier has been registered for a {@linkplain VarGroup variable group} and the variable
- *       belongs to that group, then that is the stringifier that is going to be used.
- *   <li>If a stringifier has been registered for that particular variable in that particular
- *       template, then that is the stringifier that is going to be used.
- *   <li>If a stringifier has been registered for all variables with that particular name
- *       (irrespective of the template they belong to), then that is the stringifier that is going
- *       to be used. See {@link Builder#registerByName(Stringifier, String...)} registerByName()}.
- *   <li>If a stringifier has been registered for the data type of that particular variable, then
- *       that is the stringifier that is going to be used.
- *   <li>If you have {@linkplain Builder#setDefaultStringifier(Stringifier) registered} an alternative
- *       default stringifier, then that is the stringifier that is going to be used.
- *   <li>Otherwise the {@link Stringifier#DEFAULT Stringifier.DEFAULT} is going to be used.
+ *   <li>If a stringifier has been registered for a
+ *       {@linkplain VarGroup variable group} and the variable belongs to that group,
+ *       then that is the stringifier that is going to be used.
+ *   <li>If a stringifier has been registered for that particular variable in that
+ *       particular template, then that is the stringifier that is going to be used.
+ *   <li>If a stringifier has been registered for all variables with that particular
+ *       name (irrespective of the template they belong to), then that is the
+ *       stringifier that is going to be used. See
+ *       {@link Builder#registerByName(Stringifier, String...)} registerByName()}.
+ *   <li>If a stringifier has been registered for the data type of that particular
+ *       variable, then that is the stringifier that is going to be used.
+ *   <li>If you have
+ *       {@linkplain Builder#setDefaultStringifier(Stringifier) registered} an
+ *       alternative default stringifier, then that is the stringifier that is going
+ *       to be used.
+ *   <li>Otherwise the {@link Stringifier#DEFAULT Stringifier.DEFAULT} is going to be
+ *       used.
  * </ol>
  *
  * @author Ayco Holleman
@@ -78,7 +84,7 @@ public final class StringifierRegistry {
    * A minimal {@code StringifierRegistry} instance. It contains stringifiers for the
    * predefined {@link VarGroup variable groups}. Variables not within these groups
    * are stringified using the {@linkplain Stringifier#DEFAULT default stringifier}.
-   * This is the {@code StringifierRegistry} a {@link SoloSession} will use if you
+   * This is the {@code StringifierRegistry} a {@link RenderSession} will use if you
    * called {@link Template#newRenderSession() Template.newRenderSession} without the
    * {@code StringifierRegistry} argument.
    */
@@ -87,7 +93,7 @@ public final class StringifierRegistry {
   /* ++++++++++++++++++++[ BEGIN BUILDER CLASS ]+++++++++++++++++ */
 
   /**
-   * Lets you configure a {@link StringifierRegistry}.
+   * A builder class for {@link StringifierRegistry} instances.
    *
    * @author Ayco Holleman
    */
@@ -115,7 +121,8 @@ public final class StringifierRegistry {
 
     /**
      * Lets you specify an alternative default stringifier, replacing
-     * {@link Stringifier#DEFAULT}.
+     * {@link Stringifier#DEFAULT}. For example, you might want the default
+     * stringifier to be {@link #ESCAPE_HTML}.
      *
      * @param stringifier the stringifier to use as the default stringifier
      * @return this {@code Builder}

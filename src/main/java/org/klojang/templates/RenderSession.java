@@ -66,7 +66,7 @@ public sealed interface RenderSession permits SoloSession, MultiSession {
    * Sets the specified variable to the value produced by the specified
    * {@code Supplier}. The supplier's {@code get()} method will be called when the
    * template is actually {@linkplain #render(OutputStream) rendered}. This may be
-   * useful if you plain to render the template multiple times using the same
+   * useful if you plan to render the template multiple times using the same
    * {@code RenderSession}.
    *
    * @param varName the name of the variable to set
@@ -79,7 +79,7 @@ public sealed interface RenderSession permits SoloSession, MultiSession {
    * Sets the specified variable to the value produced by the specified
    * {@code Supplier}. The supplier's {@code get()} method will be called when the
    * template is actually {@linkplain #render(OutputStream) rendered}. This may be
-   * useful if you plain to render the template multiple times using the same
+   * useful if you plan to render the template multiple times using the same
    * {@code RenderSession}.
    *
    * @param varName the name of the variable to set
@@ -428,8 +428,15 @@ public sealed interface RenderSession permits SoloSession, MultiSession {
 
   /**
    * Returns the child sessions that have been created for the specified nested
-   * template. This method throws a {@code RenderException} if no child sessions have
-   * been created yet for the specified nested template.
+   * template. When you populate a nested template, the {@code RenderSession} tacitly
+   * spawns a new {@code RenderSession} for that template. For example, the
+   * {@link #populate(String, Object, String...) populate()} method basically comes
+   * down to calling {@link #insert(Object, String...) insert()} on the child
+   * session. Since the nested template may be repeating, the parent session actually
+   * spawns an array of child sessions. In most cases you don't need to be aware of
+   * all this, but if you want full control over what happens in the nested template,
+   * you can have it via this method. A {@code RenderException} is thrown if no child
+   * sessions have been created yet for the specified nested template.
    *
    * @param nestedTemplateName the nested template
    * @return A {@code List} of child sessions

@@ -1,7 +1,7 @@
 package org.klojang.templates;
 
 /**
- * Thrown from a {@link SoloSession} under various circumstances.
+ * Thrown from a {@link RenderSession} under various circumstances.
  *
  * @author Ayco Holleman
  */

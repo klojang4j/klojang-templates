@@ -5,9 +5,9 @@ import java.io.InputStream;
 import java.util.Optional;
 
 /**
- * A {@code PathResolver} is used by the template parsing process to load the source
- * code for a template. Implementations are given the path string extracted from
- * {@code ~%%include:/path/to/resource.html%} and must return an {@link InputStream}
+ * Path resolvers are used by the template parser to load the source code for a
+ * template. Implementations are given the path string extracted from
+ * {@code ~%%include:/path/to/resource.html%%} and must return an {@link InputStream}
  * to the source code. This enables you to implement and use a custom mechanism for
  * loading templates. Klojang Templates provides two implementations itself: one that
  * loads templates from the file system (used under the hood by
@@ -40,7 +40,7 @@ public interface PathResolver {
 
   /**
    * Returns whether the path specified in an included template (like
-   * {@code ~%%include:/path/to/foo.html%}) points to an existing resource. If it is
+   * {@code ~%%include:/path/to/foo.html%%}) points to an existing resource. If it is
    * expensive to determine this (e.g. it requires a database lookup or an FTP
    * connection), you may return an empty {@code Optional}. If the {@code Optional}
    * does contain a value and it is {@code Boolean.FALSE}, this will result in

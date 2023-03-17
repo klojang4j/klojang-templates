@@ -10,17 +10,19 @@ import static org.klojang.templates.x.Messages.ERR_NO_SUCH_VARGROUP;
 
 /**
  * A {@code VarGroup} lets you group template variables across one or more templates.
- * This enables you to
+ * A variable group can be
  * {@linkplain StringifierRegistry.Builder#registerByGroup(Stringifier, String...)
- * assign} a shared {@link Stringifier} to them. Variables can be added to a variable
- * group by using a group name prefix. For example: {@code ~%html:firstName%} or
- * {@code ~%js:firstName%} or {@code ~%myDateFormat:birthDate%}. The first two
- * examples use the predefined {@link #HTML} and {@link #JS} variable groups, which
- * provide HTML-escaping and ECMASScript-escaping, respectively. The third example is
- * a custom variable group that you can define using the {@link StringifierRegistry}
- * class. Variable groups can also be assigned <i>ad hoc</i> using
- * {@link SoloSession#set(String, Object, VarGroup) RenderSession.set(varName, value,
- * varGroup}.
+ * associated} with a {@link Stringifier}. Thus variable groups allow you to define a
+ * shared stringifier for multiple variables. Within a template, variables can be
+ * added to a variable group by using an <i>inline group name prefix</i>. For
+ * example: {@code ~%html:firstName%} or {@code ~%js:firstName%} or
+ * {@code ~%myDateFormat:birthDate%}. The first two examples use the predefined
+ * {@link #HTML} and {@link #JS} variable groups, which provide HTML-escaping and
+ * ECMASScript-escaping, respectively. The third example is a custom variable group
+ * that you can define using the {@link StringifierRegistry} class. Variable groups
+ * can also be assigned <i>programmatically</i> using
+ * {@link RenderSession#set(String, Object, VarGroup) RenderSession.set(varName,
+ * value, varGroup}.
  *
  * <p>Note that variable groups are assigned at the variable <i>occurrence</i>
  * level. For example, a template may contain multiple instances of a variable named

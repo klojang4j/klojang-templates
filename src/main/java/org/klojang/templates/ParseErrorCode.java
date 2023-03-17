@@ -32,8 +32,8 @@ public enum ParseErrorCode {
 
   /**
    * The path specified in an included template
-   * ({@code ~%%include:/path/to/template.html%%}) did not resolve to an actual
-   * physical resource.
+   * (e&#46;g&#46; {@code ~%%include:/path/to/foo.html%%}) could not be resolved to a
+   * readable resource.
    *
    * @see org.klojang.templates.PathResolver#isValidPath(String)
    */

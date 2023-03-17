@@ -20,14 +20,11 @@ import static org.klojang.util.CollectionMethods.implode;
 
 /**
  * The {@code Template} class is responsible for loading and parsing templates and
- * functions as a factory for {@link SoloSession} objects that let you render them.
- * The {@code Template} class and the {@code RenderSession} class are the two central
- * classes of Klojang Templates. {@code Template} instances are unmodifiable,
- * expensive-to-create and heavy-weight objects. Generally though you should not
- * cache them as this is already done by Klojang. You can disable template caching by
- * means of a system property. See {@link Setting#TMPL_CACHE_SIZE}. This is useful
- * during development, when you want the template to be re-loaded and re-parsed with
- * every refresh of the browser.
+ * functions as a factory for {@link RenderSession} objects. {@code Template}
+ * instances are unmodifiable, expensive-to-create and heavy-weight objects.
+ * Generally though you should not cache them as this is already done by
+ * <i><b>Klojang Templates</b></i>. You can disable template caching by means of a
+ * system property. See {@link Setting#TMPL_CACHE_SIZE}.
  *
  * @author Ayco Holleman
  */
@@ -40,15 +37,15 @@ public final class Template {
    * The name given to the root template: "{root}". Any {@code Template} that is
    * explicitly instantiated by calling one of the {@code fromXXX()} methods gets
    * this name. Templates nested inside this template get their name from the source
-   * code (for example: {@code ~%%begin:foo%} or {@code ~%%include:/views/foo.html%}
-   * or {@code ~%%include:foo:/views/bar.html%}).
+   * code (for example: {@code ~%%begin:foo%} or {@code ~%%include:/views/foo.html%%}
+   * or {@code ~%%include:foo:/views/bar.html%%}).
    */
   public static final String ROOT_TEMPLATE_NAME = "{root}";
 
   /**
    * Parses the specified string into a {@code Template} instance. If the string
    * contains any {@code include} declarations (like
-   * {@code ~%%include:/path/to/foo.html%}), the path will be interpreted as a file
+   * {@code ~%%include:/path/to/foo.html%%}), the path will be interpreted as a file
    * system resource. Templates created from a string are never cached.
    *
    * @param source the source code for the {@code Template}

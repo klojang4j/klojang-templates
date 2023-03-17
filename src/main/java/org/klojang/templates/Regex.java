@@ -8,9 +8,9 @@ import static java.util.regex.Pattern.compile;
  * Tokens and regular expressions used by the template parser to parse templates. For
  * all intents and purposes, this is an internal class. However, by making this class
  * and the constants defined in it public, the API documentation as a whole becomes
- * more self-contained as it is only the only class from which you can infer what
- * constructs can be used in a Klojang template. This class might also be useful for
- * toolmakers (e.g. when writing a syntax highlighting plugin).
+ * more self-contained as it is the only class from which you can infer which
+ * syntactical constructs are available in a Klojang template. This class might also
+ * be useful for toolmakers (e.g. when writing a syntax highlighting plugin).
  */
 public final class Regex {
 
