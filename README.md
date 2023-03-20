@@ -76,14 +76,5 @@ public class HelloWorld {
       return session.set("greeting", "Hello World").render();
    }
 
-   @GET
-   @Path("/whatsup")
-   public StreamingOutput whatsup() throws ParseException {
-      Template template = Template.fromResource(getClass(), "/views/hello.html");
-      RenderSession session = template.newRenderSession();
-      session.set("greeting", "What's Up?");
-      return session::render;
-   }
-
 }
 ```
