@@ -47,5 +47,43 @@ To get started with _Klojang Templates_, add the following dependency to you pro
 implementation group: 'org.klojang', name: 'klojang-templates', version: '1.0.0'
 ```
 
-The javadocs for _Klojang Templates_ can be found [https://klojang4j.github.io/klojang-templates/1/api](https://klojang4j.github.io/klojang-templates/1/api).
+The **javadocs** for _Klojang Templates_ can be found [https://klojang4j.github.io/klojang-templates/1/api](https://klojang4j.github.io/klojang-templates/1/api).
 
+## Hello World
+
+```html
+<!-- hello.html -->
+<html>
+<body>
+<p>~%greeting%</p>
+</body>
+</html>
+```
+
+```java
+import javax.ws.rs.core.StreamingOutput;
+import org.klojang.templates.ParseException;
+import org.klojang.templates.RenderSession;
+import org.klojang.templates.Template;
+
+public class HelloWorld {
+
+   @GET
+   @Path("/hello")
+   public String hello() throws ParseException {
+      Template template = Template.fromResource(getClass(), "/views/hello.html");
+      RenderSession session = template.newRenderSession();
+      return session.set("greeting", "Hello World").render();
+   }
+
+   @GET
+   @Path("/whatsup")
+   public StreamingOutput whatsup() throws ParseException {
+      Template template = Template.fromResource(getClass(), "/views/hello.html");
+      RenderSession session = template.newRenderSession();
+      session.set("greeting", "What's Up?");
+      return session::render;
+   }
+
+}
+```
