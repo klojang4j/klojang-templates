@@ -61,7 +61,6 @@ The **javadocs** for _Klojang Templates_ can be found [https://klojang4j.github.
 ```
 
 ```java
-import javax.ws.rs.core.StreamingOutput;
 import org.klojang.templates.ParseException;
 import org.klojang.templates.RenderSession;
 import org.klojang.templates.Template;
@@ -72,8 +71,9 @@ public class HelloWorld {
    @Path("/hello")
    public String hello() throws ParseException {
       Template template = Template.fromResource(getClass(), "/views/hello.html");
-      RenderSession session = template.newRenderSession();
-      return session.set("greeting", "Hello World").render();
+      return template.newRenderSession()
+              .set("greeting", "Hello World")
+              .render();
    }
 
 }
