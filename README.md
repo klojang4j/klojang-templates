@@ -33,7 +33,6 @@ To get started with _Klojang Templates_, add the following dependency to you pro
 **Maven**:
 
 ```xml
-
 <dependency>
     <groupId>org.klojang</groupId>
     <artifactId>klojang-templates</artifactId>
@@ -47,7 +46,8 @@ To get started with _Klojang Templates_, add the following dependency to you pro
 implementation group: 'org.klojang', name: 'klojang-templates', version: '1.0.0'
 ```
 
-The **javadocs** for _Klojang Templates_ can be found [https://klojang4j.github.io/klojang-templates/1/api](https://klojang4j.github.io/klojang-templates/1/api).
+The **javadocs** for _Klojang Templates_ can be
+found [https://klojang4j.github.io/klojang-templates/1/api](https://klojang4j.github.io/klojang-templates/1/api).
 
 ## Hello World
 
@@ -67,14 +67,39 @@ import org.klojang.templates.Template;
 
 public class HelloWorld {
 
-   @GET
-   @Path("/hello")
-   public String hello() throws ParseException {
-      Template template = Template.fromResource(getClass(), "/views/hello.html");
-      return template.newRenderSession()
-              .set("greeting", "Hello World")
-              .render();
-   }
+  @GET
+  @Path("/hello")
+  public String hello() throws ParseException {
+    Template template = Template.fromResource(getClass(), "/views/hello.html");
+    RenderSession session = template.newRenderSession();
+    return session.set("greeting", "Hello World").render();
+  }
 
 }
 ```
+
+## Escaping
+
+_Klojang Templates_ is, in fact, not tied to any particular output format. However,
+it does provide some extra help in case you are working with HTML templates. This
+happens through so-called _variable groups_, which will be covered in greater detail
+later on.
+
+```html
+<html>
+<head>
+<script>
+   var currentGreeting = '~%js:greeting%';
+</script>
+</head>
+<body>
+<p>~%html:greeting%</p>
+</body>
+</html>
+```
+
+By default, _Klojang Templates_ does not apply any escaping or formatting to the
+values you insert into the template, but you can configure _Klojang Templates_ to
+HTML-escape all values by default. You can then omit the `html:` while keeping 
+the `js:` prefix to override the default behaviour.
+
