@@ -139,17 +139,16 @@ public record Employee(String firstName, String lastName, LocalDate birtDate) {
 ```
 
 ```java
-import java.time.LocalDate;
-
 public class EmployeeResource {
 
   @GET
   @Path("/john")
-  public String example() throws ParseException {
+  public StreamingOutput example() throws ParseException {
     Employee employee = new Employee("John", "Smith", LocalDate.of(1980, 6, 13));
     Template template = Template.fromResource(getClass(), "/views/employee.html");
     RenderSession session = template.newRenderSession();
-    return session.insert(employee).render();
+    session.insert(employee);
+    return session::render;
   }
 
 }
