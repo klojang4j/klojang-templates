@@ -88,9 +88,9 @@ later on.
 ```html
 <html>
 <head>
-<script>
-   const currentGreeting = '~%js:greeting%';
-</script>
+    <script>
+        const currentGreeting = '~%js:greeting%';
+    </script>
 </head>
 <body>
 <p>~%html:greeting%</p>
@@ -100,22 +100,31 @@ later on.
 
 By default, _Klojang Templates_ does not apply any escaping or formatting to the
 values you insert into the template, but you can configure _Klojang Templates_ to
-HTML-escape all values by default. You can then omit the `html:` while keeping 
-the `js:` prefix to override the default behaviour.
+HTML-escape all values by default. You can then omit the `html:` prefix while 
+keeping the `js:` prefix to override the default behaviour.
 
 ## Inserting POJOs, Records and Maps
 
-You can set multiple template variables at once by "inserting" non-scalar values 
-into the template.
+You can set multiple template variables at once by "inserting" non-scalar values into
+the template.
 
 ```html
 <!-- employee.html -->
 <html>
 <body>
 <table>
-   <tr><td>First name:</td><td>~%firstName%</td></tr>
-   <tr><td>Last name:</td><td>~%lastName%</td></tr>
-   <tr><td>Birthdate:</td><td>~%birthDate%</td></tr>
+    <tr>
+        <td>First name:</td>
+        <td>~%firstName%</td>
+    </tr>
+    <tr>
+        <td>Last name:</td>
+        <td>~%lastName%</td>
+    </tr>
+    <tr>
+        <td>Birthdate:</td>
+        <td>~%birthDate%</td>
+    </tr>
 </table>
 </body>
 </html>
@@ -125,7 +134,7 @@ into the template.
 import java.time.LocalDate;
 
 public record Employee(String firstName, String lastName, LocalDate birtDate) {
-  
+
 }
 ```
 
@@ -134,14 +143,14 @@ import java.time.LocalDate;
 
 public class EmployeeResource {
 
-   @GET
-   @Path("/john")
-   public String example() throws ParseException {
-      Employee employee = new Employee("John", "Smith", LocalDate.of(1980, 6, 13));
-      Template template = Template.fromResource(getClass(), "/views/employee.html");
-      RenderSession session = template.newRenderSession();
-      return session.insert(employee).render();
-   }
+  @GET
+  @Path("/john")
+  public String example() throws ParseException {
+    Employee employee = new Employee("John", "Smith", LocalDate.of(1980, 6, 13));
+    Template template = Template.fromResource(getClass(), "/views/employee.html");
+    RenderSession session = template.newRenderSession();
+    return session.insert(employee).render();
+  }
 
 }
 ```
