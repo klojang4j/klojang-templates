@@ -131,14 +131,6 @@ the template.
 ```
 
 ```java
-import java.time.LocalDate;
-
-public record Employee(String firstName, String lastName, LocalDate birtDate) {
-
-}
-```
-
-```java
 public class EmployeeResource {
 
   @GET
