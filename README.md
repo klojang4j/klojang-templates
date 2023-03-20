@@ -103,7 +103,10 @@ values you insert into the template, but you can configure _Klojang Templates_ t
 HTML-escape all values by default. You can then omit the `html:` while keeping 
 the `js:` prefix to override the default behaviour.
 
-## Inserting POJOs and records
+## Inserting POJOs, Records and Maps
+
+You can set multiple template variables at once by "inserting" non-scalar values 
+into the template.
 
 ```html
 <!-- employee.html -->
