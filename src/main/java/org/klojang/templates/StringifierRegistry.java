@@ -72,7 +72,7 @@ import static org.klojang.util.StringMethods.*;
  *       {@linkplain Builder#setDefaultStringifier(Stringifier) registered} an
  *       alternative default stringifier, then that is the stringifier that is going
  *       to be used.
- *   <li>Otherwise the {@link Stringifier#DEFAULT Stringifier.DEFAULT} is going to be
+ *   <li>Otherwise {@link Stringifier#DEFAULT Stringifier.DEFAULT} is going to be
  *       used.
  * </ol>
  *
