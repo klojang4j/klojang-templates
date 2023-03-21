@@ -33,6 +33,7 @@ To get started with _Klojang Templates_, add the following dependency to you pro
 **Maven**:
 
 ```xml
+
 <dependency>
     <groupId>org.klojang</groupId>
     <artifactId>klojang-templates</artifactId>
@@ -86,10 +87,11 @@ happens through so-called _variable groups_, which will be covered in greater de
 later on.
 
 ```html
+<!-- hello.html -->
 <html>
 <head>
     <script>
-        const currentGreeting = '~%js:greeting%';
+        const greeting = '~%js:greeting%';
     </script>
 </head>
 <body>
@@ -100,8 +102,8 @@ later on.
 
 By default, _Klojang Templates_ does not apply any escaping or formatting to the
 values you insert into the template, but you can configure _Klojang Templates_ to
-HTML-escape all values by default. You can then omit the `html:` prefix while 
-keeping the `js:` prefix to override the default behaviour.
+(for example) HTML-escape all values by default. You can then omit the `html:`
+prefix while keeping the `js:` prefix to override the default behaviour.
 
 ## Inserting POJOs, Records and Maps
 
@@ -133,16 +135,116 @@ the template.
 ```java
 public class EmployeeResource {
 
-  @GET
-  @Path("/john")
-  public StreamingOutput example() throws ParseException {
-    Employee employee = new Employee("John", "Smith", LocalDate.of(1980, 6, 13));
-    Template template = Template.fromResource(getClass(), "/views/employee.html");
-    RenderSession session = template.newRenderSession();
-    session.insert(employee);
-    return session::render;
-  }
+   @GET
+   @Path("/john-pojo")
+   public StreamingOutput pojo() throws ParseException {
+      Employee employee = new Employee("John", "Smith", LocalDate.of(1980, 6, 13));
+      Template template = Template.fromResource(getClass(), "/views/employee.html");
+      RenderSession session = template.newRenderSession();
+      session.insert(employee);
+      return session::render;
+   }
+
+
+   @GET
+   @Path("/john-simple")
+   public String simple() throws ParseException {
+      Template template = Template.fromResource(getClass(), "/views/employee.html");
+      return template.newRenderSession()
+              .set("firstName", "John")
+              .set("lastName", "Smith")
+              .set("birthDate", LocalDate.of(1980, 6, 13))
+              .render();
+    }
 
 }
 ```
+
+Note that the `pojo()` method returns a method reference to [RenderSession.render(OutputStream)](https://klojang4j.github.io/klojang-templates/1/api/org.klojang.emplates/org/klojang/templates/RenderSession.html#render(java.io.OutputStream)), 
+which neatly targets the JAX-RS [StreamingOutput](https://docs.oracle.com/javaee/7/api/javax/ws/rs/core/StreamingOutput.html)
+interface.
+
+## Nested Templates
+
+In _Klojang Templates_ templates can be nested inside other templates (ad infinitum
+if you like). Why you would want to do such a thing will be explained below. This 
+section details the syntax for nested templates.
+
+There are, in fact, two ways to nest one template inside another. One goes by the 
+name "inline templates"; the other by the name "included templates". Functionally 
+they are completely equivalent. The API cannot tell you whether you are 
+populating an inline template or an included template. (Well, actually, it [can](https://klojang4j.github.io/klojang-templates/1/api/org.klojang.templates/org/klojang/templates/Template.html#path()),
+but there's not much you can do with this knowledge.)
+
+### Inline Templates
+Inline templates, as the name suggests, are defined within the parent template. 
+Here is an example of a template (company-overview), which contains an inline 
+template (companies), which itself contains an inline template (departments), 
+which also contains an inline template (employees). For clarity's sake, this is a 
+non-HTML template.
+
+#### /views/company-overview.txt:
+```
+This is an overview of our customers:
+~%%begin:companies%
+    Name .......: ~%name%
+    Profits ....: ~%profits%
+    Departments:
+    ~%%begin:departments%
+        Name .......: ~%name%
+        Manager ....: ~%manager%
+        Employees:
+            ~%%begin:employees%
+                First name ....: ~%firstName%               
+                Last name .....: ~%lastName%               
+                Birth date ....: ~%birthDate%               
+            ~%%end:employees%
+   ~%%end:departments%
+~%%end:companies%
+Not bad, ey!
+```
+
+### Included Templates
+Included templates are defined in a separate file and are nested inside another 
+template using the following syntax:
+
+#### /views/company-overview.txt:
+```
+This is an overview of our customers:
+~%%begin:companies%
+    Name .......: ~%name%
+    Profits ....: ~%profits%
+    Departments:
+        ~%%include:/views/departments.txt%%
+~%%end:companies%
+Not bad, ey!
+```
+
+#### /views/departments.txt:
+```
+        Name .......: ~%name%
+        Manager ....: ~%manager%
+        Employees:
+            ~%%include:/views/employees.txt%% 
+```
+
+#### /views/employees.txt:
+```
+                First name ....: ~%firstName%               
+                Last name .....: ~%lastName%               
+                Birth date ....: ~%birthDate%               
+```
+
+Nested templates, whether inline or included, are identified by their name. That 
+is, when you want to populate them using the API, you do so by specifying their 
+name &#8212; "companies", "departments" and "employees" in the examples above. 
+For included templates, the name by default is the basename of the included file. 
+If this is too rigid, you can use the following syntax:
+
+```
+~%%include:employees:/views/employees-2023-01-01.txt%%
+```
+
+
+
 
