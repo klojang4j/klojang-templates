@@ -82,9 +82,7 @@ public class HelloWorld {
 ## Escaping
 
 _Klojang Templates_ is, in fact, not tied to any particular output format. However,
-it does provide some extra help in case you are working with HTML templates. This
-happens through so-called _variable groups_, which will be covered in greater detail
-later on.
+it does provide some extra help in case you are writing HTML templates.
 
 ```html
 <!-- hello.html -->
@@ -101,9 +99,13 @@ later on.
 ```
 
 By default, _Klojang Templates_ does not apply any escaping or formatting to the
-values you insert into the template, but you can configure _Klojang Templates_ to
-(for example) HTML-escape all values by default. You can then omit the `html:`
-prefix while keeping the `js:` prefix to override the default behaviour.
+values you insert into the template, but you can [configure](https://klojang4j.github.io/klojang-templates/1/api/org.klojang.templates/org/klojang/templates/StringifierRegistry.Builder.html#setDefaultStringifier(org.klojang.templates.Stringifier)) _Klojang Templates_ to
+HTML-escape all values by default. You can then omit the `html:` prefix while keeping
+the `js:` prefix to override the default behaviour.
+
+The `html:` and `js:` prefixes are examples of so-called
+[variable groups](https://klojang4j.github.io/klojang-templates/1/api/org.klojang.templates/org/klojang/templates/VarGroup.html),
+which will be covered in greater detail later on.
 
 ## Inserting POJOs, Records and Maps
 
@@ -177,11 +179,12 @@ populating an inline template or an included template. (Well, actually, it [can]
 but there's not much you can do with this knowledge.)
 
 ### Inline Templates
-Inline templates, as the name suggests, are defined within the parent template. 
-Here is an example of a template (company-overview), which contains an inline 
-template (companies), which itself contains an inline template (departments), 
-which also contains an inline template (employees). For clarity's sake, this is a 
-non-HTML template.
+
+Inline templates, as the name suggests, are defined within the parent template
+itself. Here is an example of a template (company-overview), which contains an inline
+template (companies), which itself contains an inline template (departments), which
+also contains an inline template (employees). For clarity's sake, this is a non-HTML
+template.
 
 #### /views/company-overview.txt:
 ```
