@@ -173,9 +173,9 @@ if you like). Why you would want to do such a thing will be explained below. Thi
 section details the syntax for nested templates.
 
 There are, in fact, two ways to nest one template inside another. One goes by the 
-name "inline templates"; the other by the name "included templates". Functionally 
+name "inline templates" and the other by the name "included templates". Functionally 
 they are completely equivalent. The API cannot tell you whether you are 
-populating an inline template or an included template. (Well, actually, it [can](https://klojang4j.github.io/klojang-templates/1/api/org.klojang.templates/org/klojang/templates/Template.html#path()),
+populating an inline template or an included template. (Well, actually, [it can](https://klojang4j.github.io/klojang-templates/1/api/org.klojang.templates/org/klojang/templates/Template.html#path()),
 but there's not much you can do with this knowledge.)
 
 ### Inline Templates
