@@ -10,7 +10,7 @@ import org.klojang.util.StringMethods;
    * the begin or end tag of an inline template finds itself on an otherwise empty
    * line, that entire line is removed from the template when it is rendered.
    */
-  static boolean occupiesLine(String src, int from, int to) {
+  static boolean onSeparateLine(String src, int from, int to) {
     char c;
 <span class="fc bfc" id="L15" title="All 4 branches covered.">    for (int i = from - 1; i &gt;= 0 &amp;&amp; (c = src.charAt(i)) != '\n'; --i) {</span>
 <span class="pc bpc" id="L16" title="1 of 4 branches missed.">      if (c != ' ' &amp;&amp; c != '\t') {</span>

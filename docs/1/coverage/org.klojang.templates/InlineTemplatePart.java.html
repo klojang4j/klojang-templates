@@ -3,36 +3,29 @@
 final class InlineTemplatePart extends NestedTemplatePart {
 
   private final boolean startTagOnSeparateLine;
-  private final boolean endTagOnSeparateLine;
 
   InlineTemplatePart(Template template,
       int start,
-      boolean startTagOnSeparateLine,
-      boolean endTagOnSeparateLine) {
-<span class="fc" id="L12">    super(template, start);</span>
-<span class="fc" id="L13">    this.startTagOnSeparateLine = startTagOnSeparateLine;</span>
-<span class="fc" id="L14">    this.endTagOnSeparateLine = endTagOnSeparateLine;</span>
-<span class="fc" id="L15">  }</span>
+      boolean startTagOnSeparateLine) {
+<span class="fc" id="L10">    super(template, start);</span>
+<span class="fc" id="L11">    this.startTagOnSeparateLine = startTagOnSeparateLine;</span>
+<span class="fc" id="L12">  }</span>
 
   boolean isStartTagOnSeparateLine() {
-<span class="fc" id="L18">    return startTagOnSeparateLine;</span>
-  }
-
-  boolean isEndTagOnSeparateLine() {
-<span class="nc" id="L22">    return endTagOnSeparateLine;</span>
+<span class="fc" id="L15">    return startTagOnSeparateLine;</span>
   }
 
   @Override
   public String toString() {
-<span class="fc" id="L27">    return new StringBuilder(100)</span>
-<span class="fc" id="L28">        .append(&quot;~%%begin:&quot;)</span>
-<span class="fc" id="L29">        .append(template.getName())</span>
-<span class="fc" id="L30">        .append('%')</span>
-<span class="fc" id="L31">        .append(template)</span>
-<span class="fc" id="L32">        .append(&quot;~%%end:&quot;)</span>
-<span class="fc" id="L33">        .append(template.getName())</span>
-<span class="fc" id="L34">        .append('%')</span>
-<span class="fc" id="L35">        .toString();</span>
+<span class="fc" id="L20">    return new StringBuilder(100)</span>
+<span class="fc" id="L21">        .append(&quot;~%%begin:&quot;)</span>
+<span class="fc" id="L22">        .append(template.getName())</span>
+<span class="fc" id="L23">        .append('%')</span>
+<span class="fc" id="L24">        .append(template)</span>
+<span class="fc" id="L25">        .append(&quot;~%%end:&quot;)</span>
+<span class="fc" id="L26">        .append(template.getName())</span>
+<span class="fc" id="L27">        .append('%')</span>
+<span class="fc" id="L28">        .toString();</span>
   }
 
 }

@@ -10,7 +10,7 @@ final class ParseUtils {
    * the begin or end tag of an inline template finds itself on an otherwise empty
    * line, that entire line is removed from the template when it is rendered.
    */
-  static boolean occupiesLine(String src, int from, int to) {
+  static boolean onSeparateLine(String src, int from, int to) {
     char c;
     for (int i = from - 1; i >= 0 && (c = src.charAt(i)) != '\n'; --i) {
       if (c != ' ' && c != '\t') {

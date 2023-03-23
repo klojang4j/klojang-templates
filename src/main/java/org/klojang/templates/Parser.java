@@ -12,6 +12,7 @@ import java.util.regex.Pattern;
 import static org.klojang.check.CommonChecks.*;
 import static org.klojang.templates.ParseErrorCode.*;
 import static org.klojang.templates.ParseUtils.deleteEmptyLine;
+import static org.klojang.templates.ParseUtils.onSeparateLine;
 import static org.klojang.templates.Template.ROOT_TEMPLATE_NAME;
 import static org.klojang.util.StringMethods.EMPTY_STRING;
 
@@ -136,15 +137,14 @@ final class Parser {
       TemplateLocation loc = new TemplateLocation(location.resolver());
       // If ~%%end:foo% is all by itself on a separate line, except possibly
       // surrounded by whitespace, then that whole line will be removed.
-      if (ParseUtils.occupiesLine(src, m.start(4), m.end(4))) {
-        mySrc = ParseUtils.deleteEmptyLine(mySrc);
+      if (onSeparateLine(src, m.start(4), m.end(4))) {
+        mySrc = deleteEmptyLine(mySrc);
       }
       Parser parser = new Parser(loc, name, mySrc);
       parts.add(
           new InlineTemplatePart(parser.parse(),
               offset + m.start(),
-              ParseUtils.occupiesLine(src, m.start(1), m.end(1)),
-              ParseUtils.occupiesLine(src, m.start(4), m.end(4))));
+              onSeparateLine(src, m.start(1), m.end(1))));
       end = m.end();
     } while (m.find());
     if (end < unparsed.text().length()) {
