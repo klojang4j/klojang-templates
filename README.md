@@ -180,30 +180,29 @@ but there's not much you can do with this knowledge.)
 
 ### Inline Templates
 
-Inline templates, as the name suggests, are defined within the parent template
-itself. Here is an example of a template (company-overview), which contains an inline
-template (companies), which itself contains an inline template (departments), which
-also contains an inline template (employees). For clarity's sake, this is a non-HTML
-template.
+Inline templates are defined within the parent template itself. Here is an example of
+a template (company-overview), which contains an inline template (companies), which
+itself contains an inline template (departments), which also contains an inline
+template (employees). For clarity's sake, this is a non-HTML template.
 
 #### /views/company-overview.txt:
 ```
 This is an overview of our customers:
-~%%begin:companies%
-    Name .......: ~%name%
-    Profits ....: ~%profits%
-    Departments:
-    ~%%begin:departments%
-        Name .......: ~%name%
-        Manager ....: ~%manager%
-        Employees:
-            ~%%begin:employees%
-                First name ....: ~%firstName%               
-                Last name .....: ~%lastName%               
-                Birth date ....: ~%birthDate%               
-            ~%%end:employees%
-   ~%%end:departments%
-~%%end:companies%
+   ~%%begin:companies%
+       Name .......: ~%name%
+       Profits ....: ~%profits%
+       Departments:
+       ~%%begin:departments%
+           Name .......: ~%name%
+           Manager ....: ~%manager%
+           Employees:
+               ~%%begin:employees%
+                   First name ....: ~%firstName%               
+                   Last name .....: ~%lastName%
+                   Birth date ....: ~%birthDate%               
+               ~%%end:employees%
+      ~%%end:departments%
+   ~%%end:companies%
 Not bad, ey!
 ```
 
@@ -247,6 +246,51 @@ If this is too rigid, you can use the following syntax:
 ```
 ~%%include:employees:/views/employees-2023-01-01.txt%%
 ```
+
+## Working with Nested Templates
+
+Nested templates enable you to "blast" the data into the main template. Suppose 
+you have the following model classes:
+
+```java
+
+public record Employee(String firstName, String lastName, LocalDate birthDate) {}
+
+public record Department(String name, String manager, List<Employee> employees) {}
+
+public record Company(String name, BigDecimal profits, List<Department> departments) {}
+```
+
+You can now construct a `Company` instance that will populate the entire 
+company-overview template with a single API call. More likely, you will receive a 
+list of `Company` instances from the data access layer, and this list can be 
+passed on as-is to the `RenderSession`:
+
+```java
+import org.klojang.templates.ParseException;
+import org.klojang.templates.RenderSession;
+import org.klojang.templates.Template;
+
+public class CompanyResource {
+  
+  private CompanyDao dao;
+
+  @GET
+  @Path("/overview")
+  @Produces("text/plain")
+  public String overview() throws ParseException {
+    List<Company> companies = dao.list();
+    Template template = Template.fromResource(getClass(), "/views/company-overview.txt");
+    return template.newRenderSession().populate("companies", companies).render();
+  }
+
+}
+```
+
+This will cause the companies template within the 
+
+
+
 
 
 

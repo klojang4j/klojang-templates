@@ -22,15 +22,14 @@ import static org.klojang.templates.x.Messages.ERR_NO_SUCH_VARGROUP;
  * that you can define using the {@link StringifierRegistry} class. Variable groups
  * can also be assigned <i>programmatically</i> using
  * {@link RenderSession#set(String, Object, VarGroup) RenderSession.set(varName,
- * value, varGroup}.
+ * value, varGroup}).
  *
  * <p>Note that variable groups are assigned at the variable <i>occurrence</i>
  * level. For example, a template may contain multiple instances of a variable named
  * {@code firstName}. For occurrences inside a &lt;script&gt; tag you might want to
- * use the "js" prefix, for the others the "html" prefix (or no prefix at all).
- * Therefore, stringifiers associated with a variable group take the highest
- * precedence, even higher (perhaps paradoxically) than stringifiers associated with
- * a variable.
+ * use the "js" prefix, for the others the "html" prefix. Therefore, stringifiers
+ * associated with a variable group take the highest precedence, even higher (perhaps
+ * paradoxically) than stringifiers associated with a variable.
  *
  * @author Ayco Holleman
  */

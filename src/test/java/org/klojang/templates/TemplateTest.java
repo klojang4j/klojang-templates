@@ -204,7 +204,7 @@ public class TemplateTest {
         ~%foo%
         """;
     Template tmpl = Template.fromString(getClass(), src);
-    assertEquals(src, tmpl.toString());
+    assertEquals(nospace(src), nospace(tmpl.toString()));
   }
 
   @Test
@@ -235,6 +235,10 @@ public class TemplateTest {
     assertFalse(tmpl3.equals(tmpl5));
     assertTrue(tmpl5.equals(tmpl5));
     assertFalse(tmpl5.equals(tmpl6));
+  }
+
+  private static String nospace(String s) {
+    return s.replaceAll("\\s+", "");
   }
 
 }

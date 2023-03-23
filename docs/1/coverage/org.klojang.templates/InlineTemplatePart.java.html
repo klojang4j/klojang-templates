@@ -2,21 +2,37 @@
 
 final class InlineTemplatePart extends NestedTemplatePart {
 
-  InlineTemplatePart(Template template, int start) {
-<span class="fc" id="L6">    super(template, start);</span>
-<span class="fc" id="L7">  }</span>
+  private final boolean startTagOnSeparateLine;
+  private final boolean endTagOnSeparateLine;
+
+  InlineTemplatePart(Template template,
+      int start,
+      boolean startTagOnSeparateLine,
+      boolean endTagOnSeparateLine) {
+<span class="fc" id="L12">    super(template, start);</span>
+<span class="fc" id="L13">    this.startTagOnSeparateLine = startTagOnSeparateLine;</span>
+<span class="fc" id="L14">    this.endTagOnSeparateLine = endTagOnSeparateLine;</span>
+<span class="fc" id="L15">  }</span>
+
+  boolean isStartTagOnSeparateLine() {
+<span class="fc" id="L18">    return startTagOnSeparateLine;</span>
+  }
+
+  boolean isEndTagOnSeparateLine() {
+<span class="nc" id="L22">    return endTagOnSeparateLine;</span>
+  }
 
   @Override
   public String toString() {
-<span class="fc" id="L11">    return new StringBuilder(100)</span>
-<span class="fc" id="L12">        .append(&quot;~%%begin:&quot;)</span>
-<span class="fc" id="L13">        .append(template.getName())</span>
-<span class="fc" id="L14">        .append('%')</span>
-<span class="fc" id="L15">        .append(template)</span>
-<span class="fc" id="L16">        .append(&quot;~%%end:&quot;)</span>
-<span class="fc" id="L17">        .append(template.getName())</span>
-<span class="fc" id="L18">        .append('%')</span>
-<span class="fc" id="L19">        .toString();</span>
+<span class="fc" id="L27">    return new StringBuilder(100)</span>
+<span class="fc" id="L28">        .append(&quot;~%%begin:&quot;)</span>
+<span class="fc" id="L29">        .append(template.getName())</span>
+<span class="fc" id="L30">        .append('%')</span>
+<span class="fc" id="L31">        .append(template)</span>
+<span class="fc" id="L32">        .append(&quot;~%%end:&quot;)</span>
+<span class="fc" id="L33">        .append(template.getName())</span>
+<span class="fc" id="L34">        .append('%')</span>
+<span class="fc" id="L35">        .toString();</span>
   }
 
 }

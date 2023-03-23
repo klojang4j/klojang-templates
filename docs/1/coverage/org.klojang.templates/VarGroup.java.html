@@ -22,28 +22,27 @@ import static org.klojang.templates.x.Messages.ERR_NO_SUCH_VARGROUP;
  * that you can define using the {@link StringifierRegistry} class. Variable groups
  * can also be assigned &lt;i&gt;programmatically&lt;/i&gt; using
  * {@link RenderSession#set(String, Object, VarGroup) RenderSession.set(varName,
- * value, varGroup}.
+ * value, varGroup}).
  *
  * &lt;p&gt;Note that variable groups are assigned at the variable &lt;i&gt;occurrence&lt;/i&gt;
  * level. For example, a template may contain multiple instances of a variable named
  * {@code firstName}. For occurrences inside a &amp;lt;script&amp;gt; tag you might want to
- * use the &quot;js&quot; prefix, for the others the &quot;html&quot; prefix (or no prefix at all).
- * Therefore, stringifiers associated with a variable group take the highest
- * precedence, even higher (perhaps paradoxically) than stringifiers associated with
- * a variable.
+ * use the &quot;js&quot; prefix, for the others the &quot;html&quot; prefix. Therefore, stringifiers
+ * associated with a variable group take the highest precedence, even higher (perhaps
+ * paradoxically) than stringifiers associated with a variable.
  *
  * @author Ayco Holleman
  */
 public class VarGroup {
 
-<span class="fc" id="L39">  private static final HashMap&lt;String, VarGroup&gt; VAR_GROUPS = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L38">  private static final HashMap&lt;String, VarGroup&gt; VAR_GROUPS = new HashMap&lt;&gt;();</span>
 
   /**
    * A predefined variable group corresponding to the {@code text:} prefix. Forces
    * the variable instance to be stringified using the
    * {@link Stringifier#DEFAULT default stringifier}.
    */
-<span class="fc" id="L46">  public static final VarGroup TEXT = withName(&quot;text&quot;);</span>
+<span class="fc" id="L45">  public static final VarGroup TEXT = withName(&quot;text&quot;);</span>
 
   /**
    * A predefined variable group corresponding to the {@code html:} prefix. Variables
@@ -52,21 +51,21 @@ public class VarGroup {
    * that the variable &lt;i&gt;has to&lt;/i&gt; have the {@code html:} prefix. The {@code age}
    * variable likely is an integer, which does not require any HTML escaping.
    */
-<span class="fc" id="L55">  public static final VarGroup HTML = withName(&quot;html&quot;);</span>
+<span class="fc" id="L54">  public static final VarGroup HTML = withName(&quot;html&quot;);</span>
 
   /**
    * A predefined variable group corresponding to the {@code js:} prefix. Variables
    * with this prefix are ECMASScript-escaped. Especially for use in {@code &lt;script&gt;}
    * tags.
    */
-<span class="fc" id="L62">  public static final VarGroup JS = withName(&quot;js&quot;);</span>
+<span class="fc" id="L61">  public static final VarGroup JS = withName(&quot;js&quot;);</span>
 
   /**
    * A predefined variable group corresponding to the {@code attr:} prefix. Works
    * just like the {@code html:} prefix except that single and double quote
    * characters are also escaped. Especially for use in element attribute values.
    */
-<span class="fc" id="L69">  public static final VarGroup ATTR = withName(&quot;attr&quot;);</span>
+<span class="fc" id="L68">  public static final VarGroup ATTR = withName(&quot;attr&quot;);</span>
 
   /**
    * A predefined variable group corresponding to the {@code jsattr:} prefix.
@@ -74,7 +73,7 @@ public class VarGroup {
    * like the {@link #ATTR} variable group. Especially for use in HTML attributes
    * that contain JavaScript, like {@code onclick} .
    */
-<span class="fc" id="L77">  public static final VarGroup JS_ATTR = withName(&quot;jsattr&quot;);</span>
+<span class="fc" id="L76">  public static final VarGroup JS_ATTR = withName(&quot;jsattr&quot;);</span>
 
   /**
    * A predefined variable group corresponding to the {@code param:} prefix. To be
@@ -86,14 +85,14 @@ public class VarGroup {
    * variable or the contents of an HTML tag. Further escaping using either
    * JavaScript-escaping rules or HTML-escaping rules would not change the value.
    */
-<span class="fc" id="L89">  public static final VarGroup PARAM = withName(&quot;param&quot;);</span>
+<span class="fc" id="L88">  public static final VarGroup PARAM = withName(&quot;param&quot;);</span>
 
   /**
    * A predefined variable group corresponding to the {@code path:} prefix. To be
    * used for template variables placed inside a URL as a path segment. For example:
    * http://example.com/~%path:city%/~%path:restaurant%.
    */
-<span class="fc" id="L96">  public static final VarGroup PATH = withName(&quot;path&quot;);</span>
+<span class="fc" id="L95">  public static final VarGroup PATH = withName(&quot;path&quot;);</span>
 
   /**
    * Returns the {@code VarGroup} with the specified name (which is also the prefix
@@ -104,23 +103,23 @@ public class VarGroup {
    * @return the {@code VarGroup} instance corresponding to the specified name
    */
   public static VarGroup forName(String name) {
-<span class="fc" id="L107">    VarGroup vg = Check.notNull(name).ok(VAR_GROUPS::get);</span>
-<span class="fc" id="L108">    return Check.that(vg).is(notNull(), ERR_NO_SUCH_VARGROUP, name).ok();</span>
+<span class="fc" id="L106">    VarGroup vg = Check.notNull(name).ok(VAR_GROUPS::get);</span>
+<span class="fc" id="L107">    return Check.that(vg).is(notNull(), ERR_NO_SUCH_VARGROUP, name).ok();</span>
   }
 
   static VarGroup createPrivileged(Private&lt;String&gt; name) {
-<span class="fc" id="L112">    return withName(name.get());</span>
+<span class="fc" id="L111">    return withName(name.get());</span>
   }
 
   private static VarGroup withName(String name) {
-<span class="fc" id="L116">    return VAR_GROUPS.computeIfAbsent(name, VarGroup::new);</span>
+<span class="fc" id="L115">    return VAR_GROUPS.computeIfAbsent(name, VarGroup::new);</span>
   }
 
   private final String name;
 
-<span class="fc" id="L121">  private VarGroup(String name) {</span>
-<span class="fc" id="L122">    this.name = name;</span>
-<span class="fc" id="L123">  }</span>
+<span class="fc" id="L120">  private VarGroup(String name) {</span>
+<span class="fc" id="L121">    this.name = name;</span>
+<span class="fc" id="L122">  }</span>
 
   /**
    * Returns the name of this {@code VarGroup}, which is also the prefix to be used
@@ -129,7 +128,7 @@ public class VarGroup {
    * @return the name of this {@code VarGroup}
    */
   public String getName() {
-<span class="fc" id="L132">    return name;</span>
+<span class="fc" id="L131">    return name;</span>
   }
 
   /**
@@ -140,7 +139,7 @@ public class VarGroup {
    */
   @Override
   public String toString() {
-<span class="fc" id="L143">    return name;</span>
+<span class="fc" id="L142">    return name;</span>
   }
 
 }

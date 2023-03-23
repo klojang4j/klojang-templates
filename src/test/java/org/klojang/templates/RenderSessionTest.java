@@ -76,12 +76,13 @@ public class RenderSessionTest {
                   <td>Name</td><td>~%name%</td>
                   <td>Boss</td><td>~%boss%</td>
                   <td>Employees</td>
-                  <td><table>~%%begin:employees%
+                  <td><table>
+                    ~%%begin:employees%
                     <tr>
                       <td>Name</td><td>~%name%</td>
                       <td>Age</td><td>~%age%</td>
                     </tr>
-                  ~%%end:employees%</table></td>
+                    ~%%end:employees%</table></td>
                 </tr>
                 ~%%end:departments%
               </table></td>
@@ -161,10 +162,92 @@ public class RenderSessionTest {
     RenderSession rs = tmpl.newRenderSession();
     rs.populate("companies", companies);
     String out = rs.render();
-    out = out.replaceAll("\\s+", "");
-    //System.out.println(out);
-    String expected = "<html><body><table><tr><td>Name</td><td>Shell</td><td>Profits</td><td>5029872.8</td><td>Departments</td><td><table><tr><td>Name</td><td>ICT</td><td>Boss</td><td>John</td><td>Employees</td><td><table><tr><td>Name</td><td>Pete</td><td>Age</td><td>27</td></tr><tr><td>Name</td><td>Jake</td><td>Age</td><td>52</td></tr></table></td></tr><tr><td>Name</td><td>HR</td><td>Boss</td><td>Joanna</td><td>Employees</td><td><table><tr><td>Name</td><td>Mary</td><td>Age</td><td>27</td></tr><tr><td>Name</td><td>John</td><td>Age</td><td>52</td></tr></table></td></tr></table></td></tr><tr><td>Name</td><td>Goggle</td><td>Profits</td><td>3.8632534578E8</td><td>Departments</td><td><table><tr><td>Name</td><td>ICT</td><td>Boss</td><td>Jane</td><td>Employees</td><td><table><tr><td>Name</td><td>Capote</td><td>Age</td><td>66</td></tr><tr><td>Name</td><td>Joan</td><td>Age</td><td>51</td></tr></table></td></tr><tr><td>Name</td><td>HR</td><td>Boss</td><td>Eric</td><td>Employees</td><td><table><tr><td>Name</td><td>Mary</td><td>Age</td><td>54</td></tr><tr><td>Name</td><td>John</td><td>Age</td><td>46</td></tr></table></td></tr></table></td></tr></table></body></html>";
-    assertEquals(expected, out);
+    System.out.println(out);
+    String expected = """
+        <html><body>
+          <table>
+            <tr>
+              <td>Name</td><td>Shell</td>
+              <td>Profits</td><td>5029872.8</td>
+              <td>Departments</td>
+              <td><table>
+                <tr>
+                  <td>Name</td><td>ICT</td>
+                  <td>Boss</td><td>John</td>
+                  <td>Employees</td>
+                  <td><table>
+                    <tr>
+                      <td>Name</td><td>Pete</td>
+                      <td>Age</td><td>27</td>
+                    </tr>
+                    
+                    <tr>
+                      <td>Name</td><td>Jake</td>
+                      <td>Age</td><td>52</td>
+                    </tr>
+                    </table></td>
+                </tr>
+                <tr>
+                  <td>Name</td><td>HR</td>
+                  <td>Boss</td><td>Joanna</td>
+                  <td>Employees</td>
+                  <td><table>
+                    <tr>
+                      <td>Name</td><td>Mary</td>
+                      <td>Age</td><td>27</td>
+                    </tr>
+                    
+                    <tr>
+                      <td>Name</td><td>John</td>
+                      <td>Age</td><td>52</td>
+                    </tr>
+                    </table></td>
+                </tr>
+              </table></td>
+            </tr>
+            <tr>
+              <td>Name</td><td>Goggle</td>
+              <td>Profits</td><td>3.8632534578E8</td>
+              <td>Departments</td>
+              <td><table>
+                <tr>
+                  <td>Name</td><td>ICT</td>
+                  <td>Boss</td><td>Jane</td>
+                  <td>Employees</td>
+                  <td><table>
+                    <tr>
+                      <td>Name</td><td>Capote</td>
+                      <td>Age</td><td>66</td>
+                    </tr>
+                    
+                    <tr>
+                      <td>Name</td><td>Joan</td>
+                      <td>Age</td><td>51</td>
+                    </tr>
+                    </table></td>
+                </tr>
+                <tr>
+                  <td>Name</td><td>HR</td>
+                  <td>Boss</td><td>Eric</td>
+                  <td>Employees</td>
+                  <td><table>
+                    <tr>
+                      <td>Name</td><td>Mary</td>
+                      <td>Age</td><td>54</td>
+                    </tr>
+                    
+                    <tr>
+                      <td>Name</td><td>John</td>
+                      <td>Age</td><td>46</td>
+                    </tr>
+                    </table></td>
+                </tr>
+              </table></td>
+            </tr>
+          </table>
+        </body></html>
+        """;
+    assertEquals(nospace(expected), nospace(out));
   }
 
   @Test
@@ -181,7 +264,7 @@ public class RenderSessionTest {
     rs.populate("companies", null);
     String out = rs.render();
     out = out.replaceAll("\\s+", "");
-    //System.out.println(out);
+    System.out.println(out);
     assertEquals("FOOBARFOO", out);
   }
 
@@ -386,7 +469,7 @@ public class RenderSessionTest {
         """;
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
-    rs.populate2("companies", "Pig", "Pony","Horse", "Cat");
+    rs.populate2("companies", "Pig", "Pony", "Horse", "Cat");
     String out = rs.render();
     out = out.replaceAll("\\s+", "");
     //System.out.println(out);
@@ -588,8 +671,12 @@ public class RenderSessionTest {
     assertFalse(rs.isFullyPopulated());
     rs.repeat("foo", 1).set("bar", "teapot");
     assertFalse(rs.isFullyPopulated());
-    rs.in("foo").set("bozo","coffeepot");
+    rs.in("foo").set("bozo", "coffeepot");
     assertTrue(rs.isFullyPopulated());
+  }
+
+  private static String nospace(String s) {
+    return s.replaceAll("\\s+", "");
   }
 
 }

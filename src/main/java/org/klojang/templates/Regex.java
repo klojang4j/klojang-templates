@@ -41,17 +41,17 @@ public final class Regex {
   public static final String REGEX_NAME = "([a-zA-Z0-9_\\-]+)";
 
   /**
-   * <p>Regular expression for path strings. Template variable names are paths
-   * through an object graph. For example: {@code ~%company.address.city%}. This
-   * variable would acquire the value of the {@code city} property of the
-   * {@code Address} object within the {@code Company} object within the object that
-   * you populate the template with. Each of the name segments must match
-   * {@link #REGEX_NAME}. In practice you are more likely to use nested and
-   * doubly-nested templates, and then use simple variable names at the appropriate
-   * nesting level (e.g. {@code ~%city%}).
+   * <p>Regular expression for path strings. Variable names are paths through an
+   * object graph. For example: {@code ~%company.address.city%}. This variable would
+   * acquire the value of the {@code city} property of the {@code Address} object
+   * within the {@code Company} object within the object that you populate the
+   * template with. Each of the name segments must match {@link #REGEX_NAME}. In
+   * practice, you are more likely to use nested and doubly-nested templates, and
+   * then use simple variable names at the appropriate nesting level (e.g.
+   * {@code ~%city%}).
    *
-   * <p>Note that this is <i>not</i> the regular expression for the include path of
-   * an included template (see {@link #REGEX_INCLUDE_PATH}).
+   * <p>Note that this is <i>not</i> the regular expression for the <i>include
+   * path</i> of an included template (see {@link #REGEX_INCLUDE_PATH}).
    *
    * @see org.klojang.path.Path
    */
@@ -75,17 +75,14 @@ public final class Regex {
   /**
    * Regular expression for a template variable that is placed between HTML comments.
    * For example: {@code <!-- ~%firstName% -->}. This is rendered in exactly the same
-   * way as {@code ~%firstName%}. That is: the entire string ("&lt;!-- ~%firstName%
-   * --&gt;") is removed from the template and replaced with the value
-   * {@linkplain SoloSession#set(String, Object) provided} for {@code firstName}. The
-   * advantage of using HTML comments is that the raw, unprocessed template still
-   * renders nicely in a browser, without "odd" tilde-percent sequences spoiling the
-   * HTML page. This works even better if you also provide a placeholder value, as in
-   * the following example: {@code <!-- ~%firstName% -->John<!--%-->}. Here, again,
-   * the <i>entire</i> string will be replaced with whatever value is provided for
-   * {@code firstName}, but when the browser renders the raw, unprocessed template,
-   * it will display the string "John". Note that the entire string must be on a
-   * single line. If you want to provide a placeholder value that spans multiple
+   * way as {@code ~%firstName%}. However, when using HTML comments, the raw,
+   * unprocessed template still renders nicely in a browser &#8212; without "odd"
+   * tilde-percent sequences spoiling the HTML page. This works even better if you
+   * also provide a placeholder value, as in the following example:
+   * {@code <!-- ~%firstName% -->John<!--%-->}. Now, when the browser renders the raw
+   * template, it will display the string "John", but when Klojang Templates renders
+   * the template, "John" will have disappeared. Note that the entire string must be
+   * on a single line. If you want to provide a placeholder value that spans multiple
    * lines, use the syntax in the example below:
    *
    * <blockquote><pre>{@code
@@ -102,7 +99,7 @@ public final class Regex {
    *
    * @see #REGEX_PLACEHOLDER
    */
-  static final String REGEX_CMT_VARIABLE
+  public static final String REGEX_CMT_VARIABLE
       = "<!--[ \\t]*"
       + REGEX_VARIABLE
       + "[ \\t]*-->((.*?)<!--%-->)?";
@@ -111,9 +108,9 @@ public final class Regex {
    * Regular expression for inline template blocks.
    */
   public static final String REGEX_INLINE_TEMPLATE
-      = "~%%begin:" + REGEX_NAME + "%"
+      = "(~%%begin:" + REGEX_NAME + "%)"
       + "(.*?)"
-      + "~%%end:\\1%";
+      + "(~%%end:\\2%)";
 
   // Used only for syntax error reporting:
   static final String REGEX_INLINE_TEMPLATE_BEGIN = "~%%begin:" + REGEX_PATH + "%";

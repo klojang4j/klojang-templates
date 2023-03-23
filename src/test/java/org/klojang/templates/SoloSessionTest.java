@@ -297,7 +297,7 @@ public class SoloSessionTest {
         false);
     rs.setNested("companies.departments.employees.lastName", i -> "Smith" + i);
     String out = rs.render();
-    //System.out.println(out);
+    System.out.println(out);
     String expected = """
         <html><body>
         <p></p>

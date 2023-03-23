@@ -11,6 +11,7 @@ import java.util.regex.Pattern;
 
 import static org.klojang.check.CommonChecks.*;
 import static org.klojang.templates.ParseErrorCode.*;
+import static org.klojang.templates.ParseUtils.trimToFristNewline;
 import static org.klojang.templates.Template.ROOT_TEMPLATE_NAME;
 import static org.klojang.util.StringMethods.EMPTY_STRING;
 
@@ -53,6 +54,7 @@ final class Parser {
     parts = parse(parts, names, (x, y) -> parseVars(x, y, true));
     parts = parse(parts, names, (x, y) -> parseVars(x, y, false));
     parts = collectTextParts(parts);
+    parts = suppressNewLines(parts);
     return parts;
   }
 
@@ -122,18 +124,27 @@ final class Parser {
       if (m.start() > end) {
         parts.add(todo(unparsed, end, m.start()));
       }
-      String name = m.group(1);
-      String mySrc = m.group(2);
+      String name = m.group(2);
+      String mySrc = m.group(3);
       Check.that(name).isNot(equalTo(), ROOT_TEMPLATE_NAME,
-          ILLEGAL_TMPL_NAME.getExceptionSupplier(src, offset + m.start(1), name));
+          ILLEGAL_TMPL_NAME.getExceptionSupplier(src, offset + m.start(2), name));
       Check.that(name).isNot(in(), names,
-          DUPLICATE_TMPL_NAME.getExceptionSupplier(src, offset + m.start(1), name));
+          DUPLICATE_TMPL_NAME.getExceptionSupplier(src, offset + m.start(2), name));
       names.add(name);
       // No path is associated with an inline template, but it inherits the
       // PathResolver of the template in which it is nested
       TemplateLocation loc = new TemplateLocation(location.resolver());
+      // If ~%%end:foo% is all by itself on a separate line, except possibly
+      // surrounded by whitespace, then that whole line will be removed.
+      if (ParseUtils.occupiesLine(src, m.start(4), m.end(4))) {
+        mySrc = ParseUtils.trimToFristNewline(mySrc);
+      }
       Parser parser = new Parser(loc, name, mySrc);
-      parts.add(new InlineTemplatePart(parser.parse(), offset + m.start()));
+      parts.add(
+          new InlineTemplatePart(parser.parse(),
+              offset + m.start(),
+              ParseUtils.occupiesLine(src, m.start(1), m.end(1)),
+              ParseUtils.occupiesLine(src, m.start(4), m.end(4))));
       end = m.end();
     } while (m.find());
     if (end < unparsed.text().length()) {
@@ -264,6 +275,29 @@ final class Parser {
     idx = str.indexOf("~%%include:");
     Check.that(idx).is(eq(), -1,
         INCLUDE_TAG_NOT_TERMINATED.getExceptionSupplier(src, off + idx));
+  }
+
+  private static List<Part> suppressNewLines(List<Part> parts) {
+    List<Part> out = new ArrayList<>(parts.size());
+    for (int i = 0; i < parts.size(); ++i) {
+      Part part = parts.get(i);
+      if (part instanceof TextPart tp) {
+        if (i < parts.size() - 1
+            && parts.get(i + 1) instanceof InlineTemplatePart itp
+            && itp.isStartTagOnSeparateLine()
+        ) {
+          String trimmed = trimToFristNewline(tp.getText());
+          if (!trimmed.isEmpty()) {
+            out.add(new TextPart(trimmed, part.start()));
+          }
+        } else {
+          out.add(part);
+        }
+      } else {
+        out.add(part);
+      }
+    }
+    return out;
   }
 
   private static Matcher match(Pattern pattern, UnparsedPart unparsed) {

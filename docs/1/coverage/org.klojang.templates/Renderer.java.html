@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.stream.IntStream;
 
 import static java.util.Arrays.stream;
+import static org.klojang.templates.ParseUtils.trimToFristNewline;
 import static org.klojang.templates.RenderUtil.stringify;
 import static org.klojang.util.StringMethods.concat;
 
@@ -15,104 +16,104 @@ final class Renderer {
 
   private final RenderState state;
 
-<span class="fc" id="L18">  Renderer(RenderState state) {</span>
-<span class="fc" id="L19">    this.state = state;</span>
-<span class="fc" id="L20">  }</span>
+<span class="fc" id="L19">  Renderer(RenderState state) {</span>
+<span class="fc" id="L20">    this.state = state;</span>
+<span class="fc" id="L21">  }</span>
 
   public void render(OutputStream out) {
-<span class="pc bpc" id="L23" title="1 of 2 branches missed.">    PrintStream ps = out instanceof PrintStream</span>
-<span class="nc" id="L24">        ? (PrintStream) out</span>
-<span class="fc" id="L25">        : new PrintStream(out);</span>
-<span class="fc" id="L26">    render(state, ps);</span>
-<span class="fc" id="L27">  }</span>
+<span class="pc bpc" id="L24" title="1 of 2 branches missed.">    PrintStream ps = out instanceof PrintStream</span>
+<span class="nc" id="L25">        ? (PrintStream) out</span>
+<span class="fc" id="L26">        : new PrintStream(out);</span>
+<span class="fc" id="L27">    render(state, ps);</span>
+<span class="fc" id="L28">  }</span>
 
   public void render(StringBuilder sb) {
-<span class="fc" id="L30">    render(state, sb);</span>
-<span class="fc" id="L31">  }</span>
+<span class="fc" id="L31">    render(state, sb);</span>
+<span class="fc" id="L32">  }</span>
 
   @Override
   public String toString() {
-<span class="nc" id="L35">    Template t = state.getSessionConfig().template();</span>
-<span class="nc bnc" id="L36" title="All 2 branches missed.">    if (t.path().isPresent()) {</span>
-<span class="nc" id="L37">      return concat(Renderer.class.getName(), &quot;[source=&quot;, t.path().get(), &quot;]&quot;);</span>
+<span class="nc" id="L36">    Template t = state.getSessionConfig().template();</span>
+<span class="nc bnc" id="L37" title="All 2 branches missed.">    if (t.path().isPresent()) {</span>
+<span class="nc" id="L38">      return concat(Renderer.class.getName(), &quot;[source=&quot;, t.path().get(), &quot;]&quot;);</span>
     }
-<span class="nc" id="L39">    return concat(Renderer.class.getName(), &quot;[template=&quot;, t.getName(), &quot;]&quot;);</span>
+<span class="nc" id="L40">    return concat(Renderer.class.getName(), &quot;[template=&quot;, t.getName(), &quot;]&quot;);</span>
   }
 
   private void render(RenderState state0, PrintStream ps) {
-<span class="fc" id="L43">    List&lt;Part&gt; parts = state0.getSessionConfig().template().parts();</span>
-<span class="fc bfc" id="L44" title="All 2 branches covered.">    for (int i = 0; i &lt; parts.size(); ++i) {</span>
-<span class="fc" id="L45">      Part part = parts.get(i);</span>
-<span class="fc bfc" id="L46" title="All 2 branches covered.">      if (part instanceof TextPart tp) {</span>
-<span class="fc" id="L47">        ps.append(tp.getText());</span>
-<span class="fc bfc" id="L48" title="All 2 branches covered.">      } else if (part instanceof VariablePart vp) {</span>
-<span class="fc bfc" id="L49" title="All 2 branches covered.">        if (state0.getVar(i) != null) {</span>
-<span class="fc" id="L50">          Object val = state0.getVar(i);</span>
-<span class="fc bfc" id="L51" title="All 2 branches covered.">          if (val instanceof Lazy lazy) {</span>
-<span class="fc" id="L52">            ps.append(eval(lazy, state0, vp));</span>
+<span class="fc" id="L44">    List&lt;Part&gt; parts = state0.getSessionConfig().template().parts();</span>
+<span class="fc bfc" id="L45" title="All 2 branches covered.">    for (int i = 0; i &lt; parts.size(); ++i) {</span>
+<span class="fc" id="L46">      Part part = parts.get(i);</span>
+<span class="fc bfc" id="L47" title="All 2 branches covered.">      if (part instanceof TextPart tp) {</span>
+<span class="fc" id="L48">        ps.append(tp.getText());</span>
+<span class="fc bfc" id="L49" title="All 2 branches covered.">      } else if (part instanceof VariablePart vp) {</span>
+<span class="fc bfc" id="L50" title="All 2 branches covered.">        if (state0.getVar(i) != null) {</span>
+<span class="fc" id="L51">          Object val = state0.getVar(i);</span>
+<span class="fc bfc" id="L52" title="All 2 branches covered.">          if (val instanceof Lazy lazy) {</span>
+<span class="fc" id="L53">            ps.append(eval(lazy, state0, vp));</span>
           } else {
-<span class="fc" id="L54">            ps.append(val.toString());</span>
+<span class="fc" id="L55">            ps.append(val.toString());</span>
           }
-<span class="fc" id="L56">        }</span>
+<span class="fc" id="L57">        }</span>
       } else /* TemplatePart */ {
-<span class="fc" id="L58">        NestedTemplatePart ntp = (NestedTemplatePart) part;</span>
-<span class="fc" id="L59">        SoloSession[] sessions = state0.getChildSessions(ntp.getTemplate());</span>
-<span class="fc bfc" id="L60" title="All 2 branches covered.">        if (sessions != null) {</span>
-<span class="fc" id="L61">          Template t = ntp.getTemplate();</span>
-<span class="fc bfc" id="L62" title="All 2 branches covered.">          if (t.isTextOnly()) {</span>
+<span class="fc" id="L59">        NestedTemplatePart ntp = (NestedTemplatePart) part;</span>
+<span class="fc" id="L60">        SoloSession[] sessions = state0.getChildSessions(ntp.getTemplate());</span>
+<span class="fc bfc" id="L61" title="All 2 branches covered.">        if (sessions != null) {</span>
+<span class="fc" id="L62">          Template t = ntp.getTemplate();</span>
+<span class="fc bfc" id="L63" title="All 2 branches covered.">          if (t.isTextOnly()) {</span>
             // The RenderSession[] array will contain only null values
             // and we just want to know its length to determine the
             // number of repetitions
-<span class="fc" id="L66">            String text = ((TextPart) t.parts().get(0)).getText();</span>
-<span class="fc" id="L67">            IntStream.range(0, sessions.length).forEach(x -&gt; ps.append(text));</span>
-<span class="fc" id="L68">          } else {</span>
-<span class="fc" id="L69">            stream(sessions)</span>
-<span class="fc" id="L70">                .map(SoloSession::getState)</span>
-<span class="fc" id="L71">                .forEach(s -&gt; render(s, ps));</span>
+<span class="fc" id="L67">            String text = ((TextPart) t.parts().get(0)).getText();</span>
+<span class="fc" id="L68">            IntStream.range(0, sessions.length).forEach(x -&gt; ps.append(text));</span>
+<span class="fc" id="L69">          } else {</span>
+<span class="fc" id="L70">            stream(sessions)</span>
+<span class="fc" id="L71">                .map(SoloSession::getState)</span>
+<span class="fc" id="L72">                .forEach(s -&gt; render(s, ps));</span>
           }
         }
       }
     }
-<span class="fc" id="L76">  }</span>
+<span class="fc" id="L77">  }</span>
 
   private void render(RenderState state0, StringBuilder sb) {
-<span class="fc" id="L79">    List&lt;Part&gt; parts = state0.getSessionConfig().template().parts();</span>
-<span class="fc bfc" id="L80" title="All 2 branches covered.">    for (int i = 0; i &lt; parts.size(); ++i) {</span>
-<span class="fc" id="L81">      Part part = parts.get(i);</span>
-<span class="fc bfc" id="L82" title="All 2 branches covered.">      if (part instanceof TextPart tp) {</span>
-<span class="fc" id="L83">        sb.append(tp.getText());</span>
-<span class="fc bfc" id="L84" title="All 2 branches covered.">      } else if (part instanceof VariablePart vp) {</span>
-<span class="fc bfc" id="L85" title="All 2 branches covered.">        if (state0.getVar(i) != null) {</span>
-<span class="fc" id="L86">          Object val = state0.getVar(i);</span>
-<span class="fc bfc" id="L87" title="All 2 branches covered.">          if (val instanceof Lazy lazy) {</span>
-<span class="fc" id="L88">            sb.append(eval(lazy, state0, vp));</span>
+<span class="fc" id="L80">    List&lt;Part&gt; parts = state0.getSessionConfig().template().parts();</span>
+<span class="fc bfc" id="L81" title="All 2 branches covered.">    for (int i = 0; i &lt; parts.size(); ++i) {</span>
+<span class="fc" id="L82">      Part part = parts.get(i);</span>
+<span class="fc bfc" id="L83" title="All 2 branches covered.">      if (part instanceof TextPart tp) {</span>
+<span class="fc" id="L84">        sb.append(tp.getText());</span>
+<span class="fc bfc" id="L85" title="All 2 branches covered.">      } else if (part instanceof VariablePart vp) {</span>
+<span class="fc bfc" id="L86" title="All 2 branches covered.">        if (state0.getVar(i) != null) {</span>
+<span class="fc" id="L87">          Object val = state0.getVar(i);</span>
+<span class="fc bfc" id="L88" title="All 2 branches covered.">          if (val instanceof Lazy lazy) {</span>
+<span class="fc" id="L89">            sb.append(eval(lazy, state0, vp));</span>
           } else {
-<span class="fc" id="L90">            sb.append(val);</span>
+<span class="fc" id="L91">            sb.append(val);</span>
           }
-<span class="fc" id="L92">        }</span>
+<span class="fc" id="L93">        }</span>
       } else /* TemplatePart */ {
-<span class="fc" id="L94">        NestedTemplatePart ntp = (NestedTemplatePart) part;</span>
-<span class="fc" id="L95">        SoloSession[] sessions = state0.getChildSessions(ntp.getTemplate());</span>
-<span class="fc bfc" id="L96" title="All 2 branches covered.">        if (sessions != null) {</span>
-<span class="fc" id="L97">          Template t = ntp.getTemplate();</span>
-<span class="fc bfc" id="L98" title="All 2 branches covered.">          if (t.isTextOnly()) {</span>
-<span class="fc" id="L99">            String text = ((TextPart) t.parts().get(0)).getText();</span>
-<span class="fc" id="L100">            IntStream.range(0, sessions.length).forEach(x -&gt; sb.append(text));</span>
-<span class="fc" id="L101">          } else {</span>
-<span class="fc" id="L102">            stream(sessions)</span>
-<span class="fc" id="L103">                .map(SoloSession::getState)</span>
-<span class="fc" id="L104">                .forEach(s -&gt; render(s, sb));</span>
+<span class="fc" id="L95">        NestedTemplatePart ntp = (NestedTemplatePart) part;</span>
+<span class="fc" id="L96">        SoloSession[] sessions = state0.getChildSessions(ntp.getTemplate());</span>
+<span class="fc bfc" id="L97" title="All 2 branches covered.">        if (sessions != null) {</span>
+<span class="fc" id="L98">          Template t = ntp.getTemplate();</span>
+<span class="fc bfc" id="L99" title="All 2 branches covered.">          if (t.isTextOnly()) {</span>
+<span class="fc" id="L100">            String text = ((TextPart) t.parts().get(0)).getText();</span>
+<span class="fc" id="L101">            IntStream.range(0, sessions.length).forEach(x -&gt; sb.append(text));</span>
+<span class="fc" id="L102">          } else {</span>
+<span class="fc" id="L103">            stream(sessions)</span>
+<span class="fc" id="L104">                .map(SoloSession::getState)</span>
+<span class="fc" id="L105">                .forEach(s -&gt; render(s, sb));</span>
           }
         }
       }
     }
-<span class="fc" id="L109">  }</span>
+<span class="fc" id="L110">  }</span>
 
   private static String eval(Lazy lazy, RenderState state, VariablePart part) {
-<span class="fc" id="L112">    StringifierRegistry reg = state.getSessionConfig().stringifiers();</span>
-<span class="fc" id="L113">    Object val = lazy.value().get();</span>
-<span class="fc" id="L114">    Stringifier stringifier = reg.getStringifier(part, lazy.varGroup(), val);</span>
-<span class="fc" id="L115">    return stringify(stringifier, part.getName(), lazy.varGroup(), val);</span>
+<span class="fc" id="L113">    StringifierRegistry reg = state.getSessionConfig().stringifiers();</span>
+<span class="fc" id="L114">    Object val = lazy.value().get();</span>
+<span class="fc" id="L115">    Stringifier stringifier = reg.getStringifier(part, lazy.varGroup(), val);</span>
+<span class="fc" id="L116">    return stringify(stringifier, part.getName(), lazy.varGroup(), val);</span>
   }
 
 }

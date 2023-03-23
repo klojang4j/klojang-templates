@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.stream.IntStream;
 
 import static java.util.Arrays.stream;
+import static org.klojang.templates.ParseUtils.trimToFristNewline;
 import static org.klojang.templates.RenderUtil.stringify;
 import static org.klojang.util.StringMethods.concat;
 

@@ -3,10 +3,10 @@
 import org.klojang.util.StringMethods;
 
 /**
- * A {@code Stringifier} is responsible for stringifying the values coming back from
+ * A stringifier is responsible for stringifying the values coming back from
  * the data access layer. Since these can, in principle, have any type, the
- * {@link RenderSession} needs to know how to stringy them, so they can be injected
- * into the template. This can be configured using a {@link StringifierRegistry}.
+ * {@link RenderSession} needs to know how to stringify them, so they can be embedded
+ * in the template. This can be configured using a {@link StringifierRegistry}.
  * Note that escaping (e.g. HTML) and formatting (e.g. dates) are also considered to
  * be forms of stringification.
  *
