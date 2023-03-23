@@ -4,29 +4,34 @@ import org.klojang.util.StringMethods;
 
 <span class="nc" id="L5">final class ParseUtils {</span>
 
+  /**
+   * Determines whether the text between from and to finds itself on an otherwise
+   * empty line. This is used to ascertain this for ~%%begin:foo% and ~%%end:foo%. If
+   * the begin or end tag of an inline template finds itself on an otherwise empty
+   * line, that entire line is removed from the template when it is rendered.
+   */
   static boolean occupiesLine(String src, int from, int to) {
     char c;
-<span class="fc" id="L9">    for (int i = from - 1;</span>
-<span class="pc bpc" id="L10" title="1 of 6 branches missed.">        i &gt;= 0 &amp;&amp; (c = src.charAt(i)) != '\n' &amp;&amp; c != '\r'; --i) {</span>
-<span class="pc bpc" id="L11" title="1 of 4 branches missed.">      if (c != ' ' &amp;&amp; c != '\t') {</span>
-<span class="fc" id="L12">        return false;</span>
+<span class="fc bfc" id="L15" title="All 4 branches covered.">    for (int i = from - 1; i &gt;= 0 &amp;&amp; (c = src.charAt(i)) != '\n'; --i) {</span>
+<span class="pc bpc" id="L16" title="1 of 4 branches missed.">      if (c != ' ' &amp;&amp; c != '\t') {</span>
+<span class="fc" id="L17">        return false;</span>
       }
     }
-<span class="fc" id="L15">    for (int i = to;</span>
-<span class="pc bpc" id="L16" title="1 of 6 branches missed.">        i &lt; src.length() &amp;&amp; (c = src.charAt(i)) != '\n' &amp;&amp; c != '\r'; ++i) {</span>
-<span class="pc bpc" id="L17" title="1 of 4 branches missed.">      if (c != ' ' &amp;&amp; c != '\t') {</span>
-<span class="fc" id="L18">        return false;</span>
+<span class="fc" id="L20">    for (int i = to;</span>
+<span class="pc bpc" id="L21" title="1 of 6 branches missed.">        i &lt; src.length() &amp;&amp; (c = src.charAt(i)) != '\n' &amp;&amp; c != '\r'; ++i) {</span>
+<span class="pc bpc" id="L22" title="1 of 4 branches missed.">      if (c != ' ' &amp;&amp; c != '\t') {</span>
+<span class="fc" id="L23">        return false;</span>
       }
     }
-<span class="fc" id="L21">    return true;</span>
+<span class="fc" id="L26">    return true;</span>
   }
 
-  static String trimToFristNewline(String txt) {
-<span class="fc" id="L25">    String s = StringMethods.rtrim(txt, &quot; \t&quot;);</span>
-<span class="pc bpc" id="L26" title="1 of 2 branches missed.">    if (s.endsWith(&quot;\n&quot;)) {</span>
-<span class="fc" id="L27">      return s.substring(0, s.length() - 1);</span>
+  static String deleteEmptyLine(String txt) {
+<span class="fc" id="L30">    String s = StringMethods.rtrim(txt, &quot; \t&quot;);</span>
+<span class="pc bpc" id="L31" title="1 of 2 branches missed.">    if (s.endsWith(&quot;\n&quot;)) {</span>
+<span class="fc" id="L32">      return s.substring(0, s.length() - 1);</span>
     }
-<span class="nc" id="L29">    return s;</span>
+<span class="nc" id="L34">    return s;</span>
   }
 
 }

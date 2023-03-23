@@ -11,7 +11,7 @@ import java.util.regex.Pattern;
 
 import static org.klojang.check.CommonChecks.*;
 import static org.klojang.templates.ParseErrorCode.*;
-import static org.klojang.templates.ParseUtils.trimToFristNewline;
+import static org.klojang.templates.ParseUtils.deleteEmptyLine;
 import static org.klojang.templates.Template.ROOT_TEMPLATE_NAME;
 import static org.klojang.util.StringMethods.EMPTY_STRING;
 
@@ -137,7 +137,7 @@ final class Parser {
       // If ~%%end:foo% is all by itself on a separate line, except possibly
       // surrounded by whitespace, then that whole line will be removed.
       if (ParseUtils.occupiesLine(src, m.start(4), m.end(4))) {
-        mySrc = ParseUtils.trimToFristNewline(mySrc);
+        mySrc = ParseUtils.deleteEmptyLine(mySrc);
       }
       Parser parser = new Parser(loc, name, mySrc);
       parts.add(
@@ -286,7 +286,7 @@ final class Parser {
             && parts.get(i + 1) instanceof InlineTemplatePart itp
             && itp.isStartTagOnSeparateLine()
         ) {
-          String trimmed = trimToFristNewline(tp.getText());
+          String trimmed = deleteEmptyLine(tp.getText());
           if (!trimmed.isEmpty()) {
             out.add(new TextPart(trimmed, part.start()));
           }

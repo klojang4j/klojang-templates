@@ -11,7 +11,7 @@ import java.util.regex.Pattern;
 
 import static org.klojang.check.CommonChecks.*;
 import static org.klojang.templates.ParseErrorCode.*;
-import static org.klojang.templates.ParseUtils.trimToFristNewline;
+import static org.klojang.templates.ParseUtils.deleteEmptyLine;
 import static org.klojang.templates.Template.ROOT_TEMPLATE_NAME;
 import static org.klojang.util.StringMethods.EMPTY_STRING;
 
@@ -137,7 +137,7 @@ final class Parser {
       // If ~%%end:foo% is all by itself on a separate line, except possibly
       // surrounded by whitespace, then that whole line will be removed.
 <span class="fc bfc" id="L139" title="All 2 branches covered.">      if (ParseUtils.occupiesLine(src, m.start(4), m.end(4))) {</span>
-<span class="fc" id="L140">        mySrc = ParseUtils.trimToFristNewline(mySrc);</span>
+<span class="fc" id="L140">        mySrc = ParseUtils.deleteEmptyLine(mySrc);</span>
       }
 <span class="fc" id="L142">      Parser parser = new Parser(loc, name, mySrc);</span>
 <span class="fc" id="L143">      parts.add(</span>
@@ -286,7 +286,7 @@ final class Parser {
 <span class="fc bfc" id="L286" title="All 2 branches covered.">            &amp;&amp; parts.get(i + 1) instanceof InlineTemplatePart itp</span>
 <span class="fc bfc" id="L287" title="All 2 branches covered.">            &amp;&amp; itp.isStartTagOnSeparateLine()</span>
         ) {
-<span class="fc" id="L289">          String trimmed = trimToFristNewline(tp.getText());</span>
+<span class="fc" id="L289">          String trimmed = deleteEmptyLine(tp.getText());</span>
 <span class="fc bfc" id="L290" title="All 2 branches covered.">          if (!trimmed.isEmpty()) {</span>
 <span class="fc" id="L291">            out.add(new TextPart(trimmed, part.start()));</span>
           }

@@ -82,7 +82,8 @@ public class RenderSessionTest {
                       <td>Name</td><td>~%name%</td>
                       <td>Age</td><td>~%age%</td>
                     </tr>
-                    ~%%end:employees%</table></td>
+                    ~%%end:employees%
+                </table></td>
                 </tr>
                 ~%%end:departments%
               </table></td>
