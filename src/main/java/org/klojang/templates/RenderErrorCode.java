@@ -81,7 +81,12 @@ public enum RenderErrorCode {
    */
   REPETITION_MISMATCH("Error while populating %s. When populating a nested template "
       + "in multiple passes you must always provide the same number of source data "
-      + "objects. Received %d source data object(s) in first round. Now got %d.");
+      + "objects. Received %d source data object(s) in first round. Now got %d."),
+
+  /**
+   * An unexpected error occurred while rendering the template.
+   */
+  UNEXPECTED_ERROR(null);
 
   private String format;
 

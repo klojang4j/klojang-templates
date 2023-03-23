@@ -2,12 +2,12 @@ package org.klojang.templates;
 
 import org.klojang.templates.x.Lazy;
 
+import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.util.List;
-import java.util.stream.IntStream;
 
-import static java.util.Arrays.stream;
+import static org.klojang.templates.RenderErrorCode.UNEXPECTED_ERROR;
 import static org.klojang.templates.RenderUtil.stringify;
 import static org.klojang.util.StringMethods.concat;
 
@@ -19,15 +19,21 @@ final class Renderer {
     this.state = state;
   }
 
-  public void render(OutputStream out) {
-    PrintStream ps = out instanceof PrintStream
-        ? (PrintStream) out
-        : new PrintStream(out);
-    render(state, ps);
+  void render(OutputStream out) {
+    Appendable x = out instanceof Appendable a ? a : new PrintStream(out);
+    try {
+      render(state, x);
+    } catch (IOException e) {
+      throw new RenderException(UNEXPECTED_ERROR, e.toString());
+    }
   }
 
-  public void render(StringBuilder sb) {
-    render(state, sb);
+  void render(StringBuilder sb) {
+    try {
+      render(state, sb);
+    } catch (IOException e) {
+      throw new RenderException(UNEXPECTED_ERROR, e.toString());
+    }
   }
 
   @Override
@@ -39,70 +45,44 @@ final class Renderer {
     return concat(Renderer.class.getName(), "[template=", t.getName(), "]");
   }
 
-  private void render(RenderState state0, PrintStream ps) {
+  private void render(RenderState state0, Appendable out) throws IOException {
     List<Part> parts = state0.getSessionConfig().template().parts();
     for (int i = 0; i < parts.size(); ++i) {
       Part part = parts.get(i);
       if (part instanceof TextPart tp) {
-        ps.append(tp.getText());
+        out.append(tp.getText());
       } else if (part instanceof VariablePart vp) {
         if (state0.getVar(i) != null) {
           Object val = state0.getVar(i);
           if (val instanceof Lazy lazy) {
-            ps.append(eval(lazy, state0, vp));
+            out.append(eval(lazy, state0, vp));
           } else {
-            ps.append(val.toString());
+            out.append(val.toString());
           }
         }
       } else /* TemplatePart */ {
-        NestedTemplatePart ntp = (NestedTemplatePart) part;
-        SoloSession[] sessions = state0.getChildSessions(ntp.getTemplate());
-        if (sessions != null) {
-          Template t = ntp.getTemplate();
-          if (t.isTextOnly()) {
-            // The RenderSession[] array will contain only null values
-            // and we just want to know its length to determine the
-            // number of repetitions
-            String text = ((TextPart) t.parts().get(0)).getText();
-            IntStream.range(0, sessions.length).forEach(x -> ps.append(text));
-          } else {
-            stream(sessions)
-                .map(SoloSession::getState)
-                .forEach(s -> render(s, ps));
-          }
-        }
+        renderNestedTemplate(out, (NestedTemplatePart) part, state0);
       }
     }
   }
 
-  private void render(RenderState state0, StringBuilder sb) {
-    List<Part> parts = state0.getSessionConfig().template().parts();
-    for (int i = 0; i < parts.size(); ++i) {
-      Part part = parts.get(i);
-      if (part instanceof TextPart tp) {
-        sb.append(tp.getText());
-      } else if (part instanceof VariablePart vp) {
-        if (state0.getVar(i) != null) {
-          Object val = state0.getVar(i);
-          if (val instanceof Lazy lazy) {
-            sb.append(eval(lazy, state0, vp));
-          } else {
-            sb.append(val);
-          }
+  private void renderNestedTemplate(Appendable out,
+      NestedTemplatePart part,
+      RenderState state) throws IOException {
+    SoloSession[] sessions = state.getChildSessions(part.getTemplate());
+    if (sessions != null) {
+      Template t = part.getTemplate();
+      if (t.isTextOnly()) {
+        // The RenderSession[] array will contain only null values
+        // and we just want to know its length to determine the
+        // number of repetitions
+        String text = ((TextPart) t.parts().get(0)).getText();
+        for (int i = 0; i < sessions.length; ++i) {
+          out.append(text);
         }
-      } else /* TemplatePart */ {
-        NestedTemplatePart ntp = (NestedTemplatePart) part;
-        SoloSession[] sessions = state0.getChildSessions(ntp.getTemplate());
-        if (sessions != null) {
-          Template t = ntp.getTemplate();
-          if (t.isTextOnly()) {
-            String text = ((TextPart) t.parts().get(0)).getText();
-            IntStream.range(0, sessions.length).forEach(x -> sb.append(text));
-          } else {
-            stream(sessions)
-                .map(SoloSession::getState)
-                .forEach(s -> render(s, sb));
-          }
+      } else {
+        for (SoloSession s : sessions) {
+          render(s.getState(), out);
         }
       }
     }

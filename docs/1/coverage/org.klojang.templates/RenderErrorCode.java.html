@@ -81,20 +81,25 @@ import java.util.function.Supplier;
    */
 <span class="fc" id="L82">  REPETITION_MISMATCH(&quot;Error while populating %s. When populating a nested template &quot;</span>
       + &quot;in multiple passes you must always provide the same number of source data &quot;
-      + &quot;objects. Received %d source data object(s) in first round. Now got %d.&quot;);
+      + &quot;objects. Received %d source data object(s) in first round. Now got %d.&quot;),
+
+  /**
+   * An unexpected error occurred while rendering the template.
+   */
+<span class="fc" id="L89">  UNEXPECTED_ERROR(null);</span>
 
   private String format;
 
-<span class="fc" id="L88">  RenderErrorCode(String format) {</span>
-<span class="fc" id="L89">    this.format = format;</span>
-<span class="fc" id="L90">  }</span>
+<span class="fc" id="L93">  RenderErrorCode(String format) {</span>
+<span class="fc" id="L94">    this.format = format;</span>
+<span class="fc" id="L95">  }</span>
 
   RenderException getException(Object... msgArgs) {
-<span class="fc" id="L93">    return new RenderException(this, String.format(format, msgArgs));</span>
+<span class="fc" id="L98">    return new RenderException(this, String.format(format, msgArgs));</span>
   }
 
   Supplier&lt;RenderException&gt; getExceptionSupplier(Object... msgArgs) {
-<span class="fc" id="L97">    return () -&gt; getException(msgArgs);</span>
+<span class="fc" id="L102">    return () -&gt; getException(msgArgs);</span>
   }
 
 }
