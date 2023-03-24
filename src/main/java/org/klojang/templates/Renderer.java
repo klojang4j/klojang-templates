@@ -73,9 +73,9 @@ final class Renderer {
     if (sessions != null) {
       Template t = part.getTemplate();
       if (t.isTextOnly()) {
-        // The RenderSession[] array will contain only null values
-        // and we just want to know its length to determine the
-        // number of repetitions
+        // Then the RenderSession[] array will contain only null values
+        // and we just want to know its length to determine the number
+        // of repetitions
         String text = ((TextPart) t.parts().get(0)).getText();
         for (int i = 0; i < sessions.length; ++i) {
           out.append(text);

@@ -73,9 +73,9 @@ final class Renderer {
 <span class="fc bfc" id="L73" title="All 2 branches covered.">    if (sessions != null) {</span>
 <span class="fc" id="L74">      Template t = part.getTemplate();</span>
 <span class="fc bfc" id="L75" title="All 2 branches covered.">      if (t.isTextOnly()) {</span>
-        // The RenderSession[] array will contain only null values
-        // and we just want to know its length to determine the
-        // number of repetitions
+        // Then the RenderSession[] array will contain only null values
+        // and we just want to know its length to determine the number
+        // of repetitions
 <span class="fc" id="L79">        String text = ((TextPart) t.parts().get(0)).getText();</span>
 <span class="fc bfc" id="L80" title="All 2 branches covered.">        for (int i = 0; i &lt; sessions.length; ++i) {</span>
 <span class="fc" id="L81">          out.append(text);</span>
