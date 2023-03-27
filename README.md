@@ -26,8 +26,8 @@ functionally equivalent. Nevertheless, we think (and hope) that you'll find
 populating a Klojang template surprisingly efficient.
 
 The **javadocs** for _Klojang Templates_ can be found **[here](https://klojang4j.github.io/klojang-templates/1/api)**.
-The latest vulnerabilities report can be found **[here](https://klojang4j.github.io/klojang-templates/1/vulnerabilities/dependency-check-report.html)**.
-The latest code coverage report can be found **[here](https://klojang4j.github.io/klojang-templates/1/coverage)**.
+The latest **vulnerabilities report** can be found **[here](https://klojang4j.github.io/klojang-templates/1/vulnerabilities/dependency-check-report.html)**.
+The latest **code coverage report** can be found **[here](https://klojang4j.github.io/klojang-templates/1/coverage)**.
 
 # Getting Started
 
