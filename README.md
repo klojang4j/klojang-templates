@@ -6,11 +6,11 @@ _Klojang Templates_ is a Java templating API written with two goals in mind:
 2. Provide a rich en flexible API for populating the templates that more than
    compensates for their simplicity.
 
-In short: leverage the skills of Java programmers, rather than make them learn what,
-in effect, amounts to a whole new language. This solidly places _Klojang Templates_
-in the _Zero Logic Templates_ camp of templating approaches, alongside, for example,
-[Mustache](http://mustache.github.io/) and on opposite sides of a template engine
-like [Thymeleaf](https://www.thymeleaf.org/).
+In short: leverage the skills of Java programmers, rather than make them learn a
+whole new skill. This solidly places _Klojang Templates_ in the _Zero Logic 
+Templates_ camp of templating approaches, alongside, for example,
+[Mustache](http://mustache.github.io/) &#8212; and on opposite sides of a template 
+engine like [Thymeleaf](https://www.thymeleaf.org/).
 
 Nevertheless, one appealing feature of Thymeleaf is that raw, unprocessed Thymeleaf
 templates render perfectly well within a browser. This allows the static HTML
@@ -22,7 +22,12 @@ their raw state.
 Klojang templates arguably are even simpler than Mustache templates. There are just
 five syntactical constructs. Three if you discount for the fact that two of them are
 comments-like constructs. Two if you consider that of those three, two are
-functionally equivalent. Nevertheless, populating a
+functionally equivalent. Nevertheless, we think (and hope) that you'll find 
+populating a Klojang template surprisingly efficient.
+
+The **javadocs** for _Klojang Templates_ can be found **[here](https://klojang4j.github.io/klojang-templates/1/api)**.
+The latest vulnerabilities report can be found **[here](https://klojang4j.github.io/klojang-templates/1/vulnerabilities/dependency-check-report.html)**.
+The latest code coverage report can be found **[here](https://klojang4j.github.io/klojang-templates/1/coverage)**.
 
 # Getting Started
 
@@ -45,10 +50,7 @@ To get started with _Klojang Templates_, add the following dependency to you pro
 implementation group: 'org.klojang', name: 'klojang-templates', version: '1.0.0'
 ```
 
-The **javadocs** for _Klojang Templates_ can be
-found [https://klojang4j.github.io/klojang-templates/1/api](https://klojang4j.github.io/klojang-templates/1/api).
-
-## Hello World
+## Hello, World
 
 ```html
 <!-- hello.html -->
@@ -112,20 +114,9 @@ _Klojang Templates_ exposes a fluent API for populating a template.
 <!-- employee.html -->
 <html>
 <body>
-<table>
-    <tr>
-        <td>First name:</td>
-        <td>~%firstName%</td>
-    </tr>
-    <tr>
-        <td>Last name:</td>
-        <td>~%lastName%</td>
-    </tr>
-    <tr>
-        <td>Birthdate:</td>
-        <td>~%birthDate%</td>
-    </tr>
-</table>
+<p>First name ....: ~%firstName%</p>
+<p>Last name .....: ~%lastName%</p>
+<p>Birthdate .....: ~%birthDate%</p>
 </body>
 </html>
 ```
@@ -139,7 +130,7 @@ public class EmployeeResource {
 
    @GET
    @Path("/john")
-   public String simple() throws ParseException {
+   public String john() throws ParseException {
       Template template = Template.fromResource(getClass(), "/views/employee.html");
       return template.newRenderSession()
               .set("firstName", "John")
@@ -153,7 +144,7 @@ public class EmployeeResource {
 
 ## Inserting Java Beans, Records and Maps
 
-You can set multiple template variables at once by "inserting" non-scalar values into
+You can set multiple template variables at once by inserting non-scalar values into
 the template.
 
 ```java
@@ -161,7 +152,7 @@ public class EmployeeResource {
 
    @GET
    @Path("/john")
-   public StreamingOutput pojo() throws ParseException {
+   public StreamingOutput john() throws ParseException {
       Employee employee = new Employee("John", "Smith", LocalDate.of(1980, 6, 13));
       Template template = Template.fromResource(getClass(), "/views/employee.html");
       RenderSession session = template.newRenderSession();
@@ -172,7 +163,7 @@ public class EmployeeResource {
 }
 ```
 
-Note that the `pojo()` method returns a method reference to [RenderSession.render(OutputStream)](https://klojang4j.github.io/klojang-templates/1/api/org.klojang.emplates/org/klojang/templates/RenderSession.html#render(java.io.OutputStream)), 
+Note that the `john()` method now returns a method reference to [RenderSession.render(OutputStream)](https://klojang4j.github.io/klojang-templates/1/api/org.klojang.emplates/org/klojang/templates/RenderSession.html#render(java.io.OutputStream)), 
 which neatly targets the JAX-RS [StreamingOutput](https://docs.oracle.com/javaee/7/api/javax/ws/rs/core/StreamingOutput.html)
 interface.
 
@@ -258,7 +249,7 @@ can also use the following syntax:
 ### The Root Template
 
 The template that you explicitly instantiate using [Template.fromResource()](https://klojang4j.github.io/klojang-templates/1/api/org.klojang.templates/org/klojang/templates/Template.html#fromResource(java.lang.Class,java.lang.String))
-(and the other `fromXXX()` methods) is called the "root" or "main" template. 
+(and the other `fromXXX` methods) is called the "root" or "main" template. 
 Inserting non-scalar values into the root template is done via 
 [insert()](https://klojang4j.github.io/klojang-templates/1/api/org.klojang.templates/org/klojang/templates/RenderSession.html#insert(java.lang.Object,java.lang.String...))
 methods of the [RenderSession](https://klojang4j.github.io/klojang-templates/1/api/org.klojang.templates/org/klojang/templates/RenderSession.html) class.
@@ -267,7 +258,7 @@ methods.
 
 ## Using Nested Templates
 
-Nested templates add an extra dimension ("depth") to a Klojang template. This 
+Nested templates add an extra dimension ("depth") to the root template. This 
 makes it almost literally become a mold into which you can sink objects with the 
 same shape. Or, put another way, if the structure of the template reflects the 
 structure of the model object, you can "blast" the data into the template with a 
@@ -308,6 +299,9 @@ public class LabelPrintResource {
 }
 ```
 
+Note how the address template gets mapped to the address property of `Employee`, 
+and how, _inside_ the address template, you have access to the `Address` properties.
+
 ### Tables
 
 Nested templates enable you to create tables and other repetitive structures.
@@ -319,18 +313,12 @@ Nested templates enable you to create tables and other repetitive structures.
 <table>
    <thead>
    <tr>
-      <th>First name</th>
-      <th>Last name</th>
-      <th>Birth date</th>
+      <th>First name</th><th>Last name</th><th>Birth date</th>
    </tr>
    </thead>
    <tbody>
    ~%%begin:employees%
-   <tr>
-      <td>~%firstName%</td>
-      <td>~%lastName%</td>
-      <td>~%birthDate%</td>
-   </tr>
+   <tr><td>~%firstName%</td><td>~%lastName%</td><td>~%birthDate%</td></tr>
    ~%%end:employees%
    </tbody>
 </table>
