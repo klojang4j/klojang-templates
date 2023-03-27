@@ -88,9 +88,9 @@ provide some extra help in case you are writing HTML templates.
 <!-- hello.html -->
 <html>
 <head>
-    <script>
-        const greeting = '~%js:greeting%';
-    </script>
+<script>
+  const greeting = '~%js:greeting%';
+</script>
 </head>
 <body>
 <p>~%html:greeting%</p>
@@ -103,9 +103,9 @@ The `html:` and `js:` prefixes are examples of so-called
 which will be covered in greater detail later on.
 
 By default, _Klojang Templates_ does not apply any escaping or formatting to the
-values you insert into the template, but you can [configure](https://klojang4j.github.io/klojang-templates/1/api/org.klojang.templates/org/klojang/templates/StringifierRegistry.Builder.html#setDefaultStringifier(org.klojang.templates.Stringifier)) _Klojang Templates_ to
-HTML-escape all values by default. You can then omit the `html:` prefix while keeping
-the `js:` prefix to override the default behaviour.
+values you insert into a template. However, you can easily [configure](https://klojang4j.github.io/klojang-templates/1/api/org.klojang.templates/org/klojang/templates/StringifierRegistry.Builder.html#setDefaultStringifier(org.klojang.templates.Stringifier)) _Klojang Templates_ to
+HTML-escape all values by default. You could then omit the `html:` prefix while 
+keeping the `js:` prefix to override the default behaviour.
 
 ## Fluent API
 _Klojang Templates_ exposes a fluent API for populating a template.
@@ -114,9 +114,9 @@ _Klojang Templates_ exposes a fluent API for populating a template.
 <!-- employee.html -->
 <html>
 <body>
-<p>First name ....: ~%firstName%</p>
-<p>Last name .....: ~%lastName%</p>
-<p>Birthdate .....: ~%birthDate%</p>
+<p>First name: ~%firstName%</p>
+<p>Last name: ~%lastName%</p>
+<p>Birthdate: ~%birthDate%</p>
 </body>
 </html>
 ```
@@ -237,32 +237,31 @@ template tags end with a double percentage sign (%%).
 ### Template Names
 
 Nested templates, whether inline or included, are identified by their name. That is,
-when populating them using the API, you do so by specifying their name &#8212;
-"companies", "departments" and "employees" in the examples above. For included
-templates, the name by default is the basename of the included file. However, you 
-can also use the following syntax:
+when populating them through the API, you do so by specifying their name &#8212;
+"companies", "departments" and "employees" in the examples above.
+
+For included templates, the name by default is the basename of the included file.
+However, you can also use the following syntax:
 
 ```
 ~%%include:employees:/views/employees-2023-01-01.txt%%
 ```
 
-### The Root Template
-
 The template that you explicitly instantiate using [Template.fromResource()](https://klojang4j.github.io/klojang-templates/1/api/org.klojang.templates/org/klojang/templates/Template.html#fromResource(java.lang.Class,java.lang.String))
-(and the other `fromXXX` methods) is called the "root" or "main" template. 
-Inserting non-scalar values into the root template is done via 
-[insert()](https://klojang4j.github.io/klojang-templates/1/api/org.klojang.templates/org/klojang/templates/RenderSession.html#insert(java.lang.Object,java.lang.String...))
-methods of the [RenderSession](https://klojang4j.github.io/klojang-templates/1/api/org.klojang.templates/org/klojang/templates/RenderSession.html) class.
-Inserting non-scalar values into nested templates is done via the [populate()](https://klojang4j.github.io/klojang-templates/1/api/org.klojang.templates/org/klojang/templates/RenderSession.html#populate(java.lang.String,java.lang.Object,java.lang.String...))
-methods.
+(and the other `fromXXX` methods) is called the "root" or "main" template. When 
+inserting non-scalar values (e.g. hash maps) directly into the root template, you 
+use the [insert()](https://klojang4j.github.io/klojang-templates/1/api/org.klojang.templates/org/klojang/templates/RenderSession.html#insert(java.lang.Object,java.lang.String...))
+method of the [RenderSession](https://klojang4j.github.io/klojang-templates/1/api/org.klojang.templates/org/klojang/templates/RenderSession.html) class.
+When inserting them into a nested template, you use the [populate()](https://klojang4j.github.io/klojang-templates/1/api/org.klojang.templates/org/klojang/templates/RenderSession.html#populate(java.lang.String,java.lang.Object,java.lang.String...))
+method. The root template also has a name. It is always "{root}".
 
 ## Using Nested Templates
 
-Nested templates add an extra dimension ("depth") to the root template. This 
-makes it almost literally become a mold into which you can sink objects with the 
-same shape. Or, put another way, if the structure of the template reflects the 
-structure of the model object, you can "blast" the data into the template with a 
-single call.
+Nested templates add an extra dimension to a Klojang template ("depth"). As a
+consequence, a Klojang template almost literally becomes a mold into which you can
+sink objects with the same shape. If the structure of the template reflects the
+structure of the model object, you can fill up the entire template with a single
+call.
 
 ```java
 record Employee(int id, String firstName, String lastName, Address address) {}
@@ -300,7 +299,8 @@ public class LabelPrintResource {
 ```
 
 Note how the address template gets mapped to the address property of `Employee`, 
-and how, _inside_ the address template, you have access to the `Address` properties.
+and how, _inside_ the address template, you have direct access to the `Address` 
+properties.
 
 ### Tables
 
@@ -354,7 +354,7 @@ each element in the array or collection.
 
 ### Complex Structures
 
-The templates and the objects with which to populate them can be arbitrarily complex.
+The templates and the objects to populate them with can be arbitrarily complex.
 
 Take, for example, the company-overview template again:
 
@@ -394,10 +394,11 @@ company-overview template. All this would happen with a single call to
 simply because the structure of the template reflects the structure of the data 
 model.
 
-Note that this does not mean that _layout_ of the template must necessarily 
-reflect the structure of the data model. The [label template](#using-nested-templates) 
-shown above reflects the structure of the Person class, actually flattens it when 
-rendered.
+Note that this does not mean that the _visual layout_ of the template must somehow
+reflect the structure of the data model.
+The [label template](#using-nested-templates) shown above reflects the structure of
+the `Employee` class, but visually it actually flattens the relationship between
+`Employee` and `Address`.
 
 ### Conditional Rendering
 
