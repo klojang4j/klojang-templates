@@ -434,5 +434,6 @@ going to be repeated zero times. In other words, you prevent it from being rende
 
 ## Stringifiers and Variable Groups
 
-What gets inserted into a template ultimately needs to be a `String`. However, 
+In the chapter on [escaping](#escaping), we showed how you could use prefixes like 
+`html:` and `js:` that 
 
