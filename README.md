@@ -229,7 +229,7 @@ method of the [RenderSession](https://klojang4j.github.io/klojang-templates/1/ap
 When inserting them into a nested template, you use the [populate()](https://klojang4j.github.io/klojang-templates/1/api/org.klojang.templates/org/klojang/templates/RenderSession.html#populate(java.lang.String,java.lang.Object,java.lang.String...))
 method. The `insert()` method does not require you to specify the name of the 
 template you want to populate. Yet, for reporting purposes, the root template 
-still also has a name. It is always "{root}".
+still also has a name. It is always **{root}**.
 
 ## Using Nested Templates
 
