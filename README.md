@@ -233,10 +233,10 @@ still also has a name. It is always **{root}**.
 
 ## Using Nested Templates
 
-Nested templates add an extra dimension to a Klojang template ("depth"). As a
-consequence, a Klojang template almost literally becomes a mold into which you can
-sink objects with the same shape. If the structure of the template reflects the
-structure of the model object, you can fill up the entire template with a single
+By allowing templates to be nested inside each other, they gain an extra dimension
+("depth"). As a consequence, a Klojang template almost literally is a mold into which
+you can sink objects with the same shape. If the structure of the template reflects
+the structure of the model object, you can fill up the entire template with a single
 call.
 
 ```java
@@ -274,9 +274,8 @@ public class LabelPrintResource {
 }
 ```
 
-Note how the address template gets mapped to the address property of `Employee`, 
-and how, _inside_ the address template, you have direct access to the `Address` 
-properties.
+Notice how the address template gets mapped to the address property of `Employee`,
+and how, _inside_ the address template, you have access to the `Address` properties.
 
 ### Tables
 
@@ -287,16 +286,14 @@ Nested templates enable you to create tables and other repetitive structures.
 <html>
 <body>
 <table>
-   <thead>
-   <tr>
-      <th>First name</th><th>Last name</th><th>Birth date</th>
-   </tr>
-   </thead>
-   <tbody>
-   ~%%begin:employees%
-   <tr><td>~%firstName%</td><td>~%lastName%</td><td>~%birthDate%</td></tr>
-   ~%%end:employees%
-   </tbody>
+    <thead>
+        <tr><th>First name</th><th>Last name</th><th>Birth date</th></tr>
+    </thead>
+    <tbody>
+    ~%%begin:employees%
+        <tr><td>~%firstName%</td><td>~%lastName%</td><td>~%birthDate%</td></tr>
+    ~%%end:employees%
+    </tbody>
 </table>
 </body>
 </html>
@@ -325,8 +322,36 @@ public class HomeResource {
 ```
 
 If the second argument to `RenderSession.populate()` is an array or collection, the
-nested template automatically turns into a _repeating template_, repeating itself for
-each element in the array or collection.
+nested template turns into a _repeating template_, repeating itself for each element
+in the array or collection.
+
+#### Newline Suppression
+
+_As an aside: when rendering a template, its structure is left fully intact. The
+value for a template variable is inserted exactly **at** the location of the template
+variable. The contents of an included template is inserted at the location of the
+tilde (**~**) of the included template tag (`~%%include:path/to/foo.html%%`). There
+is one exception: if the begin tag or end tag of an inline template is on a separate
+line, that entire line will be removed from the output. Thus, the above template 
+would render like this:_
+
+```html
+<html>
+<body>
+<table>
+    <thead>
+        <tr><th>First name</th><th>Last name</th><th>Birth date</th></tr>
+    </thead>
+    <tbody>
+        <tr><td>John</td><td>Smith</td><td>1980-06-13</td></tr>
+        <tr><td>Mary</td><td>Bear</td><td>1977-11-10</td></tr>
+        <tr><td>Tracey</td><td>Pattison</td><td>2001-04-03</td></tr>
+   </tbody>
+</table>
+</body>
+</html>
+```
+
 
 ### Complex Structures
 
