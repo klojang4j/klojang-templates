@@ -27,7 +27,7 @@ populating a Klojang template surprisingly efficient.
 
 The **javadocs** for _Klojang Templates_ can be found **[here](https://klojang4j.github.io/klojang-templates/1/api)**.
 The latest **vulnerabilities report** can be found **[here](https://klojang4j.github.io/klojang-templates/1/vulnerabilities/dependency-check-report.html)**.
-The latest **code coverage report** can be found **[here](https://klojang4j.github.io/klojang-templates/1/coverage)**.
+The latest **code coverage reports** can be found **[here](https://klojang4j. github.io/klojang-templates/1/coverage)**.
 
 # Getting Started
 
@@ -73,7 +73,7 @@ public class HelloWorld {
   public String hello() throws ParseException {
     Template template = Template.fromResource(getClass(), "/views/hello.html");
     RenderSession session = template.newRenderSession();
-    return session.set("greeting", "Hello World").render();
+    return session.set("greeting", "Hello, World").render();
   }
 
 }
@@ -98,17 +98,19 @@ provide some extra help in case you are writing HTML templates.
 </html>
 ```
 
-The `html:` and `js:` prefixes are examples of so-called
+The `html:` and `js:` prefixes are examples of 
 [variable groups](https://klojang4j.github.io/klojang-templates/1/api/org.klojang.templates/org/klojang/templates/VarGroup.html),
 which will be covered in greater detail later on.
 
 By default, _Klojang Templates_ does not apply any escaping or formatting to the
-values you insert into a template. However, you can easily [configure](https://klojang4j.github.io/klojang-templates/1/api/org.klojang.templates/org/klojang/templates/StringifierRegistry.Builder.html#setDefaultStringifier(org.klojang.templates.Stringifier)) _Klojang Templates_ to
+values you insert into a template. However, you can [configure](https://klojang4j.github.io/klojang-templates/1/api/org.klojang.templates/org/klojang/templates/StringifierRegistry.Builder.html#setDefaultStringifier(org.klojang.templates.Stringifier)) _Klojang Templates_ to
 HTML-escape all values by default. You could then omit the `html:` prefix while 
 keeping the `js:` prefix to override the default behaviour.
 
-## Fluent API
-_Klojang Templates_ exposes a fluent API for populating a template.
+## Inserting Java Beans, Records and Maps
+
+You can set multiple template variables at once by inserting non-scalar values into
+the template.
 
 ```html
 <!-- employee.html -->
@@ -120,32 +122,6 @@ _Klojang Templates_ exposes a fluent API for populating a template.
 </body>
 </html>
 ```
-
-```java
-import org.klojang.templates.ParseException;
-import org.klojang.templates.RenderSession;
-import org.klojang.templates.Template;
-
-public class EmployeeResource {
-
-   @GET
-   @Path("/john")
-   public String john() throws ParseException {
-      Template template = Template.fromResource(getClass(), "/views/employee.html");
-      return template.newRenderSession()
-              .set("firstName", "John")
-              .set("lastName", "Smith")
-              .set("birthDate", LocalDate.of(1980, 6, 13))
-              .render();
-   }
-
-}
-```
-
-## Inserting Java Beans, Records and Maps
-
-You can set multiple template variables at once by inserting non-scalar values into
-the template.
 
 ```java
 public class EmployeeResource {
@@ -170,8 +146,8 @@ interface.
 ## Nested Templates
 
 In _Klojang Templates_ templates can be nested inside other templates (ad infinitum
-if you like). Why you would want that will be explained below. This section details
-the syntax for nested templates.
+if you like). Why you would want that is explained in the next chapter. This chapter 
+details the syntax for nested templates.
 
 There are, in fact, two ways to nest one template inside another: via 
 "inline templates" or via "included templates". Functionally 
@@ -236,12 +212,10 @@ template tags end with a double percentage sign (%%).
 
 ### Template Names
 
-Nested templates, whether inline or included, are identified by their name. That is,
-when populating them through the API, you do so by specifying their name &#8212;
-"companies", "departments" and "employees" in the examples above.
-
-For included templates, the name by default is the basename of the included file.
-However, you can also use the following syntax:
+Nested templates, whether inline or included, are identified by their name &#8212;
+"companies", "departments" and "employees" in the examples above. For included
+templates, the name by default is the basename of the included file. However, you can
+also use the following syntax:
 
 ```
 ~%%include:employees:/views/employees-2023-01-01.txt%%
@@ -253,7 +227,9 @@ inserting non-scalar values (e.g. hash maps) directly into the root template, yo
 use the [insert()](https://klojang4j.github.io/klojang-templates/1/api/org.klojang.templates/org/klojang/templates/RenderSession.html#insert(java.lang.Object,java.lang.String...))
 method of the [RenderSession](https://klojang4j.github.io/klojang-templates/1/api/org.klojang.templates/org/klojang/templates/RenderSession.html) class.
 When inserting them into a nested template, you use the [populate()](https://klojang4j.github.io/klojang-templates/1/api/org.klojang.templates/org/klojang/templates/RenderSession.html#populate(java.lang.String,java.lang.Object,java.lang.String...))
-method. The root template also has a name. It is always "{root}".
+method. The `insert()` method does not require you to specify the name of the 
+template you want to populate. Yet, for reporting purposes, the root template 
+still also has a name. It is always "{root}".
 
 ## Using Nested Templates
 
@@ -414,8 +390,6 @@ However, you can make it more explicit that you don't want a block of text to be
 rendered:
 
 ```java
-import java.util.Collections;
-
 public class HomeResource {
 
    @GET
@@ -432,4 +406,8 @@ public class HomeResource {
 
 If you populate a nested template with an empty array or collection, the template is
 going to be repeated zero times. In other words, you prevent it from being rendered.
+
+## Stringifiers and Variable Groups
+
+What gets inserted into a template ultimately needs to be a `String`. However, 
 
