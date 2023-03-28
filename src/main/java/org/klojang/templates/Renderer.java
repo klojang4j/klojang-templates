@@ -92,7 +92,7 @@ final class Renderer {
     StringifierRegistry reg = state.getSessionConfig().stringifiers();
     Object val = lazy.value().get();
     Stringifier stringifier = reg.getStringifier(part, lazy.varGroup(), val);
-    return stringify(stringifier, part.getName(), lazy.varGroup(), val);
+    return stringify(val, stringifier, part, lazy.varGroup());
   }
 
 }

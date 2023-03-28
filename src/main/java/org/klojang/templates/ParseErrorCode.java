@@ -31,9 +31,17 @@ public enum ParseErrorCode {
   VAR_NAME_WITH_TMPL_NAME("Variable cannot have same name as template: \"%s\""),
 
   /**
-   * The path specified in an included template
-   * (e&#46;g&#46; {@code ~%%include:/path/to/foo.html%%}) could not be resolved to a
-   * readable resource.
+   * A template variable had the predefined {@link VarGroup#DEF def:} prefix, but no
+   * placeholder value was specified in the template. If you want to use the
+   * {@code def:} prefix, you must also provide a placeholder value.
+   */
+  NO_PLACEHOLDER_DEFINED(
+      "Prefix \"def:\" for variable %s not allowed without also specifying placeholder value"),
+
+  /**
+   * The path specified in an included template (e&#46;g&#46;
+   * {@code ~%%include:/path/to/foo.html%%}) could not be resolved to a readable
+   * resource.
    *
    * @see org.klojang.templates.PathResolver#isValidPath(String)
    */

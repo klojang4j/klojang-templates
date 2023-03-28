@@ -1,7 +1,6 @@
 package org.klojang.templates;
 
 import org.klojang.check.Check;
-import org.klojang.templates.x.Private;
 
 import java.util.HashMap;
 
@@ -95,6 +94,21 @@ public class VarGroup {
   public static final VarGroup PATH = withName("path");
 
   /**
+   * <p>A predefined variable group corresponding to the {@code def:} prefix. This
+   * prefix will cause {@code null} values to be replaced with the placeholder value
+   * defined within the template. The example below will render as "Good morning,
+   * John" if {@code firstName} was {@code null}.
+   *
+   * <blockquote><pre>{@code
+   * Good morning, <!-- ~%def:firstName% -->John<!--%-->
+   * }</pre></blockquote>
+   *
+   * <p>See {@link Regex#REGEX_CMT_VARIABLE} for an explanation of the syntax and
+   * purpose of placeholder values.
+   */
+  public static final VarGroup DEF = withName("def");
+
+  /**
    * Returns the {@code VarGroup} with the specified name (which is also the prefix
    * to be used inside a template). Throws an {@link IllegalArgumentException} if
    * there is no {@code VarGroup} with the specified name.
@@ -107,11 +121,7 @@ public class VarGroup {
     return Check.that(vg).is(notNull(), ERR_NO_SUCH_VARGROUP, name).ok();
   }
 
-  static VarGroup createPrivileged(Private<String> name) {
-    return withName(name.get());
-  }
-
-  private static VarGroup withName(String name) {
+  static VarGroup withName(String name) {
     return VAR_GROUPS.computeIfAbsent(name, VarGroup::new);
   }
 

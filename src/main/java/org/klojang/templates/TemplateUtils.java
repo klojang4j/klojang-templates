@@ -121,12 +121,13 @@ public final class TemplateUtils {
   }
 
   /**
-   * Returns breadth-first view of the template hierarchy of the specified template.
-   * The {@code List} is created on demand and modifiable.
+   * Returns the specified template and all templates descending from it. The
+   * specified template will come first in de returned list and the descendant
+   * templates are retrieved in breadth-first order. The returned {@code List} is
+   * created on demand and modifiable.
    *
-   * @param template
-   * @return a {@code List} containing the {@code Template} and all templates
-   *     descending from it
+   * @param template the template
+   * @return a {@code List} containing the {@code Template} and its descendants
    */
   public static List<Template> getTemplateHierarchy(Template template) {
     Check.notNull(template);
@@ -201,11 +202,12 @@ public final class TemplateUtils {
   }
 
   /**
-   * Returns, for this {@code Template} and all templates descending from it, the
-   * names of their variables. Each tuple in the returned {@code List} contains a
-   * {@code Template} instance and a variable name. The returned {@code List} is
-   * created on demand and modifiable.
+   * Returns the names of all variables in the specified template, <i>and</i> in all
+   * templates descending from the specified template. Each tuple in the returned
+   * {@code List} contains a {@code Template} instance and a variable name. The
+   * returned {@code List} is created on demand and modifiable.
    *
+   * @param template the template for which to retrieve the variable names
    * @return all variable names in this {@code Template} and the templates nested
    *     inside it
    */

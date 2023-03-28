@@ -68,13 +68,12 @@ final class SoloSession implements RenderSession {
     VarGroup group = part.getVarGroup().orElse(varGroup);
     StringifierRegistry reg = config.stringifiers();
     Stringifier stringifier = reg.getStringifier(part, group, value);
-    String strval = RenderUtil.stringify(stringifier, part.getName(), group, value);
+    String strval = RenderUtil.stringify(value, stringifier, part, varGroup);
     state.setVar(partIndex, strval);
   }
 
   @Override
-  public RenderSession setDelayed(String varName,
-      Supplier<Object> valueGenerator) {
+  public RenderSession setDelayed(String varName, Supplier<Object> valueGenerator) {
     return setDelayed(varName, valueGenerator, VarGroup.TEXT);
   }
 
@@ -89,15 +88,12 @@ final class SoloSession implements RenderSession {
     Check.that(varName).is(keyIn(), t.variables(),
         NO_SUCH_VARIABLE.getExceptionSupplier(getFQName(t, varName)));
     IntList indices = t.variables().get(varName);
-    indices.forEachThrowing(i -> {
-      VariablePart part = (VariablePart) config.template().parts().get(i);
-      VarGroup group = part.getVarGroup().orElse(varGroup);
-      state.setVar(i, new Lazy(valueGenerator, group));
-    });
+    indices.forEachThrowing(i -> state.setVar(i, new Lazy(valueGenerator, varGroup)));
     state.done(varName);
     return this;
   }
 
+  @Override
   public RenderSession setNested(String path, IntFunction<Object> valueGenerator) {
     Check.notNull(path, Tag.PATH);
     Check.notNull(valueGenerator, "valueGenerator");
@@ -107,6 +103,7 @@ final class SoloSession implements RenderSession {
     return this;
   }
 
+  @Override
   public RenderSession setNested(String path,
       IntFunction<Object> valueGenerator,
       VarGroup varGroup,
@@ -138,12 +135,8 @@ final class SoloSession implements RenderSession {
         children[i].setVar(path.segment(1), valueGenerator.apply(i), varGroup);
       }
     } else {
-      for (int i = 0; i < children.length; ++i) {
-        session.setNested(children[i],
-            path.shift(),
-            valueGenerator,
-            varGroup,
-            force);
+      for (SoloSession child : children) {
+        setNested(child, path.shift(), valueGenerator, varGroup, force);
       }
     }
   }

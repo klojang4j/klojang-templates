@@ -21,7 +21,7 @@ final class VariablePart extends AbstractPart implements NamedPart {
     if (prefix == null) {
       group = null;
     } else {
-      group = VarGroup.createPrivileged(Private.of(prefix));
+      group = VarGroup.withName(prefix);
     }
     this.name = name;
     this.placeholder = placeholder;

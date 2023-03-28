@@ -73,30 +73,41 @@ public final class Regex {
       + "%";
 
   /**
-   * Regular expression for a template variable that is placed between HTML comments.
-   * For example: {@code <!-- ~%firstName% -->}. This is rendered in exactly the same
-   * way as {@code ~%firstName%}. However, when using HTML comments, the raw,
-   * unprocessed template still renders nicely in a browser &#8212; without "odd"
-   * tilde-percent sequences spoiling the HTML page. This works even better if you
-   * also provide a placeholder value, as in the following example:
+   * <p>Regular expression for a template variable that is placed between HTML
+   * comments. For example: {@code <!-- ~%firstName% -->}. This is rendered in
+   * exactly the same way as {@code ~%firstName%}. However, when using HTML comments,
+   * the raw, unprocessed template still renders nicely in a browser &#8212; without
+   * "odd" tilde-percent sequences spoiling the HTML page. This works even better if
+   * you also provide a placeholder value, as in the following example:
    * {@code <!-- ~%firstName% -->John<!--%-->}. Now, when the browser renders the raw
-   * template, it will display the string "John", but when Klojang Templates renders
-   * the template, "John" will have disappeared. Note that the entire string must be
-   * on a single line. If you want to provide a placeholder value that spans multiple
-   * lines, use the syntax in the example below:
+   * template, it will display the string "John", because it actually is outside any
+   * HTML comments. But when <i><b>Klojang Templates</b></i> renders the template,
+   * "John" will have disappeared, and the only thing that remains is the value of
+   * {@code firstName}.
+   *
+   * <p>Note that the entire string ({@code <!-- ~%firstName% -->John<!--%-->})
+   * <b>must</b> be on a single line. If you want to provide a placeholder value
+   * that spans multiple lines, use the syntax in the example below:
    *
    * <blockquote><pre>{@code
    * <tr>
    *   <td>
-   *    <!-- ~%firstName% -->
-   *    <!--%-->
-   *      John<br>
-   *      Maynard
-   *    <!--%-->
+   *   <!-- ~%firstName% -->
+   *   <!--%-->
+   *       This entire piece of text, and
+   *       the placeholder tags on either
+   *       side of it, will be gone when
+   *       the template is rendered
+   *   <!--%-->
    *   </td>
    * </tr>
    * }</pre></blockquote>
    *
+   * <p>However, contrary to the single-line syntax, this value is not recorded
+   * <i>as the placeholder for</i> the preceding variable. It is just something that
+   * will be visible in the raw template, but gone in the rendered version.
+   *
+   * @see VarGroup#DEF
    * @see #REGEX_PLACEHOLDER
    */
   public static final String REGEX_CMT_VARIABLE
