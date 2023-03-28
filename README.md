@@ -327,13 +327,13 @@ in the array or collection.
 
 #### Newline Suppression
 
-_As an aside: when rendering a template, its structure is left fully intact. The
-value for a template variable is inserted exactly **at** the location of the template
+**As an aside**: when rendering a template, its structure is left fully intact. The value
+for a template variable is inserted exactly _at_ the location of the the variable.
 variable. The contents of an included template is inserted at the location of the
 tilde (**~**) of the included template tag (`~%%include:path/to/foo.html%%`). There
 is one exception: if the begin tag or end tag of an inline template is on a separate
-line, that entire line will be removed from the output. Thus, the above template 
-would render like this:_
+line, that entire line will be removed from the output. Thus, the above template
+would render somewhat like this:
 
 ```html
 <html>
