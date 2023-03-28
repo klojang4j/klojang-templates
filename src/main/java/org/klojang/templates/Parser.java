@@ -211,9 +211,10 @@ final class Parser {
       }
       String prefix = m.group(2);
       String name = m.group(3);
+      String placeholder = inComments ? m.group(8) : null;
       Check.that(name).isNot(in(), names, VAR_NAME_WITH_TMPL_NAME
           .getExceptionSupplier(src, offset + m.start(3), name));
-      parts.add(new VariablePart(offset + m.start(), prefix, name));
+      parts.add(new VariablePart(offset + m.start(), prefix, name, placeholder));
       end = m.end();
     } while (m.find());
     if (end < unparsed.text().length()) {

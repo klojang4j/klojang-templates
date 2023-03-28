@@ -14,7 +14,9 @@ final class VariablePart extends AbstractPart implements NamedPart {
   private final VarGroup group;
   private final String name;
 
-  VariablePart(int start, String prefix, String name) {
+  private final String placeholder;
+
+  VariablePart(int start, String prefix, String name, String placeholder) {
     super(start);
     if (prefix == null) {
       group = null;
@@ -22,6 +24,7 @@ final class VariablePart extends AbstractPart implements NamedPart {
       group = VarGroup.createPrivileged(Private.of(prefix));
     }
     this.name = name;
+    this.placeholder = placeholder;
   }
 
   /**
@@ -46,9 +49,16 @@ final class VariablePart extends AbstractPart implements NamedPart {
     return name;
   }
 
+  String getPlaceholder() {
+    return placeholder;
+  }
+
   @Override
   public String toString() {
-    return "~%" + name + "%";
+    if (placeholder == null) {
+      return "~%" + name + "%";
+    }
+    return "<!-- ~%" + name + "% -->" + placeholder + "<!--%-->";
   }
 
 }

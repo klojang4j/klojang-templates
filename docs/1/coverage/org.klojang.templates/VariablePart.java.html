@@ -14,15 +14,18 @@ final class VariablePart extends AbstractPart implements NamedPart {
   private final VarGroup group;
   private final String name;
 
-  VariablePart(int start, String prefix, String name) {
-<span class="fc" id="L18">    super(start);</span>
-<span class="fc bfc" id="L19" title="All 2 branches covered.">    if (prefix == null) {</span>
-<span class="fc" id="L20">      group = null;</span>
+  private final String placeholder;
+
+  VariablePart(int start, String prefix, String name, String placeholder) {
+<span class="fc" id="L20">    super(start);</span>
+<span class="fc bfc" id="L21" title="All 2 branches covered.">    if (prefix == null) {</span>
+<span class="fc" id="L22">      group = null;</span>
     } else {
-<span class="fc" id="L22">      group = VarGroup.createPrivileged(Private.of(prefix));</span>
+<span class="fc" id="L24">      group = VarGroup.createPrivileged(Private.of(prefix));</span>
     }
-<span class="fc" id="L24">    this.name = name;</span>
-<span class="fc" id="L25">  }</span>
+<span class="fc" id="L26">    this.name = name;</span>
+<span class="fc" id="L27">    this.placeholder = placeholder;</span>
+<span class="fc" id="L28">  }</span>
 
   /**
    * Returns an {@code Optional} containing the group name prefix, or an empty
@@ -33,7 +36,7 @@ final class VariablePart extends AbstractPart implements NamedPart {
    * @return An {@code Optional} containing the group name prefix
    */
   Optional&lt;VarGroup&gt; getVarGroup() {
-<span class="fc" id="L36">    return Optional.ofNullable(group);</span>
+<span class="fc" id="L39">    return Optional.ofNullable(group);</span>
   }
 
   /**
@@ -43,12 +46,19 @@ final class VariablePart extends AbstractPart implements NamedPart {
    */
   @Override
   public String getName() {
-<span class="fc" id="L46">    return name;</span>
+<span class="fc" id="L49">    return name;</span>
+  }
+
+  String getPlaceholder() {
+<span class="nc" id="L53">    return placeholder;</span>
   }
 
   @Override
   public String toString() {
-<span class="fc" id="L51">    return &quot;~%&quot; + name + &quot;%&quot;;</span>
+<span class="pc bpc" id="L58" title="1 of 2 branches missed.">    if (placeholder == null) {</span>
+<span class="fc" id="L59">      return &quot;~%&quot; + name + &quot;%&quot;;</span>
+    }
+<span class="nc" id="L61">    return &quot;&lt;!-- ~%&quot; + name + &quot;% --&gt;&quot; + placeholder + &quot;&lt;!--%--&gt;&quot;;</span>
   }
 
 }
