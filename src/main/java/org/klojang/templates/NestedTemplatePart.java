@@ -5,7 +5,7 @@ abstract sealed class NestedTemplatePart extends AbstractPart implements
 
   final Template template;
 
-  NestedTemplatePart(Template template, int start) {
+  NestedTemplatePart(int start, Template template) {
     super(start);
     this.template = template;
   }

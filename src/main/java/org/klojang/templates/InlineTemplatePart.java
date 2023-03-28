@@ -4,10 +4,8 @@ final class InlineTemplatePart extends NestedTemplatePart {
 
   private final boolean startTagOnSeparateLine;
 
-  InlineTemplatePart(Template template,
-      int start,
-      boolean startTagOnSeparateLine) {
-    super(template, start);
+  InlineTemplatePart(int start, Template template, boolean startTagOnSeparateLine) {
+    super(start, template);
     this.startTagOnSeparateLine = startTagOnSeparateLine;
   }
 

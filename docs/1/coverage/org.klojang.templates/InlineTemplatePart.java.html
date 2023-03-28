@@ -4,28 +4,26 @@ final class InlineTemplatePart extends NestedTemplatePart {
 
   private final boolean startTagOnSeparateLine;
 
-  InlineTemplatePart(Template template,
-      int start,
-      boolean startTagOnSeparateLine) {
-<span class="fc" id="L10">    super(template, start);</span>
-<span class="fc" id="L11">    this.startTagOnSeparateLine = startTagOnSeparateLine;</span>
-<span class="fc" id="L12">  }</span>
+  InlineTemplatePart(int start, Template template, boolean startTagOnSeparateLine) {
+<span class="fc" id="L8">    super(start, template);</span>
+<span class="fc" id="L9">    this.startTagOnSeparateLine = startTagOnSeparateLine;</span>
+<span class="fc" id="L10">  }</span>
 
   boolean isStartTagOnSeparateLine() {
-<span class="fc" id="L15">    return startTagOnSeparateLine;</span>
+<span class="fc" id="L13">    return startTagOnSeparateLine;</span>
   }
 
   @Override
   public String toString() {
-<span class="fc" id="L20">    return new StringBuilder(100)</span>
-<span class="fc" id="L21">        .append(&quot;~%%begin:&quot;)</span>
-<span class="fc" id="L22">        .append(template.getName())</span>
-<span class="fc" id="L23">        .append('%')</span>
-<span class="fc" id="L24">        .append(template)</span>
-<span class="fc" id="L25">        .append(&quot;~%%end:&quot;)</span>
-<span class="fc" id="L26">        .append(template.getName())</span>
-<span class="fc" id="L27">        .append('%')</span>
-<span class="fc" id="L28">        .toString();</span>
+<span class="fc" id="L18">    return new StringBuilder(100)</span>
+<span class="fc" id="L19">        .append(&quot;~%%begin:&quot;)</span>
+<span class="fc" id="L20">        .append(template.getName())</span>
+<span class="fc" id="L21">        .append('%')</span>
+<span class="fc" id="L22">        .append(template)</span>
+<span class="fc" id="L23">        .append(&quot;~%%end:&quot;)</span>
+<span class="fc" id="L24">        .append(template.getName())</span>
+<span class="fc" id="L25">        .append('%')</span>
+<span class="fc" id="L26">        .toString();</span>
   }
 
 }

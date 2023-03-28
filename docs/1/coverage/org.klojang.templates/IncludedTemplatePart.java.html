@@ -14,8 +14,8 @@ final class IncludedTemplatePart extends NestedTemplatePart {
 <span class="fc" id="L14">    return substringBefore(substrAfter(path, &quot;/&quot;, -1), &quot;.&quot;, -1);</span>
   }
 
-  IncludedTemplatePart(Template template, int start) {
-<span class="fc" id="L18">    super(template, start);</span>
+  IncludedTemplatePart(int start, Template template) {
+<span class="fc" id="L18">    super(start, template);</span>
 <span class="fc" id="L19">  }</span>
 
   @Override

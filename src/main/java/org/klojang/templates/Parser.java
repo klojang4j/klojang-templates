@@ -142,8 +142,7 @@ final class Parser {
       }
       Parser parser = new Parser(loc, name, mySrc);
       parts.add(
-          new InlineTemplatePart(parser.parse(),
-              offset + m.start(),
+          new InlineTemplatePart(offset + m.start(), parser.parse(),
               onSeparateLine(src, m.start(1), m.end(1))));
       end = m.end();
     } while (m.find());
@@ -186,7 +185,7 @@ final class Parser {
       if (!nested.getName().equals(name)) {
         nested = new Template(nested, name);
       }
-      parts.add(new IncludedTemplatePart(nested, offset + m.start()));
+      parts.add(new IncludedTemplatePart(offset + m.start(), nested));
       end = m.end();
     } while (m.find());
     if (end < unparsed.text().length()) {
@@ -214,7 +213,7 @@ final class Parser {
       String name = m.group(3);
       Check.that(name).isNot(in(), names, VAR_NAME_WITH_TMPL_NAME
           .getExceptionSupplier(src, offset + m.start(3), name));
-      parts.add(new VariablePart(prefix, name, offset + m.start()));
+      parts.add(new VariablePart(offset + m.start(), prefix, name));
       end = m.end();
     } while (m.find());
     if (end < unparsed.text().length()) {

@@ -14,8 +14,8 @@ final class IncludedTemplatePart extends NestedTemplatePart {
     return substringBefore(substrAfter(path, "/", -1), ".", -1);
   }
 
-  IncludedTemplatePart(Template template, int start) {
-    super(template, start);
+  IncludedTemplatePart(int start, Template template) {
+    super(start, template);
   }
 
   @Override
