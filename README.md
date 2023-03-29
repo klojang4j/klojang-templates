@@ -391,33 +391,17 @@ the `Employee` class, but visually it actually _flattens_ the relationship betwe
 Conditional rendering &#8212; that is, rendering a block of text within a template
 only if a certain condition is met, is also done by means of nested templates.
 
-Conditional rendering is, in fact, a rather unremarkable affair in _Klojang
-Templates_. By default, neither template variables nor nested templates are rendered
-in the first place. If you don't set a variable to a value, it will simply disappear
-from the template. If you don't populate a nested template, the entire block of text
-it encloses will disappear from the template. Thus, if you don't want something to be
-rendered, just "don't mention its name" in a `RenderSession`.
+Conditional rendering is an unremarkable affair in _Klojang Templates_. By default,
+neither template variables nor nested templates are rendered in the first place. If
+you don't set a variable to a value, it will simply disappear from the template. If
+you don't populate a nested template, the entire block of text it encloses will
+disappear from the template. Thus, if you don't want something to be rendered, just "
+don't mention its name" in the `RenderSession`.
 
 However, you can make it more explicit that you don't want a block of text to be
 rendered. If you populate a nested template with an empty array or collection, the
 template is going to be repeated zero times. In other words, you prevent it from
 being rendered.
-
-```java
-public class EmployeeResource {
-
-   @GET
-   @Path("/no-data")
-   public String list() throws ParseException {
-      Template template = Template.fromResource(getClass(), "/views/employees.html");
-      return template.newRenderSession()
-              .populate("employees", Collections.emptyList())
-              .render();
-   }
-
-}
-```
-
 
 ## Stringifiers and Variable Groups
 
@@ -426,7 +410,7 @@ could be used for HTML-escaping and ECMAScript-escaping, respectively. These pre
 are, in fact, the names of two predefined 
 [variable groups](https://klojang4j.github.io/klojang-templates/1/api/org.klojang.templates/org/klojang/templates/VarGroup.html).
 There are a couple more of them, and you can also define your own variable groups.
-For example, you might want to define variable group for formatting date/time 
+For example, you might want to define a variable group for formatting date/time 
 objects according to your locale.
 
 ```html
@@ -457,7 +441,7 @@ public class Setup {
    private static StringifierRegistry configureStringifiers() {
       Stringifier stringifier = obj -> {
          if (obj == null) {
-            return "&nbsp;";
+            return "\&nbsp;";
          }
          DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy年mm月dd日");
          return formatter.format((LocalDate) obj);

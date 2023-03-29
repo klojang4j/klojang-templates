@@ -235,7 +235,7 @@ final class SoloSession implements RenderSession {
     Template t = getNestedTemplate(nestedTemplateName);
     List<?> data = listify(sourceData);
     if (t.isTextOnly()) {
-      return show(data.size(), t);
+      return enable(data.size(), t);
     }
     Check.that(data, Tag.DATA).is(deepNotNull());
     return populate(t, data, varGroup, names);
@@ -274,7 +274,7 @@ final class SoloSession implements RenderSession {
         Check.that(t).is(Template::isTextOnly,
             NOT_TEXT_ONLY.getExceptionSupplier(t.getName()));
         if (!state.isProcessed(t)) {
-          show(repeats, t);
+          enable(repeats, t);
         }
       }
     } else {
@@ -282,19 +282,19 @@ final class SoloSession implements RenderSession {
         Template t = getNestedTemplate(name);
         Check.that(t).is(Template::isTextOnly,
             NOT_TEXT_ONLY.getExceptionSupplier(t.getName()));
-        show(repeats, t);
+        enable(repeats, t);
       }
     }
     return this;
   }
 
-  private RenderSession show(int repeats, Template nested) {
+  private RenderSession enable(int repeats, Template nested) {
     state.createChildSessions(nested, repeats);
     return this;
   }
 
   @Override
-  public RenderSession showRecursive(String... nestedTemplateNames) {
+  public RenderSession enableRecursive(String... nestedTemplateNames) {
     Check.notNull(nestedTemplateNames);
     if (nestedTemplateNames.length == 0) {
       for (Template t : config.template().getNestedTemplates()) {
@@ -314,7 +314,7 @@ final class SoloSession implements RenderSession {
   }
 
   private static void showAllRecursive(SoloSession s0, Template t0) {
-    s0.show(1, t0);
+    s0.enable(1, t0);
     if (!t0.getNestedTemplates().isEmpty()) {
       SoloSession s = s0.state.getChildSessions(t0)[0];
       t0.getNestedTemplates().forEach(t -> showAllRecursive(s, t));
@@ -325,7 +325,7 @@ final class SoloSession implements RenderSession {
       Template t0,
       Set<String> names) {
     if (names.contains(t0.getName())) {
-      s0.show(1, t0);
+      s0.enable(1, t0);
       if (!t0.getNestedTemplates().isEmpty()) {
         SoloSession s = s0.state.getChildSessions(t0)[0];
         t0.getNestedTemplates().forEach(t -> showSelectedRecursive(s, t, names));

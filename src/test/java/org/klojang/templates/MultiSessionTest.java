@@ -472,7 +472,7 @@ public class MultiSessionTest {
         """;
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
-    String out = rs.in("companies").showRecursive().render();
+    String out = rs.in("companies").enableRecursive().render();
     //System.out.println(out);
     String expected = """
 
@@ -499,7 +499,7 @@ public class MultiSessionTest {
         """;
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
-    String out = rs.in("companies").showRecursive("text-only1").render();
+    String out = rs.in("companies").enableRecursive("text-only1").render();
     //System.out.println(out);
     String expected = """
 
@@ -524,7 +524,7 @@ public class MultiSessionTest {
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
     String out = rs.in("companies")
-        .showRecursive("text-only1", "text-only3")
+        .enableRecursive("text-only1", "text-only3")
         .render();
     //System.out.println(out);
     String expected = """

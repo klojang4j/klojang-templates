@@ -131,8 +131,8 @@ final class MultiSession implements RenderSession {
   }
 
   @Override
-  public RenderSession showRecursive(String... nestedTemplateNames) {
-    Arrays.stream(sessions).forEach(s -> s.showRecursive(nestedTemplateNames));
+  public RenderSession enableRecursive(String... nestedTemplateNames) {
+    Arrays.stream(sessions).forEach(s -> s.enableRecursive(nestedTemplateNames));
     return this;
   }
 

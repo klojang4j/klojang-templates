@@ -383,7 +383,7 @@ public class RenderSessionTest {
         """;
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
-    rs.showRecursive();
+    rs.enableRecursive();
     String out = rs.render();
     out = out.replaceAll("\\s+", "");
     //System.out.println(out);
@@ -413,7 +413,7 @@ public class RenderSessionTest {
         """;
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
-    rs.showRecursive("chairs");
+    rs.enableRecursive("chairs");
     String out = rs.render();
     out = out.replaceAll("\\s+", "");
     //System.out.println(out);

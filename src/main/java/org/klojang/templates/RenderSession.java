@@ -247,7 +247,7 @@ public sealed interface RenderSession permits SoloSession, MultiSession {
    * necessary to disable a nested template, because nested templates are anyhow only
    * rendered once you populate them. However, it can be useful in combination with a
    * subsequent call to {@link #enable(String...) show()} and
-   * {@link #showRecursive(String...) showRecursive()}.
+   * {@link #enableRecursive(String...) showRecursive()}.
    *
    * <p>Contrary to most of the other methods, this method does not return
    * <i>this</i> {@code RenderSession}. Instead, it returns a {@code RenderSession}
@@ -332,7 +332,7 @@ public sealed interface RenderSession permits SoloSession, MultiSession {
    * of course, it <i>does</i> make sense to first explicitly disable the text-only
    * templates that should <i>not</i> be rendered.
    *
-   * <p>To enable a text-only template, you could also call:
+   * <p>To enable a text-only template, you <i>could</i> also call:
    *
    * <ul>
    * <li>{@code populate(nestedTemplateName, null)}
@@ -340,9 +340,10 @@ public sealed interface RenderSession permits SoloSession, MultiSession {
    * <li>{@code populate(nestedTemplateName, new Object[1])}
    * </ul>
    *
-   * <p>The {@code populate()} method will detect that there are no variables in the
+   * <p>The {@code populate()} method would detect that there are no variables in the
    * template, and hence has no need to, and will not query the source data object
-   * passed as the second argument. However, the {@code show} method bypasses some
+   * passed as the second argument (and hence the second argument may be anything you
+   * like, including {@code null}). However, the {@code show} method bypasses some
    * code that is irrelevant for text-only templates.
    *
    * @param repeats the number of times the nested template(s) must be repeated
@@ -362,7 +363,7 @@ public sealed interface RenderSession permits SoloSession, MultiSession {
    *     rendered
    * @return this {@code RenderSession}
    */
-  RenderSession showRecursive(String... nestedTemplateNames);
+  RenderSession enableRecursive(String... nestedTemplateNames);
 
   /**
    * Convenience method for populating a nested template that contains exactly one
