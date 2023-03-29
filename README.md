@@ -441,7 +441,7 @@ public class Setup {
    private static StringifierRegistry configureStringifiers() {
       Stringifier stringifier = obj -> {
          if (obj == null) {
-            return "\&nbsp;";
+            return "&nbsp;";
          }
          DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy年mm月dd日");
          return formatter.format((LocalDate) obj);
