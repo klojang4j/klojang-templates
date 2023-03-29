@@ -354,7 +354,7 @@ public class MultiSessionTest {
         """;
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
-    String out = rs.repeat("companies", 2).show().render();
+    String out = rs.repeat("companies", 2).enable().render();
     //System.out.println(out);
     String expected = """
 
@@ -380,7 +380,7 @@ public class MultiSessionTest {
         """;
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
-    String out = rs.repeat("companies", 2).show("text-only2").render();
+    String out = rs.repeat("companies", 2).enable("text-only2").render();
     //System.out.println(out);
     String expected = """
 
@@ -405,8 +405,8 @@ public class MultiSessionTest {
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
     String out = rs.repeat("companies", 2)
-        .show("text-only2")
-        .show("text-only1")
+        .enable("text-only2")
+        .enable("text-only1")
         .render();
     //System.out.println(out);
     String expected = """
@@ -433,7 +433,7 @@ public class MultiSessionTest {
         """;
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
-    String out = rs.repeat("companies", 2).show("text-only2", "text-only1").render();
+    String out = rs.repeat("companies", 2).enable("text-only2", "text-only1").render();
     //System.out.println(out);
     String expected = """
 
@@ -452,7 +452,7 @@ public class MultiSessionTest {
     String src = " ~%%begin:companies% Hello ~%%end:companies%";
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
-    String out = rs.show(3, "companies").render();
+    String out = rs.enable(3, "companies").render();
     System.out.println(out);
     String expected = "Hello Hello Hello";
     assertEquals(nospace(expected), nospace(out));

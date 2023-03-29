@@ -88,7 +88,8 @@ final class SoloSession implements RenderSession {
     Check.that(varName).is(keyIn(), t.variables(),
         NO_SUCH_VARIABLE.getExceptionSupplier(getFQName(t, varName)));
     IntList indices = t.variables().get(varName);
-    indices.forEachThrowing(i -> state.setVar(i, new Lazy(valueGenerator, varGroup)));
+    indices.forEachThrowing(i -> state.setVar(i,
+        new Lazy(valueGenerator, varGroup)));
     state.done(varName);
     return this;
   }
@@ -260,12 +261,12 @@ final class SoloSession implements RenderSession {
   }
 
   @Override
-  public RenderSession show(String... nestedTemplateNames) {
-    return show(1, nestedTemplateNames);
+  public RenderSession enable(String... nestedTemplateNames) {
+    return enable(1, nestedTemplateNames);
   }
 
   @Override
-  public RenderSession show(int repeats, String... nestedTemplateNames) {
+  public RenderSession enable(int repeats, String... nestedTemplateNames) {
     Check.that(repeats, MTag.REPEATS).is(gte(), 0);
     Check.notNull(nestedTemplateNames, Tag.VARARGS);
     if (nestedTemplateNames.length == 0) {

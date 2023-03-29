@@ -246,7 +246,7 @@ public sealed interface RenderSession permits SoloSession, MultiSession {
    * explicitly disabled (in other words: <i>not</i> rendered). Usually it is not
    * necessary to disable a nested template, because nested templates are anyhow only
    * rendered once you populate them. However, it can be useful in combination with a
-   * subsequent call to {@link #show(String...) show()} and
+   * subsequent call to {@link #enable(String...) show()} and
    * {@link #showRecursive(String...) showRecursive()}.
    *
    * <p>Contrary to most of the other methods, this method does not return
@@ -308,46 +308,49 @@ public sealed interface RenderSession permits SoloSession, MultiSession {
   RenderSession in(String nestedTemplateName);
 
   /**
-   * Enables or disables the rendering of nested text-only templates. The specified
-   * templates must all be text-only templates, otherwise a {@link RenderException}
-   * is thrown. Equivalent to
-   * {@link #show(int, String...) show(1, nestedTemplateNames)}.
+   * Convenience method for rendering one ore more nested text-only templates.
+   * Equivalent to {@link #enable(int, String...) show(1, nestedTemplateNames)}.
    *
    * @param nestedTemplateNames the names of the nested templates to be
    *     rendered.
    * @return this {@code RenderSession}
    */
-  RenderSession show(String... nestedTemplateNames);
+  RenderSession enable(String... nestedTemplateNames);
 
   /**
-   * Enables or disables the rendering of nested text-only templates. A text-only
-   * template is a template that does not contain any variables or nested templates.
+   * Convenience method for rendering one or more nested text-only templates. A
+   * text-only template is a template that does not contain any variables or
+   * doubly-nested templates.
    *
-   * <p>To <i>disable</i> rendering of a text-only template, specify 0 (zero) for
-   * the {@code repeats} argument. Note, however, that by default template variables
-   * and nested templates are not rendered in the first place, so you could also just
-   * not call this method for the template in question.
+   * <p>To explicitly disable the rendering of a text-only template, you can call
+   * this method and specify 0 (zero) for the {@code repeats} argument. Note,
+   * however, that by default template variables and nested templates are not
+   * rendered in the first place.
    *
-   * <p>Specify an empty {@code String} array ({@code new String[0]}) to enable
-   * <i>all</i> text-only templates that have not been explicitly enabled or
-   * disabled yet. In that case, of course, it <i>does</i> make sense to first
-   * explicitly disable the text-only templates that should not be rendered.
+   * <p>Specify an empty {@code String} array to enable <i>all</i> text-only
+   * templates that have not been explicitly enabled or disabled yet. In that case,
+   * of course, it <i>does</i> make sense to first explicitly disable the text-only
+   * templates that should <i>not</i> be rendered.
    *
-   * <p>You could achieve the same by calling
-   * {@code populate(nestedTemplateName, null)} (show the template) or
-   * {@code populate(nestedTemplateName, new Object())} (show the template) or
-   * {@code populate(nestedTemplateName, new Object[1])} (show the template) or
-   * {@code populate(nestedTemplateName, new Object[6])} (repeat six times) or
-   * {@code populate(nestedTemplateName, new Object[0])} (disable the template).
-   * However, the {@code show} method bypasses some code that is irrelevant to
-   * text-only templates.
+   * <p>To enable a text-only template, you could also call:
+   *
+   * <ul>
+   * <li>{@code populate(nestedTemplateName, null)}
+   * <li>{@code populate(nestedTemplateName, new Object())}
+   * <li>{@code populate(nestedTemplateName, new Object[1])}
+   * </ul>
+   *
+   * <p>The {@code populate()} method will detect that there are no variables in the
+   * template, and hence has no need to, and will not query the source data object
+   * passed as the second argument. However, the {@code show} method bypasses some
+   * code that is irrelevant for text-only templates.
    *
    * @param repeats the number of times the nested template(s) must be repeated
    * @param nestedTemplateNames the names of the nested text-only templates to be
    *     rendered
    * @return this {@code RenderSession}
    */
-  RenderSession show(int repeats, String... nestedTemplateNames);
+  RenderSession enable(int repeats, String... nestedTemplateNames);
 
   /**
    * Enables all nested text-only templates that have not been explicitly disabled
@@ -399,7 +402,7 @@ public sealed interface RenderSession permits SoloSession, MultiSession {
    * Convenience method for populating a nested template that contains exactly two
    * variables. The provided varargs array must contain an even number of elements,
    * alternating between a value for the first template variable and a value for the
-   * second one. The specified template is going to be repeated for each pair of
+   * second one. The template is going to be repeated for each <i>pair</i> of
    * values.
    *
    * @param nestedTemplateName the name of the nested template.
@@ -413,7 +416,7 @@ public sealed interface RenderSession permits SoloSession, MultiSession {
    * Convenience method for populating a nested template that contains exactly two
    * variables. The provided varargs array must contain an even number of elements,
    * alternating between a value for the first template variable and a value for the
-   * second one. The specified template is going to be repeated for each pair of
+   * second one. The template is going to be repeated for each <i>pair</i> of
    * values.
    *
    * @param nestedTemplateName the name of the nested template

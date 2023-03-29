@@ -96,7 +96,7 @@ public class RenderErrorTest {
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
     try {
-      rs.show("foo");
+      rs.enable("foo");
     } catch (RenderException e) {
       //System.out.println(e.getMessage());
       assertEquals(

@@ -2,7 +2,6 @@ package org.klojang.templates;
 
 import org.junit.jupiter.api.Test;
 import org.klojang.path.util.MapBuilder;
-import org.klojang.util.AnyTuple2;
 
 import java.util.List;
 import java.util.Map;
@@ -315,7 +314,7 @@ public class RenderSessionTest {
         """;
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
-    rs.show(2);
+    rs.enable(2);
     String out = rs.render();
     out = out.replaceAll("\\s+", "");
     //System.out.println(out);
@@ -336,7 +335,7 @@ public class RenderSessionTest {
         """;
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
-    rs.show(2, "companies");
+    rs.enable(2, "companies");
     String out = rs.render();
     out = out.replaceAll("\\s+", "");
     //System.out.println(out);
@@ -357,7 +356,7 @@ public class RenderSessionTest {
         """;
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
-    rs.show("teapots");
+    rs.enable("teapots");
     String out = rs.render();
     out = out.replaceAll("\\s+", "");
     //System.out.println(out);

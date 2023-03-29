@@ -119,14 +119,14 @@ final class MultiSession implements RenderSession {
   }
 
   @Override
-  public RenderSession show(String... nestedTemplateNames) {
-    Arrays.stream(sessions).forEach(s -> s.show(nestedTemplateNames));
+  public RenderSession enable(String... nestedTemplateNames) {
+    Arrays.stream(sessions).forEach(s -> s.enable(nestedTemplateNames));
     return this;
   }
 
   @Override
-  public RenderSession show(int repeats, String... nestedTemplateNames) {
-    Arrays.stream(sessions).forEach(s -> s.show(repeats, nestedTemplateNames));
+  public RenderSession enable(int repeats, String... nestedTemplateNames) {
+    Arrays.stream(sessions).forEach(s -> s.enable(repeats, nestedTemplateNames));
     return this;
   }
 
