@@ -389,15 +389,19 @@ the `Employee` class, but visually it actually _flattens_ the relationship betwe
 ### Conditional Rendering
 
 Conditional rendering &#8212; that is, rendering a block of text within a template
-only if a certain condition is met, is an unremarkable affair in _Klojang Templates_.
-By default, neither template variables nor nested templates are rendered in the first
-place. If you don't set a variable to a value, it will simply disappear from the
-template. If you don't populate a nested template, the entire block of text it
-encloses will disappear from the template. Thus, if you don't want something to be
+only if a certain condition is met, is also done by means of nested templates.
+
+Conditional rendering is, in fact, a rather unremarkable affair in _Klojang
+Templates_. By default, neither template variables nor nested templates are rendered
+in the first place. If you don't set a variable to a value, it will simply disappear
+from the template. If you don't populate a nested template, the entire block of text
+it encloses will disappear from the template. Thus, if you don't want something to be
 rendered, just "don't mention its name" in a `RenderSession`.
 
 However, you can make it more explicit that you don't want a block of text to be
-rendered:
+rendered. If you populate a nested template with an empty array or collection, the
+template is going to be repeated zero times. In other words, you prevent it from
+being rendered.
 
 ```java
 public class EmployeeResource {
@@ -414,8 +418,6 @@ public class EmployeeResource {
 }
 ```
 
-If you populate a nested template with an empty array or collection, the template is
-going to be repeated zero times. In other words, you prevent it from being rendered.
 
 ## Stringifiers and Variable Groups
 
