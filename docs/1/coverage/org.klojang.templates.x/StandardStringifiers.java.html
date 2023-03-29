@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>StandardStringifiers.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Klojang Templates</a> &gt; <a href="index.source.html" class="el_package">org.klojang.templates.x</a> &gt; <span class="el_source">StandardStringifiers.java</span></div><h1>StandardStringifiers.java</h1><pre class="source lang-java linenums">package org.klojang.templates.x;
+
+import org.apache.commons.text.StringEscapeUtils;
+import org.apache.commons.text.translate.AggregateTranslator;
+import org.apache.commons.text.translate.CharSequenceTranslator;
+import org.apache.commons.text.translate.EntityArrays;
+import org.apache.commons.text.translate.LookupTranslator;
+import org.apache.http.client.utils.URIBuilder;
+import org.klojang.templates.Stringifier;
+import org.klojang.templates.VarGroup;
+
+import java.util.Map;
+import java.util.function.UnaryOperator;
+
+import static org.apache.commons.text.StringEscapeUtils.escapeEcmaScript;
+import static org.klojang.templates.VarGroup.*;
+import static org.klojang.util.StringMethods.EMPTY_STRING;
+
+<span class="nc" id="L19">public class StandardStringifiers {</span>
+
+  // Copied from StringEscapeUtils and added the 4th LookupTranslator
+<span class="fc" id="L22">  private static final CharSequenceTranslator HTML_ATTR_TRANSLATOR =</span>
+      new AggregateTranslator(
+          new LookupTranslator(EntityArrays.BASIC_ESCAPE),
+          new LookupTranslator(EntityArrays.ISO8859_1_ESCAPE),
+          new LookupTranslator(EntityArrays.HTML40_EXTENDED_ESCAPE),
+<span class="fc" id="L27">          new LookupTranslator(Map.of(&quot;'&quot;, &quot;&amp;#39;&quot;, &quot;\&quot;&quot;, &quot;&amp;#34;&quot;)));</span>
+
+<span class="fc" id="L29">  public static final Stringifier ESCAPE_HTML = wrap(StringEscapeUtils::escapeHtml4);</span>
+
+<span class="fc" id="L31">  public static final Stringifier ESCAPE_JS = wrap(StringEscapeUtils::escapeEcmaScript);</span>
+
+<span class="fc" id="L33">  public static final Stringifier ESCAPE_ATTR = wrap(HTML_ATTR_TRANSLATOR::translate);</span>
+
+<span class="fc" id="L35">  public static final Stringifier ESCAPE_JS_ATTR = wrap(StandardStringifiers::escapeJsAttr);</span>
+
+<span class="fc" id="L37">  public static final Stringifier ESCAPE_QUERY_PARAM = wrap(StandardStringifiers::escapeParam);</span>
+
+<span class="fc" id="L39">  public static final Stringifier ESCAPE_PATH = wrap(StandardStringifiers::escapePath);</span>
+
+  public static Map&lt;VarGroup, Stringifier&gt; get() {
+<span class="fc" id="L42">    return Map.of(</span>
+        TEXT, Stringifier.DEFAULT,
+        HTML, ESCAPE_HTML,
+        JS, ESCAPE_JS,
+        ATTR, ESCAPE_ATTR,
+        JS_ATTR, ESCAPE_JS_ATTR,
+        PARAM, ESCAPE_QUERY_PARAM,
+        PATH, ESCAPE_PATH);
+  }
+
+  private static String escapeJsAttr(String s) {
+<span class="fc" id="L53">    return HTML_ATTR_TRANSLATOR.translate(escapeEcmaScript(s));</span>
+  }
+
+  private static String escapeParam(String s) {
+<span class="nc" id="L57">    return new URIBuilder().setPathSegments(s).toString().substring(1);</span>
+  }
+
+  private static String escapePath(String s) {
+<span class="nc" id="L61">    return new URIBuilder().addParameter(&quot;x&quot;, s).toString().substring(3);</span>
+  }
+
+  private static Stringifier wrap(UnaryOperator&lt;String&gt; stringifier) {
+<span class="pc bpc" id="L65" title="1 of 2 branches missed.">    return x -&gt; x == null ? EMPTY_STRING : stringifier.apply(x.toString());</span>
+  }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

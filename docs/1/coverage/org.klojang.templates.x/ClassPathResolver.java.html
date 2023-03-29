@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ClassPathResolver.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Klojang Templates</a> &gt; <a href="index.source.html" class="el_package">org.klojang.templates.x</a> &gt; <span class="el_source">ClassPathResolver.java</span></div><h1>ClassPathResolver.java</h1><pre class="source lang-java linenums">package org.klojang.templates.x;
+
+import org.klojang.templates.PathResolver;
+
+import java.io.InputStream;
+import java.util.Optional;
+
+public final class ClassPathResolver implements PathResolver {
+
+  private final Class&lt;?&gt; clazz;
+
+<span class="fc" id="L12">  public ClassPathResolver(Class&lt;?&gt; clazz) {</span>
+<span class="fc" id="L13">    this.clazz = clazz;</span>
+<span class="fc" id="L14">  }</span>
+
+  @Override
+  public Optional&lt;Boolean&gt; isValidPath(String path) {
+<span class="pc bpc" id="L18" title="1 of 2 branches missed.">    return clazz.getResource(path) == null ? INVALID_PATH : VALID_PATH;</span>
+  }
+
+  @Override
+  public InputStream resolve(String path) {
+<span class="fc" id="L23">    return clazz.getResourceAsStream(path);</span>
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+<span class="pc bpc" id="L28" title="1 of 2 branches missed.">    if (this == obj) {</span>
+<span class="nc" id="L29">      return true;</span>
+<span class="fc bfc" id="L30" title="All 2 branches covered.">    } else if (obj instanceof ClassPathResolver cpr) {</span>
+<span class="pc bpc" id="L31" title="1 of 2 branches missed.">      return clazz.getPackage() == cpr.clazz.getPackage();</span>
+    }
+<span class="fc" id="L33">    return false;</span>
+  }
+
+  @Override
+  public int hashCode() {
+<span class="fc" id="L38">    return clazz.hashCode();</span>
+  }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

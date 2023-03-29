@@ -27,7 +27,7 @@ populating a Klojang template surprisingly efficient.
 
 The **javadocs** for _Klojang Templates_ can be found **[here](https://klojang4j.github.io/klojang-templates/1/api)**.
 The latest **vulnerabilities report** can be found **[here](https://klojang4j.github.io/klojang-templates/1/vulnerabilities/dependency-check-report.html)**.
-The latest **code coverage reports** can be found **[here](https://klojang4j. github.io/klojang-templates/1/coverage)**.
+The latest **code coverage reports** can be found **[here](https://klojang4j.github.io/klojang-templates/1/coverage)**.
 
 # Getting Started
 
@@ -36,7 +36,6 @@ To get started with _Klojang Templates_, add the following dependency to you pro
 **Maven**:
 
 ```xml
-
 <dependency>
     <groupId>org.klojang</groupId>
     <artifactId>klojang-templates</artifactId>
@@ -146,7 +145,8 @@ interface.
 ## Nested Templates
 
 In _Klojang Templates_ templates can be nested inside other templates (ad infinitum
-if you like). Why you would want that is explained in the next chapter. This chapter 
+if you like). Why you would want to do that is explained in the next chapter. This 
+chapter 
 details the syntax for nested templates.
 
 There are, in fact, two ways to nest one template inside another: via 
@@ -210,8 +210,6 @@ _/views/departments.txt:_
 Note that inline template tags end with a single percentage sign (%) while included 
 template tags end with a double percentage sign (%%).
 
-### Template Names
-
 Nested templates, whether inline or included, are identified by their name &#8212;
 "companies", "departments" and "employees" in the examples above. For included
 templates, the name by default is the basename of the included file. However, you can
@@ -221,23 +219,13 @@ also use the following syntax:
 ~%%include:employees:/views/employees-2023-01-01.txt%%
 ```
 
-The template that you explicitly instantiate using [Template.fromResource()](https://klojang4j.github.io/klojang-templates/1/api/org.klojang.templates/org/klojang/templates/Template.html#fromResource(java.lang.Class,java.lang.String))
-(and the other `fromXXX` methods) is called the "root" or "main" template. When 
-inserting non-scalar values (e.g. hash maps) directly into the root template, you 
-use the [insert()](https://klojang4j.github.io/klojang-templates/1/api/org.klojang.templates/org/klojang/templates/RenderSession.html#insert(java.lang.Object,java.lang.String...))
-method of the [RenderSession](https://klojang4j.github.io/klojang-templates/1/api/org.klojang.templates/org/klojang/templates/RenderSession.html) class.
-When inserting them into a nested template, you use the [populate()](https://klojang4j.github.io/klojang-templates/1/api/org.klojang.templates/org/klojang/templates/RenderSession.html#populate(java.lang.String,java.lang.Object,java.lang.String...))
-method. The `insert()` method does not require you to specify the name of the 
-template you want to populate. Yet, for reporting purposes, the root template 
-still also has a name. It is always **{root}**.
-
 ## Using Nested Templates
 
 By allowing templates to be nested inside each other, they gain an extra dimension
 ("depth"). As a consequence, a Klojang template almost literally is a mold into which
 you can sink objects with the same shape. If the structure of the template reflects
 the structure of the model object, you can fill up the entire template with a single
-call.
+call. The following code snippets illustrate this.
 
 ```java
 record Employee(int id, String firstName, String lastName, Address address) {}
@@ -282,7 +270,7 @@ and how, _inside_ the address template, you have access to the `Address` propert
 Nested templates enable you to create tables and other repetitive structures.
 
 ```html
-<!-- home.html -->
+<!-- employees.html -->
 <html>
 <body>
 <table>
@@ -304,14 +292,14 @@ import org.klojang.templates.ParseException;
 import org.klojang.templates.RenderSession;
 import org.klojang.templates.Template;
 
-public class HomeResource {
+public class EmployeeResource {
   
   private EmployeeDao dao;
 
   @GET
   @Path("/")
    public String list() throws ParseException {
-     Template template = Template.fromResource(getClass(), "/views/home.html");
+     Template template = Template.fromResource(getClass(), "/views/employees.html");
      List<Employee> employees = dao.list();
      return template.newRenderSession()
              .populate("employees", employees)
@@ -322,18 +310,16 @@ public class HomeResource {
 ```
 
 If the second argument to `RenderSession.populate()` is an array or collection, the
-nested template turns into a _repeating template_, repeating itself for each element
-in the array or collection.
+nested template automatically turns into a _repeating template_, repeating itself for
+each element in the array or collection.
 
 #### Newline Suppression
 
-**As an aside**: when rendering a template, its structure is left fully intact. The value
-for a template variable is inserted exactly _at_ the location of the the variable.
-variable. The contents of an included template is inserted at the location of the
-tilde (**~**) of the included template tag (`~%%include:path/to/foo.html%%`). There
-is one exception: if the begin tag or end tag of an inline template is on a separate
-line, that entire line will be removed from the output. Thus, the above template
-would render somewhat like this:
+As an aside: when rendering a template, its structure is left completely intact.
+Variables are replaced by their values and nested templates are replaced by their
+contents. There is one exception: if the begin tag or end tag of an inline template
+is on a separate line, that entire line will be removed from the output. Thus, the
+above template would render somewhat like this:
 
 ```html
 <html>
@@ -345,7 +331,7 @@ would render somewhat like this:
     <tbody>
         <tr><td>John</td><td>Smith</td><td>1980-06-13</td></tr>
         <tr><td>Mary</td><td>Bear</td><td>1977-11-10</td></tr>
-        <tr><td>Tracey</td><td>Pattison</td><td>2001-04-03</td></tr>
+        <tr><td>Tracey</td><td>Peterson</td><td>2001-04-03</td></tr>
    </tbody>
 </table>
 </body>
@@ -355,9 +341,8 @@ would render somewhat like this:
 
 ### Complex Structures
 
-The templates and the objects to populate them with can be arbitrarily complex.
-
-Take, for example, the company-overview template again:
+Nested templates really start to shine as the information you need to convey 
+becomes more complex. Take, for example, the company-overview template again:
 
 ```
 This is an overview of our customers:
@@ -389,16 +374,16 @@ record Employee(String firstName, String lastName, LocalDate birthDate) {}
 
 Then, when inserting a list of Company instances into the template, the 
 employees template would repeat within the departments template, which would 
-repeat within the companies template, which would again repeat within the 
+repeat within the companies template, which would repeat within the 
 company-overview template. All this would happen with a single call to 
 [RenderSession.populate()](https://klojang4j.github.io/klojang-templates/1/api/org.klojang.templates/org/klojang/templates/RenderSession.html#populate(java.lang.String,java.lang.Object,java.lang.String...)),
 simply because the structure of the template reflects the structure of the data 
 model.
 
-Note that this does not mean that the _visual layout_ of the template must somehow
-reflect the structure of the data model.
+Note that this does not mean that the visual appearance of the template must
+somehow reflect the structure of the data model.
 The [label template](#using-nested-templates) shown above reflects the structure of
-the `Employee` class, but visually it actually flattens the relationship between
+the `Employee` class, but visually it actually _flattens_ the relationship between
 `Employee` and `Address`.
 
 ### Conditional Rendering
@@ -409,18 +394,18 @@ By default, neither template variables nor nested templates are rendered in the 
 place. If you don't set a variable to a value, it will simply disappear from the
 template. If you don't populate a nested template, the entire block of text it
 encloses will disappear from the template. Thus, if you don't want something to be
-rendered, just "don't mention its name".
+rendered, just "don't mention its name" in a `RenderSession`.
 
 However, you can make it more explicit that you don't want a block of text to be
 rendered:
 
 ```java
-public class HomeResource {
+public class EmployeeResource {
 
    @GET
    @Path("/no-data")
    public String list() throws ParseException {
-      Template template = Template.fromResource(getClass(), "/views/home.html");
+      Template template = Template.fromResource(getClass(), "/views/employees.html");
       return template.newRenderSession()
               .populate("employees", Collections.emptyList())
               .render();
@@ -434,6 +419,69 @@ going to be repeated zero times. In other words, you prevent it from being rende
 
 ## Stringifiers and Variable Groups
 
-In the chapter on [escaping](#escaping), we showed how you could use prefixes like 
-`html:` and `js:` that 
+The chapter on [escaping](#escaping), illustrated how the`html:` and `js:` prefixes
+could be used for HTML-escaping and ECMAScript-escaping, respectively. These prefixes
+are, in fact, the names of two predefined 
+[variable groups](https://klojang4j.github.io/klojang-templates/1/api/org.klojang.templates/org/klojang/templates/VarGroup.html).
+There are a couple more of them, and you can also define your own variable groups.
+For example, you might want to define variable group for formatting date/time 
+objects according to your locale.
+
+```html
+<!-- employee.html -->
+<html>
+<body>
+<p>First name: ~%firstName%</p>
+<p>Last name: ~%lastName%</p>
+<p>Birthdate: ~%date-format1:birthDate%</p>
+</body>
+</html>
+```
+
+```java
+import org.klojang.templates.Stringifier;
+import org.klojang.templates.StringifierRegistry;
+
+import java.time.LocalDate;
+
+public class Setup {
+
+   private static final StringifierRegistry stringifiers = configureStringifiers();
+
+   public static StringifierRegistry getStringifiers() {
+      return stringifiers;
+   }
+
+   private static StringifierRegistry configureStringifiers() {
+      Stringifier stringifier = obj -> {
+         if (obj == null) {
+            return "&nbsp;";
+         }
+         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy年mm月dd日");
+         return formatter.format((LocalDate) obj);
+      };
+      return StringifierRegistry.configure()
+              .registerByGroup("date-format1", stringifier)
+              .freeze();
+   }
+
+}
+```
+
+```java
+public class EmployeeResource {
+
+   @GET
+   @Path("/john")
+   public StreamingOutput john() throws ParseException {
+      Employee employee = new Employee("John", "Smith", LocalDate.of(1980, 6, 13));
+      Template template = Template.fromResource(getClass(), "/views/employee.html");
+      RenderSession session = template.newRenderSession(Setup.getStringifiers());
+      session.insert(employee);
+      return session::render;
+   }
+
+}
+```
+
 
