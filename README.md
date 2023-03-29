@@ -439,16 +439,18 @@ public class Setup {
    }
 
    private static StringifierRegistry configureStringifiers() {
-      Stringifier stringifier = obj -> {
+      return StringifierRegistry.configure()
+              .registerByGroup("date-format1", getDateTimeStringifier())
+              .freeze();
+   }
+
+   private static Stringifier getDateTimeStringifier() {
+      return obj -> {
          if (obj == null) {
             return "&nbsp;";
          }
-         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy年mm月dd日");
-         return formatter.format((LocalDate) obj);
+         return DateTimeFormatter.ofPattern("yyyy年mm月dd日").format((LocalDate) obj);
       };
-      return StringifierRegistry.configure()
-              .registerByGroup("date-format1", stringifier)
-              .freeze();
    }
 
 }
