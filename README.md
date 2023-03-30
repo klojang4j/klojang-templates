@@ -440,7 +440,7 @@ public class Setup {
 
    private static StringifierRegistry configureStringifiers() {
       return StringifierRegistry.configure()
-              .registerByGroup("date-format1", getDateTimeStringifier())
+              .forVarGroup(getDateTimeStringifier(), "date-format1")
               .freeze();
    }
 
@@ -449,7 +449,8 @@ public class Setup {
          if (obj == null) {
             return "&nbsp;";
          }
-         return DateTimeFormatter.ofPattern("yyyy年mm月dd日").format((LocalDate) obj);
+         return DateTimeFormatter.ofPattern("yyyy年mm月dd日")
+                 .format((LocalDate) obj);
       };
    }
 

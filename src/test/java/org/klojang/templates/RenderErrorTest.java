@@ -158,7 +158,7 @@ public class RenderErrorTest {
     String src = "~%xyz:name%";
     Stringifier sf = obj -> null;
     StringifierRegistry reg = StringifierRegistry.configure()
-        .registerByGroup(sf, "xyz")
+        .forVarGroup("xyz", sf)
         .freeze();
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession(reg);
@@ -182,7 +182,7 @@ public class RenderErrorTest {
       throw new NullPointerException();
     };
     StringifierRegistry reg = StringifierRegistry.configure()
-        .registerByGroup(sf, "xyz")
+        .forVarGroup("xyz", sf)
         .freeze();
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession(reg);

@@ -24,7 +24,7 @@ public class RenderSessionTest {
   public void set01() throws ParseException {
     Stringifier stringifier = obj -> String.valueOf(obj).toUpperCase();
     StringifierRegistry registry = StringifierRegistry.configure()
-        .registerByGroup(stringifier, "upper")
+        .forVarGroup("upper", stringifier)
         .freeze();
     String src = "~%upper:foo%";
     Template tmpl = Template.fromString(src);
@@ -38,7 +38,7 @@ public class RenderSessionTest {
   public void set02() throws ParseException {
     Stringifier stringifier = obj -> String.valueOf(obj).toUpperCase();
     StringifierRegistry registry = StringifierRegistry.configure()
-        .registerByGroup(stringifier, "upper")
+        .forVarGroup("upper", stringifier)
         .freeze();
     String src = "<td>~%foo%</td>";
     Template tmpl = Template.fromString(src);

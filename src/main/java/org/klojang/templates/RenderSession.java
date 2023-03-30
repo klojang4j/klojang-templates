@@ -58,7 +58,7 @@ public sealed interface RenderSession permits SoloSession, MultiSession {
    * @param varGroup the variable group to assign the variable to if the variable
    *     has no group name prefix. May be {@code null}.
    * @return this {@code RenderSession}
-   * @see StringifierRegistry.Builder#registerByGroup(Stringifier, String...)
+   * @see StringifierRegistry.Builder#forVarGroup(String, Stringifier)
    */
   RenderSession set(String varName, Object value, VarGroup varGroup);
 

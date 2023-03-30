@@ -235,7 +235,7 @@ final class SoloSession implements RenderSession {
 <span class="fc" id="L235">    Template t = getNestedTemplate(nestedTemplateName);</span>
 <span class="fc" id="L236">    List&lt;?&gt; data = listify(sourceData);</span>
 <span class="fc bfc" id="L237" title="All 2 branches covered.">    if (t.isTextOnly()) {</span>
-<span class="fc" id="L238">      return show(data.size(), t);</span>
+<span class="fc" id="L238">      return enable(data.size(), t);</span>
     }
 <span class="fc" id="L240">    Check.that(data, Tag.DATA).is(deepNotNull());</span>
 <span class="fc" id="L241">    return populate(t, data, varGroup, names);</span>
@@ -274,7 +274,7 @@ final class SoloSession implements RenderSession {
 <span class="fc" id="L274">        Check.that(t).is(Template::isTextOnly,</span>
 <span class="fc" id="L275">            NOT_TEXT_ONLY.getExceptionSupplier(t.getName()));</span>
 <span class="pc bpc" id="L276" title="1 of 2 branches missed.">        if (!state.isProcessed(t)) {</span>
-<span class="fc" id="L277">          show(repeats, t);</span>
+<span class="fc" id="L277">          enable(repeats, t);</span>
         }
 <span class="fc" id="L279">      }</span>
     } else {
@@ -282,19 +282,19 @@ final class SoloSession implements RenderSession {
 <span class="fc" id="L282">        Template t = getNestedTemplate(name);</span>
 <span class="fc" id="L283">        Check.that(t).is(Template::isTextOnly,</span>
 <span class="fc" id="L284">            NOT_TEXT_ONLY.getExceptionSupplier(t.getName()));</span>
-<span class="fc" id="L285">        show(repeats, t);</span>
+<span class="fc" id="L285">        enable(repeats, t);</span>
       }
     }
 <span class="fc" id="L288">    return this;</span>
   }
 
-  private RenderSession show(int repeats, Template nested) {
+  private RenderSession enable(int repeats, Template nested) {
 <span class="fc" id="L292">    state.createChildSessions(nested, repeats);</span>
 <span class="fc" id="L293">    return this;</span>
   }
 
   @Override
-  public RenderSession showRecursive(String... nestedTemplateNames) {
+  public RenderSession enableRecursive(String... nestedTemplateNames) {
 <span class="fc" id="L298">    Check.notNull(nestedTemplateNames);</span>
 <span class="fc bfc" id="L299" title="All 2 branches covered.">    if (nestedTemplateNames.length == 0) {</span>
 <span class="fc bfc" id="L300" title="All 2 branches covered.">      for (Template t : config.template().getNestedTemplates()) {</span>
@@ -314,7 +314,7 @@ final class SoloSession implements RenderSession {
   }
 
   private static void showAllRecursive(SoloSession s0, Template t0) {
-<span class="fc" id="L317">    s0.show(1, t0);</span>
+<span class="fc" id="L317">    s0.enable(1, t0);</span>
 <span class="fc bfc" id="L318" title="All 2 branches covered.">    if (!t0.getNestedTemplates().isEmpty()) {</span>
 <span class="fc" id="L319">      SoloSession s = s0.state.getChildSessions(t0)[0];</span>
 <span class="fc" id="L320">      t0.getNestedTemplates().forEach(t -&gt; showAllRecursive(s, t));</span>
@@ -325,7 +325,7 @@ final class SoloSession implements RenderSession {
       Template t0,
       Set&lt;String&gt; names) {
 <span class="fc bfc" id="L327" title="All 2 branches covered.">    if (names.contains(t0.getName())) {</span>
-<span class="fc" id="L328">      s0.show(1, t0);</span>
+<span class="fc" id="L328">      s0.enable(1, t0);</span>
 <span class="fc bfc" id="L329" title="All 2 branches covered.">      if (!t0.getNestedTemplates().isEmpty()) {</span>
 <span class="fc" id="L330">        SoloSession s = s0.state.getChildSessions(t0)[0];</span>
 <span class="fc" id="L331">        t0.getNestedTemplates().forEach(t -&gt; showSelectedRecursive(s, t, names));</span>

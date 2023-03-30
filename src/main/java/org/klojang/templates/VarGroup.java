@@ -10,7 +10,7 @@ import static org.klojang.templates.x.Messages.ERR_NO_SUCH_VARGROUP;
 /**
  * A {@code VarGroup} lets you group template variables across one or more templates.
  * A variable group, on its turn, can be
- * {@linkplain StringifierRegistry.Builder#registerByGroup(Stringifier, String...)
+ * {@linkplain StringifierRegistry.Builder#forVarGroup(String, Stringifier)}
  * associated} with a {@link Stringifier}. Thus variable groups allow you to define a
  * shared stringifier for multiple variables. Within a template, variables can be
  * assigned to a variable group by using the variable group's name as a prefix. For

@@ -35,7 +35,7 @@ public class StringifierRegistryTest {
     Template t = Template.fromString(src);
     StringifierRegistry reg = StringifierRegistry
         .configure()
-        .registerByGroup(uppercaser, "uppercase")
+        .forVarGroup("uppercase", uppercaser)
         .freeze();
     RenderSession rs = t.newRenderSession(reg);
     rs.set("foo", "Bar");
@@ -48,8 +48,8 @@ public class StringifierRegistryTest {
     Template t = Template.fromString(src);
     StringifierRegistry reg = StringifierRegistry
         .configure()
-        .registerByGroup(uppercaser, "uppercase")
-        .registerByName(lowercaser, "foo")
+        .forVarGroup("uppercase", uppercaser)
+        .forName("foo", lowercaser)
         .freeze();
     RenderSession rs = t.newRenderSession(reg);
     rs.set("foo", "Bar");
@@ -62,7 +62,7 @@ public class StringifierRegistryTest {
     Template t = Template.fromString(src);
     StringifierRegistry reg = StringifierRegistry
         .configure()
-        .registerByName(lowercaser, "foo")
+        .forName("foo", lowercaser)
         .freeze();
     RenderSession rs = t.newRenderSession(reg);
     rs.set("foo", "Bar");
@@ -75,8 +75,8 @@ public class StringifierRegistryTest {
     Template t = Template.fromString(src);
     StringifierRegistry reg = StringifierRegistry
         .configure()
-        .registerByName(lowercaser, "foo")
-        .registerByType(typer, Number.class)
+        .forName("foo", lowercaser)
+        .forType(Number.class, typer)
         .freeze();
     RenderSession rs = t.newRenderSession(reg);
     rs.set("foo", 10.7F);
@@ -89,7 +89,7 @@ public class StringifierRegistryTest {
     Template t = Template.fromString(src);
     StringifierRegistry reg = StringifierRegistry
         .configure()
-        .registerByType(typer, Number.class)
+        .forType(Number.class, typer)
         .freeze();
     RenderSession rs = t.newRenderSession(reg);
     rs.set("foo", 10.7F);
@@ -103,7 +103,7 @@ public class StringifierRegistryTest {
     StringifierRegistry reg = StringifierRegistry
         .configure()
         .setDefaultStringifier(obj -> "don't care")
-        .registerByType(typer, Number.class)
+        .forType(Number.class, typer)
         .freeze();
     RenderSession rs = t.newRenderSession(reg);
     rs.set("foo", LocalDate.now());
@@ -116,8 +116,8 @@ public class StringifierRegistryTest {
     Template t = Template.fromString(src);
     StringifierRegistry reg = StringifierRegistry
         .configure()
-        .register(uppercaser, t, "foo")
-        .registerByType(typer, Number.class)
+        .register(t, uppercaser, "foo")
+        .forType(Number.class, typer)
         .freeze();
     RenderSession rs = t.newRenderSession(reg);
     rs.set("foo", 23d);
@@ -142,8 +142,8 @@ public class StringifierRegistryTest {
     Template t = Template.fromString(src);
     StringifierRegistry reg = StringifierRegistry
         .configure()
-        .registerByName(decimal1, "averagePrice")
-        .registerByName(decimal2, "averageSales")
+        .forName("averagePrice", decimal1)
+        .forName("averageSales", decimal2)
         .freeze();
     RenderSession rs = t.newRenderSession(reg);
     rs.set("foo", 23d);
@@ -173,8 +173,8 @@ public class StringifierRegistryTest {
     Template t = Template.fromString(src);
     StringifierRegistry reg = StringifierRegistry
         .configure()
-        .registerByName(decimal1, "averagePrice")
-        .registerByName(decimal2, "averageSales")
+        .forName("averagePrice", decimal1)
+        .forName("averageSales", decimal2)
         .freeze();
     RenderSession rs = t.newRenderSession(reg);
     Map<String, Object> map = new MapBuilder()
@@ -213,8 +213,8 @@ public class StringifierRegistryTest {
     Template t = Template.fromString(src);
     StringifierRegistry reg = StringifierRegistry
         .configure()
-        .registerByName(decimal1, "average*")
-        .registerByName(decimal2, "averageSales")
+        .forName("average*", decimal1)
+        .forName("averageSales", decimal2)
         .freeze();
     RenderSession rs = t.newRenderSession(reg);
     Map<String, Object> map = new MapBuilder()
@@ -253,7 +253,7 @@ public class StringifierRegistryTest {
     Template t = Template.fromString(src);
     StringifierRegistry reg = StringifierRegistry
         .configure()
-        .registerByName(decimal2, "*rage*")
+        .forName("*rage*", decimal2)
         .freeze();
     RenderSession rs = t.newRenderSession(reg);
     Map<String, Object> map = new MapBuilder()
@@ -292,7 +292,7 @@ public class StringifierRegistryTest {
     Template t = Template.fromString(src);
     StringifierRegistry reg = StringifierRegistry
         .configure()
-        .registerByName(decimal1, "*rage*")
+        .forName("*rage*", decimal1)
         .freeze();
     RenderSession rs = t.newRenderSession(reg);
     Map<String, Object> map = new MapBuilder()
@@ -331,9 +331,9 @@ public class StringifierRegistryTest {
     Template t = Template.fromString(src);
     StringifierRegistry reg = StringifierRegistry
         .configure()
-        .registerByTemplate(decimal1, t, null)
-        .registerByTemplate(decimal2, t, "t0")
-        .registerByTemplate(typer, t, "t0.t1")
+        .register(t, decimal1)
+        .forTemplate(t, "t0", decimal2)
+        .forTemplate(t, "t0.t1", typer)
         .freeze();
     RenderSession rs = t.newRenderSession(reg);
     Map<String, Object> map = new MapBuilder()
@@ -360,8 +360,8 @@ public class StringifierRegistryTest {
     Template t = Template.fromString(src);
     StringifierRegistry reg = StringifierRegistry
         .configure()
-        .registerByType(typer, Number.class)
-        .setVariableType(Float.class, t, "foo")
+        .forType(Number.class, typer)
+        .setType(Float.class, t, "foo")
         .freeze();
     RenderSession rs = t.newRenderSession(reg);
     rs.set("foo", null);
@@ -386,9 +386,9 @@ public class StringifierRegistryTest {
     Template t = Template.fromString(src);
     StringifierRegistry reg = StringifierRegistry
         .configure()
-        .registerByTemplate(decimal1, t, null, "averagePrice")
-        .registerByTemplate(decimal2, t, "t0", "averagePrice")
-        .registerByTemplate(typer, t, "t0.t1", "averagePrice")
+        .register(t, decimal1, "averagePrice")
+        .forTemplate(t, "t0", decimal2, "averagePrice")
+        .forTemplate(t, "t0.t1", typer, "averagePrice")
         .freeze();
     RenderSession rs = t.newRenderSession(reg);
     Map<String, Object> map = new MapBuilder()
