@@ -45,11 +45,9 @@ public class RegexTest {
   public void variable03() {
     assertTrue(Regex.CMT_VARIABLE.matcher("<!--~%person%-->").find());
     assertTrue(Regex.CMT_VARIABLE.matcher("<!-- ~%person% -->").find());
-    assertTrue(Regex.CMT_VARIABLE.matcher("<!--\t~%person%\t-->").find());
+    assertFalse(Regex.CMT_VARIABLE.matcher("<!--\t~%person%\t-->").find());
     assertTrue(Regex.CMT_VARIABLE.matcher("FOO\t<!--~%person%-->BAR").find());
-    assertTrue(Regex.CMT_VARIABLE
-        .matcher("\n<!--      \t~%person%\t\t   -->\n")
-        .find());
+    assertFalse(Regex.CMT_VARIABLE.matcher("\n<!--  ~%person%  -->\n").find());
   }
 
   @Test
@@ -167,11 +165,11 @@ public class RegexTest {
 
   @Test
   public void cmtInclude02() {
-    String src = "FOO ******* <!--\n\t~%%include:/views/rows.html%% \t\n  --> ******* BAR";
+    String src = "FOO ******* <!-- ~%%include:/views/rows.html%% --> ******* BAR";
     Matcher m = Regex.CMT_INCLUDED_TEMPLATE.matcher(src);
     m.find();
     assertEquals(3, m.groupCount());
-    assertEquals("<!--\n\t~%%include:/views/rows.html%% \t\n  -->", m.group(0));
+    assertEquals("<!-- ~%%include:/views/rows.html%% -->", m.group(0));
     assertNull(m.group(1));
     assertNull(m.group(2));
     assertEquals("/views/rows.html", m.group(3));
@@ -179,11 +177,11 @@ public class RegexTest {
 
   @Test
   public void cmtInclude03() {
-    String src = "\n\nFOO ******* <!--\n\t~%%include:/views/rows.html%% \t\n  --> ******* \nBAR";
+    String src = "\n\nFOO ******* <!--~%%include:/views/rows.html%%--> ******* \nBAR";
     Matcher m = Regex.CMT_INCLUDED_TEMPLATE.matcher(src);
     m.find();
     assertEquals(3, m.groupCount());
-    assertEquals("<!--\n\t~%%include:/views/rows.html%% \t\n  -->", m.group(0));
+    assertEquals("<!--~%%include:/views/rows.html%%-->", m.group(0));
     assertNull(m.group(1));
     assertNull(m.group(2));
     assertEquals("/views/rows.html", m.group(3));
@@ -198,7 +196,7 @@ public class RegexTest {
 
   @Test
   public void ditch01() throws ParseException {
-    String src = "<!--%% this is a comment -->foo==bar<!--%%-->";
+    String src = "<!--%%-->foo==bar<!--%%-->";
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
     String out = rs.render();
@@ -206,29 +204,11 @@ public class RegexTest {
   }
 
   @Test
-  public void ditch02() throws ParseException {
-    String src = "<td><!--%% this is a comment -->foo==bar<!--%%--></td>";
-    Template tmpl = Template.fromString(src);
-    RenderSession rs = tmpl.newRenderSession();
-    String out = rs.render();
-    assertEquals("<td></td>", out);
-  }
-
-  @Test
-  public void ditch03() throws ParseException, RenderException {
-    String src = "<td>~%foo%<!--%% this is a comment -->foo==bar<!--%%-->~%bar%</td>";
-    Template tmpl = Template.fromString(src);
-    RenderSession rs = tmpl.newRenderSession();
-    String out = rs.set("foo", 'A').set("bar", 'B').render();
-    assertEquals("<td>AB</td>", out);
-  }
-
-  @Test
-  public void ditch04() throws ParseException, RenderException {
+  public void ditch02() throws ParseException, RenderException {
     String src = """
         <td>
           ~%html-extra2:foo%
-          <!--%% ~%ignoreMe% -->
+          <!--%%-->
           foo==bar
           ~%ignoreMe%
           <!--%%-->

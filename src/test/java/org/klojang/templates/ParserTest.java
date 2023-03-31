@@ -170,7 +170,7 @@ public class ParserTest {
 
   @Test
   public void parseInlineTemplates02() throws ParseException {
-    String src = "<!--~%%begin:__foo-bar-00__%~%%end:__foo-bar-00__%-->";
+    String src = "<!--~%%begin:__foo-bar-00__%--><!--~%%end:__foo-bar-00__%-->";
     Parser parser = new Parser(TemplateLocation.STRING, ROOT_TEMPLATE_NAME, src);
     List<Part> parts = parser.getParts();
     assertEquals(1, parts.size());
@@ -182,7 +182,7 @@ public class ParserTest {
 
   @Test
   public void parseInlineTemplates03() throws ParseException {
-    String src = "<!--~%%begin:21% FOO ~%%end:21%-->";
+    String src = "<!-- ~%%begin:21% --> FOO <!--~%%end:21%-->";
     Parser parser = new Parser(TemplateLocation.STRING, ROOT_TEMPLATE_NAME, src);
     List<Part> parts = parser.getParts();
     assertEquals(1, parts.size());

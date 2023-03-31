@@ -111,9 +111,9 @@ public final class Regex {
    * @see #REGEX_PLACEHOLDER
    */
   public static final String REGEX_CMT_VARIABLE
-      = "<!--[ \\t]*"
+      = "<!-- ?"
       + REGEX_VARIABLE
-      + "[ \\t]*-->((.*?)<!--%-->)?";
+      + " ?-->((.*?)<!--%-->)?";
 
   /**
    * Regular expression for inline template blocks.
@@ -133,9 +133,9 @@ public final class Regex {
    * comments.
    */
   public static final String REGEX_CMT_INLINE_TEMPLATE
-      = REGEX_CMT_START
-      + REGEX_INLINE_TEMPLATE
-      + REGEX_CMT_END;
+      = "(<!-- ?~%%begin:" + REGEX_NAME + "% ?-->)"
+      + "(.*?)"
+      + "(<!-- ?~%%end:\\2% ?-->)";
 
   /**
    * Regular expression for the path specified in an included template. Templates are
@@ -166,12 +166,12 @@ public final class Regex {
    * comments.
    */
   public static final String CMT_REGEX_INCLUDED_TEMPLATE
-      = REGEX_CMT_START
+      = "<!-- ?"
       + REGEX_INCLUDED_TEMPLATE
-      + REGEX_CMT_END;
+      + " ?-->";
 
   // Used only for syntax error detection:
-  static final String REGEX_DITCH_TAG = "<!--%%(.*?)-->";
+  static final String REGEX_DITCH_TAG = "<!--%%-->";
 
   /**
    * Regular expression for ditch blocks. A ditch block is a pair of
@@ -181,7 +181,7 @@ public final class Regex {
    * Klojang Templates for that matter).
    */
   public static final String REGEX_DITCH_BLOCK
-      = REGEX_DITCH_TAG + "(.*?)" + REGEX_DITCH_TAG;
+      =  "<!--%%-->(.*?)<!--%%-->";
 
   /**
    * Regular expression for placeholders. A placeholder is a pair of
