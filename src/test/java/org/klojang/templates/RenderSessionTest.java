@@ -162,7 +162,7 @@ public class RenderSessionTest {
     RenderSession rs = tmpl.newRenderSession();
     rs.populate("companies", companies);
     String out = rs.render();
-    System.out.println(out);
+    //System.out.println(out);
     String expected = """
         <html><body>
           <table>
@@ -264,7 +264,7 @@ public class RenderSessionTest {
     rs.populate("companies", null);
     String out = rs.render();
     out = out.replaceAll("\\s+", "");
-    System.out.println(out);
+    //System.out.println(out);
     assertEquals("FOOBARFOO", out);
   }
 
@@ -673,6 +673,58 @@ public class RenderSessionTest {
     assertFalse(rs.isFullyPopulated());
     rs.in("foo").set("bozo", "coffeepot");
     assertTrue(rs.isFullyPopulated());
+  }
+
+  @Test
+  public void placeholder00() throws ParseException {
+    String src = "<!-- ~%foo% -->John<!--%-->";
+    Template tmpl = Template.fromString(src);
+    RenderSession rs = tmpl.newRenderSession();
+    String out = rs.set("foo", "bar").render();
+    assertEquals("bar", out);
+  }
+
+  @Test
+  public void placeholder01() throws ParseException {
+    String src = "<!-- ~%foo% -->John<!--%-->";
+    Template tmpl = Template.fromString(src);
+    RenderSession rs = tmpl.newRenderSession();
+    String out = rs.set("foo", null).render();
+    assertEquals("", out);
+  }
+
+  @Test
+  public void placeholder02() throws ParseException {
+    String src = "<!-- ~%def:foo% -->John<!--%-->";
+    Template tmpl = Template.fromString(src);
+    RenderSession rs = tmpl.newRenderSession();
+    String out = rs.set("foo", null).render();
+    assertEquals("John", out);
+  }
+
+  @Test
+  public void placeholder03() throws ParseException {
+    String src = "<!-- ~%def:foo% -->John<!--%-->";
+    Template tmpl = Template.fromString(src);
+    RenderSession rs = tmpl.newRenderSession();
+    String out = rs.setDelayed("foo", () -> null).render();
+    assertEquals("John", out);
+  }
+
+  @Test
+  public void newlineSuppression00() throws ParseException {
+    String src = """
+        <table>~%%begin:foo%
+        <tr><td>Hello</td></tr>
+        ~%%end:foo%
+        </table>
+        """;
+    Template tmpl = Template.fromString(src);
+    RenderSession rs = tmpl.newRenderSession();
+    rs.repeat("foo", 3);
+    String out = rs.render();
+    System.out.println(out);
+    //assertEquals("John", out);
   }
 
   private static String nospace(String s) {

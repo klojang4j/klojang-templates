@@ -181,6 +181,32 @@ This is an overview of our customers:
 Not bad, ey!
 ```
 
+Are these nested structures _really_ templates in their own right? Yes! You could 
+even render them separately (e.g. for debugging purposes):
+
+```java
+public class CompanyResource {
+
+   @GET
+   @Path("/overview")
+   @Produces("text/plain")
+   public StreamingOutput john() throws ParseException {
+      Template template = Template.fromResource(getClass(), "/views/company-overview.txt");
+      RenderSession session = template.newRenderSession();
+      String out = session.in("companies").in("departments").in("employees")
+              .set("firstName", "John")
+              .set("lastName", "Smith")
+              .set("birthDate", LocalDate.of(1980, 6, 13))
+              .render();
+      LOG.debug(out);
+      // more stuff ...
+      return session::render;
+   }
+
+}
+```
+
+
 ### Included Templates
 Included templates are defined in a separate file and are nested inside another 
 template using the following syntax:
@@ -338,6 +364,11 @@ above template would render somewhat like this:
 </html>
 ```
 
+_(If this fails to make you spill your tea, notice that the text enclosed by the
+inline template's begin and end tags actually contains **two** newlines: one right
+after the begin tag (`~%%begin:employees%`), and one right after the `</tr>` tag. If
+the begin tag would have been on the same line as the `<tbody>` tag, these newlines
+would have been faithfully reproduced upon rendering.)_
 
 ### Complex Structures
 
@@ -373,11 +404,11 @@ record Employee(String firstName, String lastName, LocalDate birthDate) {}
 ```
 
 Then, when inserting a list of Company instances into the template, the 
-employees template would repeat within the departments template, which would 
+employees template would repeat within the departments template. which would 
 repeat within the companies template, which would repeat within the 
 company-overview template. All this would happen with a single call to 
 [RenderSession.populate()](https://klojang4j.github.io/klojang-templates/1/api/org.klojang.templates/org/klojang/templates/RenderSession.html#populate(java.lang.String,java.lang.Object,java.lang.String...)),
-simply because the structure of the template reflects the structure of the data 
+simply because the structure of the template matches the structure of the data 
 model.
 
 Note that this does not mean that the visual appearance of the template must
@@ -395,8 +426,8 @@ Conditional rendering is an unremarkable affair in _Klojang Templates_. By defau
 neither template variables nor nested templates are rendered in the first place. If
 you don't set a variable to a value, it will simply disappear from the template. If
 you don't populate a nested template, the entire block of text it encloses will
-disappear from the template. Thus, if you don't want something to be rendered, just "
-don't mention its name" in the `RenderSession`.
+disappear from the template. Thus, if you don't want something to be rendered, just 
+"don't mention its name" in the `RenderSession`.
 
 However, you can make it more explicit that you don't want a block of text to be
 rendered. If you populate a nested template with an empty array or collection, the
@@ -440,19 +471,15 @@ public class Setup {
 
    private static StringifierRegistry configureStringifiers() {
       return StringifierRegistry.configure()
-              .forVarGroup(getDateTimeStringifier(), "date-format1")
+              .forVarGroup("date-format1", getDateTimeStringifier())
               .freeze();
    }
 
    private static Stringifier getDateTimeStringifier() {
-      return obj -> {
-         if (obj == null) {
-            return "&nbsp;";
-         }
-         return DateTimeFormatter.ofPattern("yyyy年mm月dd日")
-                 .format((LocalDate) obj);
-      };
-   }
+     return obj -> obj == null 
+            ? "&nbsp;" 
+            : DateTimeFormatter.ofPattern("yyyy年mm月dd日") .format((LocalDate) obj);
+    }
 
 }
 ```
@@ -471,6 +498,49 @@ public class EmployeeResource {
    }
 
 }
+```
+
+## Evolving the Raw Template
+
+_Klojang Templates_ supports the creation of templates that will render just fine 
+in a browser, even in their raw, unprocessed state.
+
+```html
+<!DOCTYPE html>
+<html>
+<body style="background-color: pink">
+<table>
+   <thead>
+   <tr><th>First name</th><th>Last name</th><th>Birthdate</th></tr>
+   </thead>
+   <tbody>
+   <tr><td>John</td><td>Smith</td><td>1980-06-13</td></tr>
+   </tbody>
+</table>
+</body>
+</html>
+```
+
+
+```html
+<!DOCTYPE html>
+<html>
+<body style="background-color: pink">
+<table>
+   <thead>
+      <tr><th>First name</th><th>Last name</th><th>Birthdate</th></tr>
+   </thead>
+   <tbody>
+   <!--%%-->
+      <tr><td>John</td><td>Smith</td><td>1980-06-13</td></tr>
+   <!--%%-->
+   <!-- ~%%begin:employees%
+      <tr><td>John</td><td>Smith</td><td>1980-06-13</td></tr>
+   ~%%end:employees% -->
+   </tbody>
+</table>
+</body>
+</html>
 ```
 
 

@@ -15,6 +15,7 @@ import static org.klojang.templates.ParseUtils.deleteEmptyLine;
 import static org.klojang.templates.ParseUtils.onSeparateLine;
 import static org.klojang.templates.Template.ROOT_TEMPLATE_NAME;
 import static org.klojang.util.StringMethods.EMPTY_STRING;
+import static org.klojang.util.StringMethods.trim;
 
 final class Parser {
 
@@ -213,7 +214,7 @@ final class Parser {
       String name = m.group(3);
       String placeholder = inComments ? m.group(8) : null;
       Check.that(name).isNot(in(), names, VAR_NAME_WITH_TMPL_NAME
-              .getExceptionSupplier(src, offset + m.start(3), name));
+          .getExceptionSupplier(src, offset + m.start(3), name));
       if (VarGroup.DEF.getName().equals(prefix) && placeholder == null) {
         throw NO_PLACEHOLDER_DEFINED.getException(src, offset + m.start(3), name);
       }

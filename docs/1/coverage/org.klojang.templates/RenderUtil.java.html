@@ -10,8 +10,8 @@ import static org.klojang.templates.RenderErrorCode.STRINGIFIER_RETURNED_NULL;
       VariablePart part,
       VarGroup adhoc) {
 <span class="fc" id="L12">    VarGroup vg = part.getVarGroup().orElse(adhoc);</span>
-<span class="pc bpc" id="L13" title="3 of 6 branches missed.">    if (value == null &amp;&amp; vg == VarGroup.DEF &amp;&amp; part.getPlaceholder() != null) {</span>
-<span class="nc" id="L14">      return part.getPlaceholder();</span>
+<span class="pc bpc" id="L13" title="1 of 6 branches missed.">    if (value == null &amp;&amp; vg == VarGroup.DEF &amp;&amp; part.getPlaceholder() != null) {</span>
+<span class="fc" id="L14">      return part.getPlaceholder();</span>
     }
     String s;
     try {

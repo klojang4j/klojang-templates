@@ -459,10 +459,10 @@ public final class StringifierRegistry {
       }
 <span class="fc" id="L460">    }</span>
 <span class="fc" id="L461">    Class&lt;?&gt; type = typeLookup.get(Tuple2.of(tmpl, var));</span>
-<span class="pc bpc" id="L462" title="1 of 4 branches missed.">    if (type == null &amp;&amp; value != null) {</span>
+<span class="fc bfc" id="L462" title="All 4 branches covered.">    if (type == null &amp;&amp; value != null) {</span>
 <span class="fc" id="L463">      type = value.getClass();</span>
     }
-<span class="pc bpc" id="L465" title="1 of 2 branches missed.">    if (type != null) {</span>
+<span class="fc bfc" id="L465" title="All 2 branches covered.">    if (type != null) {</span>
 <span class="fc bfc" id="L466" title="All 2 branches covered.">      if (null != (sf = typeStringifiers.get(type))) {</span>
 <span class="fc" id="L467">        return sf;</span>
       }
