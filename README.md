@@ -145,14 +145,11 @@ interface.
 ## Nested Templates
 
 In _Klojang Templates_ templates can be nested inside other templates (ad infinitum
-if you like). Why you would want to do that is explained in the next chapter. This 
-chapter 
-details the syntax for nested templates.
-
-There are, in fact, two ways to nest one template inside another: via 
-"inline templates" or via "included templates". Functionally 
-they are completely equivalent. The API cannot tell you whether you are 
-populating an inline template or an included template. (Well, actually, it [sort of can](https://klojang4j.github.io/klojang-templates/1/api/org.klojang.templates/org/klojang/templates/Template.html#path()),
+if you like). This can be done in two ways: via
+"inline templates" or via "included templates". Functionally they are completely
+equivalent. The API cannot tell you whether you are populating an inline template or
+an included template. (Well, actually,
+it [sort of can](https://klojang4j.github.io/klojang-templates/1/api/org.klojang.templates/org/klojang/templates/Template.html#path()),
 but there's not much you can do with this knowledge.)
 
 ### Inline Templates
@@ -178,7 +175,6 @@ This is an overview of our customers:
             ~%%end:employees%                   
    ~%%end:departments%  
 ~%%end:companies%
-Not bad, ey!
 ```
 
 Are these nested structures _really_ templates in their own right? Yes! You could 
@@ -193,6 +189,7 @@ public class CompanyResource {
    public StreamingOutput john() throws ParseException {
       Template template = Template.fromResource(getClass(), "/views/company-overview.txt");
       RenderSession session = template.newRenderSession();
+      // Will *only* render the employees template:
       String out = session.in("companies").in("departments").in("employees")
               .set("firstName", "John")
               .set("lastName", "Smith")
@@ -220,7 +217,6 @@ This is an overview of our customers:
     Departments:
         ~%%include:/views/departments.txt%%
 ~%%end:companies%
-Not bad, ey!
 ```
 
 _/views/departments.txt:_
@@ -247,11 +243,10 @@ also use the following syntax:
 
 ## Using Nested Templates
 
-By allowing templates to be nested inside each other, they gain an extra dimension
-("depth"). As a consequence, a Klojang template almost literally is a mold into which
-you can sink objects with the same shape. If the structure of the template reflects
-the structure of the model object, you can fill up the entire template with a single
-call. The following code snippets illustrate this.
+The nested-template feature almost literally turns a Klojang template into a mold
+into which you can sink objects with the same shape. If the structure of the template
+reflects the structure of the model object, you can fill up the entire template with
+a single call. The following code snippets illustrate this.
 
 ```java
 record Employee(int id, String firstName, String lastName, Address address) {}
@@ -262,11 +257,11 @@ record Address(String line1, String zipCode, String city, State state) {}
 ```html
 <!-- label.html -->
 <html><body>
-<p>~%firstName% ~%lastName%</p>
-~%%begin:address%
-<p>~%line1%</p>
-<p>~%city%, ~%state%, ~%zipCode%</p>
-~%%end:address%
+   <p>~%firstName% ~%lastName%</p>
+   ~%%begin:address%
+   <p>~%line1%</p>
+   <p>~%city%, ~%state%, ~%zipCode%</p>
+   ~%%end:address%
 </body></html>
 ```
 
@@ -289,7 +284,8 @@ public class LabelPrintResource {
 ```
 
 Notice how the address template gets mapped to the address property of `Employee`,
-and how, _inside_ the address template, you have access to the `Address` properties.
+and how, _inside_ the address template, you have access to the `Address` 
+properties.
 
 ### Tables
 
@@ -327,9 +323,7 @@ public class EmployeeResource {
    public String list() throws ParseException {
      Template template = Template.fromResource(getClass(), "/views/employees.html");
      List<Employee> employees = dao.list();
-     return template.newRenderSession()
-             .populate("employees", employees)
-             .render();
+     return template.newRenderSession().populate("employees", employees).render();
   }
 
 }
@@ -365,10 +359,8 @@ above template would render somewhat like this:
 ```
 
 _(If this fails to make you spill your tea, notice that the text enclosed by the
-inline template's begin and end tags actually contains **two** newlines: one right
-after the begin tag (`~%%begin:employees%`), and one right after the `</tr>` tag. If
-the begin tag would have been on the same line as the `<tbody>` tag, these newlines
-would have been faithfully reproduced upon rendering.)_
+inline template's begin and end tags contains **two** newlines: one right
+after the begin tag (`~%%begin:employees%`), and one right after the `</tr>` tag.)_
 
 ### Complex Structures
 
@@ -390,7 +382,6 @@ This is an overview of our customers:
             ~%%end:employees%                   
    ~%%end:departments%  
 ~%%end:companies%
-Not bad, ey!
 ```
 
 The corresponding model classes might look like this:
@@ -411,10 +402,10 @@ company-overview template. All this would happen with a single call to
 simply because the structure of the template matches the structure of the data 
 model.
 
-Note that this does not mean that the visual appearance of the template must
+Note that this does not mean that the _visual_ appearance of the template must
 somehow reflect the structure of the data model.
 The [label template](#using-nested-templates) shown above reflects the structure of
-the `Employee` class, but visually it actually _flattens_ the relationship between
+the Employee class, but visually it actually _flattens_ the relationship between
 `Employee` and `Address`.
 
 ### Conditional Rendering
@@ -422,11 +413,11 @@ the `Employee` class, but visually it actually _flattens_ the relationship betwe
 Conditional rendering &#8212; that is, rendering a block of text within a template
 only if a certain condition is met, is also done by means of nested templates.
 
-Conditional rendering is an unremarkable affair in _Klojang Templates_. By default,
-neither template variables nor nested templates are rendered in the first place. If
-you don't set a variable to a value, it will simply disappear from the template. If
-you don't populate a nested template, the entire block of text it encloses will
-disappear from the template. Thus, if you don't want something to be rendered, just 
+The first thing to note here is that. by default, neither template variables nor
+nested templates are rendered in the first place. If you don't set a variable to a
+value, it will simply disappear from the template. If you don't populate a nested
+template, the entire block of text it encloses will disappear from the template.
+Thus, if you don't want something to be rendered, just
 "don't mention its name" in the `RenderSession`.
 
 However, you can make it more explicit that you don't want a block of text to be
