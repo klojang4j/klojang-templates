@@ -502,10 +502,16 @@ in a browser, even in their raw, unprocessed state.
 <body style="background-color: pink">
 <table>
    <thead>
-   <tr><th>First name</th><th>Last name</th><th>Birthdate</th></tr>
+   <tr>
+      <th>First name</th>
+      <th>Last name</th>
+   </tr>
    </thead>
    <tbody>
-   <tr><td>John</td><td>Smith</td><td>1980-06-13</td></tr>
+   <tr>
+      <td>John</td>
+      <td>Smith</td>
+   </tr>
    </tbody>
 </table>
 </body>
@@ -519,19 +525,63 @@ in a browser, even in their raw, unprocessed state.
 <body style="background-color: pink">
 <table>
    <thead>
-      <tr><th>First name</th><th>Last name</th><th>Birthdate</th></tr>
+   <tr>
+      <th>First name</th>
+      <th>Last name</th>
+   </tr>
    </thead>
    <tbody>
-   <!--%%-->
-      <tr><td>John</td><td>Smith</td><td>1980-06-13</td></tr>
-   <!--%%-->
-   <!-- ~%%begin:employees%
-      <tr><td>John</td><td>Smith</td><td>1980-06-13</td></tr>
-   ~%%end:employees% -->
+   <tr>
+      <td><!-- ~%firstName% --></td>
+      <td><!-- ~%lastName% --></td>
+   </tr>
    </tbody>
 </table>
 </body>
 </html>
 ```
+
+### Placeholders
+
+```html
+<td>
+   <!-- ~%firstName% -->
+   <!--%-->John<!--%-->
+</td>
+<td>
+   <!-- ~%lastName% -->
+   <!--%-->Smith<!--%-->
+</td>
+```
+
+```html
+<td><!-- ~%firstName% -->John<!--%--></td>
+<td><!-- ~%lastName% -->Smith<!--%--></td>
+```
+
+
+```html
+<!DOCTYPE html>
+<html>
+<body style="background-color: pink">
+<table>
+   <thead>
+   <tr>
+      <th>First name</th>
+      <th>Last name</th>
+   </tr>
+   </thead>
+   <tbody>
+   <!-- ~%%begin:employees% --><tr>
+      <td><!-- ~%firstName% -->John<!--%--></td>
+      <td><!-- ~%lastName% -->Smith<!--%--></td>
+   </tr><!-- ~%%end:employees% -->
+   </tbody>
+</table>
+</body>
+</html>
+```
+
+
 
 
