@@ -138,18 +138,17 @@ public class EmployeeResource {
 }
 ```
 
-Note that the `john()` method now returns a method reference to [RenderSession.render(OutputStream)](https://klojang4j.github.io/klojang-templates/1/api/org.klojang.emplates/org/klojang/templates/RenderSession.html#render(java.io.OutputStream)), 
+Note that the `john()` method returns a method reference to [RenderSession.render(OutputStream)](https://klojang4j.github.io/klojang-templates/1/api/org.klojang.emplates/org/klojang/templates/RenderSession.html#render(java.io.OutputStream)), 
 which neatly targets the JAX-RS [StreamingOutput](https://docs.oracle.com/javaee/7/api/javax/ws/rs/core/StreamingOutput.html)
 interface.
 
 ## Nested Templates
 
 In _Klojang Templates_ templates can be nested inside other templates (ad infinitum
-if you like). This can be done in two ways: via
-"inline templates" or via "included templates". Functionally they are completely
-equivalent. The API cannot tell you whether you are populating an inline template or
-an included template. (Well, actually,
-it [sort of can](https://klojang4j.github.io/klojang-templates/1/api/org.klojang.templates/org/klojang/templates/Template.html#path()),
+if you like). Syntactically, this can be done in two ways: via
+"inline templates" or via "included templates". Functionally, there if no 
+difference between these two options. The API cannot tell you whether you are populating an inline
+template or an included template. (Well, actually, it [sort of can](https://klojang4j.github.io/klojang-templates/1/api/org.klojang.templates/org/klojang/templates/Template.html#path()),
 but there's not much you can do with this knowledge.)
 
 ### Inline Templates
@@ -285,7 +284,8 @@ public class LabelPrintResource {
 
 Notice how the address template gets mapped to the address property of `Employee`,
 and how, _inside_ the address template, you have access to the `Address` 
-properties.
+properties. In fact, inside the address template you are in a "different 
+universe" and you can **only** access the `Address` properties.
 
 ### Tables
 
