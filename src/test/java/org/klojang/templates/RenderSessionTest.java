@@ -712,9 +712,75 @@ public class RenderSessionTest {
   }
 
   @Test
-  public void newlineSuppression00() throws ParseException {
+  public void newlines00() throws ParseException {
+    String src = """
+        <table>~%%begin:foo%<tr><td>Hello</td></tr>~%%end:foo%
+        </table>
+        """;
+    Template tmpl = Template.fromString(src);
+    RenderSession rs = tmpl.newRenderSession();
+    rs.repeat("foo", 3);
+    String out = rs.render();
+    //System.out.println(out);
+    String expected = """
+        <table><tr><td>Hello</td></tr><tr><td>Hello</td></tr><tr><td>Hello</td></tr>
+        </table>
+        """;
+    assertEquals(expected, out);
+  }
+
+  @Test
+  public void newlines01() throws ParseException {
     String src = """
         <table>~%%begin:foo%
+        <tr><td>Hello</td></tr>~%%end:foo%
+        </table>
+        """;
+    Template tmpl = Template.fromString(src);
+    RenderSession rs = tmpl.newRenderSession();
+    rs.repeat("foo", 3);
+    String out = rs.render();
+    //System.out.println(out);
+    String expected = """
+        <table>
+        <tr><td>Hello</td></tr>
+        <tr><td>Hello</td></tr>
+        <tr><td>Hello</td></tr>
+        </table>
+        """;
+    assertEquals(expected, out);
+  }
+
+  @Test
+  public void newlines02() throws ParseException {
+    String src = """
+        <table>
+        ~%%begin:foo%<tr>
+        <td>Hello</td></tr>~%%end:foo%
+        </table>
+        """;
+    Template tmpl = Template.fromString(src);
+    RenderSession rs = tmpl.newRenderSession();
+    rs.repeat("foo", 3);
+    String out = rs.render();
+    //System.out.println(out);
+    String expected = """
+        <table>
+        <tr>
+        <td>Hello</td></tr><tr>
+        <td>Hello</td></tr><tr>
+        <td>Hello</td></tr>
+        </table>
+        """;
+    assertEquals(expected, out);
+  }
+
+
+  @Test
+  public void newlines03() throws ParseException {
+    String src = """
+        <table>
+        ~%%begin:foo%
         <tr><td>Hello</td></tr>
         ~%%end:foo%
         </table>
@@ -723,8 +789,39 @@ public class RenderSessionTest {
     RenderSession rs = tmpl.newRenderSession();
     rs.repeat("foo", 3);
     String out = rs.render();
-    System.out.println(out);
-    //assertEquals("John", out);
+    //System.out.println(out);
+    String expected = """
+        <table>
+        <tr><td>Hello</td></tr>
+        <tr><td>Hello</td></tr>
+        <tr><td>Hello</td></tr>
+        </table>
+        """;
+    assertEquals(expected, out);
+  }
+
+  @Test
+  public void newlines04() throws ParseException {
+    String src = """
+        <table>~%%begin:foo%<tr>
+        <td>Hello</td>
+        </tr>~%%end:foo%</table>
+        """;
+    Template tmpl = Template.fromString(src);
+    RenderSession rs = tmpl.newRenderSession();
+    rs.repeat("foo", 3);
+    String out = rs.render();
+    //System.out.println(out);
+    String expected = """
+        <table><tr>
+        <td>Hello</td>
+        </tr><tr>
+        <td>Hello</td>
+        </tr><tr>
+        <td>Hello</td>
+        </tr></table>
+        """;
+    assertEquals(expected, out);
   }
 
   private static String nospace(String s) {

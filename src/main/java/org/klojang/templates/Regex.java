@@ -161,7 +161,7 @@ public final class Regex {
    * insert multiple spaces or any other characters.
    */
   public static final String REGEX_CMT_ALL_INLINE_TEMPLATE
-      = "(<!-- ?~%%begin:" + REGEX_NAME + "% ?-->)"
+      = "(<!-- ?~%%begin:" + REGEX_NAME + "%)"
       + "(.*?)"
       + "(~%%end:\\2% ?-->)";
 

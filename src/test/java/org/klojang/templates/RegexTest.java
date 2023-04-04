@@ -93,6 +93,26 @@ public class RegexTest {
     }
   }
 
+
+  @Test
+  public void inline03() throws IOException {
+    assertTrue(Regex.CMT_ALL_INLINE_TEMPLATE
+        .matcher("<!--~%%begin:foo%bar~%%end:foo%-->")
+        .find());
+    assertTrue(Regex.CMT_ALL_INLINE_TEMPLATE
+        .matcher("<!-- ~%%begin:foo%bar~%%end:foo%-->")
+        .find());
+    assertTrue(Regex.CMT_ALL_INLINE_TEMPLATE
+        .matcher("<!-- ~%%begin:foo%bar~%%end:foo% -->")
+        .find());
+    assertTrue(Regex.CMT_ALL_INLINE_TEMPLATE
+        .matcher("<!--~%%begin:foo%bar~%%end:foo% -->")
+        .find());
+    assertTrue(Regex.CMT_ALL_INLINE_TEMPLATE
+        .matcher(" <!--~%%begin:foo% bar ~%%end:foo% --> ")
+        .find());
+  }
+
   @Test
   public void include01() throws ParseException, IOException {
     try (InputStream is = getClass().getResourceAsStream("RegexTest.test06.html")) {
