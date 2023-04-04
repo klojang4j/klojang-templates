@@ -367,7 +367,7 @@ public class RenderSessionTest {
   }
 
   @Test
-  public void show01() throws ParseException {
+  public void enable01() throws ParseException {
     String src = """
         FOO
             ~%%begin:companies%
@@ -388,7 +388,7 @@ public class RenderSessionTest {
   }
 
   @Test
-  public void show02() throws ParseException {
+  public void enable02() throws ParseException {
     String src = """
         FOO
             ~%%begin:companies%
@@ -409,7 +409,7 @@ public class RenderSessionTest {
   }
 
   @Test
-  public void show03() throws ParseException {
+  public void enable03() throws ParseException {
     String src = """
         FOO
             ~%%begin:companies%
@@ -430,7 +430,7 @@ public class RenderSessionTest {
   }
 
   @Test
-  public void showRecursive00() throws ParseException {
+  public void enableRecursive00() throws ParseException {
     String src = """
         Foo
             ~%%begin:companies%
@@ -457,7 +457,7 @@ public class RenderSessionTest {
   }
 
   @Test
-  public void showRecursive01() throws ParseException {
+  public void enableRecursive01() throws ParseException {
     String src = """
         Foo
             ~%%begin:companies%

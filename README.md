@@ -358,11 +358,11 @@ above template would render somewhat like this:
 </html>
 ```
 
-_(If this fails to make you spill your tea, notice that the text enclosed by the
-inline template's begin and end tags contains **two** newlines: one right
-after the begin tag (`~%%begin:employees%`), and one right after the `</tr>` tag.)_
+_(If this fails to make you spill your coffee, keep in mind that the text 
+enclosed by `~%%begin:employees%` and `~%%end:employees%` contains **two** 
+newlines, which would ordinarily be faithfully reproduced.)_
 
-### Complex Structures
+### Complex Information
 
 Nested templates really start to shine as the information you need to convey 
 becomes more complex. Take, for example, the company-overview template again:
@@ -384,7 +384,7 @@ This is an overview of our customers:
 ~%%end:companies%
 ```
 
-The corresponding model classes might look like this:
+The corresponding model classes would probably look somewhat like this:
 
 ```java
 record Company(String name, BigDecimal profits, List<Department> departments) {}
@@ -413,7 +413,7 @@ the Employee class, but visually it actually _flattens_ the relationship between
 Conditional rendering &#8212; that is, rendering a block of text within a template
 only if a certain condition is met, is also done by means of nested templates.
 
-The first thing to note here is that. by default, neither template variables nor
+The first thing to note here is that, by default, neither template variables nor
 nested templates are rendered in the first place. If you don't set a variable to a
 value, it will simply disappear from the template. If you don't populate a nested
 template, the entire block of text it encloses will disappear from the template.
@@ -493,8 +493,10 @@ public class EmployeeResource {
 
 ## Evolving the Raw Template
 
-_Klojang Templates_ supports the creation of templates that will render just fine 
-in a browser, even in their raw, unprocessed state.
+_Klojang Templates_ allows you to write templates that will render just fine in their
+raw, unprocessed state. This paragraph explains how you can achieve this.
+
+Suppose your company's design team handed you this design:
 
 ```html
 <!DOCTYPE html>
@@ -518,6 +520,16 @@ in a browser, even in their raw, unprocessed state.
 </html>
 ```
 
+The company fired the design team, but you plough on.
+
+The first thing to keep in mind is that template variables can be placed in HTML
+comments without this making a difference in how the template is rendered.
+`<!-- ~%foo% -->` is rendered just like `~%foo%`. (You can also
+write `<!--~%foo%-->`, without space characters, but you cannot insert multiple
+spaces or any other characters.)
+
+So your first attempt at turning the design in a dynamically populated pages 
+might look like this:
 
 ```html
 <!DOCTYPE html>
@@ -543,6 +555,15 @@ in a browser, even in their raw, unprocessed state.
 
 ### Placeholders
 
+That's nice. No ugly `~%` sequences. Unfortunately, not much else either. "John 
+Smith" has gone.
+
+This can be remedied by using _placeholders_. A placeholder is a value that is 
+placed inside a pairs of `<!--%-->` sequences. Since `<!--%-->` is a self-closed 
+HTML comment, any text inside such a pair will be visible in the browser. However,
+when _Klojang Templates_ renders the template, it will remove both the `<!--%-->` 
+sequences and any text inside it.
+
 ```html
 <td>
    <!-- ~%firstName% -->
@@ -554,11 +575,24 @@ in a browser, even in their raw, unprocessed state.
 </td>
 ```
 
+If you remove all HTML comments from the above HTML snippet, you are basically 
+back to the original design.
+
+If the placeholder fits into a single line, this can be contracted to:
+
 ```html
 <td><!-- ~%firstName% -->John<!--%--></td>
 <td><!-- ~%lastName% -->Smith<!--%--></td>
 ```
 
+### Populating the Table
+
+Now we want to introduce a nested template so we can make the table row repeat 
+for each element of the `List<Employee>` we received from the data access layer.
+
+As with template variables, you can place the begin and end tag of an inline 
+template in HTML comments. _Klojang Templates_ treats `<!-- ~%%begin:foo% -->` 
+just like it treats `~%%begin:foo%`
 
 ```html
 <!DOCTYPE html>
@@ -572,15 +606,21 @@ in a browser, even in their raw, unprocessed state.
    </tr>
    </thead>
    <tbody>
-   <!-- ~%%begin:employees% --><tr>
+   <!-- ~%%begin:employees% -->
+   <tr>
       <td><!-- ~%firstName% -->John<!--%--></td>
       <td><!-- ~%lastName% -->Smith<!--%--></td>
-   </tr><!-- ~%%end:employees% -->
+   </tr>
+   <!-- ~%%end:employees% -->
    </tbody>
 </table>
 </body>
 </html>
 ```
+
+This will still render perfectly well in a browser. Again. when you remove all HTML
+comments, you are back to where you started. Yet now the page has become fully
+dynamic.
 
 
 
