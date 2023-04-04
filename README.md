@@ -524,9 +524,10 @@ The company fired the design team, but you plough on.
 
 The first thing to keep in mind is that template variables can be placed in HTML
 comments without this making a difference in how the template is rendered.
-`<!-- ~%foo% -->` is rendered just like `~%foo%`. (You can also
-write `<!--~%foo%-->`, without space characters, but you cannot insert multiple
-spaces or any other characters.)
+`<!-- ~%foo% -->` is rendered just like `~%foo%`. _Klojang Templates will replace the
+_entire_ character sequence with whatever value `foo` was set to. You may
+write `<!--~%foo%-->` (without the space characters), but that is about as much
+syntactical freedom as you have.
 
 So your first attempt at turning the design in a dynamically populated pages 
 might look like this:
@@ -555,14 +556,15 @@ might look like this:
 
 ### Placeholders
 
-That's nice. No ugly `~%` sequences. Unfortunately, not much else either. "John 
-Smith" has gone.
+That's nice. The user won't see ugly `~%` sequences when viewing the raw template in
+a browser. Unfortunately, the example row containing "John Smith" now has effectively
+disappeared from view.
 
-This can be remedied by using _placeholders_. A placeholder is a value that is 
-placed inside a pairs of `<!--%-->` sequences. Since `<!--%-->` is a self-closed 
-HTML comment, any text inside such a pair will be visible in the browser. However,
-when _Klojang Templates_ renders the template, it will remove both the `<!--%-->` 
-sequences and any text inside it.
+This can be remedied by using _placeholders_. A placeholder is a value that is placed
+inside a pairs of `<!--%-->` sequences. Since `<!--%-->` is a self-closed HTML
+comment, any text inside a pair of these sequences will be visible in the browser.
+However, when _Klojang Templates_ renders the template, it will remove both
+the `<!--%-->` sequences and any text inside it.
 
 ```html
 <td>
@@ -618,9 +620,18 @@ just like it treats `~%%begin:foo%`
 </html>
 ```
 
-This will still render perfectly well in a browser. Again. when you remove all HTML
+This will still render perfectly well in a browser. Again, when you remove all HTML
 comments, you are back to where you started. Yet now the page has become fully
 dynamic.
+
+## About
+
+<img src="docs/logo-groen.png" style="float:left;width:5%;padding:0 12px 12px 0"/>
+
+Klojang Check is developed by [Naturalis](https://www.naturalis.nl/en), a
+biodiversity research institute and natural history museum. It maintains one
+of the largest collections of zoological and botanical specimens in the world.
+
 
 
 
