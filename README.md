@@ -29,28 +29,6 @@ The **javadocs** for _Klojang Templates_ can be found **[here](https://klojang4j
 The latest **vulnerabilities report** can be found **[here](https://klojang4j.github.io/klojang-templates/1/vulnerabilities/dependency-check-report.html)**.
 The latest **code coverage reports** can be found **[here](https://klojang4j.github.io/klojang-templates/1/coverage)**.
 
-<!-- TOC -->
-* [Klojang Templates](#klojang-templates)
-* [Getting Started](#getting-started)
-  * [Hello, World](#hello-world)
-  * [Escaping](#escaping)
-  * [Inserting Java Beans, Records and Maps](#inserting-java-beans-records-and-maps)
-  * [Nested Templates](#nested-templates)
-    * [Inline Templates](#inline-templates)
-    * [Included Templates](#included-templates)
-  * [Using Nested Templates](#using-nested-templates)
-    * [Tables](#tables)
-      * [Newline Suppression](#newline-suppression)
-    * [Complex Information](#complex-information)
-    * [Conditional Rendering](#conditional-rendering)
-  * [Stringifiers and Variable Groups](#stringifiers-and-variable-groups)
-  * [Evolving the Raw Template](#evolving-the-raw-template)
-    * [Placeholders](#placeholders)
-    * [Populating the Table](#populating-the-table)
-  * [About](#about)
-<!-- TOC -->
-
-
 # Getting Started
 
 To get started with _Klojang Templates_, add the following dependency to you project:
