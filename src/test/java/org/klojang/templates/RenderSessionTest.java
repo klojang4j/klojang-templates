@@ -301,6 +301,72 @@ public class RenderSessionTest {
   }
 
   @Test
+  public void populate05() throws ParseException {
+    String src = """
+        <!--~%%begin:companies%-->
+          <!--~%foo%-->
+        <!--~%%end:companies%-->
+        """;
+    Template tmpl = Template.fromString(src);
+    RenderSession rs = tmpl.newRenderSession();
+    String out = rs.populate("companies", Map.of("foo", "bar")).render();
+    //System.out.println(out);
+    assertEquals("bar", out.strip());
+  }
+
+  @Test
+  public void populate06() throws ParseException {
+    String src = """
+        <!--~%%begin:companies%-->
+          <!-- ~%foo% -->
+        <!--~%%end:companies%-->
+        """;
+    Template tmpl = Template.fromString(src);
+    RenderSession rs = tmpl.newRenderSession();
+    String out = rs.populate("companies", Map.of("foo", "bar")).render();
+    //System.out.println(out);
+    assertEquals("bar", out.strip());
+  }
+
+  @Test
+  public void populate07() throws ParseException {
+    String src = """
+        <!--~%%begin:companies%-->
+          <!--  ~%foo%  -->
+        <!--~%%end:companies%-->
+        """;
+    Template tmpl = Template.fromString(src);
+    RenderSession rs = tmpl.newRenderSession();
+    String out = rs.populate("companies", Map.of("foo", "bar")).render();
+    //System.out.println(out);
+    assertEquals("<!--  bar  -->", out.strip());
+  }
+
+  @Test
+  public void populate08() throws ParseException {
+    String src = """
+        <!--~%%begin:companies%
+          <!--  ~%foo%  -->
+        ~%%end:companies%-->
+        """;
+    Template tmpl = Template.fromString(src);
+    RenderSession rs = tmpl.newRenderSession();
+    String out = rs.populate("companies", Map.of("foo", "bar")).render();
+    //System.out.println(out);
+    assertEquals("<!--  bar  -->", out.strip());
+  }
+
+  @Test
+  public void populate09() throws ParseException {
+    String src = "<!--~%%begin:companies%~%foo%~%%end:companies%-->";
+    Template tmpl = Template.fromString(src);
+    RenderSession rs = tmpl.newRenderSession();
+    String out = rs.populate("companies", Map.of("foo", "bar")).render();
+    //System.out.println(out);
+    assertEquals("bar", out);
+  }
+
+  @Test
   public void show01() throws ParseException {
     String src = """
         FOO
@@ -774,7 +840,6 @@ public class RenderSessionTest {
         """;
     assertEquals(expected, out);
   }
-
 
   @Test
   public void newlines03() throws ParseException {
