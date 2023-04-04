@@ -8,28 +8,25 @@ import static org.klojang.check.CommonChecks.notNull;
 import static org.klojang.templates.x.Messages.ERR_NO_SUCH_VARGROUP;
 
 /**
- * A {@code VarGroup} lets you group template variables across one or more templates.
- * A variable group, on its turn, can be
- * {@linkplain StringifierRegistry.Builder#forVarGroup(String, Stringifier)}
- * associated} with a {@link Stringifier}. Thus variable groups allow you to define a
- * shared stringifier for multiple variables. Within a template, variables can be
- * assigned to a variable group by using the variable group's name as a prefix. For
- * example: {@code ~%html:firstName%} or {@code ~%js:firstName%} or
- * {@code ~%myDateFormat:birthDate%}. The first two examples specify the predefined
- * {@link #HTML} and {@link #JS} variable groups, which provide HTML-escaping and
- * ECMASScript-escaping, respectively. The third example is a custom group that you
- * can define using the {@link StringifierRegistry} class. Variable groups can also
- * be assigned <i>programmatically</i> &#8212; many methods of the
- * {@link RenderSession} class take a {@code VarGroup} argument. This will assign the
- * variable(s) to be set to the specified variable group <i>if</i> no prefix was
- * specified in the template.
+ * Variable groups provide a mechanism to group template variables across one or more
+ * templates in order to make them use a shared {@link Stringifier}. Within a
+ * template, variables can be assigned to a variable group by using the variable
+ * group's name as a prefix. For example: {@code ~%html:firstName%} or
+ * {@code ~%js:firstName%} or {@code ~%myDateFormat:birthDate%}. The first two
+ * examples specify the predefined {@link #HTML} and {@link #JS} variable groups,
+ * which provide HTML-escaping and ECMASScript-escaping, respectively. The third
+ * example is a custom group that you can define using the
+ * {@link StringifierRegistry} class. Variable groups can also be assigned
+ * programmatically &#8212; many methods of the {@link RenderSession} class take a
+ * {@code VarGroup} argument. This will assign the variable(s) to be set to the
+ * specified variable group <i>if</i> no prefix was specified in the template.
  *
  * <p>Note that variable groups are assigned at the variable <i>occurrence</i>
  * level. For example, a template may contain multiple instances of a variable named
  * {@code firstName}. For occurrences inside a {@code <script>} tag you might want to
  * use the {@code js:} prefix, for the others the {@code html:} prefix. Therefore,
  * stringifiers associated with a variable group take the highest precedence, even
- * higher than stringifiers associated with a variable.
+ * higher, perhaps counterintuitively, than stringifiers associated with a variable.
  *
  * @author Ayco Holleman
  */
