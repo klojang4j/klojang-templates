@@ -81,7 +81,7 @@ public class RegexTest {
   public void inline01() throws IOException {
     try (InputStream is = getClass().getResourceAsStream("RegexTest.inline01.html")) {
       String s = IOMethods.getContents(is);
-      assertTrue(Regex.CMT_INLINE_TEMPLATE.matcher(s).find());
+      assertTrue(Regex.CMT_TAGS_INLINE_TEMPLATE.matcher(s).find());
     }
   }
 
@@ -89,7 +89,7 @@ public class RegexTest {
   public void inline02() throws IOException {
     try (InputStream is = getClass().getResourceAsStream("RegexTest.inline02.html")) {
       String s = IOMethods.getContents(is);
-      assertTrue(Regex.CMT_INLINE_TEMPLATE.matcher(s).find());
+      assertTrue(Regex.CMT_TAGS_INLINE_TEMPLATE.matcher(s).find());
     }
   }
 
@@ -97,7 +97,7 @@ public class RegexTest {
   public void include01() throws ParseException, IOException {
     try (InputStream is = getClass().getResourceAsStream("RegexTest.test06.html")) {
       String s = IOMethods.getContents(is);
-      assertTrue(Regex.CMT_INLINE_TEMPLATE.matcher(s).find());
+      assertTrue(Regex.CMT_TAGS_INLINE_TEMPLATE.matcher(s).find());
     }
   }
 

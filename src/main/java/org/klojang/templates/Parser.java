@@ -50,7 +50,9 @@ final class Parser {
     List<Part> parts = List.of(new UnparsedPart(src, 0));
     parts = purgeDitchBlocks(parts);
     parts = parse(parts, names,
-        (x, y) -> parseInlineTemplates(x, y, CMT_INLINE_TEMPLATE));
+        (x, y) -> parseInlineTemplates(x, y, CMT_TAGS_INLINE_TEMPLATE));
+    parts = parse(parts, names,
+        (x, y) -> parseInlineTemplates(x, y, CMT_ALL_INLINE_TEMPLATE));
     parts = parse(parts, names,
         (x, y) -> parseInlineTemplates(x, y, INLINE_TEMPLATE));
     parts = parse(parts, names,
