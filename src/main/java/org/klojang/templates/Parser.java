@@ -13,9 +13,9 @@ import static org.klojang.check.CommonChecks.*;
 import static org.klojang.templates.ParseErrorCode.*;
 import static org.klojang.templates.ParseUtils.deleteEmptyLine;
 import static org.klojang.templates.ParseUtils.onSeparateLine;
+import static org.klojang.templates.Regex.*;
 import static org.klojang.templates.Template.ROOT_TEMPLATE_NAME;
 import static org.klojang.util.StringMethods.EMPTY_STRING;
-import static org.klojang.util.StringMethods.trim;
 
 final class Parser {
 
@@ -49,12 +49,16 @@ final class Parser {
     Set<String> names = new HashSet<>();
     List<Part> parts = List.of(new UnparsedPart(src, 0));
     parts = purgeDitchBlocks(parts);
-    parts = parse(parts, names, (x, y) -> parseInlineTemplates(x, y, true));
-    parts = parse(parts, names, (x, y) -> parseInlineTemplates(x, y, false));
-    parts = parse(parts, names, (x, y) -> parseIncludedTemplates(x, y, true));
-    parts = parse(parts, names, (x, y) -> parseIncludedTemplates(x, y, false));
-    parts = parse(parts, names, (x, y) -> parseVars(x, y, true));
-    parts = parse(parts, names, (x, y) -> parseVars(x, y, false));
+    parts = parse(parts, names,
+        (x, y) -> parseInlineTemplates(x, y, CMT_INLINE_TEMPLATE));
+    parts = parse(parts, names,
+        (x, y) -> parseInlineTemplates(x, y, INLINE_TEMPLATE));
+    parts = parse(parts, names,
+        (x, y) -> parseIncludedTemplates(x, y, CMT_INCLUDED_TEMPLATE));
+    parts = parse(parts, names,
+        (x, y) -> parseIncludedTemplates(x, y, INCLUDED_TEMPLATE));
+    parts = parse(parts, names, (x, y) -> parseVars(x, y, CMT_VARIABLE));
+    parts = parse(parts, names, (x, y) -> parseVars(x, y, VARIABLE));
     parts = collectTextParts(parts);
     parts = suppressNewLines(parts);
     return parts;
@@ -113,10 +117,9 @@ final class Parser {
 
   private List<Part> parseInlineTemplates(UnparsedPart unparsed,
       Set<String> names,
-      boolean inComments)
+      Pattern variant)
       throws ParseException {
-    Pattern p = inComments ? Regex.CMT_INLINE_TEMPLATE : Regex.INLINE_TEMPLATE;
-    Matcher m = match(p, unparsed);
+    Matcher m = match(variant, unparsed);
     if (!m.find()) {
       return Collections.singletonList(unparsed);
     }
@@ -155,10 +158,9 @@ final class Parser {
 
   private List<Part> parseIncludedTemplates(UnparsedPart unparsed,
       Set<String> names,
-      boolean inComments)
+      Pattern variant)
       throws ParseException {
-    Pattern p = inComments ? Regex.CMT_INCLUDED_TEMPLATE : Regex.INCLUDED_TEMPLATE;
-    Matcher m = match(p, unparsed);
+    Matcher m = match(variant, unparsed);
     if (!m.find()) {
       return Collections.singletonList(unparsed);
     }
@@ -197,10 +199,9 @@ final class Parser {
 
   private List<Part> parseVars(UnparsedPart unparsed,
       Set<String> names,
-      boolean inComments)
+      Pattern variant)
       throws ParseException {
-    Pattern p = inComments ? Regex.CMT_VARIABLE : Regex.VARIABLE;
-    Matcher m = match(p, unparsed);
+    Matcher m = match(variant, unparsed);
     if (!m.find()) {
       return Collections.singletonList(unparsed);
     }
@@ -212,7 +213,7 @@ final class Parser {
       }
       String prefix = m.group(2);
       String name = m.group(3);
-      String placeholder = inComments ? m.group(8) : null;
+      String placeholder = variant == CMT_VARIABLE ? m.group(8) : null;
       Check.that(name).isNot(in(), names, VAR_NAME_WITH_TMPL_NAME
           .getExceptionSupplier(src, offset + m.start(3), name));
       if (VarGroup.DEF.getName().equals(prefix) && placeholder == null) {
