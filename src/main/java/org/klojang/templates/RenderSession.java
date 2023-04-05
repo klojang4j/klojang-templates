@@ -8,14 +8,11 @@ import java.util.function.Supplier;
 /**
  * A {@code RenderSession} lets you populate a template and then render it. You
  * obtain a {@code RenderSession} for a template by calling
- * {@link Template#newRenderSession()}. By default template variables and nested
- * templates are not rendered. If you do not provide values for them, they will
- * simply disappear from the template upon rendering.
- *
- * <p>Render sessions are meant to be throw-away objects. They should not typically
- * survive the method in which they are created. A {@code RenderSession} is cheap to
- * instantiate, but can gain a lot of state as the template gets populated.
- * Therefore, make sure they don't stick around hogging the heap.
+ * {@link Template#newRenderSession()}. Render sessions are meant to be throw-away
+ * objects. They should not typically survive the method in which they are created. A
+ * {@code RenderSession} is cheap to instantiate, but can gain a lot of state as the
+ * template gets populated. Therefore, make sure they don't stick around hogging the
+ * heap.
  *
  * <h2>Thead Safety</h2>
  *
@@ -31,17 +28,10 @@ import java.util.function.Supplier;
 public sealed interface RenderSession permits SoloSession, MultiSession {
 
   /**
-   * Sets the specified variable to the specified value. Equivalent to
-   * {@link #set(String, Object, VarGroup) set(varName, value, null)}. If the
-   * variable came with an inline {@linkplain VarGroup variable group} (as in
-   * {@code ~%html:firstName%}), the value will be stringified and/or escaped
-   * according to the variable group's {@link Stringifier}. Otherwise a suitable
-   * {@code Stringifier} will be looked up in the {@link StringifierRegistry} passed
-   * on to this {@code RenderSession}. (See
-   * {@link Template#newRenderSession(StringifierRegistry)}.)
+   * Sets the specified variable to the specified value.
    *
    * @param varName the name of the variable to set
-   * @param value the value of the variable
+   * @param value the value
    * @return this {@code RenderSession}
    */
   RenderSession set(String varName, Object value);
@@ -54,7 +44,7 @@ public sealed interface RenderSession permits SoloSession, MultiSession {
    * will prevail.
    *
    * @param varName the name of the variable to set
-   * @param value the value of the variable
+   * @param value the value
    * @param varGroup the variable group to assign the variable to if the variable
    *     has no group name prefix. May be {@code null}.
    * @return this {@code RenderSession}
@@ -64,9 +54,9 @@ public sealed interface RenderSession permits SoloSession, MultiSession {
 
   /**
    * Sets the specified variable to the value produced by the specified
-   * {@code Supplier}. The supplier's {@code get()} method will be called when the
-   * template is actually {@linkplain #render(OutputStream) rendered}. This may be
-   * useful if you plan to render the template multiple times using the same
+   * {@code Supplier}. The supplier's {@code get()} method will be called each time
+   * the template is actually {@linkplain #render(OutputStream) rendered}. This may
+   * be useful if you plan to render the template multiple times using the same
    * {@code RenderSession}.
    *
    * @param varName the name of the variable to set

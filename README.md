@@ -624,6 +624,65 @@ This will still render perfectly well in a browser. Again, when you remove all H
 comments, you are back to where you started. Yet now the page has become fully
 dynamic.
 
+### Ditch Blocks
+
+It may have occurred to you that this won't work for included templates:
+
+```html
+   <tbody>
+       <!-- ~%%include:employee:/views/employee-row.html%% -->
+   </tbody>
+```
+
+Now you just have an empty table body in the raw template. Nevertheless, this, 
+_too_, will be rendered by _Klojang Templates_ just like 
+`~%%include:employee:/views/employee-row.html%%` (without HTML comments).
+
+```html
+<!DOCTYPE html>
+<html>
+<body style="background-color: pink">
+<table>
+   <thead>
+   <tr>
+      <th>First name</th>
+      <th>Last name</th>
+   </tr>
+   </thead>
+   <tbody>
+   <!--%%-->
+   <tr>
+      <td>John</td>
+      <td>Smith</td>
+   </tr>
+   <!--%%-->
+   <!-- ~%%include:employee:/views/employee-row.html%% -->
+   </tbody>
+</table>
+</body>
+</html>
+```
+
+
+```html
+   <tbody>
+   <!--%%-->
+   <tr>
+      <td>John</td>
+      <td>Smith</td>
+   </tr>
+   <!--%%-->
+   
+   <!-- ~%%begin:employees%
+   <tr>
+      <td>~%firstName%</td>
+      <td>~%lastName%</td>
+   </tr>
+   ~%%end:employees% -->
+   </tbody>
+```
+
+
 ## About
 
 <img src="docs/logo-groen.png" style="float:left;width:5%;padding:0 12px 12px 0"/>

@@ -12,12 +12,12 @@ import java.util.function.Supplier;
 public enum RenderErrorCode {
 
   /**
-   * A non-existent variable name was specified while populating a template.
+   * A non-existent name was specified to set a variable.
    */
   NO_SUCH_VARIABLE("No such variable: \"%s\""),
 
   /**
-   * A non-existent nested template name was specified while populating a template.
+   * A non-existent name was specified to populate a nested template.
    */
   NO_SUCH_TEMPLATE("No such nested template: \"%s\""),
 
@@ -35,7 +35,7 @@ public enum RenderErrorCode {
   ACCESS_EXCEPTION("Error while retrieving value for %s: %s"),
 
   /**
-   * {@code RenderSession.show()} was called on a nested template, but it was not a
+   * {@code RenderSession.enable()} was called on a nested template, but it was not a
    * text-only template.
    */
   NOT_TEXT_ONLY("Not a text-only template: %s"),
