@@ -561,7 +561,7 @@ a browser. Unfortunately, the example row containing "John Smith" now has effect
 disappeared from view.
 
 This can be remedied by using _placeholders_. A placeholder is a value that is placed
-inside a pairs of `<!--%-->` sequences. Since `<!--%-->` is a self-closed HTML
+inside a pair of `<!--%-->` sequences. Since `<!--%-->` is a self-closed HTML
 comment, any text inside a pair of these sequences will be visible in the browser.
 However, when _Klojang Templates_ renders the template, it will remove both
 the `<!--%-->` sequences and any text inside it.
@@ -634,61 +634,65 @@ It may have occurred to you that this won't work for included templates:
    </tbody>
 ```
 
-Now you just have an empty table body in the raw template. Nevertheless, this, 
+Now you just have an empty table body in the raw template. In this case you can 
+use _ditch blocks_ to restore renderability to the raw template:
+
+Nevertheless, this, 
 _too_, will be rendered by _Klojang Templates_ just like 
 `~%%include:employee:/views/employee-row.html%%` (without HTML comments).
 
 ```html
-<!DOCTYPE html>
-<html>
-<body style="background-color: pink">
-<table>
-   <thead>
-   <tr>
-      <th>First name</th>
-      <th>Last name</th>
-   </tr>
-   </thead>
    <tbody>
-   <!--%%-->
-   <tr>
-      <td>John</td>
-      <td>Smith</td>
-   </tr>
-   <!--%%-->
-   <!-- ~%%include:employee:/views/employee-row.html%% -->
+      <!--%%-->
+      <tr>
+         <td>John</td>
+         <td>Smith</td>
+      </tr>
+      <!--%%-->
+      
+      <!-- ~%%include:employee:/views/employee-row.html%% -->
    </tbody>
-</table>
-</body>
-</html>
 ```
 
+Ditch blocks are pairs of `<!--%%-->` sequences and any text between them. As 
+with placeholders (`<!--%-->`), these sequences are self-closed HTML comments, so 
+the text between them will be visible in the browser. But when _Klojang Templates_ 
+renders the template, all ditch blocks will be removed from the template. (In fact,
+they will be removed very early on in the parsing phase. The 
+[Template](https://klojang4j.github.io/klojang-templates/1/api/org.klojang.templates/org/klojang/templates/Template.html) 
+instance produced by the parser cannot tell you whether there were any ditch blocks
+in the template source.)
+
+By the way, ditch blocks can also be combined with inline templates to produce 
+the same result:
 
 ```html
    <tbody>
-   <!--%%-->
-   <tr>
-      <td>John</td>
-      <td>Smith</td>
-   </tr>
-   <!--%%-->
-   
-   <!-- ~%%begin:employees%
-   <tr>
-      <td>~%firstName%</td>
-      <td>~%lastName%</td>
-   </tr>
-   ~%%end:employees% -->
+      <!--%%-->
+      <tr>
+         <td>John</td>
+         <td>Smith</td>
+      </tr>
+      <!--%%-->
+      
+      <!-- ~%%begin:employees%
+      <tr>
+         <td>~%firstName%</td>
+         <td>~%lastName%</td>
+      </tr>
+      ~%%end:employees% -->
    </tbody>
 ```
 
+Notice how, this time, it is not just the begin and end tags of the the inline 
+template that are placed inside HTML comments. It is the _entire_ inline template.
 
 ## About
 
 <img src="docs/logo-groen.png" style="float:left;width:5%;padding:0 12px 12px 0"/>
 
-Klojang Check is developed by [Naturalis](https://www.naturalis.nl/en), a
-biodiversity research institute and natural history museum. It maintains one
+Klojang Check is developed by [Naturalis](https://www.naturalis.nl/en), the Dutch
+national biodiversity research institute and natural history museum. It maintains one
 of the largest collections of zoological and botanical specimens in the world.
 
 
