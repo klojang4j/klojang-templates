@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Accessor.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Klojang Templates</a> &gt; <a href="index.source.html" class="el_package">org.klojang.templates</a> &gt; <span class="el_source">Accessor.java</span></div><h1>Accessor.java</h1><pre class="source lang-java linenums">package org.klojang.templates;
+
+/**
+ * Accessors are used to extract values from objects. The {@link RenderSession} uses
+ * them to extract values from the objects passed to its
+ * {@link RenderSession#insert(Object, String...) insert()} and
+ * {@link RenderSession#populate(String, Object, String...) populate()} methods.
+ * Object access is name-based and requires some sort of mapping between template
+ * variables and named values (e.g. JavaBean properties or map keys). By default,
+ * Klojang Templates assumes an as-is mapping between the two, but you can inject
+ * {@linkplain NameMapper name mappers} for more sophisticated mappings.
+ *
+ * @param &lt;T&gt; the type of the source data object
+ * @author Ayco Holleman
+ * @see AccessorRegistry
+ */
+@FunctionalInterface
+public interface Accessor&lt;T&gt; {
+
+  /**
+   * The value that &lt;b&gt;should&lt;/b&gt; be returned by accessors if a template variable
+   * cannot be mapped to a value in the source data object. {@code Accessor}
+   * implementations should not throw an exception and they should not return
+   * {@code null} in this case.
+   */
+<span class="fc" id="L26">  Object UNDEFINED = new Object();</span>
+
+  /**
+   * Returns the value identified by the specified name from the specified source
+   * data object. If the source data object is a {@code Map}, {@code name} would
+   * likely be a map key; if it is a JavaBean, {@code name} would likely be a bean
+   * property. However, it is up to individual {@code Accessor} implementation
+   * determine the type of objects they provide access to, and how names are to be
+   * interpreted.
+   *
+   * @param data the data to be accessed
+   * @param name the name by which to retrieve the desired value from the data
+   * @return the value
+   */
+  Object access(T data, String name);
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
