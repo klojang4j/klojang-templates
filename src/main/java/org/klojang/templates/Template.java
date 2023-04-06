@@ -13,18 +13,22 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.util.*;
 
+import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toUnmodifiableList;
 import static org.klojang.check.CommonChecks.*;
 import static org.klojang.templates.x.Messages.ERR_NO_SUCH_TEMPLATE;
 import static org.klojang.util.CollectionMethods.implode;
 
 /**
- * The {@code Template} class is responsible for loading and parsing templates and
- * functions as a factory for {@link RenderSession} objects. {@code Template}
+ * The {@code Template} class is responsible for loading and parsing templates. It
+ * also functions as a factory for {@link RenderSession} objects. {@code Template}
  * instances are unmodifiable, expensive-to-create and heavy-weight objects.
  * Generally though you should not cache them as this is already done by
- * <i><b>Klojang Templates</b></i>. You can disable template caching by means of a
- * system property. See {@link Setting#TMPL_CACHE_SIZE}.
+ * <i>Klojang Templates</i>. You can disable template caching by means of a
+ * system property. See {@link Setting#TMPL_CACHE_SIZE}. This can be useful during
+ * development and/or debugging as the template file will be re-loaded and re-parsed
+ * every time you press the refresh button in the browser, allowing you to edit the
+ * template in between.
  *
  * @author Ayco Holleman
  */
@@ -36,17 +40,15 @@ public final class Template {
   /**
    * The name given to the root template: "{root}". Any {@code Template} that is
    * explicitly instantiated by calling one of the {@code fromXXX()} methods gets
-   * this name. Templates nested inside this template get their name from the source
-   * code (for example: {@code ~%%begin:foo%} or {@code ~%%include:/views/foo.html%%}
-   * or {@code ~%%include:foo:/views/bar.html%%}).
+   * this name.
    */
   public static final String ROOT_TEMPLATE_NAME = "{root}";
 
   /**
-   * Parses the specified string into a {@code Template} instance. If the string
-   * contains any {@code include} declarations (like
-   * {@code ~%%include:/path/to/foo.html%%}), the path will be interpreted as a file
-   * system resource. Templates created from a string are never cached.
+   * Parses the specified string into a {@code Template}. If the string contains any
+   * {@code include} tags (like {@code ~%%include:/path/to/foo.html%%}), the path
+   * will be interpreted as a file system resource. Templates created from a string
+   * are never cached.
    *
    * @param source the source code for the {@code Template}
    * @return a new {@code Template} instance
@@ -58,13 +60,12 @@ public final class Template {
   }
 
   /**
-   * Parses the specified string into a {@code Template} instance. The specified
-   * class will be used to include other templates using
-   * {@code clazz.getResourceAsStream("/path/to/template")}. Templates created from a
-   * string are never cached.
+   * Parses the specified string into a {@code Template}. The specified class will be
+   * used to include other templates using {@code Class.getResourceAsStream()}.
+   * Templates created from a string are never cached.
    *
-   * @param clazz Any {@code Class} object that provides access to the included
-   *     template files by calling {@code getResourceAsStream} on it
+   * @param clazz a {@code Class} object that provides access to the included
+   *     template file by calling {@code getResourceAsStream} on it
    * @param source the source code for the {@code Template}
    * @return a {@code Template} instance
    * @throws ParseException if the template source contains a syntax error
@@ -79,12 +80,12 @@ public final class Template {
   }
 
   /**
-   * Parses the specified resource into a {@code Template} instance. Templates
-   * created from a classpath resource are always cached. Thus, calling this method
-   * multiple times with the same {@code clazz} and {@code path} arguments will
-   * always return the same instance. Make sure the provided class is publicly
-   * accessible, otherwise Klojang Templates cannot use it to open an
-   * {@code InputStream} to the resource.
+   * Parses the specified resource into a {@code Template}. Templates created from a
+   * classpath resource are always cached. Thus, calling this method multiple times
+   * with the same {@code clazz} and {@code path} arguments will always return the
+   * same instance. <b>Make sure the provided class is publicly accessible</b>.
+   * Otherwise Klojang Templates cannot use it to open an {@code InputStream} to the
+   * resource.
    *
    * @param clazz a {@code Class} object that provides access to the template
    *     file by calling {@code getResourceAsStream} on it
@@ -102,9 +103,9 @@ public final class Template {
   }
 
   /**
-   * Parses the specified file into a {@code Template} instance. Templates created
-   * from file are always cached. Thus, calling this method multiple times with the
-   * same {@code path} argument will always return the same instance.
+   * Parses the specified file into a {@code Template}. Templates created from file
+   * are always cached. Thus, calling this method multiple times with the same
+   * {@code path} argument will always return the same instance.
    *
    * @param path the path of the file to be parsed
    * @return a {@code Template} instance
@@ -118,7 +119,10 @@ public final class Template {
 
   /**
    * Creates a {@code Template} from the source provided by the specified
-   * {@link PathResolver}.
+   * {@link PathResolver}. Templates created using a {@code PathResolver} are always
+   * cached. Thus, calling this method multiple times with the same
+   * {@code PathResolver} (as per its {@code equals()} method) and the same path will
+   * always return the same instance.
    *
    * @param resolver the {@code PathResolver}
    * @param path the path to be resolved by the {@code PathResolver}
@@ -196,12 +200,12 @@ public final class Template {
   }
 
   /**
-   * Returns the ultimate ancestor of this {@code Template}. In other words, the
+   * Returns the root template of this (nested) {@code Template}. That is, the
    * {@code Template} that was explicitly created by a call to one of the
    * {@code fromXXX()} methods of this class. If this {@code Template} <i>is</i> the
    * root template, then this method returns {@code this}.
    *
-   * @return the ultimate ancestor of this {@code Template}
+   * @return the root template of this {@code Template}
    */
   public Template getRootTemplate() {
     if (parent == null) {
@@ -243,6 +247,32 @@ public final class Template {
   }
 
   /**
+   * Returns all occurrences of all variables within this {@code Template}. Note that
+   * a variable name may occur multiple times within the same template.
+   *
+   * @return all occurrences of all variables within this {@code Template}
+   */
+  public List<VariableOccurrence> getVariableOccurrences() {
+    return parts.stream()
+        .filter(VariablePart.class::isInstance)
+        .map(VariablePart.class::cast)
+        .map(VariablePart::toOccurrence)
+        .collect(toList());
+  }
+
+  /**
+   * Returns the total number of variables in this {@code Template}. Note that a
+   * variable name may occur multiple times within the same template. This method
+   * does not count the number of <i>unique</i> variable names. To get that number,
+   * call {@link #getVariables() getVariables().size()}.
+   *
+   * @return the total number of variables in this {@code Template}
+   */
+  public int countVariableOccurrences() {
+    return (int) parts.stream().filter(VariablePart.class::isInstance).count();
+  }
+
+  /**
    * Returns {@code true} if this {@code Template} <i>directly</i> contains a
    * variable with the specified name. Variables inside nested templates are not
    * considered.
@@ -253,18 +283,6 @@ public final class Template {
    */
   public boolean hasVariable(String name) {
     return Check.notNull(name).ok(varIndices::containsKey);
-  }
-
-  /**
-   * Returns the total number of variables in this {@code Template}. Note that one
-   * variable name may occur multiple times within the same template. This method
-   * does not count the number of <i>unique</i> variable names. To get that number,
-   * call {@link #getVariables() getVariables().size()}.
-   *
-   * @return the total number of variables in this {@code Template}
-   */
-  public int countVariables() {
-    return (int) parts.stream().filter(VariablePart.class::isInstance).count();
   }
 
   private List<Template> nestedTemplates;

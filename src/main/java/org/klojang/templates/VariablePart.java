@@ -61,4 +61,11 @@ final class VariablePart extends AbstractPart implements NamedPart {
     return "<!-- ~%" + name + "% -->" + placeholder + "<!--%-->";
   }
 
+  VariableOccurrence toOccurrence() {
+    return new VariableOccurrence(name,
+        Optional.ofNullable(group),
+        Optional.ofNullable(placeholder),
+        start());
+  }
+
 }

@@ -18,15 +18,14 @@ import static org.klojang.templates.x.MTag.TEMPLATE;
 
 /**
  * <p>A registry of {@linkplain Accessor accessors}. Accessors are used by the
- * {@link RenderSession} to extract values from model objects. The
- * {@link #STANDARD_ACCESSORS} constant is a ready-made {@code AccessorRegistry} that
- * may contain all the accessors you will ever need for your application. In other
- * words, you may never have to actually implement an {@code Accessor} yourself. Note
- * that you only interact with Klojang Templates via entire accessor registries, not
- * via individual accessors.
+ * {@link RenderSession} to extract values from data provided by the data access
+ * layer. The {@link #STANDARD_ACCESSORS} constant is a ready-made
+ * {@code AccessorRegistry} that may well contain all the accessors you will ever
+ * need. In other words, you may never have to actually implement an {@code Accessor}
+ * yourself, but if you need to, or want to, the option is there.
  *
- * <p>This is how an {@code AccessorRegistry} decides which accessor to hand out to
- * the {@code RenderSession} for a particular type of object:
+ * <p>This is how an {@code AccessorRegistry} decides which accessor to use for a
+ * particular type of object:
  *
  * <ol>
  *   <li>If you have {@linkplain Builder#register(Accessor, Class) registered} your
@@ -38,11 +37,11 @@ import static org.klojang.templates.x.MTag.TEMPLATE;
  *       {@link PathWalker}.
  * </ol>
  *
- * <p>Note that the {@code PathAccessor} class does not use reflection to read bean
- * properties, but it <i>does</i> use reflection to figure out what those properties
- * are in the first place. Thus, if you use this accessor from within a Java 9+
- * module, you will have to open up the module for reflection. Alternatively, you
- * could write your own {@code Accessor} after all:
+ * <p>Note that this internally defined {@code Accessor} does not use reflection to
+ * read bean properties, but it <i>does</i> use reflection to figure out what those
+ * properties are in the first place. Thus, if you use <i>Klojang Templates</i> from
+ * within a Java 9+ module, you must open up the module for reflection.
+ * Alternatively, you could write your own {@code Accessor} after all:
  *
  * <blockquote><pre>{@code
  * Accessor<Person> personAccessor =
@@ -65,14 +64,14 @@ import static org.klojang.templates.x.MTag.TEMPLATE;
  *
  * <blockquote><pre>{@code
  * // forClass returns a BeanReaderBuilder
- * BeanReader br = BeanReader.forClass(Person.class)
+ * BeanReader beanReader = BeanReader.forClass(Person.class)
  *    .withInt("id")
  *    .withString("firstName", "lastName")
  *    .with(LocalDate.class, "birthDate"))
  *    .build();
  * AccessorRegistry reg = AccessorRegistry
  *   .configure()
- *   .register(br)
+ *   .register(beanReader)
  *   .freeze();
  * RenderSession session = template.newRenderSession(reg);
  * }</pre></blockquote>

@@ -12,20 +12,20 @@ import java.util.function.Supplier;
 public enum RenderErrorCode {
 
   /**
-   * A non-existent name was specified to set a variable.
+   * A non-existent variable name was specified.
    */
   NO_SUCH_VARIABLE("No such variable: \"%s\""),
 
   /**
-   * A non-existent name was specified to populate a nested template.
+   * A non-existent nested template name was specified.
    */
   NO_SUCH_TEMPLATE("No such nested template: \"%s\""),
 
   /**
-   * The child sessions for a nested template were requested, but the nested template
-   * had not been instantiated yet.
+   * The child sessions for a nested template were requested, but none were created
+   * yet.
    *
-   * @see SoloSession#getChildSessions(String)
+   * @see RenderSession#getChildSessions(String)
    */
   TEMPLATE_NOT_INSTANTIATED("Template %s not instantiated yet"),
 
@@ -37,18 +37,24 @@ public enum RenderErrorCode {
   /**
    * {@code RenderSession.enable()} was called on a nested template, but it was not a
    * text-only template.
+   *
+   * @see RenderSession#enable(String...)
    */
   NOT_TEXT_ONLY("Not a text-only template: %s"),
 
   /**
    * {@code RenderSession.populate1()} was called on a nested template, but it was
-   * not a template with exactly one variable and zero doubly-nested templates.
+   * not a template with exactly one variable.
+   *
+   * @see RenderSession#populate1(String, Object...)
    */
   NOT_ONE_VAR_TEMPLATE("Not a one-variable template: %s"),
 
   /**
    * {@code RenderSession.populate2()} was called on a nested template, but it was
-   * not a template with exactly two variables and zero doubly-nested templates.
+   * not a template with exactly two variables.
+   *
+   * @see RenderSession#populate2(String, Object...)
    */
   NOT_TWO_VAR_TEMPLATE("Not a two-variable template: %s"),
 
@@ -68,16 +74,18 @@ public enum RenderErrorCode {
       "Stringifier for variable %s in variable group %s threw NullPointerException"),
 
   /**
-   * A call to {@link RenderSession#repeat(String, int) repeat()} was made but the
-   * number of repetitions had already been fixed, either by a previous call to
-   * {@code repeat()}, or implicitly, via the
+   * A call to {@link RenderSession#repeat(String, int) RenderSession.repeat()} was
+   * made, but the number of repetitions had already been fixed, either by a previous
+   * call to {@code repeat()}, or implicitly, via the
    * {@link RenderSession#populate(String, Object, String...) popupate()} method.
    */
   REPETITIONS_FIXED("Number of repetitions already fixed for template %s"),
 
   /**
-   * A nested template was populated in multiple passes, but with a different number
-   * of source data objects.
+   * The number fo elements in the array or {@code Collection} passed to
+   * {@link RenderSession#populate(String, Object, String...)
+   * RenderSession.populate()} differed from the number of repetitions fixed by the
+   * first call to {@code populate()} or {@code repeat()}.
    */
   REPETITION_MISMATCH("Error while populating %s. When populating a nested template "
       + "in multiple passes you must always provide the same number of source data "

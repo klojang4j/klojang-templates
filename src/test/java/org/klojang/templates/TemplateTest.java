@@ -62,7 +62,7 @@ public class TemplateTest {
         </body></html>
         """;
     Template tmpl = Template.fromString(getClass(), src);
-    assertEquals(0, tmpl.countVariables());
+    assertEquals(0, tmpl.countVariableOccurrences());
   }
 
   @Test
@@ -77,7 +77,7 @@ public class TemplateTest {
         ~%foo%
         """;
     Template tmpl = Template.fromString(getClass(), src);
-    assertEquals(1, tmpl.countVariables());
+    assertEquals(1, tmpl.countVariableOccurrences());
   }
 
   @Test
@@ -93,7 +93,7 @@ public class TemplateTest {
         """;
     Template tmpl = Template.fromString(getClass(), src);
     assertEquals(1, tmpl.getVariables().size());
-    assertEquals(2, tmpl.countVariables());
+    assertEquals(2, tmpl.countVariableOccurrences());
   }
 
   @Test
@@ -109,7 +109,7 @@ public class TemplateTest {
         """;
     Template tmpl = Template.fromString(getClass(), src);
     assertEquals(2, tmpl.getVariables().size());
-    assertEquals(2, tmpl.countVariables());
+    assertEquals(2, tmpl.countVariableOccurrences());
   }
 
   @Test

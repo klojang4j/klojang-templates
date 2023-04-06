@@ -25,11 +25,11 @@ comments-like constructs. Two if you consider that of those three, two are
 functionally equivalent. Nevertheless, we think (and hope) that you'll find 
 populating a Klojang template surprisingly efficient.
 
-The **javadocs** for _Klojang Templates_ can be found **[here](https://klojang4j.github.io/klojang-templates/1/api)**.
-The latest **vulnerabilities report** can be found **[here](https://klojang4j.github.io/klojang-templates/1/vulnerabilities/dependency-check-report.html)**.
-The latest **code coverage reports** can be found **[here](https://klojang4j.github.io/klojang-templates/1/coverage)**.
+- The **javadocs** for _Klojang Templates_ can be found [here](https://klojang4j.github.io/klojang-templates/1/api).
+- The latest **vulnerabilities report** can be found [here](https://klojang4j.github.io/klojang-templates/1/vulnerabilities/dependency-check-report.html).
+- The latest **code coverage reports** can be found [here](https://klojang4j.github.io/klojang-templates/1/coverage).
 
-# Getting Started
+## Getting Started
 
 To get started with _Klojang Templates_, add the following dependency to you project:
 
@@ -106,7 +106,7 @@ values you insert into a template. However, you can [configure](https://klojang4
 HTML-escape all values by default. You could then omit the `html:` prefix while 
 keeping the `js:` prefix to override the default behaviour.
 
-## Inserting Java Beans, Records and Maps
+## Inserting Beans, Records and Maps
 
 You can set multiple template variables at once by inserting non-scalar values into
 the template.
@@ -138,18 +138,19 @@ public class EmployeeResource {
 }
 ```
 
-Note that the `john()` method returns a method reference to [RenderSession.render(OutputStream)](https://klojang4j.github.io/klojang-templates/1/api/org.klojang.emplates/org/klojang/templates/RenderSession.html#render(java.io.OutputStream)), 
-which neatly targets the JAX-RS [StreamingOutput](https://docs.oracle.com/javaee/7/api/javax/ws/rs/core/StreamingOutput.html)
+Note that the `john()` method returns a method reference to 
+[RenderSession.render(OutputStream)](https://klojang4j.github.io/klojang-templates/1/api/org.klojang.emplates/org/klojang/templates/RenderSession.html#render(java.io.OutputStream)), 
+which neatly targets the JAX-RS 
+[StreamingOutput](https://docs.oracle.com/javaee/7/api/javax/ws/rs/core/StreamingOutput.html)
 interface.
 
 ## Nested Templates
 
 In _Klojang Templates_ templates can be nested inside other templates (ad infinitum
 if you like). Syntactically, this can be done in two ways: via
-"inline templates" or via "included templates". Functionally, there if no 
-difference between these two options. The API cannot tell you whether you are populating an inline
-template or an included template. (Well, actually, it [sort of can](https://klojang4j.github.io/klojang-templates/1/api/org.klojang.templates/org/klojang/templates/Template.html#path()),
-but there's not much you can do with this knowledge.)
+_inline templates_ or via _included templates_. Functionally, there if no 
+difference between these two options. They are populated using the exact same 
+methods in the API.
 
 ### Inline Templates
 

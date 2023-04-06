@@ -22,7 +22,8 @@ public enum Setting {
    * {@link Template} instances - used to reduce the overhead of parsing template
    * files. When the cache reaches the specified size, {@code Template} instances are
    * evicted on a least-recently-used basis. A value of -1 means the cache is allowed
-   * to grow to any size. A value of 0 disables caching. This is useful during
+   * to grow to any size. A value of 0 disables caching.
+   * This is useful during
    * development and/or debugging as the template file will be re-loaded and
    * re-parsed every time you press the refresh button in the browser.
    * </p>
