@@ -7,27 +7,32 @@ _Klojang Templates_ is a Java templating API written with two goals in mind:
    compensates for their simplicity.
 
 In short: leverage the skills of Java programmers, rather than make them learn a
-whole new skill. This solidly places _Klojang Templates_ in the _Zero Logic 
-Templates_ camp of templating approaches, alongside, for example,
-[Mustache](http://mustache.github.io/) &#8212; and on opposite sides of a template 
+whole new skill.
+
+This solidly places _Klojang Templates_ in the _Zero Logic Templates_ camp of
+templating approaches, alongside, for example,
+[Mustache](http://mustache.github.io/) &#8212; and on opposite sides of a template
 engine like [Thymeleaf](https://www.thymeleaf.org/).
 
 Nevertheless, one appealing feature of Thymeleaf is that raw, unprocessed Thymeleaf
-templates render perfectly well within a browser. This allows the static HTML
-produced by UI designers to gradually evolve into fully dynamic pages while at no
-point entering an "unrenderable" phase. While this was not the prime objective for
-_Klojang Templates_, it _does_ let you create templates that render just fine in
+templates render flawlessly within a browser. This allows the static HTML produced by
+UI designers to gradually evolve into fully dynamic pages while at no point entering
+an "unrenderable" phase. While this was not the primary motivation for developing
+_Klojang Templates_, it, too, lets you create templates that render just fine in
 their raw state.
 
 Klojang templates arguably are even simpler than Mustache templates. There are just
 five syntactical constructs. Three if you discount for the fact that two of them are
-comments-like constructs. Two if you consider that of those three, two are
-functionally equivalent. Nevertheless, we think (and hope) that you'll find 
-populating a Klojang template surprisingly efficient.
+comments-like constructs. Two if you consider that, of those three, two are
+functionally equivalent. Nevertheless, we hope and think that you'll find populating
+a Klojang template surprisingly efficient.
 
-- The **javadocs** for _Klojang Templates_ can be found [here](https://klojang4j.github.io/klojang-templates/1/api).
-- The latest **vulnerabilities report** can be found [here](https://klojang4j.github.io/klojang-templates/1/vulnerabilities/dependency-check-report.html).
-- The latest **code coverage reports** can be found [here](https://klojang4j.github.io/klojang-templates/1/coverage).
+- The **javadocs** for _Klojang Templates_ can be
+  found [here](https://klojang4j.github.io/klojang-templates/1/api).
+- The latest **vulnerabilities report** can be
+  found [here](https://klojang4j.github.io/klojang-templates/1/vulnerabilities/dependency-check-report.html).
+- The latest **code coverage reports** can be
+  found [here](https://klojang4j.github.io/klojang-templates/1/coverage).
 
 ## Getting Started
 
@@ -87,9 +92,9 @@ provide some extra help in case you are writing HTML templates.
 <!-- hello.html -->
 <html>
 <head>
-<script>
-  const greeting = '~%js:greeting%';
-</script>
+    <script>
+        const greeting = '~%js:greeting%';
+    </script>
 </head>
 <body>
 <p>~%html:greeting%</p>
@@ -97,14 +102,15 @@ provide some extra help in case you are writing HTML templates.
 </html>
 ```
 
-The `html:` and `js:` prefixes are examples of 
+The `html:` and `js:` prefixes are examples of
 [variable groups](https://klojang4j.github.io/klojang-templates/1/api/org.klojang.templates/org/klojang/templates/VarGroup.html),
 which will be covered in greater detail later on.
 
 By default, _Klojang Templates_ does not apply any escaping or formatting to the
-values you insert into a template. However, you can [configure](https://klojang4j.github.io/klojang-templates/1/api/org.klojang.templates/org/klojang/templates/StringifierRegistry.Builder.html#setDefaultStringifier(org.klojang.templates.Stringifier)) _Klojang Templates_ to
-HTML-escape all values by default. You could then omit the `html:` prefix while 
-keeping the `js:` prefix to override the default behaviour.
+values you insert into a template. However, you
+can [configure](https://klojang4j.github.io/klojang-templates/1/api/org.klojang.templates/org/klojang/templates/StringifierRegistry.Builder.html#setDefaultStringifier(org.klojang.templates.Stringifier))
+_Klojang Templates_ to HTML-escape all values by default. You could then omit
+the `html:` prefix while keeping the `js:` prefix to override the default behaviour.
 
 ## Inserting Beans, Records and Maps
 
@@ -125,22 +131,22 @@ the template.
 ```java
 public class EmployeeResource {
 
-   @GET
-   @Path("/john")
-   public StreamingOutput john() throws ParseException {
-      Employee employee = new Employee("John", "Smith", LocalDate.of(1980, 6, 13));
-      Template template = Template.fromResource(getClass(), "/views/employee.html");
-      RenderSession session = template.newRenderSession();
-      session.insert(employee);
-      return session::render;
-   }
+  @GET
+  @Path("/john")
+  public StreamingOutput john() throws ParseException {
+    Employee employee = new Employee("John", "Smith", LocalDate.of(1980, 6, 13));
+    Template template = Template.fromResource(getClass(), "/views/employee.html");
+    RenderSession session = template.newRenderSession();
+    session.insert(employee);
+    return session::render;
+  }
 
 }
 ```
 
-Note that the `john()` method returns a method reference to 
-[RenderSession.render(OutputStream)](https://klojang4j.github.io/klojang-templates/1/api/org.klojang.emplates/org/klojang/templates/RenderSession.html#render(java.io.OutputStream)), 
-which neatly targets the JAX-RS 
+Note that the `john()` method returns a method reference to
+[RenderSession.render(OutputStream)](https://klojang4j.github.io/klojang-templates/1/api/org.klojang.emplates/org/klojang/templates/RenderSession.html#render(java.io.OutputStream)),
+which neatly targets the JAX-RS
 [StreamingOutput](https://docs.oracle.com/javaee/7/api/javax/ws/rs/core/StreamingOutput.html)
 interface.
 
@@ -148,18 +154,18 @@ interface.
 
 In _Klojang Templates_ templates can be nested inside other templates (ad infinitum
 if you like). Syntactically, this can be done in two ways: via
-_inline templates_ or via _included templates_. Functionally, there if no 
-difference between these two options. They are populated using the exact same 
-methods in the API.
+_inline templates_ or via _included templates_. Functionally, there is no difference
+between these two options. They are populated using the exact same methods.
 
 ### Inline Templates
 
 Inline templates are defined within the parent template itself. Here is an example of
 a template which contains an inline template ("companies"), which itself contains an
-inline template ("departments"), which also contains an inline template ("employees"). 
-For clarity's sake, this is a non-HTML template.
+inline template ("departments"), which also contains an inline template ("
+employees"). For clarity's sake, this is a non-HTML template.
 
 _/views/company-overview.txt:_
+
 ```
 This is an overview of our customers:
 ~%%begin:companies%
@@ -177,38 +183,39 @@ This is an overview of our customers:
 ~%%end:companies%
 ```
 
-Are these nested structures _really_ templates in their own right? Yes! You could 
+Are these nested structures _really_ templates in their own right? Yes! You could
 even render them separately (e.g. for debugging purposes):
 
 ```java
 public class CompanyResource {
 
-   @GET
-   @Path("/overview")
-   @Produces("text/plain")
-   public StreamingOutput john() throws ParseException {
-      Template template = Template.fromResource(getClass(), "/views/company-overview.txt");
-      RenderSession session = template.newRenderSession();
-      // Will *only* render the employees template:
-      String out = session.in("companies").in("departments").in("employees")
-              .set("firstName", "John")
-              .set("lastName", "Smith")
-              .set("birthDate", LocalDate.of(1980, 6, 13))
-              .render();
-      LOG.debug(out);
-      // more stuff ...
-      return session::render;
-   }
+  @GET
+  @Path("/overview")
+  @Produces("text/plain")
+  public StreamingOutput john() throws ParseException {
+    Template template = Template.fromResource(getClass(), "/views/company-overview.txt");
+    RenderSession session = template.newRenderSession();
+    // Will *only* render the employees template:
+    String out = session.in("companies").in("departments").in("employees")
+        .set("firstName", "John")
+        .set("lastName", "Smith")
+        .set("birthDate", LocalDate.of(1980, 6, 13))
+        .render();
+    LOG.debug(out);
+    // more stuff ...
+    return session::render;
+  }
 
 }
 ```
 
-
 ### Included Templates
-Included templates are defined in a separate file and are nested inside another 
+
+Included templates are defined in a separate file and are nested inside another
 template using the following syntax:
 
 _/views/company-overview.txt:_
+
 ```
 This is an overview of our customers:
 ~%%begin:companies%
@@ -220,6 +227,7 @@ This is an overview of our customers:
 ```
 
 _/views/departments.txt:_
+
 ```
         Name .......: ~%name%
         Manager ....: ~%manager%
@@ -229,7 +237,7 @@ _/views/departments.txt:_
             ~%%end:employees%                   
 ```
 
-Note that inline template tags end with a single percentage sign (%) while included 
+Note that inline template tags end with a single percentage sign (%) while included
 template tags end with a double percentage sign (%%).
 
 Nested templates, whether inline or included, are identified by their name &#8212;
@@ -256,37 +264,39 @@ record Address(String line1, String zipCode, String city, State state) {}
 
 ```html
 <!-- label.html -->
-<html><body>
-   <p>~%firstName% ~%lastName%</p>
-   ~%%begin:address%
-   <p>~%line1%</p>
-   <p>~%city%, ~%state%, ~%zipCode%</p>
-   ~%%end:address%
-</body></html>
+<html>
+<body>
+<p>~%firstName% ~%lastName%</p>
+~%%begin:address%
+<p>~%line1%</p>
+<p>~%city%, ~%state%, ~%zipCode%</p>
+~%%end:address%
+</body>
+</html>
 ```
 
 ```java
 @Path("/print")
 public class LabelPrintResource {
 
-   EmployeeDao dao;
+  EmployeeDao dao;
 
-   @Path("/{id}")
-   public StreamingOutput printLabel(@PathParam("id") int id) throws ParseException {
-      Employee employee = dao.find(id);
-      Template template = Template.fromResource(getClass(), "/views/label.html");
-      RenderSession session = template.newRenderSession();
-      session.insert(employee);
-      return session::render;
-   }
+  @Path("/{id}")
+  public StreamingOutput printLabel(@PathParam("id") int id) throws ParseException {
+    Employee employee = dao.find(id);
+    Template template = Template.fromResource(getClass(), "/views/label.html");
+    RenderSession session = template.newRenderSession();
+    session.insert(employee);
+    return session::render;
+  }
 
 }
 ```
 
 Notice how the address template gets mapped to the address property of `Employee`,
-and how, _inside_ the address template, you have access to the `Address` 
-properties. In fact, inside the address template you are in a "different 
-universe" and you can **only** access the `Address` properties.
+and how, _inside_ the address template, you have access to the `Address`
+properties. In fact, inside the address template you are in a "different universe"
+and you can **only** access the `Address` properties.
 
 ### Tables
 
@@ -298,11 +308,19 @@ Nested templates enable you to create tables and other repetitive structures.
 <body>
 <table>
     <thead>
-        <tr><th>First name</th><th>Last name</th><th>Birth date</th></tr>
+    <tr>
+        <th>First name</th>
+        <th>Last name</th>
+        <th>Birth date</th>
+    </tr>
     </thead>
     <tbody>
     ~%%begin:employees%
-        <tr><td>~%firstName%</td><td>~%lastName%</td><td>~%birthDate%</td></tr>
+    <tr>
+        <td>~%firstName%</td>
+        <td>~%lastName%</td>
+        <td>~%birthDate%</td>
+    </tr>
     ~%%end:employees%
     </tbody>
 </table>
@@ -316,15 +334,15 @@ import org.klojang.templates.RenderSession;
 import org.klojang.templates.Template;
 
 public class EmployeeResource {
-  
+
   private EmployeeDao dao;
 
   @GET
   @Path("/")
-   public String list() throws ParseException {
-     Template template = Template.fromResource(getClass(), "/views/employees.html");
-     List<Employee> employees = dao.list();
-     return template.newRenderSession().populate("employees", employees).render();
+  public String list() throws ParseException {
+    Template template = Template.fromResource(getClass(), "/views/employees.html");
+    List<Employee> employees = dao.list();
+    return template.newRenderSession().populate("employees", employees).render();
   }
 
 }
@@ -347,26 +365,38 @@ above template would render somewhat like this:
 <body>
 <table>
     <thead>
-        <tr><th>First name</th><th>Last name</th><th>Birth date</th></tr>
+    <tr>
+        <th>First name</th>
+        <th>Last name</th>
+        <th>Birth date</th>
+    </tr>
     </thead>
     <tbody>
-        <tr><td>John</td><td>Smith</td><td>1980-06-13</td></tr>
-        <tr><td>Mary</td><td>Bear</td><td>1977-11-10</td></tr>
-        <tr><td>Tracey</td><td>Peterson</td><td>2001-04-03</td></tr>
-   </tbody>
+    <tr>
+        <td>John</td>
+        <td>Smith</td>
+        <td>1980-06-13</td>
+    </tr>
+    <tr>
+        <td>Mary</td>
+        <td>Bear</td>
+        <td>1977-11-10</td>
+    </tr>
+    <tr>
+        <td>Tracey</td>
+        <td>Peterson</td>
+        <td>2001-04-03</td>
+    </tr>
+    </tbody>
 </table>
 </body>
 </html>
 ```
 
-_(If this fails to make you spill your coffee, keep in mind that the text 
-enclosed by `~%%begin:employees%` and `~%%end:employees%` contains **two** 
-newlines, which would ordinarily be faithfully reproduced.)_
-
 ### Complex Information
 
-Nested templates really start to shine as the information you need to convey 
-becomes more complex. Take, for example, the company-overview template again:
+Nested templates really start to shine as the information you need to convey becomes
+more complex. Take, for example, the company-overview template again:
 
 ```
 This is an overview of our customers:
@@ -395,13 +425,12 @@ record Department(String name, String manager, List<Employee> employees) {}
 record Employee(String firstName, String lastName, LocalDate birthDate) {}
 ```
 
-Then, when inserting a list of Company instances into the template, the 
-employees template would repeat within the departments template. which would 
-repeat within the companies template, which would repeat within the 
-company-overview template. All this would happen with a single call to 
+Then, when inserting a list of Company instances into the template, the employees
+template would repeat within the departments template. which would repeat within the
+companies template, which would repeat within the company-overview template. All this
+would happen with a single call to
 [RenderSession.populate()](https://klojang4j.github.io/klojang-templates/1/api/org.klojang.templates/org/klojang/templates/RenderSession.html#populate(java.lang.String,java.lang.Object,java.lang.String...)),
-simply because the structure of the template matches the structure of the data 
-model.
+simply because the structure of the template matches the structure of the data model.
 
 Note that this does not mean that the _visual_ appearance of the template must
 somehow reflect the structure of the data model.
@@ -430,11 +459,11 @@ being rendered.
 
 The chapter on [escaping](#escaping), illustrated how the`html:` and `js:` prefixes
 could be used for HTML-escaping and ECMAScript-escaping, respectively. These prefixes
-are, in fact, the names of two predefined 
+are, in fact, the names of two predefined
 [variable groups](https://klojang4j.github.io/klojang-templates/1/api/org.klojang.templates/org/klojang/templates/VarGroup.html).
 There are a couple more of them, and you can also define your own variable groups.
-For example, you might want to define a variable group for formatting date/time 
-objects according to your locale.
+For example, you might want to define a variable group for formatting date/time
+objects.
 
 ```html
 <!-- employee.html -->
@@ -455,23 +484,23 @@ import java.time.LocalDate;
 
 public class Setup {
 
-   private static final StringifierRegistry stringifiers = configureStringifiers();
+  private static final StringifierRegistry stringifiers = configureStringifiers();
 
-   public static StringifierRegistry getStringifiers() {
-      return stringifiers;
-   }
+  public static StringifierRegistry getStringifiers() {
+    return stringifiers;
+  }
 
-   private static StringifierRegistry configureStringifiers() {
-      return StringifierRegistry.configure()
-              .forVarGroup("date-format1", getDateTimeStringifier())
-              .freeze();
-   }
+  private static StringifierRegistry configureStringifiers() {
+    return StringifierRegistry.configure()
+        .forVarGroup("date-format1", getDateStringifier())
+        .freeze();
+  }
 
-   private static Stringifier getDateTimeStringifier() {
-     return obj -> obj == null 
-            ? "&nbsp;" 
-            : DateTimeFormatter.ofPattern("yyyy年mm月dd日") .format((LocalDate) obj);
-    }
+  private static Stringifier getDateStringifier() {
+    return obj -> obj == null
+        ? "&nbsp;"
+        : DateTimeFormatter.ofPattern("yyyy年mm月dd日").format((LocalDate) obj);
+  }
 
 }
 ```
@@ -479,23 +508,30 @@ public class Setup {
 ```java
 public class EmployeeResource {
 
-   @GET
-   @Path("/john")
-   public StreamingOutput john() throws ParseException {
-      Employee employee = new Employee("John", "Smith", LocalDate.of(1980, 6, 13));
-      Template template = Template.fromResource(getClass(), "/views/employee.html");
-      RenderSession session = template.newRenderSession(Setup.getStringifiers());
-      session.insert(employee);
-      return session::render;
-   }
+  @GET
+  @Path("/john")
+  public StreamingOutput john() throws ParseException {
+    Employee employee = new Employee("John", "Smith", LocalDate.of(1980, 6, 13));
+    Template template = Template.fromResource(getClass(), "/views/employee.html");
+    RenderSession session = template.newRenderSession(Setup.getStringifiers());
+    session.insert(employee);
+    return session::render;
+  }
 
 }
 ```
 
+## Conclusion
+
+That's it, really. The next paragraph will only be of interest of you if you want to
+write templates that render flawlessly in their raw, unprocessed state. The 
+[RenderSession](file:///home/ayco/git-repos/klojang/klojang-templates/target/apidocs/org.klojang.templates/org/klojang/templates/RenderSession.html)
+class contains quite a few more methods that help you populate a Klojang template, 
+
 ## Evolving the Raw Template
 
-_Klojang Templates_ allows you to write templates that will render just fine in their
-raw, unprocessed state. This paragraph explains how you can achieve this.
+_Klojang Templates_ allows you to write templates that will render flawlessly in
+their raw, unprocessed state. This paragraph explains how you can achieve this.
 
 Suppose your company's design team handed you this design:
 
@@ -504,18 +540,18 @@ Suppose your company's design team handed you this design:
 <html>
 <body style="background-color: pink">
 <table>
-   <thead>
-   <tr>
-      <th>First name</th>
-      <th>Last name</th>
-   </tr>
-   </thead>
-   <tbody>
-   <tr>
-      <td>John</td>
-      <td>Smith</td>
-   </tr>
-   </tbody>
+    <thead>
+    <tr>
+        <th>First name</th>
+        <th>Last name</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td>John</td>
+        <td>Smith</td>
+    </tr>
+    </tbody>
 </table>
 </body>
 </html>
@@ -526,30 +562,30 @@ The company fired the design team, but you plough on.
 The first thing to keep in mind is that template variables can be placed in HTML
 comments without this making a difference in how the template is rendered.
 `<!-- ~%foo% -->` is rendered just like `~%foo%`. _Klojang Templates will replace the
-_entire_ character sequence with whatever value `foo` was set to. You may
-write `<!--~%foo%-->` (without the space characters), but that is about as much
-syntactical freedom as you have.
+_entire_ character sequence with whatever value `foo` was set to. The space character
+on either side of `~%foo%` is optional. You may also write `<!--~%foo%-->`, but
+multiple space characters, or any other character, are not allowed.
 
-So your first attempt at turning the design in a dynamically populated pages 
-might look like this:
+So your first attempt at turning the design into a dynamically populated page might
+look like this:
 
 ```html
 <!DOCTYPE html>
 <html>
 <body style="background-color: pink">
 <table>
-   <thead>
-   <tr>
-      <th>First name</th>
-      <th>Last name</th>
-   </tr>
-   </thead>
-   <tbody>
-   <tr>
-      <td><!-- ~%firstName% --></td>
-      <td><!-- ~%lastName% --></td>
-   </tr>
-   </tbody>
+    <thead>
+    <tr>
+        <th>First name</th>
+        <th>Last name</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td><!-- ~%firstName% --></td>
+        <td><!-- ~%lastName% --></td>
+    </tr>
+    </tbody>
 </table>
 </body>
 </html>
@@ -569,19 +605,19 @@ the `<!--%-->` sequences and any text inside it.
 
 ```html
 <td>
-   <!-- ~%firstName% -->
-   <!--%-->John<!--%-->
+    <!-- ~%firstName% -->
+    <!--%-->John<!--%-->
 </td>
 <td>
-   <!-- ~%lastName% -->
-   <!--%-->Smith<!--%-->
+    <!-- ~%lastName% -->
+    <!--%-->Smith<!--%-->
 </td>
 ```
 
-If you remove all HTML comments from the above HTML snippet, you are basically 
-back to the original design.
+If you remove all HTML comments from the above HTML snippet, you are back to the
+original design.
 
-If the placeholder fits into a single line, this can be contracted to:
+If the placeholder fits on a single line, this can be contracted to:
 
 ```html
 <td><!-- ~%firstName% -->John<!--%--></td>
@@ -590,11 +626,11 @@ If the placeholder fits into a single line, this can be contracted to:
 
 ### Populating the Table
 
-Now we want to introduce a nested template so we can make the table row repeat 
-for each element of the `List<Employee>` we received from the data access layer.
+Now we want to introduce a nested template so we can make the table row repeat for
+each element of the `List<Employee>` we received from the data access layer.
 
-As with template variables, you can place the begin and end tag of an inline 
-template in HTML comments. _Klojang Templates_ treats `<!-- ~%%begin:foo% -->` 
+As with template variables, you can place the begin and end tag of an inline template
+in HTML comments. _Klojang Templates_ treats `<!-- ~%%begin:foo% -->`
 just like it treats `~%%begin:foo%`
 
 ```html
@@ -602,20 +638,20 @@ just like it treats `~%%begin:foo%`
 <html>
 <body style="background-color: pink">
 <table>
-   <thead>
-   <tr>
-      <th>First name</th>
-      <th>Last name</th>
-   </tr>
-   </thead>
-   <tbody>
-   <!-- ~%%begin:employees% -->
-   <tr>
-      <td><!-- ~%firstName% -->John<!--%--></td>
-      <td><!-- ~%lastName% -->Smith<!--%--></td>
-   </tr>
-   <!-- ~%%end:employees% -->
-   </tbody>
+    <thead>
+    <tr>
+        <th>First name</th>
+        <th>Last name</th>
+    </tr>
+    </thead>
+    <tbody>
+    <!-- ~%%begin:employees% -->
+    <tr>
+        <td><!-- ~%firstName% -->John<!--%--></td>
+        <td><!-- ~%lastName% -->Smith<!--%--></td>
+    </tr>
+    <!-- ~%%end:employees% -->
+    </tbody>
 </table>
 </body>
 </html>
@@ -630,62 +666,63 @@ dynamic.
 It may have occurred to you that this won't work for included templates:
 
 ```html
-   <tbody>
-       <!-- ~%%include:employee:/views/employee-row.html%% -->
-   </tbody>
+
+<tbody>
+<!-- ~%%include:employee:/views/employee-row.html%% -->
+</tbody>
 ```
 
-Now you just have an empty table body in the raw template. In this case you can 
-use _ditch blocks_ to restore renderability to the raw template:
+This, too, will be rendered just like
+`~%%include:employee:/views/employee-row.html%%` (without HTML comments), but the raw
+template now unfortunately simply has an empty table body.
 
-Nevertheless, this, 
-_too_, will be rendered by _Klojang Templates_ just like 
-`~%%include:employee:/views/employee-row.html%%` (without HTML comments).
+In this case you can use _ditch blocks_ to restore renderability to the raw template:
 
 ```html
-   <tbody>
-      <!--%%-->
-      <tr>
-         <td>John</td>
-         <td>Smith</td>
-      </tr>
-      <!--%%-->
-      
-      <!-- ~%%include:employee:/views/employee-row.html%% -->
-   </tbody>
+
+<tbody>
+    <!--%%-->
+    <tr>
+        <td>John</td>
+        <td>Smith</td>
+    </tr>
+    <!--%%-->
+    
+    <!-- ~%%include:employee:/views/employee-row.html%% -->
+</tbody>
 ```
 
-Ditch blocks are pairs of `<!--%%-->` sequences and any text between them. As 
-with placeholders (`<!--%-->`), these sequences are self-closed HTML comments, so 
-the text between them will be visible in the browser. But when _Klojang Templates_ 
+Ditch blocks are pairs of `<!--%%-->` sequences and any text between them. As with
+placeholders (`<!--%-->`), these sequences are self-closed HTML comments, so the text
+between them will be visible in the browser. But when _Klojang Templates_
 renders the template, all ditch blocks will be removed from the template. (In fact,
-they will be removed very early on in the parsing phase. The 
-[Template](https://klojang4j.github.io/klojang-templates/1/api/org.klojang.templates/org/klojang/templates/Template.html) 
+they will be removed very early on in the parsing phase. The
+[Template](https://klojang4j.github.io/klojang-templates/1/api/org.klojang.templates/org/klojang/templates/Template.html)
 instance produced by the parser cannot tell you whether there were any ditch blocks
 in the template source.)
 
-By the way, ditch blocks can also be combined with inline templates to produce 
-the same result:
+Ditch blocks can also be combined with inline templates to produce the same result:
 
 ```html
-   <tbody>
-      <!--%%-->
-      <tr>
-         <td>John</td>
-         <td>Smith</td>
-      </tr>
-      <!--%%-->
-      
-      <!-- ~%%begin:employees%
-      <tr>
-         <td>~%firstName%</td>
-         <td>~%lastName%</td>
-      </tr>
-      ~%%end:employees% -->
-   </tbody>
+
+<tbody>
+<!--%%-->
+<tr>
+    <td>John</td>
+    <td>Smith</td>
+</tr>
+<!--%%-->
+
+<!-- ~%%begin:employees%
+<tr>
+   <td>~%firstName%</td>
+   <td>~%lastName%</td>
+</tr>
+~%%end:employees% -->
+</tbody>
 ```
 
-Notice how, this time, it is not just the begin and end tags of the the inline 
+Notice how, this time, it is not just the begin and end tags of the the inline
 template that are placed inside HTML comments. It is the _entire_ inline template.
 
 ## About

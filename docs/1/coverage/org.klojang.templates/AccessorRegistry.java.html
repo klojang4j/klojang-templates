@@ -18,11 +18,11 @@ import static org.klojang.templates.x.MTag.TEMPLATE;
 
 /**
  * &lt;p&gt;A registry of {@linkplain Accessor accessors}. Accessors are used by the
- * {@link RenderSession} to extract values from data provided by the data access
+ * {@link RenderSession} to extract values from the data provided by the data access
  * layer. The {@link #STANDARD_ACCESSORS} constant is a ready-made
  * {@code AccessorRegistry} that may well contain all the accessors you will ever
  * need. In other words, you may never have to actually implement an {@code Accessor}
- * yourself, but if you need to, or want to, the option is there.
+ * yourself.
  *
  * &lt;p&gt;This is how an {@code AccessorRegistry} decides which accessor to use for a
  * particular type of object:
@@ -37,11 +37,11 @@ import static org.klojang.templates.x.MTag.TEMPLATE;
  *       {@link PathWalker}.
  * &lt;/ol&gt;
  *
- * &lt;p&gt;Note that this internally defined {@code Accessor} does not use reflection to
- * read bean properties, but it &lt;i&gt;does&lt;/i&gt; use reflection to figure out what those
- * properties are in the first place. Thus, if you use &lt;i&gt;Klojang Templates&lt;/i&gt; from
- * within a Java 9+ module, you must open up the module for reflection.
- * Alternatively, you could write your own {@code Accessor} after all:
+ * &lt;p&gt;Note that the internally defined {@code Accessor} mentioned above does not use
+ * reflection to read bean properties, but it &lt;i&gt;does&lt;/i&gt; use reflection to figure
+ * out what those properties are in the first place. Thus, if you use
+ * &lt;i&gt;Klojang Templates&lt;/i&gt; from within a Java 9+ module, you must open up the module
+ * for reflection. Alternatively, you could write your own {@code Accessor} after all:
  *
  * &lt;blockquote&gt;&lt;pre&gt;{@code
  * Accessor&lt;Person&gt; personAccessor =

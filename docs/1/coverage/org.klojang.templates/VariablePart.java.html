@@ -55,17 +55,17 @@ final class VariablePart extends AbstractPart implements NamedPart {
 
   @Override
   public String toString() {
-<span class="pc bpc" id="L58" title="1 of 2 branches missed.">    if (placeholder == null) {</span>
+<span class="fc bfc" id="L58" title="All 2 branches covered.">    if (placeholder == null) {</span>
 <span class="fc" id="L59">      return &quot;~%&quot; + name + &quot;%&quot;;</span>
     }
-<span class="nc" id="L61">    return &quot;&lt;!-- ~%&quot; + name + &quot;% --&gt;&quot; + placeholder + &quot;&lt;!--%--&gt;&quot;;</span>
+<span class="fc" id="L61">    return &quot;&lt;!-- ~%&quot; + name + &quot;% --&gt;&quot; + placeholder + &quot;&lt;!--%--&gt;&quot;;</span>
   }
 
   VariableOccurrence toOccurrence() {
-<span class="nc" id="L65">    return new VariableOccurrence(name,</span>
-<span class="nc" id="L66">        Optional.ofNullable(group),</span>
-<span class="nc" id="L67">        Optional.ofNullable(placeholder),</span>
-<span class="nc" id="L68">        start());</span>
+<span class="fc" id="L65">    return new VariableOccurrence(name,</span>
+<span class="fc" id="L66">        Optional.ofNullable(group),</span>
+<span class="fc" id="L67">        Optional.ofNullable(placeholder),</span>
+<span class="fc" id="L68">        start());</span>
   }
 
 }

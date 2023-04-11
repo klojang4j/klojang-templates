@@ -98,25 +98,28 @@ public final class TemplateUtils {
   }
 
   /**
-   * Returns a breadth-first view of all variables and templates nested at whatever
-   * level inside the specified template. The returned {@code Set} is created on
-   * demand and modifiable.
+   * Returns a depth-first view of all variable occurrences within the specified
+   * template.
    *
-   * @param template the {@code Template} to extract the names from
-   * @return the names of all variables and nested templates within the specified
-   *     template and all templates descending from it
+   * @param template the template to collect the variable occurrences from
+   * @return a depth-first view of all variable occurrences within the specified
+   *     template
    */
-  public static Set<String> getAllNames(Template template) {
+  public static List<VariableOccurrence> getAllVariableOccurrences(Template template) {
     Check.notNull(template);
-    Set<String> names = new LinkedHashSet<>();
-    collectNames(template, names);
-    return names;
+    ArrayList<VariableOccurrence> list = new ArrayList<>();
+    collectOccurences(template, list);
+    return list;
   }
 
-  private static void collectNames(Template template, Set<String> names) {
-    names.addAll(template.getNames());
-    for (Template t : template.getNestedTemplates()) {
-      collectNames(t, names);
+  public static void collectOccurences(Template template,
+      ArrayList<VariableOccurrence> list) {
+    for (Part part : template.parts()) {
+      if (part instanceof VariablePart vp) {
+        list.add(vp.toOccurrence());
+      } else if (part instanceof NestedTemplatePart ntp) {
+        collectOccurences(ntp.getTemplate(), list);
+      }
     }
   }
 

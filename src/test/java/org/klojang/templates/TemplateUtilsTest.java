@@ -4,10 +4,8 @@ import org.junit.jupiter.api.Test;
 import org.klojang.util.CollectionMethods;
 import org.klojang.util.Tuple2;
 
-import java.util.Arrays;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -33,7 +31,7 @@ public class TemplateUtilsTest {
           ~%%end:foo%
         ~%%end:bar%
         <p onclick="alert('~%jsattr:message1%');">Click me</p>
-        <p>~%message2%</p>
+        <p><!--~%message2%-->Hi there<!--%--></p>
         ~%%begin:bozo%
           <p>Hello</p>
         ~%%end:bozo%
@@ -61,20 +59,6 @@ public class TemplateUtilsTest {
     Template bar = root.getNestedTemplate("bar");
     Template foo = bar.getNestedTemplate("foo");
     assertEquals("bar.foo.bozo", TemplateUtils.getFQName(foo, "bozo"));
-  }
-
-  @Test
-  public void getNames00() throws ParseException {
-    Template root = Template.fromString(src);
-    Set<String> names = TemplateUtils.getAllNames(root);
-    Set expected = new LinkedHashSet(Arrays.asList("message1",
-        "foo",
-        "bar",
-        "message2",
-        "bozo",
-        "message3",
-        "message4"));
-    assertEquals(expected, names);
   }
 
   @Test
@@ -127,6 +111,19 @@ public class TemplateUtilsTest {
   public void printParts00() throws ParseException {
     Template root = Template.fromString(src);
     TemplateUtils.printParts(root, System.out);
+  }
+
+  @Test
+  public void getAllVariableOccurrences() throws ParseException {
+    Template root = Template.fromString(src);
+    List<VariableOccurrence> l = TemplateUtils.getAllVariableOccurrences(root);
+    l.forEach(System.out::println);
+    assertEquals("message1", l.get(0).name());
+    assertEquals(VarGroup.JS, l.get(0).varGroup().get());
+    assertEquals(Optional.empty(), l.get(0).placeholder());
+    assertEquals("message2", l.get(7).name());
+    assertEquals(Optional.empty(), l.get(7).varGroup());
+    assertEquals("Hi there", l.get(7).placeholder().get());
   }
 
 }

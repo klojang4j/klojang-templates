@@ -7,8 +7,8 @@ package org.klojang.templates;
  * {@link RenderSession#populate(String, Object, String...) populate()} methods.
  * Object access is name-based and requires some sort of mapping between template
  * variables and named values (e.g. JavaBean properties or map keys). By default,
- * Klojang Templates assumes an as-is mapping between the two, but you can inject
- * {@linkplain NameMapper name mappers} for more sophisticated mappings.
+ * <i>Klojang Templates</i> assumes an as-is mapping between the two, but you can
+ * inject {@linkplain NameMapper name mappers} for more sophisticated mappings.
  *
  * @param <T> the type of the source data object
  * @author Ayco Holleman
@@ -29,7 +29,7 @@ public interface Accessor<T> {
    * Returns the value identified by the specified name from the specified source
    * data object. If the source data object is a {@code Map}, {@code name} would
    * likely be a map key; if it is a JavaBean, {@code name} would likely be a bean
-   * property. However, it is up to individual {@code Accessor} implementation
+   * property. However, it is up to individual {@code Accessor} implementation to
    * determine the type of objects they provide access to, and how names are to be
    * interpreted.
    *
