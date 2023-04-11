@@ -27,7 +27,7 @@ Klojang Templates,org.klojang.templates,PathResolver,2,7,0,0,1,2,1,1,1,1
 Klojang Templates,org.klojang.templates,ParseUtils,5,67,4,16,2,11,5,8,1,2
 Klojang Templates,org.klojang.templates,MapAccessor,25,0,2,0,7,0,4,0,3,0
 Klojang Templates,org.klojang.templates,Regex,6,89,0,0,2,26,1,2,1,2
-Klojang Templates,org.klojang.templates,SoloSession,28,1132,5,67,4,202,8,73,3,42
+Klojang Templates,org.klojang.templates,SoloSession,14,1146,5,67,2,204,6,75,1,44
 Klojang Templates,org.klojang.templates,Accessor,0,5,0,0,0,1,0,1,0,1
 Klojang Templates,org.klojang.templates,UnparsedPart,3,10,0,0,1,4,1,2,1,2
 Klojang Templates,org.klojang.templates,PartsPrinter,0,325,0,18,0,72,0,18,0,9
@@ -38,7 +38,7 @@ Klojang Templates,org.klojang.templates,TemplateCache,112,112,19,11,21,28,14,6,0
 Klojang Templates,org.klojang.templates,RenderUtil,3,55,1,7,1,10,2,4,1,1
 Klojang Templates,org.klojang.templates,VariablePart,0,57,0,4,0,17,0,8,0,6
 Klojang Templates,org.klojang.templates,VariableOccurrence,3,24,0,0,0,1,1,4,1,4
-Klojang Templates,org.klojang.templates,MultiSession,88,340,0,4,13,49,12,38,12,36
+Klojang Templates,org.klojang.templates,MultiSession,71,357,0,4,10,52,10,40,10,38
 Klojang Templates,org.klojang.templates,VarGroup,0,71,0,0,0,17,0,6,0,6
 Klojang Templates,org.klojang.templates,StringifierRegistry.Builder,0,490,0,24,0,78,0,30,0,18
 Klojang Templates,org.klojang.templates,AccessorRegistry.Builder,0,213,0,4,0,38,0,13,0,11

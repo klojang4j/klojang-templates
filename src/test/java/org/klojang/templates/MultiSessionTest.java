@@ -3,6 +3,8 @@ package org.klojang.templates;
 import org.junit.jupiter.api.Test;
 import org.klojang.util.MutableInt;
 
+import java.io.ByteArrayOutputStream;
+import java.io.OutputStream;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -115,6 +117,54 @@ public class MultiSessionTest {
     String out = rs.render();
     //System.out.println(out);
     assertEquals("&lt;", nospace(out));
+  }
+
+  @Test
+  public void setNested02() throws ParseException {
+    String src = """
+        ~%%begin:companies%
+             ~%%begin:departments%~%name%~%%end:departments%
+        ~%%end:companies%
+        """;
+    Template tmpl = Template.fromString(src);
+    RenderSession rs = tmpl.newRenderSession();
+    rs.repeat("companies", 3);
+    rs.setNested("companies.departments.name", i -> "foo");
+    String out = rs.render();
+    //System.out.println("*" + out + "*");
+    assertEquals("foofoofoo", nospace(out));
+  }
+
+  @Test
+  public void setNested03() throws ParseException {
+    String src = """
+        ~%%begin:companies%
+             ~%%begin:departments%~%name%~%%end:departments%
+        ~%%end:companies%
+        """;
+    Template tmpl = Template.fromString(src);
+    RenderSession rs = tmpl.newRenderSession();
+    rs.repeat("companies", 3);
+    rs.setNested("companies.departments.name", i -> "foo" + i + "|");
+    String out = rs.render();
+    //System.out.println("*" + out + "*");
+    assertEquals("foo0|foo0|foo0|", nospace(out));
+  }
+
+  @Test
+  public void setNested04() throws ParseException {
+    String src = """
+        ~%%begin:companies%
+             ~%%begin:departments%~%name%~%%end:departments%
+        ~%%end:companies%
+        """;
+    Template tmpl = Template.fromString(src);
+    RenderSession rs = tmpl.newRenderSession();
+    rs.in("companies").repeat("departments", 3);
+    rs.setNested("companies.departments.name", i -> "foo" + i + "|");
+    String out = rs.render();
+    //System.out.println("*" + out + "*");
+    assertEquals("foo0|foo1|foo2|", nospace(out));
   }
 
   @Test
@@ -433,7 +483,9 @@ public class MultiSessionTest {
         """;
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
-    String out = rs.repeat("companies", 2).enable("text-only2", "text-only1").render();
+    String out = rs.repeat("companies", 2)
+        .enable("text-only2", "text-only1")
+        .render();
     //System.out.println(out);
     String expected = """
 
@@ -618,7 +670,7 @@ public class MultiSessionTest {
     assertEquals(nospace(expected), nospace(out));
   }
 
-  //@Test
+  @Test
   public void populate2_01() throws ParseException {
     String src = """
         <html><body>~%%begin:foo%
@@ -629,15 +681,18 @@ public class MultiSessionTest {
         """;
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
-    rs.in("foo").populate1("companies", "MacDonald's", "USA", "Shell", "UK");
+    rs.in("foo").populate2("companies",
+        VarGroup.HTML,
+        "MacDonald<<<s",
+        "USA",
+        "Shell",
+        "UK");
     String out = rs.render();
-    //System.out.println(out);
+    System.out.println(out);
     String expected = """
-         <html><body>
-         <html><body>
-         <p>MacDonald's (USA)</p>
-         <p>Shell (UK)</p>
-         </body></html>
+        <html><body>
+        <p>MacDonald&lt;&lt;&lt;s (USA)</p>
+        <p>Shell (UK)</p>
         </body></html>
          """;
     assertEquals(nospace(expected), nospace(out));
@@ -719,7 +774,41 @@ public class MultiSessionTest {
     rs.repeat("companies", 2).repeat("departments", 3).repeat("employees", 4);
     assertEquals(2, rs.getChildSessions("companies").size());
     assertEquals(6, rs.in("companies").getChildSessions("departments").size());
-    assertEquals(24, rs.in("companies").in("departments").getChildSessions("employees").size());
+    assertEquals(24,
+        rs.in("companies").in("departments").getChildSessions("employees").size());
+  }
+
+  @Test
+  public void render00() throws ParseException {
+    String src = "~%%begin:companies%~%var%~%%end:companies%";
+    Template tmpl = Template.fromString(src);
+    RenderSession rs = tmpl.newRenderSession();
+    rs.repeat("companies", 2).set("var", 2);
+    OutputStream out = new ByteArrayOutputStream();
+    rs.render(out);
+    assertEquals("22", out.toString());
+  }
+
+  @Test
+  public void render01() throws ParseException {
+    String src = "~%%begin:companies%~%var%~%%end:companies%";
+    Template tmpl = Template.fromString(src);
+    RenderSession rs = tmpl.newRenderSession();
+    rs.repeat("companies", 2).set("var", 2);
+    StringBuilder out = new StringBuilder();
+    rs.render(out);
+    assertEquals("22", out.toString());
+  }
+
+  @Test
+  public void enable00() throws ParseException {
+    String src = "~%%begin:foo%~%%begin:bar%2~%%end:bar%~%%end:foo%";
+    Template tmpl = Template.fromString(src);
+    RenderSession rs = tmpl.newRenderSession();
+    rs.repeat("foo", 2).enable("bar");
+    StringBuilder out = new StringBuilder();
+    rs.render(out);
+    assertEquals("22", out.toString());
   }
 
   private static String nospace(String s) {

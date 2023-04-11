@@ -84,8 +84,8 @@ public final class Template {
    * classpath resource are always cached. Thus, calling this method multiple times
    * with the same {@code clazz} and {@code path} arguments will always return the
    * same instance. <b>Make sure the provided class is publicly accessible</b>.
-   * Otherwise Klojang Templates cannot use it to open an {@code InputStream} to the
-   * resource.
+   * Otherwise <i>Klojang Templates</i> cannot use it to open an {@code InputStream}
+   * to the resource.
    *
    * @param clazz a {@code Class} object that provides access to the template
    *     file by calling {@code getResourceAsStream} on it

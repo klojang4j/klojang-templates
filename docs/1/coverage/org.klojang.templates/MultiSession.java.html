@@ -161,9 +161,9 @@ final class MultiSession implements RenderSession {
   @Override
   public RenderSession populate2(String nestedTemplateName,
       VarGroup varGroup, Object... values) {
-<span class="nc" id="L164">    Arrays.stream(sessions).forEach(</span>
-<span class="nc" id="L165">        s -&gt; s.populate2(nestedTemplateName, varGroup, values));</span>
-<span class="nc" id="L166">    return this;</span>
+<span class="fc" id="L164">    Arrays.stream(sessions).forEach(</span>
+<span class="fc" id="L165">        s -&gt; s.populate2(nestedTemplateName, varGroup, values));</span>
+<span class="fc" id="L166">    return this;</span>
   }
 
   @Override
