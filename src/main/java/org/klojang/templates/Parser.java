@@ -143,7 +143,7 @@ final class Parser {
       Parser parser = new Parser(loc, name, mySrc);
       parts.add(
           new InlineTemplatePart(offset + m.start(), parser.parse(),
-              onSeparateLine(src, m.start(), m.end())));
+              onSeparateLine(unparsed.text(), m.start(), m.end())));
       end = endTag.end();
     } while (m.find(end));
     if (end < unparsed.text().length()) {
