@@ -195,6 +195,13 @@ public class ParserTest {
   }
 
   @Test
+  public void parseInlineTemplates04() throws ParseException {
+    String src = "~%%begin:foo%~%%begin:bar%bozo~%%end:bar%~%%end:foo%";
+    Parser parser = new Parser(TemplateLocation.STRING, ROOT_TEMPLATE_NAME, src);
+    List<Part> parts = parser.getParts();
+  }
+
+  @Test
   public void parseIncludedTemplates00() throws ParseException {
     String src = """
         <html>

@@ -125,9 +125,11 @@ public final class Regex {
       + "(~%%end:\\2%)";
 
   // Used only for syntax error reporting:
-  static final String REGEX_INLINE_TEMPLATE_BEGIN = "~%%begin:" + REGEX_PATH + "%";
+  static final String REGEX_INLINE_TEMPLATE_BEGIN
+      = "(<!-- ?)?~%%begin:" + REGEX_NAME + "%( ?-->)?";
 
-  static final String REGEX_INLINE_TEMPLATE_END = "~%%end:" + REGEX_PATH + "%";
+  static final String REGEX_INLINE_TEMPLATE_END
+      = "(<!-- ?)?~%%end:" + REGEX_NAME + "%( ?-->)?";
 
   /**
    * Regular expression for inline templates of which the begin and end tags are

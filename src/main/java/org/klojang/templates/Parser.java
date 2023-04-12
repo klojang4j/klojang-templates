@@ -49,12 +49,7 @@ final class Parser {
     Set<String> names = new HashSet<>();
     List<Part> parts = List.of(new UnparsedPart(src, 0));
     parts = purgeDitchBlocks(parts);
-    parts = parse(parts, names,
-        (x, y) -> parseInlineTemplates(x, y, CMT_TAGS_INLINE_TEMPLATE));
-    parts = parse(parts, names,
-        (x, y) -> parseInlineTemplates(x, y, CMT_ALL_INLINE_TEMPLATE));
-    parts = parse(parts, names,
-        (x, y) -> parseInlineTemplates(x, y, INLINE_TEMPLATE));
+    parts = parse(parts, names, this::parseInlineTemplates);
     parts = parse(parts, names,
         (x, y) -> parseIncludedTemplates(x, y, CMT_INCLUDED_TEMPLATE));
     parts = parse(parts, names,
@@ -117,11 +112,9 @@ final class Parser {
     return parts;
   }
 
-  private List<Part> parseInlineTemplates(UnparsedPart unparsed,
-      Set<String> names,
-      Pattern variant)
+  private List<Part> parseInlineTemplates(UnparsedPart unparsed, Set<String> names)
       throws ParseException {
-    Matcher m = match(variant, unparsed);
+    Matcher m = match(INLINE_TEMPLATE_BEGIN, unparsed);
     if (!m.find()) {
       return Collections.singletonList(unparsed);
     }
@@ -132,30 +125,58 @@ final class Parser {
         parts.add(todo(unparsed, end, m.start()));
       }
       String name = m.group(2);
-      String mySrc = m.group(3);
       Check.that(name).isNot(equalTo(), ROOT_TEMPLATE_NAME,
           ILLEGAL_TMPL_NAME.getExceptionSupplier(src, offset + m.start(2), name));
       Check.that(name).isNot(in(), names,
           DUPLICATE_TMPL_NAME.getExceptionSupplier(src, offset + m.start(2), name));
       names.add(name);
+      EndTag endTag = getEndTag(unparsed, name, m.end(), 0);
+      String mySrc = unparsed.text().substring(m.end(), endTag.start());
       // No path is associated with an inline template, but it inherits the
       // PathResolver of the template in which it is nested
       TemplateLocation loc = new TemplateLocation(location.resolver());
       // If ~%%end:foo% is all by itself on a separate line, except possibly
       // surrounded by whitespace, then that whole line will be removed.
-      if (onSeparateLine(src, m.start(4), m.end(4))) {
+      if (onSeparateLine(unparsed.text(), endTag.start(), endTag.end())) {
         mySrc = deleteEmptyLine(mySrc);
       }
       Parser parser = new Parser(loc, name, mySrc);
       parts.add(
           new InlineTemplatePart(offset + m.start(), parser.parse(),
-              onSeparateLine(src, m.start(1), m.end(1))));
-      end = m.end();
-    } while (m.find());
+              onSeparateLine(src, m.start(), m.end())));
+      end = endTag.end();
+    } while (m.find(end));
     if (end < unparsed.text().length()) {
       parts.add(todo(unparsed, end, unparsed.text().length()));
     }
     return parts;
+  }
+
+  private record EndTag(int start, int end) {}
+
+  private EndTag getEndTag(UnparsedPart unparsed,
+      String tmplName,
+      int offset,
+      int level)
+      throws ParseException {
+    Matcher mEnd = Pattern
+        .compile("(<!-- ?)?~%%end:" + tmplName + "%( ?-->)?")
+        .matcher(unparsed.text());
+    Check.that(mEnd.find(offset)).is(yes(),
+        MISSING_END_TAG.getExceptionSupplier(src, offset, tmplName));
+    Matcher mStart = Pattern
+        .compile("(<!-- ?)?~%%begin:" + tmplName + "%( ?-->)?")
+        .matcher(unparsed.text());
+    if (!mStart.find(offset)) {
+      return new EndTag(mEnd.start(), mEnd.end());
+    }
+    if (mEnd.start() < mStart.start()) {
+      if (level == 0) {
+        return new EndTag(mEnd.start(), mEnd.end());
+      }
+      return getEndTag(unparsed, tmplName, mEnd.end(), --level);
+    }
+    return getEndTag(unparsed, tmplName, mStart.end(), ++level);
   }
 
   private List<Part> parseIncludedTemplates(UnparsedPart unparsed,
@@ -263,11 +284,11 @@ final class Parser {
     int off = unparsed.start();
     Matcher m = Regex.INLINE_TEMPLATE_BEGIN.matcher(str);
     if (m.find()) {
-      throw MISSING_END_TAG.getException(src, off + m.start(), m.group(1));
+      throw MISSING_END_TAG.getException(src, off + m.start(), m.group(2));
     }
     m = Regex.INLINE_TEMPLATE_END.matcher(str);
     if (m.find()) {
-      throw DANGLING_END_TAG.getException(src, off + m.start(), m.group(1));
+      throw DANGLING_END_TAG.getException(src, off + m.start(), m.group(2));
     }
     m = Regex.DITCH_TAG.matcher(str);
     if (m.find()) {

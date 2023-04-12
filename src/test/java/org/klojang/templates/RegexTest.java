@@ -93,7 +93,6 @@ public class RegexTest {
     }
   }
 
-
   @Test
   public void inline03() throws IOException {
     assertTrue(Regex.CMT_ALL_INLINE_TEMPLATE
