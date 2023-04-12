@@ -105,7 +105,7 @@ public final class Regex {
    *
    * <p>The space character surrounding the variable (as in
    * {@code <!-- ~%firstName% -->}) is optional. You may also omit it
-   * ({@code <!--~%firstName%-->}). Multiple spaces or any other characters are not
+   * ({@code <!--~%firstName%-->}). Multiple spaces or other characters are not
    * allowed.
    *
    * @see VarGroup#DEF
@@ -117,57 +117,29 @@ public final class Regex {
       + " ?-->((.*?)<!--%-->)?";
 
   /**
-   * Regular expression for inline templates.
+   * Regular expression for inline templates begin tags. The following examples are
+   * all valid begin
+   * tags:<br/><br/>{@code ~%%begin:foo%}<br/>{@code <!-- ~%%begin:foo%}<br/>{@code
+   * <!-- ~%%begin:foo% -->}<br/><br/>The space character following "&lt;!--" and
+   * preceding "--&gt;" is optional. Multiple spaces or other characters are not
+   * allowed. Although {@code <!-- ~%%begin:foo%} is specifically meant to be
+   * combined with {@code ~%%end:foo% -->}, this is not enforced by the template
+   * parser.
    */
-  public static final String REGEX_INLINE_TEMPLATE
-      = "(~%%begin:" + REGEX_NAME + "%)"
-      + "(.*?)"
-      + "(~%%end:\\2%)";
-
-  // Used only for syntax error reporting:
-  static final String REGEX_INLINE_TEMPLATE_BEGIN
+  public static final String REGEX_INLINE_TEMPLATE_BEGIN
       = "(<!-- ?)?~%%begin:" + REGEX_NAME + "%( ?-->)?";
 
-  static final String REGEX_INLINE_TEMPLATE_END
+  /**
+   * Regular expression for inline templates end tags. The following examples are all
+   * valid end
+   * tags:<br/><br/>{@code ~%%end:foo%}<br/>{@code ~%%end:foo% -->}<br/>{@code <!--
+   * ~%%end:foo% -->}<br/><br/>The space character following "&lt;!--" and preceding
+   * "--&gt;" is optional. Multiple spaces or other characters are not allowed.
+   * Although {@code ~%%end:foo% -->} is specifically meant to be preceded by
+   * {@code <!-- ~%%begin:foo%}, this is not enforced by the template parser.
+   */
+  public static final String REGEX_INLINE_TEMPLATE_END
       = "(<!-- ?)?~%%end:" + REGEX_NAME + "%( ?-->)?";
-
-  /**
-   * Regular expression for inline templates of which the begin and end tags are
-   * placed inside HTML comments:
-   *
-   * <blockquote><pre>{@code
-   * <!-- ~%%begin:foo% -->
-   *   <p>bar</p>
-   * <!-- ~%%end:foo% -->
-   * }</pre></blockquote>
-   *
-   * <p>The space character surrounding {@code ~%%begin:foo%} and
-   * {@code ~%%end:foo%} is optional. You may also omit it. Multiple spaces or any
-   * other characters are not allowed.
-   */
-  public static final String REGEX_CMT_TAGS_INLINE_TEMPLATE
-      = "(<!-- ?~%%begin:" + REGEX_NAME + "% ?-->)"
-      + "(.*?)"
-      + "(<!-- ?~%%end:\\2% ?-->)";
-
-  /**
-   * Regular expression for inline templates that are placed entirely inside an HTML
-   * comment:
-   *
-   * <blockquote><pre>{@code
-   * <!-- ~%%begin:foo%
-   *   <p>bar</p>
-   * ~%%end:foo% -->
-   * }</pre></blockquote>
-   *
-   * <p>The space character before {@code ~%%begin:foo%} and after
-   * {@code ~%%end:foo%} is optional You may also omit it. Multiple spaces or any
-   * other characters are not allowed.
-   */
-  public static final String REGEX_CMT_ALL_INLINE_TEMPLATE
-      = "(<!-- ?~%%begin:" + REGEX_NAME + "%)"
-      + "(.*?)"
-      + "(~%%end:\\2% ?-->)";
 
   /**
    * Regular expression for the path specified in an included template. Templates are
@@ -224,43 +196,16 @@ public final class Regex {
    * placeholders may appear inside a nested template.
    */
   public static final String REGEX_PLACEHOLDER = "<!--%-->(.*?)<!--%-->";
-
   static final Pattern VARIABLE = compile(REGEX_VARIABLE);
-
   static final Pattern CMT_VARIABLE = compile(REGEX_CMT_VARIABLE);
-
-  static final Pattern INLINE_TEMPLATE = compile(REGEX_INLINE_TEMPLATE, MULTILINE);
-
-  // Only used for syntax error reporting
-  static final Pattern INLINE_TEMPLATE_BEGIN =
-      compile(REGEX_INLINE_TEMPLATE_BEGIN);
-
+  static final Pattern INLINE_TEMPLATE_BEGIN = compile(REGEX_INLINE_TEMPLATE_BEGIN);
   static final Pattern INLINE_TEMPLATE_END = compile(REGEX_INLINE_TEMPLATE_END);
-
-  static final Pattern CMT_TAGS_INLINE_TEMPLATE =
-      compile(REGEX_CMT_TAGS_INLINE_TEMPLATE, MULTILINE);
-
-  static final Pattern CMT_ALL_INLINE_TEMPLATE =
-      compile(REGEX_CMT_ALL_INLINE_TEMPLATE, MULTILINE);
-
   static final Pattern INCLUDED_TEMPLATE = compile(REGEX_INCLUDED_TEMPLATE);
-
-  static final Pattern CMT_INCLUDED_TEMPLATE
-      = compile(REGEX_CMT_INCLUDED_TEMPLATE);
-
+  static final Pattern CMT_INCLUDED_TEMPLATE = compile(REGEX_CMT_INCLUDED_TEMPLATE);
   // Only used for syntax error reporting
   static final Pattern DITCH_TAG = compile(REGEX_DITCH_TAG, MULTILINE);
-
-  /**
-   * The compiled version of {@link #REGEX_DITCH_BLOCK}.
-   */
   static final Pattern DITCH_BLOCK = compile(REGEX_DITCH_BLOCK, MULTILINE);
-
-  /**
-   * The compiled version of {@link #REGEX_PLACEHOLDER}.
-   */
   static final Pattern PLACEHOLDER = compile(REGEX_PLACEHOLDER, MULTILINE);
-
   static final String PLACEHOLDER_START_END = "<!--%-->";
 
   /**
@@ -269,9 +214,8 @@ public final class Regex {
   public static void printAll() {
     System.out.println("VARIABLE ................: " + VARIABLE);
     System.out.println("CMT_VARIABLE ............: " + CMT_VARIABLE);
-    System.out.println("INLINE_TEMPLATE .........: " + INLINE_TEMPLATE);
-    System.out.println("CMT_TAGS_INLINE_TEMPLATE : " + CMT_TAGS_INLINE_TEMPLATE);
-    System.out.println("CMT_ALL_INLINE_TEMPLATE .: " + CMT_ALL_INLINE_TEMPLATE);
+    System.out.println("INLINE_TEMPLATE_BEGIN ...: " + INLINE_TEMPLATE_BEGIN);
+    System.out.println("INLINE_TEMPLATE_END .....: " + INLINE_TEMPLATE_END);
     System.out.println("INCLUDED_TEMPLATE .......: " + INCLUDED_TEMPLATE);
     System.out.println("CMT_INCLUDED_TEMPLATE ...: " + CMT_INCLUDED_TEMPLATE);
     System.out.println("DITCH_BLOCK .............: " + DITCH_BLOCK);

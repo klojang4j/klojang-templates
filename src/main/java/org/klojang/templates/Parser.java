@@ -168,7 +168,10 @@ final class Parser {
         .compile("(<!-- ?)?~%%begin:" + tmplName + "%( ?-->)?")
         .matcher(unparsed.text());
     if (!mStart.find(offset)) {
-      return new EndTag(mEnd.start(), mEnd.end());
+      if (level == 0) {
+        return new EndTag(mEnd.start(), mEnd.end());
+      }
+      return getEndTag(unparsed, tmplName, mEnd.end(), --level);
     }
     if (mEnd.start() < mStart.start()) {
       if (level == 0) {

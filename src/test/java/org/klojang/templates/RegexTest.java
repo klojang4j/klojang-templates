@@ -1,10 +1,7 @@
 package org.klojang.templates;
 
 import org.junit.jupiter.api.Test;
-import org.klojang.util.IOMethods;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.regex.Matcher;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -69,56 +66,7 @@ public class RegexTest {
     assertEquals("Mark", s);
   }
 
-  @Test
-  public void inline00() throws IOException {
-    try (InputStream is = getClass().getResourceAsStream("RegexTest.inline00.html")) {
-      String s = IOMethods.getContents(is);
-      assertTrue(Regex.INLINE_TEMPLATE.matcher(s).find());
-    }
-  }
 
-  @Test
-  public void inline01() throws IOException {
-    try (InputStream is = getClass().getResourceAsStream("RegexTest.inline01.html")) {
-      String s = IOMethods.getContents(is);
-      assertTrue(Regex.CMT_TAGS_INLINE_TEMPLATE.matcher(s).find());
-    }
-  }
-
-  @Test
-  public void inline02() throws IOException {
-    try (InputStream is = getClass().getResourceAsStream("RegexTest.inline02.html")) {
-      String s = IOMethods.getContents(is);
-      assertTrue(Regex.CMT_TAGS_INLINE_TEMPLATE.matcher(s).find());
-    }
-  }
-
-  @Test
-  public void inline03() throws IOException {
-    assertTrue(Regex.CMT_ALL_INLINE_TEMPLATE
-        .matcher("<!--~%%begin:foo%bar~%%end:foo%-->")
-        .find());
-    assertTrue(Regex.CMT_ALL_INLINE_TEMPLATE
-        .matcher("<!-- ~%%begin:foo%bar~%%end:foo%-->")
-        .find());
-    assertTrue(Regex.CMT_ALL_INLINE_TEMPLATE
-        .matcher("<!-- ~%%begin:foo%bar~%%end:foo% -->")
-        .find());
-    assertTrue(Regex.CMT_ALL_INLINE_TEMPLATE
-        .matcher("<!--~%%begin:foo%bar~%%end:foo% -->")
-        .find());
-    assertTrue(Regex.CMT_ALL_INLINE_TEMPLATE
-        .matcher(" <!--~%%begin:foo% bar ~%%end:foo% --> ")
-        .find());
-  }
-
-  @Test
-  public void include01() throws ParseException, IOException {
-    try (InputStream is = getClass().getResourceAsStream("RegexTest.test06.html")) {
-      String s = IOMethods.getContents(is);
-      assertTrue(Regex.CMT_TAGS_INLINE_TEMPLATE.matcher(s).find());
-    }
-  }
 
   @Test
   public void include02() throws ParseException {

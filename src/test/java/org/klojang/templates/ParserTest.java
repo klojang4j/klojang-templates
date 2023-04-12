@@ -197,8 +197,35 @@ public class ParserTest {
   @Test
   public void parseInlineTemplates04() throws ParseException {
     String src = "~%%begin:foo%~%%begin:bar%bozo~%%end:bar%~%%end:foo%";
-    Parser parser = new Parser(TemplateLocation.STRING, ROOT_TEMPLATE_NAME, src);
-    List<Part> parts = parser.getParts();
+    Template t = Template.fromString(src);
+    RenderSession rs = t.newRenderSession();
+    rs.in("foo").enable("bar");
+    assertEquals("bozo", rs.render());
+  }
+
+  @Test
+  public void parseInlineTemplates05() throws ParseException {
+    String src = """
+        ~%%begin:foo%
+          ~%%begin:foo%
+            ~%%begin:foo%
+              ~%bozo%
+            ~%%end:foo%
+          ~%%end:foo%
+        ~%%end:foo%
+        ~%%begin:bar%
+          ~%%begin:foo%
+            ~%%begin:foo%
+              ~%bozo%
+            ~%%end:foo%
+          ~%%end:foo%
+        ~%%end:bar%
+        """;
+    Template t = Template.fromString(src);
+    RenderSession rs = t.newRenderSession();
+    rs.in("foo").in("foo").in("foo").set("bozo", "bozo");
+    rs.in("bar").in("foo").in("foo").set("bozo", "bozo");
+    assertEquals("bozobozo", nospace(rs.render()));
   }
 
   @Test
@@ -468,6 +495,10 @@ public class ParserTest {
     } catch (ParseException e) {
       assertEquals(ParseErrorCode.PLACEHOLDER_NOT_CLOSED, e.getErrorCode());
     }
+  }
+
+  private static String nospace(String s) {
+    return s.replaceAll("\\s+", "");
   }
 
 }
