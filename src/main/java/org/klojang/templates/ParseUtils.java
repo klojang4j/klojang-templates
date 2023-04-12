@@ -2,9 +2,12 @@ package org.klojang.templates;
 
 import org.klojang.util.StringMethods;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 final class ParseUtils {
 
-  /**
+  /*
    * Determines whether the text between from and to finds itself on an otherwise
    * empty line. This is used to ascertain this for ~%%begin:foo% and ~%%end:foo%. If
    * the begin or end tag of an inline template finds itself on an otherwise empty
@@ -32,6 +35,15 @@ final class ParseUtils {
       return s.substring(0, s.length() - 1);
     }
     return s;
+  }
+
+  static Matcher match(Pattern pattern, UnparsedPart unparsed) {
+    return pattern.matcher(unparsed.text());
+  }
+
+  static UnparsedPart todo(UnparsedPart p, int from, int to) {
+    String s = p.text().substring(from, to);
+    return new UnparsedPart(s, p.start() + from);
   }
 
 }

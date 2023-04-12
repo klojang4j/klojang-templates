@@ -11,8 +11,7 @@ import java.util.regex.Pattern;
 
 import static org.klojang.check.CommonChecks.*;
 import static org.klojang.templates.ParseErrorCode.*;
-import static org.klojang.templates.ParseUtils.deleteEmptyLine;
-import static org.klojang.templates.ParseUtils.onSeparateLine;
+import static org.klojang.templates.ParseUtils.*;
 import static org.klojang.templates.Regex.*;
 import static org.klojang.templates.Template.ROOT_TEMPLATE_NAME;
 import static org.klojang.util.StringMethods.EMPTY_STRING;
@@ -42,13 +41,11 @@ final class Parser {
     return new Template(name, location, List.copyOf(getParts()));
   }
 
-  // visible for testing
   List<Part> getParts() throws ParseException {
     logParsing(name, location);
     // Accumulates template names for duplicate checks:
     Set<String> names = new HashSet<>();
-    List<Part> parts = List.of(new UnparsedPart(src, 0));
-    parts = purgeDitchBlocks(parts);
+    List<Part> parts = purgeDitchBlocks();
     parts = parse(parts, names, this::parseInlineTemplates);
     parts = parse(parts, names,
         (x, y) -> parseIncludedTemplates(x, y, CMT_INCLUDED_TEMPLATE));
@@ -61,55 +58,39 @@ final class Parser {
     return parts;
   }
 
-  private static List<Part> parse(List<Part> in,
-      Set<String> names,
-      PartialParser parser)
-      throws ParseException {
-    List<Part> out = new ArrayList<>(in.size() + 10);
-    for (Part p : in) {
-      if (p.getClass() == UnparsedPart.class) {
-        out.addAll(parser.apply((UnparsedPart) p, names));
-      } else {
-        out.add(p);
-      }
-    }
-    return out;
-  }
-
-  private static List<Part> purgeDitchBlocks(List<Part> parts) {
-    List<Part> out = new ArrayList<>();
-    // There will always be just 1 part, and it will always be
-    // an UnparsedPart. Nevertheless, let's act as if we don't
-    // know this
-    for (Part p : parts) {
-      if (p instanceof UnparsedPart) {
-        out.addAll(purgeDitchBlocksInPart((UnparsedPart) p));
-      } else {
-        out.add(p);
-      }
-    }
-    return out;
-  }
-
-  private static List<Part> purgeDitchBlocksInPart(UnparsedPart unparsed) {
-    String src = unparsed.text();
+  private List<Part> purgeDitchBlocks() {
     Matcher m = Regex.DITCH_BLOCK.matcher(src);
     if (!m.find()) {
-      return Collections.singletonList(unparsed);
+      return Collections.singletonList(new UnparsedPart(src, 0));
     }
     List<Part> parts = new ArrayList<>();
     int end = 0;
     do {
       int start = m.start();
       if (start > end) {
-        parts.add(todo(unparsed, end, m.start()));
+        parts.add(new UnparsedPart(src.substring(end, start), end));
       }
       end = m.end();
     } while (m.find());
     if (end < src.length()) {
-      parts.add(todo(unparsed, end, unparsed.text().length()));
+      parts.add(new UnparsedPart(src.substring(end), end));
     }
     return parts;
+  }
+
+  private static List<Part> parse(List<Part> in,
+      Set<String> names,
+      PartialParser parser)
+      throws ParseException {
+    List<Part> out = new ArrayList<>(in.size() + 10);
+    for (Part p : in) {
+      if (p instanceof UnparsedPart unparsed) {
+        out.addAll(parser.apply(unparsed, names));
+      } else {
+        out.add(p);
+      }
+    }
+    return out;
   }
 
   private List<Part> parseInlineTemplates(UnparsedPart unparsed, Set<String> names)
@@ -331,16 +312,7 @@ final class Parser {
     return out;
   }
 
-  private static Matcher match(Pattern pattern, UnparsedPart unparsed) {
-    return pattern.matcher(unparsed.text());
-  }
-
-  private static UnparsedPart todo(UnparsedPart p, int from, int to) {
-    String s = p.text().substring(from, to);
-    return new UnparsedPart(s, from + p.start());
-  }
-
-  private static void logParsing(String name, TemplateLocation location) {
+  static void logParsing(String name, TemplateLocation location) {
     if (LOG.isTraceEnabled()) {
       if (name.equals(ROOT_TEMPLATE_NAME)) {
         LOG.trace("Parsing root template");
