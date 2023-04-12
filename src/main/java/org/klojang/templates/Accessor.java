@@ -5,10 +5,10 @@ package org.klojang.templates;
  * them to extract values from the objects passed to its
  * {@link RenderSession#insert(Object, String...) insert()} and
  * {@link RenderSession#populate(String, Object, String...) populate()} methods.
- * Object access is name-based and requires some sort of mapping between template
- * variables and named values (e.g. JavaBean properties or map keys). By default,
- * <i>Klojang Templates</i> assumes an as-is mapping between the two, but you can
- * inject {@linkplain NameMapper name mappers} for more sophisticated mappings.
+ * Object access is name-based and requires a mapping between template variables and
+ * bean properties or map keys. By default, <i>Klojang Templates</i> assumes an as-is
+ * mapping between the two, but you can use {@linkplain NameMapper name mappers} for
+ * more sophisticated mappings.
  *
  * @param <T> the type of the source data object
  * @author Ayco Holleman

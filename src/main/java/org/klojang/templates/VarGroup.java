@@ -8,11 +8,11 @@ import static org.klojang.check.CommonChecks.notNull;
 import static org.klojang.templates.x.Messages.ERR_NO_SUCH_VARGROUP;
 
 /**
- * Variable groups provide a mechanism for grouping template variables across one or
- * more templates. The reason to group variables is to have them formatted or escaped
- * identically, using a shared {@link Stringifier}. Within a template, variables can
- * be assigned to a variable group by using the variable group's name as a prefix.
- * For example: {@code ~%html:firstName%} or {@code ~%js:firstName%} or
+ * Variable groups allow you to group template variables across one or more
+ * templates. This, in turn, allows you to format or escape their values in an
+ * identical manner &#8212; using a shared {@link Stringifier}. Within a template,
+ * variables can be assigned to a variable group by using the variable group's name
+ * as a prefix. For example: {@code ~%html:firstName%} or {@code ~%js:firstName%} or
  * {@code ~%myDateFormat:birthDate%}. The first two examples specify the predefined
  * {@link #HTML} and {@link #JS} variable groups, which provide HTML-escaping and
  * ECMASScript-escaping, respectively. The third example is a custom group that you
@@ -20,12 +20,13 @@ import static org.klojang.templates.x.Messages.ERR_NO_SUCH_VARGROUP;
  * be assigned in a more <i>ad hoc</i> manner using the API. Many methods of the
  * {@link RenderSession} class take a {@code VarGroup} argument.
  *
- * <p>Note that variable groups are assigned at the variable <i>occurrence</i>
- * level. For example, a template may contain multiple instances of a variable named
- * {@code firstName}. For occurrences inside a {@code <script>} tag you might want to
- * use the {@code js:} prefix, for the others the {@code html:} prefix. Therefore,
- * stringifiers associated with a variable group take the highest precedence, even
- * higher, perhaps counterintuitively, than stringifiers associated with a variable.
+ * <p>Note that variable groups are assigned at the
+ * {@linkplain VariableOccurrence variable occurrence} level. For example, a template
+ * may contain multiple instances of a variable named {@code firstName}. For
+ * occurrences inside a {@code <script>} tag you might want to use the {@code js:}
+ * prefix, for the others the {@code html:} prefix. Therefore, stringifiers
+ * associated with a variable group take the highest precedence, even higher, perhaps
+ * counterintuitively, than stringifiers associated with a variable.
  *
  * @author Ayco Holleman
  */

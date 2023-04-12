@@ -70,7 +70,7 @@ public final class Regex {
 
   /**
    * <p>Regular expression for a template variable that is placed inside an HTML
-   * comments. For example: {@code <!-- ~%firstName% -->}. This is rendered just like
+   * comment. For example: {@code <!-- ~%firstName% -->}. This is rendered just like
    * {@code ~%firstName%}. However, when using HTML comments, the raw, unprocessed
    * template still renders nicely in a browser &#8212; without "odd" tilde-percent
    * sequences spoiling the HTML page. This works even better if you also provide a
@@ -117,26 +117,44 @@ public final class Regex {
       + " ?-->((.*?)<!--%-->)?";
 
   /**
+   * <p>
    * Regular expression for inline templates begin tags. The following examples are
-   * all valid begin
-   * tags:<br/><br/>{@code ~%%begin:foo%}<br/>{@code <!-- ~%%begin:foo%}<br/>{@code
-   * <!-- ~%%begin:foo% -->}<br/><br/>The space character following "&lt;!--" and
-   * preceding "--&gt;" is optional. Multiple spaces or other characters are not
-   * allowed. Although {@code <!-- ~%%begin:foo%} is specifically meant to be
-   * combined with {@code ~%%end:foo% -->}, this is not enforced by the template
+   * all valid begin tags:
+   * </p>
+   * <p>
+   * {@code ~%%begin:foo%}<br/>{@code <!-- ~%%begin:foo%}<br/>
+   * {@code <!-- ~%%begin:foo% -->}
+   * </p>
+   * <p>
+   * Although {@code <!-- ~%%begin:foo%} is specifically meant to be used in
+   * combination with {@code ~%%end:foo% -->}, this is not enforced by the template
    * parser.
+   * </p>
+   * <p>
+   * The space character following "&lt;!--" and/or preceding "--&gt;" is optional.
+   * Multiple spaces or other characters are not allowed.
+   * </p>
    */
   public static final String REGEX_INLINE_TEMPLATE_BEGIN
       = "(<!-- ?)?~%%begin:" + REGEX_NAME + "%( ?-->)?";
 
   /**
+   * <p>
    * Regular expression for inline templates end tags. The following examples are all
-   * valid end
-   * tags:<br/><br/>{@code ~%%end:foo%}<br/>{@code ~%%end:foo% -->}<br/>{@code <!--
-   * ~%%end:foo% -->}<br/><br/>The space character following "&lt;!--" and preceding
-   * "--&gt;" is optional. Multiple spaces or other characters are not allowed.
+   * valid end tags:
+   * </p>
+   * <p>
+   * {@code ~%%end:foo%}<br/>{@code ~%%end:foo% -->}<br/>
+   * {@code <!-- ~%%end:foo% -->}
+   * </p>
+   * <p>
    * Although {@code ~%%end:foo% -->} is specifically meant to be preceded by
-   * {@code <!-- ~%%begin:foo%}, this is not enforced by the template parser.
+   * {@code ~%%begin:foo% -->}, this is not enforced by the template parser.
+   * </p>
+   * <p>
+   * The space character following "&lt;!--" and/or preceding "--&gt;" is optional.
+   * Multiple spaces or other characters are not allowed.
+   * </p>
    */
   public static final String REGEX_INLINE_TEMPLATE_END
       = "(<!-- ?)?~%%end:" + REGEX_NAME + "%( ?-->)?";

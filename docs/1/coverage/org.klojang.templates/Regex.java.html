@@ -70,7 +70,7 @@ public final class Regex {
 
   /**
    * &lt;p&gt;Regular expression for a template variable that is placed inside an HTML
-   * comments. For example: {@code &lt;!-- ~%firstName% --&gt;}. This is rendered just like
+   * comment. For example: {@code &lt;!-- ~%firstName% --&gt;}. This is rendered just like
    * {@code ~%firstName%}. However, when using HTML comments, the raw, unprocessed
    * template still renders nicely in a browser &amp;#8212; without &quot;odd&quot; tilde-percent
    * sequences spoiling the HTML page. This works even better if you also provide a
@@ -117,26 +117,44 @@ public final class Regex {
       + &quot; ?--&gt;((.*?)&lt;!--%--&gt;)?&quot;;
 
   /**
+   * &lt;p&gt;
    * Regular expression for inline templates begin tags. The following examples are
-   * all valid begin
-   * tags:&lt;br/&gt;&lt;br/&gt;{@code ~%%begin:foo%}&lt;br/&gt;{@code &lt;!-- ~%%begin:foo%}&lt;br/&gt;{@code
-   * &lt;!-- ~%%begin:foo% --&gt;}&lt;br/&gt;&lt;br/&gt;The space character following &quot;&amp;lt;!--&quot; and
-   * preceding &quot;--&amp;gt;&quot; is optional. Multiple spaces or other characters are not
-   * allowed. Although {@code &lt;!-- ~%%begin:foo%} is specifically meant to be
-   * combined with {@code ~%%end:foo% --&gt;}, this is not enforced by the template
+   * all valid begin tags:
+   * &lt;/p&gt;
+   * &lt;p&gt;
+   * {@code ~%%begin:foo%}&lt;br/&gt;{@code &lt;!-- ~%%begin:foo%}&lt;br/&gt;
+   * {@code &lt;!-- ~%%begin:foo% --&gt;}
+   * &lt;/p&gt;
+   * &lt;p&gt;
+   * Although {@code &lt;!-- ~%%begin:foo%} is specifically meant to be used in
+   * combination with {@code ~%%end:foo% --&gt;}, this is not enforced by the template
    * parser.
+   * &lt;/p&gt;
+   * &lt;p&gt;
+   * The space character following &quot;&amp;lt;!--&quot; and/or preceding &quot;--&amp;gt;&quot; is optional.
+   * Multiple spaces or other characters are not allowed.
+   * &lt;/p&gt;
    */
   public static final String REGEX_INLINE_TEMPLATE_BEGIN
       = &quot;(&lt;!-- ?)?~%%begin:&quot; + REGEX_NAME + &quot;%( ?--&gt;)?&quot;;
 
   /**
+   * &lt;p&gt;
    * Regular expression for inline templates end tags. The following examples are all
-   * valid end
-   * tags:&lt;br/&gt;&lt;br/&gt;{@code ~%%end:foo%}&lt;br/&gt;{@code ~%%end:foo% --&gt;}&lt;br/&gt;{@code &lt;!--
-   * ~%%end:foo% --&gt;}&lt;br/&gt;&lt;br/&gt;The space character following &quot;&amp;lt;!--&quot; and preceding
-   * &quot;--&amp;gt;&quot; is optional. Multiple spaces or other characters are not allowed.
+   * valid end tags:
+   * &lt;/p&gt;
+   * &lt;p&gt;
+   * {@code ~%%end:foo%}&lt;br/&gt;{@code ~%%end:foo% --&gt;}&lt;br/&gt;
+   * {@code &lt;!-- ~%%end:foo% --&gt;}
+   * &lt;/p&gt;
+   * &lt;p&gt;
    * Although {@code ~%%end:foo% --&gt;} is specifically meant to be preceded by
-   * {@code &lt;!-- ~%%begin:foo%}, this is not enforced by the template parser.
+   * {@code ~%%begin:foo% --&gt;}, this is not enforced by the template parser.
+   * &lt;/p&gt;
+   * &lt;p&gt;
+   * The space character following &quot;&amp;lt;!--&quot; and/or preceding &quot;--&amp;gt;&quot; is optional.
+   * Multiple spaces or other characters are not allowed.
+   * &lt;/p&gt;
    */
   public static final String REGEX_INLINE_TEMPLATE_END
       = &quot;(&lt;!-- ?)?~%%end:&quot; + REGEX_NAME + &quot;%( ?--&gt;)?&quot;;
@@ -196,34 +214,34 @@ public final class Regex {
    * placeholders may appear inside a nested template.
    */
   public static final String REGEX_PLACEHOLDER = &quot;&lt;!--%--&gt;(.*?)&lt;!--%--&gt;&quot;;
-<span class="fc" id="L199">  static final Pattern VARIABLE = compile(REGEX_VARIABLE);</span>
-<span class="fc" id="L200">  static final Pattern CMT_VARIABLE = compile(REGEX_CMT_VARIABLE);</span>
-<span class="fc" id="L201">  static final Pattern INLINE_TEMPLATE_BEGIN = compile(REGEX_INLINE_TEMPLATE_BEGIN);</span>
-<span class="fc" id="L202">  static final Pattern INLINE_TEMPLATE_END = compile(REGEX_INLINE_TEMPLATE_END);</span>
-<span class="fc" id="L203">  static final Pattern INCLUDED_TEMPLATE = compile(REGEX_INCLUDED_TEMPLATE);</span>
-<span class="fc" id="L204">  static final Pattern CMT_INCLUDED_TEMPLATE = compile(REGEX_CMT_INCLUDED_TEMPLATE);</span>
+<span class="fc" id="L217">  static final Pattern VARIABLE = compile(REGEX_VARIABLE);</span>
+<span class="fc" id="L218">  static final Pattern CMT_VARIABLE = compile(REGEX_CMT_VARIABLE);</span>
+<span class="fc" id="L219">  static final Pattern INLINE_TEMPLATE_BEGIN = compile(REGEX_INLINE_TEMPLATE_BEGIN);</span>
+<span class="fc" id="L220">  static final Pattern INLINE_TEMPLATE_END = compile(REGEX_INLINE_TEMPLATE_END);</span>
+<span class="fc" id="L221">  static final Pattern INCLUDED_TEMPLATE = compile(REGEX_INCLUDED_TEMPLATE);</span>
+<span class="fc" id="L222">  static final Pattern CMT_INCLUDED_TEMPLATE = compile(REGEX_CMT_INCLUDED_TEMPLATE);</span>
   // Only used for syntax error reporting
-<span class="fc" id="L206">  static final Pattern DITCH_TAG = compile(REGEX_DITCH_TAG, MULTILINE);</span>
-<span class="fc" id="L207">  static final Pattern DITCH_BLOCK = compile(REGEX_DITCH_BLOCK, MULTILINE);</span>
-<span class="fc" id="L208">  static final Pattern PLACEHOLDER = compile(REGEX_PLACEHOLDER, MULTILINE);</span>
+<span class="fc" id="L224">  static final Pattern DITCH_TAG = compile(REGEX_DITCH_TAG, MULTILINE);</span>
+<span class="fc" id="L225">  static final Pattern DITCH_BLOCK = compile(REGEX_DITCH_BLOCK, MULTILINE);</span>
+<span class="fc" id="L226">  static final Pattern PLACEHOLDER = compile(REGEX_PLACEHOLDER, MULTILINE);</span>
   static final String PLACEHOLDER_START_END = &quot;&lt;!--%--&gt;&quot;;
 
   /**
    * Prints the regular expressions.
    */
   public static void printAll() {
-<span class="fc" id="L215">    System.out.println(&quot;VARIABLE ................: &quot; + VARIABLE);</span>
-<span class="fc" id="L216">    System.out.println(&quot;CMT_VARIABLE ............: &quot; + CMT_VARIABLE);</span>
-<span class="fc" id="L217">    System.out.println(&quot;INLINE_TEMPLATE_BEGIN ...: &quot; + INLINE_TEMPLATE_BEGIN);</span>
-<span class="fc" id="L218">    System.out.println(&quot;INLINE_TEMPLATE_END .....: &quot; + INLINE_TEMPLATE_END);</span>
-<span class="fc" id="L219">    System.out.println(&quot;INCLUDED_TEMPLATE .......: &quot; + INCLUDED_TEMPLATE);</span>
-<span class="fc" id="L220">    System.out.println(&quot;CMT_INCLUDED_TEMPLATE ...: &quot; + CMT_INCLUDED_TEMPLATE);</span>
-<span class="fc" id="L221">    System.out.println(&quot;DITCH_BLOCK .............: &quot; + DITCH_BLOCK);</span>
-<span class="fc" id="L222">    System.out.println(&quot;PLACEHOLDER .............: &quot; + PLACEHOLDER);</span>
-<span class="fc" id="L223">  }</span>
+<span class="fc" id="L233">    System.out.println(&quot;VARIABLE ................: &quot; + VARIABLE);</span>
+<span class="fc" id="L234">    System.out.println(&quot;CMT_VARIABLE ............: &quot; + CMT_VARIABLE);</span>
+<span class="fc" id="L235">    System.out.println(&quot;INLINE_TEMPLATE_BEGIN ...: &quot; + INLINE_TEMPLATE_BEGIN);</span>
+<span class="fc" id="L236">    System.out.println(&quot;INLINE_TEMPLATE_END .....: &quot; + INLINE_TEMPLATE_END);</span>
+<span class="fc" id="L237">    System.out.println(&quot;INCLUDED_TEMPLATE .......: &quot; + INCLUDED_TEMPLATE);</span>
+<span class="fc" id="L238">    System.out.println(&quot;CMT_INCLUDED_TEMPLATE ...: &quot; + CMT_INCLUDED_TEMPLATE);</span>
+<span class="fc" id="L239">    System.out.println(&quot;DITCH_BLOCK .............: &quot; + DITCH_BLOCK);</span>
+<span class="fc" id="L240">    System.out.println(&quot;PLACEHOLDER .............: &quot; + PLACEHOLDER);</span>
+<span class="fc" id="L241">  }</span>
 
-<span class="nc" id="L225">  private Regex() {</span>
-<span class="nc" id="L226">    throw new UnsupportedOperationException();</span>
+<span class="nc" id="L243">  private Regex() {</span>
+<span class="nc" id="L244">    throw new UnsupportedOperationException();</span>
   }
 
 }

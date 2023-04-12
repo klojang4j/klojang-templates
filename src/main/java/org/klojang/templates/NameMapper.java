@@ -1,9 +1,9 @@
 package org.klojang.templates;
 
 /**
- * Generic name mapping interface. Name mappers are used to map template variable
- * names to names used in the data model, thus allowing for an extra level of
- * indirection between the view layer and the data layer.
+ * Generic name mapping interface. Name mappers can optionally be used to map names
+ * using in Klojang template to names used in the data access layer, thus allowing
+ * for an extra level of indirection between the view layer and the data layer.
  *
  * @author Ayco Holleman
  * @see AccessorRegistry.Builder#setDefaultNameMapper(NameMapper)

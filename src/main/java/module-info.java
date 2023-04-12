@@ -36,38 +36,55 @@
  * RenderSession.populate()}, a variable name may be a
  * {@linkplain org.klojang.path.Path path} through the source data object passed to
  * these methods. For example: {@code ~%employee.address.city%}. Since you may be
- * populating your templates with hash maps, with variable names corresponding to map
- * keys, there are hardly any constraints on what constitutes a valid variable name
- * (or path segment):<br/> &#x25c6; it must contain at least one character<br/>
- * &#x25c6; it must not contain any of the following characters:
- * {@code ~%.:\r\n\0}.<br/> Obviously, when using records or JavaBeans as source
- * data, you will be more in your choice of variable names: they must be valid Java
- * identifiers, or dot-separated strings of valid Java identifiers (like
- * {@code employee.address.city}).
+ * populating your templates with hash maps, in which case variable names would
+ * correspond to map keys, there are hardly any constraints on what constitutes a
+ * valid variable name (or path segment):<br/>&#x25c6; it must contain at least one
+ * character<br/>&#x25c6; it must not contain any of the following characters:
+ * {@code ~%.:\r\n\0}.<br/>Obviously, when using records or JavaBeans as source data,
+ * you will be more constrained in your choice of variable names: they must be valid
+ * Java identifiers.
  * </p>
  * <p>
  * <b>Nested Templates</b><br/>
- * In <i>Klojang Templates</i> you can embed templates in other templates, either
- * via
- * <i><b>inline templates</b></i> or via <i><b>included templates</b></i>. Nested
- * templates may themselves contain variables, nested templates and placeholders.
+ * In <i>Klojang Templates</i> you can embed templates in other templates.
+ * Syntactically, this happens either either via <i><b>inline templates</b></i> or
+ * via <i><b>included templates</b></i>.
  * </p>
  * <p>
- * Inline templates look like this:
+ * Within an HTML template, inline templates would look like this:
+ * </p>
  * <blockquote><pre>{@code
- * <p>I am in the parent template</p>
- * ~%%begin:employees%
- *    <p>I am in the child template</p>
- * ~%%end:employees%
+ * <html>
+ * <body>
+ *   ~%%begin:employees%
+ *     <p>First name: ~%firstName%</p>
+ *     <p>Last name: ~%lastName%</p>
+ *   ~%%end:employees%
+ * </body>
+ * </html>
  * }</pre></blockquote>
+ * <p>
  * Included templates look like this:
+ * </p>
  * <blockquote><pre>{@code
- * ~%%include:/static/views/employees.html%%
+ * <html>
+ * <body>
+ *   ~%%include:/static/views/employees.html%%
+ * </body>
+ * </html>
  * }</pre></blockquote>
- * When populating a nested template through the API, you must their name. For
- * included templates, the name by default is the basename of the include path
+ * <p>
+ * And the contents of employees.html would then be something like this:
+ * </p>
+ * <blockquote><pre>{@code
+ *   <p>First name: ~%firstName%</p>
+ *   <p>Last name: ~%lastName%</p>
+ * }</pre></blockquote>
+ * <p>
+ * The name of an included template by default is the basename of the include path
  * ("employees" in the example above). However, you can also use the following
  * syntax:
+ * </p>
  * <blockquote><pre>{@code
  * ~%%include:employees:/static/views/employees-2023-01-01.html%%
  * }</pre></blockquote>
@@ -131,10 +148,45 @@
  * }</pre></blockquote>
  *
  * <h2>Using the API</h2>
- * Generally, when using <i>Klojang Templates</i>, your will follow this pattern:<br/>
- * &#x25c6; load the template<br/>
- * &#x25c6; populate the template<br/>
- * &#x25c6; render it
+ * <p>
+ * Here are two fairly typical examples of using <i>Klojang Templates</i> within
+ * JAX-RS. They produce the same result by different means.
+ * </p>
+ * <blockquote><pre>{@code
+ * public class EmployeeResource {
+ *
+ *  EmployeeDao dao;
+ *
+ *  @GET
+ *  @Path("/{id}")
+ *  public String find(@PathParam("id") int id) {
+ *    Employee emp = dao.find(id);
+ *    Template template = Template.fromResource(getClass(), "/views/employee.html");
+ *    RenderSession session = template.newRenderSession();
+ *    return session
+ *      .set("firstName", emp.getFirstName())
+ *      .set("lastName", emp.getLastName())
+ *      .render();
+ *  }
+ * }
+ * }</pre></blockquote>
+ *
+ * <blockquote><pre>{@code
+ * public class EmployeeResource {
+ *
+ *  EmployeeDao dao;
+ *
+ *  @GET
+ *  @Path("/{id}")
+ *  public StreamingOutput find(@PathParam("id") int id) {
+ *    Employee employee = dao.find(id);
+ *    Template template = Template.fromResource(getClass(), "/views/employee.html");
+ *    RenderSession session = template.newRenderSession()
+ *    session.insert(employee);
+ *    return session::render;
+ *  }
+ * }
+ * }</pre></blockquote>
  */
 module org.klojang.templates {
   exports org.klojang.templates;

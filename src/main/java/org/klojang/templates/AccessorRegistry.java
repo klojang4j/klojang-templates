@@ -18,13 +18,8 @@ import static org.klojang.templates.x.MTag.TEMPLATE;
 
 /**
  * <p>A registry of {@linkplain Accessor accessors}. Accessors are used by the
- * {@link RenderSession} to extract values from the data provided by the data access
- * layer. The {@link #STANDARD_ACCESSORS} constant is a ready-made
- * {@code AccessorRegistry} that may well contain all the accessors you will ever
- * need. In other words, you may never have to actually implement an {@code Accessor}
- * yourself.
- *
- * <p>This is how an {@code AccessorRegistry} decides which accessor to use for a
+ * {@link RenderSession} to extract values from data provided by the data access
+ * layer. This is how an {@code AccessorRegistry} decides which accessor to use for a
  * particular type of object:
  *
  * <ol>
@@ -41,7 +36,7 @@ import static org.klojang.templates.x.MTag.TEMPLATE;
  * reflection to read bean properties, but it <i>does</i> use reflection to figure
  * out what those properties are in the first place. Thus, if you use
  * <i>Klojang Templates</i> from within a Java 9+ module, you must open up the module
- * for reflection. Alternatively, you could write your own {@code Accessor} after all:
+ * for reflection. Alternatively, you could write your own {@code Accessor}:
  *
  * <blockquote><pre>{@code
  * Accessor<Person> personAccessor =
@@ -83,15 +78,15 @@ public final class AccessorRegistry {
 
   /**
    * An {@code AccessorRegistry} that should be sufficient for most use cases. It
-   * assumes that the names you use in your templates can be mapped as-is to your
-   * model objects.
+   * assumes that template variables map <i>as-is</i> to names used in source data
+   * objects.
    */
   public static final AccessorRegistry STANDARD_ACCESSORS = configure().freeze();
 
   /**
    * Returns an {@code AccessorRegistry} that should be sufficient for most use
    * cases. It allows you to specify one global {@link NameMapper} for mapping the
-   * names used in your templates to the names used in your model objects.
+   * template variables to the names used in source data objects.
    *
    * @param nameMapper the {@code NameMapper} to be used to map template
    *     variables to bean properties and/or map keys.
@@ -188,10 +183,10 @@ public final class AccessorRegistry {
     }
 
     /**
-     * Wraps the specified {@link BeanReader} into an internally defined
-     * (non-exposed) {@code BeanAccessor} instance, used to access beans of the type
-     * targeted by the {@code BeanReader}. Use this method if you prefer 100%
-     * reflection-free bean reading. See {@link BeanReader#forClass(Class)}.
+     * Use the specified {@link BeanReader} to access objects of the type the
+     * {@code BeanReader} can read. Use a {@link BeanReaderBuilder} to obtain the
+     * {@code BeanReader} if you prefer 100% reflection-free bean reading. See
+     * {@link BeanReader#forClass(Class)}.
      *
      * @param br the {@code BeanReader}
      * @param <T> the type of the beans
@@ -202,10 +197,10 @@ public final class AccessorRegistry {
     }
 
     /**
-     * Wraps the specified {@link BeanReader} into an internally defined
-     * (non-exposed) {@code BeanAccessor} instance, used to access beans of the type
-     * targeted by the {@code BeanReader}. Use this method if you prefer 100%
-     * reflection-free bean reading. See {@link BeanReader#forClass(Class)}.
+     * Use the specified {@link BeanReader} to access objects of the type the
+     * {@code BeanReader} can read. Use a {@link BeanReaderBuilder} to obtain the
+     * {@code BeanReader} if you prefer 100% reflection-free bean reading. See
+     * {@link BeanReader#forClass(Class)}.
      *
      * @param beanReader the {@code BeanReader}
      * @param template the template for which to use the accessor (may be a root
@@ -213,16 +208,15 @@ public final class AccessorRegistry {
      * @param <T> the type of the beans
      * @return this {@code Builder} instance
      */
-    public <T> Builder register(BeanReader<T> beanReader,
-        Template template) {
+    public <T> Builder register(BeanReader<T> beanReader, Template template) {
       return register(beanReader, template, defMapper);
     }
 
     /**
-     * Wraps the specified {@link BeanReader} into an internally defined
-     * (non-exposed) {@code BeanAccessor} instance, used to access beans of the type
-     * targeted by the {@code BeanReader}. Use this method if you prefer 100%
-     * reflection-free bean reading. See {@link BeanReader#forClass(Class)}.
+     * Use the specified {@link BeanReader} to access objects of the type the
+     * {@code BeanReader} can read. Use a {@link BeanReaderBuilder} to obtain the
+     * {@code BeanReader} if you prefer 100% reflection-free bean reading. See
+     * {@link BeanReader#forClass(Class)}.
      *
      * @param br the {@code BeanReader}
      * @param nameMapper the {@code NameMapper} to be used to map template
@@ -237,10 +231,10 @@ public final class AccessorRegistry {
     }
 
     /**
-     * Wraps the specified {@link BeanReader} into an internally defined
-     * (non-exposed) {@code BeanAccessor} instance, used to access beans of the type
-     * targeted by the {@code BeanReader}. Use this method if you prefer 100%
-     * reflection-free bean reading. See {@link BeanReader#forClass(Class)}.
+     * Use the specified {@link BeanReader} to access objects of the type the
+     * {@code BeanReader} can read. Use a {@link BeanReaderBuilder} to obtain the
+     * {@code BeanReader} if you prefer 100% reflection-free bean reading. See
+     * {@link BeanReader#forClass(Class)}.
      *
      * @param beanReader the {@code BeanReader}
      * @param template the template for which to use the accessor (may be a root

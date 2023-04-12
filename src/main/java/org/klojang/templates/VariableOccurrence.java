@@ -3,8 +3,9 @@ package org.klojang.templates;
 import java.util.Optional;
 
 /**
- * Represents a concrete occurrence of a variable within a template. Note that a
- * variable name may occur multiple times within the same template.
+ * Represents a concrete occurrence of a variable within a template. Variable names
+ * may occur multiple times within the same template. A {@code VariableOccurrence}
+ * captures the information associated with a single occurrence.
  *
  * @param name the name of the variable
  * @param varGroup an {@code Optional} containing the
