@@ -94,7 +94,7 @@ final class Parser {
 
   private List<Part> parseInlineTemplates(UnparsedPart unparsed, Set<String> names)
       throws ParseException {
-    Matcher m = match(INLINE_TEMPLATE_BEGIN, unparsed);
+    Matcher m = getMatcher(INLINE_TEMPLATE_BEGIN, unparsed);
     if (!m.find()) {
       return Collections.singletonList(unparsed);
     }
@@ -121,9 +121,9 @@ final class Parser {
         mySrc = deleteEmptyLine(mySrc);
       }
       Parser parser = new Parser(loc, name, mySrc);
-      parts.add(
-          new InlineTemplatePart(offset + m.start(), parser.parse(),
-              onSeparateLine(unparsed.text(), m.start(), m.end())));
+      parts.add(new InlineTemplatePart(offset + m.start(),
+          parser.parse(),
+          onSeparateLine(unparsed.text(), m.start(), m.end())));
       end = endTag.end();
     } while (m.find(end));
     if (end < unparsed.text().length()) {
@@ -139,14 +139,10 @@ final class Parser {
       int offset,
       int level)
       throws ParseException {
-    Matcher mEnd = Pattern
-        .compile("(<!-- ?)?~%%end:" + tmplName + "%( ?-->)?")
-        .matcher(unparsed.text());
+    Matcher mEnd = getEndTagMatcher(unparsed, tmplName);
     Check.that(mEnd.find(offset)).is(yes(),
         MISSING_END_TAG.getExceptionSupplier(src, offset, tmplName));
-    Matcher mStart = Pattern
-        .compile("(<!-- ?)?~%%begin:" + tmplName + "%( ?-->)?")
-        .matcher(unparsed.text());
+    Matcher mStart = getBeginTagMatcher(unparsed, tmplName);
     if (!mStart.find(offset)) {
       if (level == 0) {
         return new EndTag(mEnd.start(), mEnd.end());
@@ -166,7 +162,7 @@ final class Parser {
       Set<String> names,
       Pattern variant)
       throws ParseException {
-    Matcher m = match(variant, unparsed);
+    Matcher m = getMatcher(variant, unparsed);
     if (!m.find()) {
       return Collections.singletonList(unparsed);
     }
@@ -207,7 +203,7 @@ final class Parser {
       Set<String> names,
       Pattern variant)
       throws ParseException {
-    Matcher m = match(variant, unparsed);
+    Matcher m = getMatcher(variant, unparsed);
     if (!m.find()) {
       return Collections.singletonList(unparsed);
     }
@@ -262,15 +258,11 @@ final class Parser {
   private void checkGarbage(UnparsedPart unparsed) throws ParseException {
     String str = unparsed.text();
     int off = unparsed.start();
-    Matcher m = Regex.INLINE_TEMPLATE_BEGIN.matcher(str);
-    if (m.find()) {
-      throw MISSING_END_TAG.getException(src, off + m.start(), m.group(2));
-    }
-    m = Regex.INLINE_TEMPLATE_END.matcher(str);
+    Matcher m = INLINE_TEMPLATE_END.matcher(str);
     if (m.find()) {
       throw DANGLING_END_TAG.getException(src, off + m.start(), m.group(2));
     }
-    m = Regex.DITCH_TAG.matcher(str);
+    m = DITCH_TAG.matcher(str);
     if (m.find()) {
       throw DITCH_BLOCK_NOT_CLOSED.getException(src, off + m.start());
     }

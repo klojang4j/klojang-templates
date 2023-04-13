@@ -39,13 +39,25 @@ import java.util.regex.Pattern;
 <span class="nc" id="L39">    return s;</span>
   }
 
-  static Matcher match(Pattern pattern, UnparsedPart unparsed) {
+  static Matcher getMatcher(Pattern pattern, UnparsedPart unparsed) {
 <span class="fc" id="L43">    return pattern.matcher(unparsed.text());</span>
   }
 
+  static Matcher getBeginTagMatcher(UnparsedPart unparsed, String tmplName) {
+<span class="fc" id="L47">    return Pattern</span>
+<span class="fc" id="L48">        .compile(&quot;(&lt;!-- ?)?~%%begin:&quot; + tmplName + &quot;%( ?--&gt;)?&quot;)</span>
+<span class="fc" id="L49">        .matcher(unparsed.text());</span>
+  }
+
+  static Matcher getEndTagMatcher(UnparsedPart unparsed, String tmplName) {
+<span class="fc" id="L53">    return Pattern</span>
+<span class="fc" id="L54">        .compile(&quot;(&lt;!-- ?)?~%%end:&quot; + tmplName + &quot;%( ?--&gt;)?&quot;)</span>
+<span class="fc" id="L55">        .matcher(unparsed.text());</span>
+  }
+
   static UnparsedPart todo(UnparsedPart p, int from, int to) {
-<span class="fc" id="L47">    String s = p.text().substring(from, to);</span>
-<span class="fc" id="L48">    return new UnparsedPart(s, p.start() + from);</span>
+<span class="fc" id="L59">    String s = p.text().substring(from, to);</span>
+<span class="fc" id="L60">    return new UnparsedPart(s, p.start() + from);</span>
   }
 
 }

@@ -39,8 +39,20 @@ final class ParseUtils {
     return s;
   }
 
-  static Matcher match(Pattern pattern, UnparsedPart unparsed) {
+  static Matcher getMatcher(Pattern pattern, UnparsedPart unparsed) {
     return pattern.matcher(unparsed.text());
+  }
+
+  static Matcher getBeginTagMatcher(UnparsedPart unparsed, String tmplName) {
+    return Pattern
+        .compile("(<!-- ?)?~%%begin:" + tmplName + "%( ?-->)?")
+        .matcher(unparsed.text());
+  }
+
+  static Matcher getEndTagMatcher(UnparsedPart unparsed, String tmplName) {
+    return Pattern
+        .compile("(<!-- ?)?~%%end:" + tmplName + "%( ?-->)?")
+        .matcher(unparsed.text());
   }
 
   static UnparsedPart todo(UnparsedPart p, int from, int to) {
