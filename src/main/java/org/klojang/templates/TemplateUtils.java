@@ -8,9 +8,7 @@ import org.klojang.util.Tuple2;
 
 import java.io.PrintStream;
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
 
 import static java.util.Arrays.copyOfRange;
 import static org.klojang.check.CommonChecks.empty;
@@ -39,7 +37,7 @@ public final class TemplateUtils {
    * @param template the template for which to retrieve the fully-qualified name
    * @return the fully-qualified name of the template
    */
-  public static String getFQName(Template template) {
+  public static String getFQN(Template template) {
     Check.notNull(template);
     if (template.getParent() == null) {
       return template.getName();
@@ -63,18 +61,19 @@ public final class TemplateUtils {
   /**
    * Returns the fully-qualified name of the specified name, relative to the
    * specified template. The provided name supposedly is the name of a variable or
-   * nested template. The fully-qualified name is a dot-separated concatenation of
-   * name segments, with each subsequent name representing a template at the next
-   * nesting level. The last segment of the fully-qualified name will be the
-   * specified name itself. If the specified template is the root template
-   * ({@code template.getParent()} equals {@code null}}, the name is returned as-is.
+   * nested template, but this method does not verify this. The fully-qualified name
+   * is a dot-separated concatenation of name segments, with each subsequent name
+   * representing a template at the next nesting level. The last segment of the
+   * fully-qualified name will be the specified name itself. If the specified
+   * template is the root template ({@code template.getParent()} equals
+   * {@code null}}, the name is returned as-is.
    *
    * @param template the template relative to which to get the fully-qualified
    *     name
    * @param name the name of a template variable or nested template
    * @return its fully-qualified name
    */
-  public static String getFQName(Template template, String name) {
+  public static String getFQN(Template template, String name) {
     Check.notNull(template, MTag.TEMPLATE);
     Check.notNull(name, Tag.NAME);
     if (template.getParent() == null) {
@@ -99,7 +98,7 @@ public final class TemplateUtils {
 
   /**
    * Returns a depth-first view of all variable occurrences within the specified
-   * template.
+   * template. The returned {@code List} is created on demand and modifiable.
    *
    * @param template the template to collect the variable occurrences from
    * @return a depth-first view of all variable occurrences within the specified
@@ -108,17 +107,17 @@ public final class TemplateUtils {
   public static List<VariableOccurrence> getAllVariableOccurrences(Template template) {
     Check.notNull(template);
     ArrayList<VariableOccurrence> list = new ArrayList<>();
-    collectOccurences(template, list);
+    collectOccurrences(template, list);
     return list;
   }
 
-  public static void collectOccurences(Template template,
+  private static void collectOccurrences(Template template,
       ArrayList<VariableOccurrence> list) {
     for (Part part : template.parts()) {
       if (part instanceof VariablePart vp) {
         list.add(vp.toOccurrence());
       } else if (part instanceof NestedTemplatePart ntp) {
-        collectOccurences(ntp.getTemplate(), list);
+        collectOccurrences(ntp.getTemplate(), list);
       }
     }
   }
@@ -149,9 +148,9 @@ public final class TemplateUtils {
    * Returns the nested template corresponding to the specified fully-qualified name.
    * Contrary to
    * {@link Template#getNestedTemplate(String) Template.getNestedTemplate()} this
-   * method lets you retrieve nested templates at any depth (nesting level). The
-   * fully-qualified name must be relative to the specified template and must not
-   * start with the specified template's name itself.
+   * method lets you retrieve deeply nested templates. The fully-qualified name must
+   * be relative to the specified template and must not start with the specified
+   * template's name itself.
    *
    * @param template the template containing the (deeply) nested template
    * @param fqName the fully qualified name of the nested template
@@ -160,7 +159,7 @@ public final class TemplateUtils {
    */
   public static Template getNestedTemplate(Template template, String fqName) {
     Check.notNull(template, MTag.TEMPLATE);
-    Check.that(fqName, "fqName").isNot(empty());
+    Check.that(fqName, MTag.FQN).isNot(empty());
     return getNestedTemplate(template, fqName, fqName.split("\\."));
   }
 
@@ -193,7 +192,7 @@ public final class TemplateUtils {
    */
   public static Template getContainingTemplate(Template template, String fqName) {
     Check.notNull(template, MTag.TEMPLATE);
-    Check.that(fqName, "fqName").isNot(empty());
+    Check.that(fqName, MTag.FQN).isNot(empty());
     if (count(fqName, ".") == 0) {
       Check.that(fqName).is(in(),
           template.getNames(),
@@ -205,10 +204,11 @@ public final class TemplateUtils {
   }
 
   /**
-   * Returns the names of all variables in the specified template, <i>and</i> in all
+   * Returns the names of all variables in the specified template and in all
    * templates descending from the specified template. Each tuple in the returned
    * {@code List} contains a {@code Template} instance and a variable name. The
-   * returned {@code List} is created on demand and modifiable.
+   * {@code Template} instance is either the specified template itself or one of its
+   * descendants. The returned {@code List} is created on demand and modifiable.
    *
    * @param template the template for which to retrieve the variable names
    * @return all variable names in this {@code Template} and the templates nested

@@ -20,7 +20,7 @@ import static org.klojang.check.CommonProperties.length;
 import static org.klojang.check.CommonProperties.size;
 import static org.klojang.templates.Accessor.UNDEFINED;
 import static org.klojang.templates.RenderErrorCode.*;
-import static org.klojang.templates.TemplateUtils.getFQName;
+import static org.klojang.templates.TemplateUtils.getFQN;
 import static org.klojang.templates.x.MTag.VAR_GROUP;
 import static org.klojang.templates.x.MTag.VAR_NAME;
 import static org.klojang.util.CollectionMethods.listify;
@@ -55,7 +55,7 @@ final class SoloSession implements RenderSession {
 <span class="fc bfc" id="L55" title="All 2 branches covered.">    if (value != UNDEFINED) {</span>
 <span class="fc" id="L56">      Template t = config.template();</span>
 <span class="fc" id="L57">      Check.that(varName).is(keyIn(), t.variables(),</span>
-<span class="fc" id="L58">          NO_SUCH_VARIABLE.getExceptionSupplier(getFQName(t, varName)));</span>
+<span class="fc" id="L58">          NO_SUCH_VARIABLE.getExceptionSupplier(TemplateUtils.getFQN(t, varName)));</span>
 <span class="fc" id="L59">      IntList indices = t.variables().get(varName);</span>
 <span class="fc" id="L60">      indices.forEachThrowing(i -&gt; setVar(i, value, varGroup));</span>
 <span class="fc" id="L61">      state.done(varName);</span>
@@ -86,7 +86,7 @@ final class SoloSession implements RenderSession {
 <span class="fc" id="L86">    Check.notNull(varGroup, VAR_GROUP);</span>
 <span class="fc" id="L87">    Template t = config.template();</span>
 <span class="fc" id="L88">    Check.that(varName).is(keyIn(), t.variables(),</span>
-<span class="fc" id="L89">        NO_SUCH_VARIABLE.getExceptionSupplier(getFQName(t, varName)));</span>
+<span class="fc" id="L89">        NO_SUCH_VARIABLE.getExceptionSupplier(TemplateUtils.getFQN(t, varName)));</span>
 <span class="fc" id="L90">    IntList indices = t.variables().get(varName);</span>
 <span class="fc" id="L91">    indices.forEachThrowing(i -&gt; state.setVar(i,</span>
         new Lazy(valueGenerator, varGroup)));
@@ -184,7 +184,7 @@ final class SoloSession implements RenderSession {
       try {
 <span class="fc" id="L185">        value = acc.access(data, varName);</span>
 <span class="fc" id="L186">      } catch (RuntimeException e) {</span>
-<span class="fc" id="L187">        String fqn = getFQName(config.template(), varName);</span>
+<span class="fc" id="L187">        String fqn = TemplateUtils.getFQN(config.template(), varName);</span>
 <span class="fc" id="L188">        throw ACCESS_EXCEPTION.getException(fqn, e);</span>
 <span class="fc" id="L189">      }</span>
 <span class="fc bfc" id="L190" title="All 2 branches covered.">      if (value != UNDEFINED) {</span>
@@ -402,7 +402,7 @@ final class SoloSession implements RenderSession {
 
   @Override
   public String toString() {
-<span class="nc" id="L405">    return String.format(&quot;RenderSession[template=%s]&quot;, getFQName(config.template()));</span>
+<span class="nc" id="L405">    return String.format(&quot;RenderSession[template=%s]&quot;, getFQN(config.template()));</span>
   }
 
   RenderState getState() {
@@ -424,7 +424,7 @@ final class SoloSession implements RenderSession {
 <span class="fc" id="L424">    Check.notNull(name, MTag.TEMPLATE_NAME);</span>
 <span class="fc" id="L425">    Template t = config.template();</span>
 <span class="fc" id="L426">    return Check.that(name).is(elementOf(), t.getNestedTemplateNames(),</span>
-<span class="fc" id="L427">            NO_SUCH_TEMPLATE.getExceptionSupplier(getFQName(t, name)))</span>
+<span class="fc" id="L427">            NO_SUCH_TEMPLATE.getExceptionSupplier(TemplateUtils.getFQN(t, name)))</span>
 <span class="fc" id="L428">        .ok(t::getNestedTemplate);</span>
   }
 

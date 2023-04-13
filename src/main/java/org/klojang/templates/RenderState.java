@@ -3,7 +3,7 @@ package org.klojang.templates;
 import java.util.*;
 
 import static org.klojang.templates.RenderErrorCode.REPETITION_MISMATCH;
-import static org.klojang.templates.TemplateUtils.getFQName;
+import static org.klojang.templates.TemplateUtils.getFQN;
 
 final class RenderState {
 
@@ -62,7 +62,7 @@ final class RenderState {
       sessions.put(t, children);
     }
     if (repeats != children.length) {
-      throw REPETITION_MISMATCH.getException(getFQName(t), children.length, repeats);
+      throw REPETITION_MISMATCH.getException(getFQN(t), children.length, repeats);
     }
     return children;
   }

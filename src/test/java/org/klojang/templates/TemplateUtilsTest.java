@@ -42,7 +42,7 @@ public class TemplateUtilsTest {
   @Test
   public void getFQName0() throws ParseException {
     Template root = Template.fromString(src);
-    assertEquals("{root}", TemplateUtils.getFQName(root));
+    assertEquals("{root}", TemplateUtils.getFQN(root));
   }
 
   @Test
@@ -50,7 +50,7 @@ public class TemplateUtilsTest {
     Template root = Template.fromString(src);
     Template bar = root.getNestedTemplate("bar");
     Template foo = bar.getNestedTemplate("foo");
-    assertEquals("bar.foo", TemplateUtils.getFQName(foo));
+    assertEquals("bar.foo", TemplateUtils.getFQN(foo));
   }
 
   @Test
@@ -58,7 +58,7 @@ public class TemplateUtilsTest {
     Template root = Template.fromString(src);
     Template bar = root.getNestedTemplate("bar");
     Template foo = bar.getNestedTemplate("foo");
-    assertEquals("bar.foo.bozo", TemplateUtils.getFQName(foo, "bozo"));
+    assertEquals("bar.foo.bozo", TemplateUtils.getFQN(foo, "bozo"));
   }
 
   @Test
@@ -73,20 +73,20 @@ public class TemplateUtilsTest {
   public void getNestedTemplate00() throws ParseException {
     Template root = Template.fromString(src);
     Template bozo = TemplateUtils.getNestedTemplate(root, "bozo");
-    assertEquals("bozo", TemplateUtils.getFQName(bozo));
+    assertEquals("bozo", TemplateUtils.getFQN(bozo));
     Template barFoo = TemplateUtils.getNestedTemplate(root, "bar.foo");
-    assertEquals("bar.foo", TemplateUtils.getFQName(barFoo));
+    assertEquals("bar.foo", TemplateUtils.getFQN(barFoo));
   }
 
   @Test
   public void getContainingTemplate00() throws ParseException {
     Template root = Template.fromString(src);
     Template bar = TemplateUtils.getContainingTemplate(root, "bar.message1");
-    assertEquals("bar", TemplateUtils.getFQName(bar));
+    assertEquals("bar", TemplateUtils.getFQN(bar));
     assertEquals("{root}",
         TemplateUtils.getContainingTemplate(root, "message1").getName());
     bar = TemplateUtils.getContainingTemplate(root, "bar.foo.message4");
-    assertEquals("bar", TemplateUtils.getFQName(bar));
+    assertEquals("bar", TemplateUtils.getFQN(bar));
   }
 
   @Test

@@ -133,7 +133,7 @@ public final class StringifierRegistry {
      * @param stringifier the stringifier
      * @param varNames any array of fully-qualified variable names
      * @return this {@code Builder}
-     * @see TemplateUtils#getFQName(Template, String)
+     * @see TemplateUtils#getFQN(Template, String)
      * @see TemplateUtils#getContainingTemplate(Template, String)
      */
     public Builder register(Template template, Stringifier stringifier,

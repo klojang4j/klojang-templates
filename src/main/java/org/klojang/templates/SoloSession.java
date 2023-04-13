@@ -20,7 +20,7 @@ import static org.klojang.check.CommonProperties.length;
 import static org.klojang.check.CommonProperties.size;
 import static org.klojang.templates.Accessor.UNDEFINED;
 import static org.klojang.templates.RenderErrorCode.*;
-import static org.klojang.templates.TemplateUtils.getFQName;
+import static org.klojang.templates.TemplateUtils.getFQN;
 import static org.klojang.templates.x.MTag.VAR_GROUP;
 import static org.klojang.templates.x.MTag.VAR_NAME;
 import static org.klojang.util.CollectionMethods.listify;
@@ -55,7 +55,7 @@ final class SoloSession implements RenderSession {
     if (value != UNDEFINED) {
       Template t = config.template();
       Check.that(varName).is(keyIn(), t.variables(),
-          NO_SUCH_VARIABLE.getExceptionSupplier(getFQName(t, varName)));
+          NO_SUCH_VARIABLE.getExceptionSupplier(TemplateUtils.getFQN(t, varName)));
       IntList indices = t.variables().get(varName);
       indices.forEachThrowing(i -> setVar(i, value, varGroup));
       state.done(varName);
@@ -86,7 +86,7 @@ final class SoloSession implements RenderSession {
     Check.notNull(varGroup, VAR_GROUP);
     Template t = config.template();
     Check.that(varName).is(keyIn(), t.variables(),
-        NO_SUCH_VARIABLE.getExceptionSupplier(getFQName(t, varName)));
+        NO_SUCH_VARIABLE.getExceptionSupplier(TemplateUtils.getFQN(t, varName)));
     IntList indices = t.variables().get(varName);
     indices.forEachThrowing(i -> state.setVar(i,
         new Lazy(valueGenerator, varGroup)));
@@ -184,7 +184,7 @@ final class SoloSession implements RenderSession {
       try {
         value = acc.access(data, varName);
       } catch (RuntimeException e) {
-        String fqn = getFQName(config.template(), varName);
+        String fqn = TemplateUtils.getFQN(config.template(), varName);
         throw ACCESS_EXCEPTION.getException(fqn, e);
       }
       if (value != UNDEFINED) {
@@ -402,7 +402,7 @@ final class SoloSession implements RenderSession {
 
   @Override
   public String toString() {
-    return String.format("RenderSession[template=%s]", getFQName(config.template()));
+    return String.format("RenderSession[template=%s]", getFQN(config.template()));
   }
 
   RenderState getState() {
@@ -424,7 +424,7 @@ final class SoloSession implements RenderSession {
     Check.notNull(name, MTag.TEMPLATE_NAME);
     Template t = config.template();
     return Check.that(name).is(elementOf(), t.getNestedTemplateNames(),
-            NO_SUCH_TEMPLATE.getExceptionSupplier(getFQName(t, name)))
+            NO_SUCH_TEMPLATE.getExceptionSupplier(TemplateUtils.getFQN(t, name)))
         .ok(t::getNestedTemplate);
   }
 

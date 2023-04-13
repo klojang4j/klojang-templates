@@ -29,4 +29,6 @@ public final class MTag {
 
   public static final String SUFFIX = "suffix";
 
+  public static final String FQN = "fully-qualified name";
+
 }
