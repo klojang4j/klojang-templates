@@ -33,9 +33,10 @@ import static org.klojang.util.ArrayMethods.prefix;
   /**
    * A template variable had the predefined {@link VarGroup#DEF def:} prefix, but no
    * placeholder value was specified in the template. If you want to use the
-   * {@code def:} prefix, you must also provide a placeholder value.
+   * {@code def:} prefix, you must also provide a placeholder value. For example:
+   * {@code ~%def:firstName%John&lt;!--%--&gt;}.
    */
-<span class="fc" id="L38">  NO_PLACEHOLDER_DEFINED(</span>
+<span class="fc" id="L39">  NO_PLACEHOLDER_DEFINED(</span>
       &quot;Prefix \&quot;def:\&quot; for variable %s not allowed without also specifying placeholder value&quot;),
 
   /**
@@ -45,76 +46,77 @@ import static org.klojang.util.ArrayMethods.prefix;
    *
    * @see org.klojang.templates.PathResolver#isValidPath(String)
    */
-<span class="fc" id="L48">  INVALID_INCLUDE_PATH(&quot;Invalid include path: %s. %s&quot;),</span>
+<span class="fc" id="L49">  INVALID_INCLUDE_PATH(&quot;Invalid include path: %s. %s&quot;),</span>
 
   /**
    * The character sequence {@code ~%%begin:} was found, but no terminating
    * percentage-sign ({@code %}) followed.
    */
-<span class="fc" id="L54">  BEGIN_TAG_NOT_TERMINATED(&quot;Template \&quot;begin\&quot; tag not terminated&quot;),</span>
+<span class="fc" id="L55">  BEGIN_TAG_NOT_TERMINATED(&quot;Template begin tag (~%%%%begin:) not terminated by \&quot;%%\&quot;&quot;),</span>
 
   /**
    * The character sequence {@code ~%%end:} was found, but no terminating
    * percentage-sign ({@code %}) followed.
    */
-<span class="fc" id="L60">  END_TAG_NOT_TERMINATED(&quot;Template \&quot;end\&quot; tag not terminated&quot;),</span>
+<span class="fc" id="L61">  END_TAG_NOT_TERMINATED(&quot;Template end tag (~%%%%end:) not terminated by \&quot;%%\&quot;&quot;),</span>
 
   /**
    * The character sequence {@code ~%%include:} was found, but no terminating
    * {@code %%} followed.
    */
-<span class="fc" id="L66">  INCLUDE_TAG_NOT_TERMINATED(&quot;Template \&quot;include\&quot; tag not terminated&quot;),</span>
+<span class="fc" id="L67">  INCLUDE_TAG_NOT_TERMINATED(</span>
+      &quot;Template include tag(~%%%%include:) not terminated by \&quot;%%%%\&quot;&quot;),
 
   /**
    * An inline template did not close properly. For example ~%%begin:foo% was found,
    * but ~%%end:foo% was not.
    */
-<span class="fc" id="L72">  MISSING_END_TAG(&quot;Missing end tag for inline template \&quot;%s\&quot;&quot;),</span>
+<span class="fc" id="L74">  MISSING_END_TAG(&quot;Missing end tag for inline template \&quot;%s\&quot;&quot;),</span>
 
   /**
    * A dangling end-of-template was found. For example ~%%end:foo% was found, but not
    * preceded by ~%%begin:foo%.
    */
-<span class="fc" id="L78">  DANGLING_END_TAG(&quot;Dangling end tag with template name \&quot;%s\&quot;&quot;),</span>
+<span class="fc" id="L80">  DANGLING_END_TAG(&quot;Dangling end tag with template name \&quot;%s\&quot;&quot;),</span>
 
   /**
    * A ditch block was not closed. (There was an uneven number of {@code &lt;!--%%--&gt;}
    * tokens.)
    */
-<span class="fc" id="L84">  DITCH_BLOCK_NOT_CLOSED(&quot;Ditch block not closed&quot;),</span>
+<span class="fc" id="L86">  DITCH_BLOCK_NOT_CLOSED(&quot;Ditch block not closed&quot;),</span>
 
   /**
    * A placeholder block was not closed. (There was an uneven number of
    * {@code &lt;!--%--&gt;} tokens.)
    */
-<span class="fc" id="L90">  PLACEHOLDER_NOT_CLOSED(&quot;Placeholder not closed&quot;);</span>
+<span class="fc" id="L92">  PLACEHOLDER_NOT_CLOSED(&quot;Placeholder not closed&quot;);</span>
 
   private static final String ERR_BASE = &quot;Error at line %d, column %d. &quot;;
 
   private final String format;
 
-<span class="fc" id="L96">  ParseErrorCode(String format) {</span>
-<span class="fc" id="L97">    this.format = format;</span>
-<span class="fc" id="L98">  }</span>
+<span class="fc" id="L98">  ParseErrorCode(String format) {</span>
+<span class="fc" id="L99">    this.format = format;</span>
+<span class="fc" id="L100">  }</span>
 
   // No line and column number included in exception message
   ParseException getTracelessException(Object... msgArgs) {
-<span class="nc" id="L102">    return new ParseException(this, String.format(format, msgArgs));</span>
+<span class="nc" id="L104">    return new ParseException(this, String.format(format, msgArgs));</span>
   }
 
   ParseException getException(String src, int pos, Object... args) {
-<span class="fc" id="L106">    return new ParseException(this, createMessage(src, pos, args));</span>
+<span class="fc" id="L108">    return new ParseException(this, createMessage(src, pos, args));</span>
   }
 
   Supplier&lt;ParseException&gt; getExceptionSupplier(String src,
       int pos,
       Object... msgArgs) {
-<span class="fc" id="L112">    return () -&gt; getException(src, pos, msgArgs);</span>
+<span class="fc" id="L114">    return () -&gt; getException(src, pos, msgArgs);</span>
   }
 
   private String createMessage(String src, int pos, Object... args) {
-<span class="fc" id="L116">    int[] x = StringMethods.getLineAndColumn(src, pos);</span>
-<span class="fc" id="L117">    return String.format(ERR_BASE + format, prefix(args, x[0] + 1, x[1] + 1));</span>
+<span class="fc" id="L118">    int[] x = StringMethods.getLineAndColumn(src, pos);</span>
+<span class="fc" id="L119">    return String.format(ERR_BASE + format, prefix(args, x[0] + 1, x[1] + 1));</span>
   }
 
 }

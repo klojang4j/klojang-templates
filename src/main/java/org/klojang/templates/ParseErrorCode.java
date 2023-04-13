@@ -33,7 +33,8 @@ public enum ParseErrorCode {
   /**
    * A template variable had the predefined {@link VarGroup#DEF def:} prefix, but no
    * placeholder value was specified in the template. If you want to use the
-   * {@code def:} prefix, you must also provide a placeholder value.
+   * {@code def:} prefix, you must also provide a placeholder value. For example:
+   * {@code ~%def:firstName%John<!--%-->}.
    */
   NO_PLACEHOLDER_DEFINED(
       "Prefix \"def:\" for variable %s not allowed without also specifying placeholder value"),
@@ -51,19 +52,20 @@ public enum ParseErrorCode {
    * The character sequence {@code ~%%begin:} was found, but no terminating
    * percentage-sign ({@code %}) followed.
    */
-  BEGIN_TAG_NOT_TERMINATED("Template \"begin\" tag not terminated"),
+  BEGIN_TAG_NOT_TERMINATED("Template begin tag (~%%%%begin:) not terminated by \"%%\""),
 
   /**
    * The character sequence {@code ~%%end:} was found, but no terminating
    * percentage-sign ({@code %}) followed.
    */
-  END_TAG_NOT_TERMINATED("Template \"end\" tag not terminated"),
+  END_TAG_NOT_TERMINATED("Template end tag (~%%%%end:) not terminated by \"%%\""),
 
   /**
    * The character sequence {@code ~%%include:} was found, but no terminating
    * {@code %%} followed.
    */
-  INCLUDE_TAG_NOT_TERMINATED("Template \"include\" tag not terminated"),
+  INCLUDE_TAG_NOT_TERMINATED(
+      "Template include tag(~%%%%include:) not terminated by \"%%%%\""),
 
   /**
    * An inline template did not close properly. For example ~%%begin:foo% was found,

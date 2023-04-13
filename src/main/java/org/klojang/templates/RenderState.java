@@ -17,9 +17,9 @@ final class RenderState {
   private final Map<Template, SoloSession[]> sessions;
 
   // variable occurrence values. A variable may occur multiple times
-  // within the same template, and occurrences may have different values
-  // due to being escaped differently. The keys in the map are the
-  // indices of VarPart parts.
+  // within the same template, and occurrences may end up having
+  // different values due to being escaped differently. The keys in
+  // the map are the indices of VarPart parts.
   private final Map<Integer, Object> varValues;
 
   RenderState(SessionConfig config) {
@@ -87,24 +87,8 @@ final class RenderState {
     varValues.put(partIndex, value);
   }
 
-  boolean isSet(String var) {
-    return !todo.contains(var);
-  }
-
   void done(String var) {
     todo.remove(var);
-  }
-
-  private static void collectUnsetVars(RenderState state0, ArrayList<String> names) {
-    Template t = state0.config.template();
-    state0.todo.stream().map(var -> getFQName(t, var)).forEach(names::add);
-    state0
-        .sessions
-        .values()
-        .stream()
-        .flatMap(Arrays::stream)
-        .map(SoloSession::getState)
-        .forEach(state -> collectUnsetVars(state, names));
   }
 
   boolean isFullyPopulated() {

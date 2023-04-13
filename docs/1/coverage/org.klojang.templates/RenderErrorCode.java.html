@@ -12,14 +12,16 @@ import java.util.function.Supplier;
 <span class="fc" id="L12">public enum RenderErrorCode {</span>
 
   /**
-   * A non-existent variable name was specified.
+   * A non-existent variable name was specified when calling
+   * {@link RenderSession#set(String, Object) RenderSession.set()}, or other methods
+   * taking a variable name as argument.
    */
-<span class="fc" id="L17">  NO_SUCH_VARIABLE(&quot;No such variable: \&quot;%s\&quot;&quot;),</span>
+<span class="fc" id="L19">  NO_SUCH_VARIABLE(&quot;No such variable: \&quot;%s\&quot;&quot;),</span>
 
   /**
    * A non-existent nested template name was specified.
    */
-<span class="fc" id="L22">  NO_SUCH_TEMPLATE(&quot;No such nested template: \&quot;%s\&quot;&quot;),</span>
+<span class="fc" id="L24">  NO_SUCH_TEMPLATE(&quot;No such nested template: \&quot;%s\&quot;&quot;),</span>
 
   /**
    * The child sessions for a nested template were requested, but none were created
@@ -27,12 +29,12 @@ import java.util.function.Supplier;
    *
    * @see RenderSession#getChildSessions(String)
    */
-<span class="fc" id="L30">  TEMPLATE_NOT_INSTANTIATED(&quot;Template %s not instantiated yet&quot;),</span>
+<span class="fc" id="L32">  TEMPLATE_NOT_INSTANTIATED(&quot;Template %s not instantiated yet&quot;),</span>
 
   /**
    * An error occurred while retrieving the value for a template variable.
    */
-<span class="fc" id="L35">  ACCESS_EXCEPTION(&quot;Error while retrieving value for %s: %s&quot;),</span>
+<span class="fc" id="L37">  ACCESS_EXCEPTION(&quot;Error while retrieving value for %s: %s&quot;),</span>
 
   /**
    * {@code RenderSession.enable()} was called on a nested template, but it was not a
@@ -40,7 +42,7 @@ import java.util.function.Supplier;
    *
    * @see RenderSession#enable(String...)
    */
-<span class="fc" id="L43">  NOT_TEXT_ONLY(&quot;Not a text-only template: %s&quot;),</span>
+<span class="fc" id="L45">  NOT_TEXT_ONLY(&quot;Not a text-only template: %s&quot;),</span>
 
   /**
    * {@code RenderSession.populate1()} was called on a nested template, but it was
@@ -48,7 +50,7 @@ import java.util.function.Supplier;
    *
    * @see RenderSession#populate1(String, Object...)
    */
-<span class="fc" id="L51">  NOT_ONE_VAR_TEMPLATE(&quot;Not a one-variable template: %s&quot;),</span>
+<span class="fc" id="L53">  NOT_ONE_VAR_TEMPLATE(&quot;Not a one-variable template: %s&quot;),</span>
 
   /**
    * {@code RenderSession.populate2()} was called on a nested template, but it was
@@ -56,13 +58,13 @@ import java.util.function.Supplier;
    *
    * @see RenderSession#populate2(String, Object...)
    */
-<span class="fc" id="L59">  NOT_TWO_VAR_TEMPLATE(&quot;Not a two-variable template: %s&quot;),</span>
+<span class="fc" id="L61">  NOT_TWO_VAR_TEMPLATE(&quot;Not a two-variable template: %s&quot;),</span>
 
   /**
    * A stringifier's {@link Stringifier#stringify(Object) stringify} method returned
    * {@code null}, but stringifiers must &lt;i&gt;never&lt;/i&gt; return {@code null}.
    */
-<span class="fc" id="L65">  STRINGIFIER_RETURNED_NULL(</span>
+<span class="fc" id="L67">  STRINGIFIER_RETURNED_NULL(</span>
       &quot;Stringifier for variable %s in variable group %s returned null&quot;),
 
   /**
@@ -70,7 +72,7 @@ import java.util.function.Supplier;
    * {@code NullPointerException}, but stringifiers &lt;i&gt;must&lt;/i&gt; be capable of
    * stringifying {@code null}.
    */
-<span class="fc" id="L73">  STRINGIFIER_NOT_NULL_RESISTENT(</span>
+<span class="fc" id="L75">  STRINGIFIER_NOT_NULL_RESISTENT(</span>
       &quot;Stringifier for variable %s in variable group %s threw NullPointerException&quot;),
 
   /**
@@ -79,35 +81,35 @@ import java.util.function.Supplier;
    * call to {@code repeat()}, or implicitly, via the
    * {@link RenderSession#populate(String, Object, String...) popupate()} method.
    */
-<span class="fc" id="L82">  REPETITIONS_FIXED(&quot;Number of repetitions already fixed for template %s&quot;),</span>
+<span class="fc" id="L84">  REPETITIONS_FIXED(&quot;Number of repetitions already fixed for template %s&quot;),</span>
 
   /**
-   * The number fo elements in the array or {@code Collection} passed to
+   * The number of elements in the array or {@code Collection} passed to
    * {@link RenderSession#populate(String, Object, String...)
    * RenderSession.populate()} differed from the number of repetitions fixed by the
    * first call to {@code populate()} or {@code repeat()}.
    */
-<span class="fc" id="L90">  REPETITION_MISMATCH(&quot;Error while populating %s. When populating a nested template &quot;</span>
+<span class="fc" id="L92">  REPETITION_MISMATCH(&quot;Error while populating %s. When populating a nested template &quot;</span>
       + &quot;in multiple passes you must always provide the same number of source data &quot;
       + &quot;objects. Received %d source data object(s) in first round. Now got %d.&quot;),
 
   /**
    * An unexpected error occurred while rendering the template.
    */
-<span class="fc" id="L97">  UNEXPECTED_ERROR(null);</span>
+<span class="fc" id="L99">  UNEXPECTED_ERROR(null);</span>
 
   private String format;
 
-<span class="fc" id="L101">  RenderErrorCode(String format) {</span>
-<span class="fc" id="L102">    this.format = format;</span>
-<span class="fc" id="L103">  }</span>
+<span class="fc" id="L103">  RenderErrorCode(String format) {</span>
+<span class="fc" id="L104">    this.format = format;</span>
+<span class="fc" id="L105">  }</span>
 
   RenderException getException(Object... msgArgs) {
-<span class="fc" id="L106">    return new RenderException(this, String.format(format, msgArgs));</span>
+<span class="fc" id="L108">    return new RenderException(this, String.format(format, msgArgs));</span>
   }
 
   Supplier&lt;RenderException&gt; getExceptionSupplier(Object... msgArgs) {
-<span class="fc" id="L110">    return () -&gt; getException(msgArgs);</span>
+<span class="fc" id="L112">    return () -&gt; getException(msgArgs);</span>
   }
 
 }

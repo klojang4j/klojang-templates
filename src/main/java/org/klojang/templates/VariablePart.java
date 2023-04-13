@@ -1,7 +1,5 @@
 package org.klojang.templates;
 
-import org.klojang.templates.x.Private;
-
 import java.util.Optional;
 
 /**
@@ -27,23 +25,10 @@ final class VariablePart extends AbstractPart implements NamedPart {
     this.placeholder = placeholder;
   }
 
-  /**
-   * Returns an {@code Optional} containing the group name prefix, or an empty
-   * {@code Optional} if the variable was declared without a group name prefix. For
-   * example for {@code ~%html:firstName%} this method would return the
-   * {@link VarGroup#HTML} variable group.
-   *
-   * @return An {@code Optional} containing the group name prefix
-   */
   Optional<VarGroup> getVarGroup() {
     return Optional.ofNullable(group);
   }
 
-  /**
-   * Returns the name of the variable.
-   *
-   * @return The name of the variable
-   */
   @Override
   public String getName() {
     return name;

@@ -12,7 +12,9 @@ import java.util.function.Supplier;
 public enum RenderErrorCode {
 
   /**
-   * A non-existent variable name was specified.
+   * A non-existent variable name was specified when calling
+   * {@link RenderSession#set(String, Object) RenderSession.set()}, or other methods
+   * taking a variable name as argument.
    */
   NO_SUCH_VARIABLE("No such variable: \"%s\""),
 
@@ -82,7 +84,7 @@ public enum RenderErrorCode {
   REPETITIONS_FIXED("Number of repetitions already fixed for template %s"),
 
   /**
-   * The number fo elements in the array or {@code Collection} passed to
+   * The number of elements in the array or {@code Collection} passed to
    * {@link RenderSession#populate(String, Object, String...)
    * RenderSession.populate()} differed from the number of repetitions fixed by the
    * first call to {@code populate()} or {@code repeat()}.

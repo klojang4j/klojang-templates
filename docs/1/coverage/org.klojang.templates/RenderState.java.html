@@ -17,9 +17,9 @@ final class RenderState {
   private final Map&lt;Template, SoloSession[]&gt; sessions;
 
   // variable occurrence values. A variable may occur multiple times
-  // within the same template, and occurrences may have different values
-  // due to being escaped differently. The keys in the map are the
-  // indices of VarPart parts.
+  // within the same template, and occurrences may end up having
+  // different values due to being escaped differently. The keys in
+  // the map are the indices of VarPart parts.
   private final Map&lt;Integer, Object&gt; varValues;
 
 <span class="fc" id="L25">  RenderState(SessionConfig config) {</span>
@@ -87,44 +87,28 @@ final class RenderState {
 <span class="fc" id="L87">    varValues.put(partIndex, value);</span>
 <span class="fc" id="L88">  }</span>
 
-  boolean isSet(String var) {
-<span class="nc bnc" id="L91" title="All 2 branches missed.">    return !todo.contains(var);</span>
-  }
-
   void done(String var) {
-<span class="fc" id="L95">    todo.remove(var);</span>
-<span class="fc" id="L96">  }</span>
-
-  private static void collectUnsetVars(RenderState state0, ArrayList&lt;String&gt; names) {
-<span class="nc" id="L99">    Template t = state0.config.template();</span>
-<span class="nc" id="L100">    state0.todo.stream().map(var -&gt; getFQName(t, var)).forEach(names::add);</span>
-<span class="nc" id="L101">    state0</span>
-        .sessions
-<span class="nc" id="L103">        .values()</span>
-<span class="nc" id="L104">        .stream()</span>
-<span class="nc" id="L105">        .flatMap(Arrays::stream)</span>
-<span class="nc" id="L106">        .map(SoloSession::getState)</span>
-<span class="nc" id="L107">        .forEach(state -&gt; collectUnsetVars(state, names));</span>
-<span class="nc" id="L108">  }</span>
+<span class="fc" id="L91">    todo.remove(var);</span>
+<span class="fc" id="L92">  }</span>
 
   boolean isFullyPopulated() {
-<span class="fc" id="L111">    return ready(this);</span>
+<span class="fc" id="L95">    return ready(this);</span>
   }
 
   private static boolean ready(RenderState state0) {
-<span class="fc bfc" id="L115" title="All 2 branches covered.">    if (state0.todo.size() &gt; 0) {</span>
-<span class="fc" id="L116">      return false;</span>
+<span class="fc bfc" id="L99" title="All 2 branches covered.">    if (state0.todo.size() &gt; 0) {</span>
+<span class="fc" id="L100">      return false;</span>
     }
-<span class="fc bfc" id="L118" title="All 2 branches covered.">    if (state0.config.template().countNestedTemplates() &gt; state0.sessions.size()) {</span>
-<span class="fc" id="L119">      return false;</span>
+<span class="fc bfc" id="L102" title="All 2 branches covered.">    if (state0.config.template().countNestedTemplates() &gt; state0.sessions.size()) {</span>
+<span class="fc" id="L103">      return false;</span>
     }
-<span class="fc" id="L121">    return state0</span>
+<span class="fc" id="L105">    return state0</span>
         .sessions
-<span class="fc" id="L123">        .values()</span>
-<span class="fc" id="L124">        .stream()</span>
-<span class="fc" id="L125">        .flatMap(Arrays::stream)</span>
-<span class="fc" id="L126">        .map(SoloSession::getState)</span>
-<span class="fc" id="L127">        .allMatch(RenderState::ready);</span>
+<span class="fc" id="L107">        .values()</span>
+<span class="fc" id="L108">        .stream()</span>
+<span class="fc" id="L109">        .flatMap(Arrays::stream)</span>
+<span class="fc" id="L110">        .map(SoloSession::getState)</span>
+<span class="fc" id="L111">        .allMatch(RenderState::ready);</span>
   }
 
 }
