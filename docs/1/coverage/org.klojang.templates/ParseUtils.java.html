@@ -11,17 +11,17 @@ import java.util.regex.Pattern;
    * Determines whether the text between from and to finds itself on an otherwise
    * empty line. This is used to ascertain this for ~%%begin:foo% and ~%%end:foo%. If
    * the begin or end tag of an inline template finds itself on an otherwise empty
-   * line, that entire line is removed from the template when it is rendered.
+   * line, then that entire line is removed from the template when it is rendered.
    */
   static boolean onSeparateLine(String src, int from, int to) {
     char c;
-<span class="fc bfc" id="L18" title="All 4 branches covered.">    for (int i = from - 1; i &gt;= 0 &amp;&amp; (c = src.charAt(i)) != '\n'; --i) {</span>
+<span class="pc bpc" id="L18" title="1 of 6 branches missed.">    for (int i = from - 1; i &gt;= 0 &amp;&amp; (c = src.charAt(i)) != '\n' &amp;&amp; c != '\r'; --i) {</span>
 <span class="pc bpc" id="L19" title="1 of 4 branches missed.">      if (c != ' ' &amp;&amp; c != '\t') {</span>
 <span class="fc" id="L20">        return false;</span>
       }
     }
-<span class="fc" id="L23">    for (int i = to;</span>
-<span class="pc bpc" id="L24" title="1 of 6 branches missed.">        i &lt; src.length() &amp;&amp; (c = src.charAt(i)) != '\n' &amp;&amp; c != '\r'; ++i) {</span>
+<span class="fc" id="L23">    int len = src.length();</span>
+<span class="pc bpc" id="L24" title="1 of 6 branches missed.">    for (int i = to; i &lt; len &amp;&amp; (c = src.charAt(i)) != '\n' &amp;&amp; c != '\r'; ++i) {</span>
 <span class="pc bpc" id="L25" title="1 of 4 branches missed.">      if (c != ' ' &amp;&amp; c != '\t') {</span>
 <span class="fc" id="L26">        return false;</span>
       }
@@ -31,19 +31,21 @@ import java.util.regex.Pattern;
 
   static String deleteEmptyLine(String txt) {
 <span class="fc" id="L33">    String s = StringMethods.rtrim(txt, &quot; \t&quot;);</span>
-<span class="pc bpc" id="L34" title="1 of 2 branches missed.">    if (s.endsWith(&quot;\n&quot;)) {</span>
-<span class="fc" id="L35">      return s.substring(0, s.length() - 1);</span>
+<span class="pc bpc" id="L34" title="1 of 2 branches missed.">    if (s.endsWith(&quot;\r\n&quot;)) {</span>
+<span class="nc" id="L35">      return s.substring(0, s.length() - 2);</span>
+<span class="pc bpc" id="L36" title="3 of 4 branches missed.">    } else if (s.endsWith(&quot;\n&quot;) || s.endsWith(&quot;\r&quot;)) {</span>
+<span class="fc" id="L37">      return s.substring(0, s.length() - 1);</span>
     }
-<span class="nc" id="L37">    return s;</span>
+<span class="nc" id="L39">    return s;</span>
   }
 
   static Matcher match(Pattern pattern, UnparsedPart unparsed) {
-<span class="fc" id="L41">    return pattern.matcher(unparsed.text());</span>
+<span class="fc" id="L43">    return pattern.matcher(unparsed.text());</span>
   }
 
   static UnparsedPart todo(UnparsedPart p, int from, int to) {
-<span class="fc" id="L45">    String s = p.text().substring(from, to);</span>
-<span class="fc" id="L46">    return new UnparsedPart(s, p.start() + from);</span>
+<span class="fc" id="L47">    String s = p.text().substring(from, to);</span>
+<span class="fc" id="L48">    return new UnparsedPart(s, p.start() + from);</span>
   }
 
 }

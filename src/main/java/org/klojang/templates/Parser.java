@@ -14,7 +14,6 @@ import static org.klojang.templates.ParseErrorCode.*;
 import static org.klojang.templates.ParseUtils.*;
 import static org.klojang.templates.Regex.*;
 import static org.klojang.templates.Template.ROOT_TEMPLATE_NAME;
-import static org.klojang.util.StringMethods.EMPTY_STRING;
 
 final class Parser {
 
@@ -242,19 +241,16 @@ final class Parser {
   private List<Part> collectTextParts(List<Part> in) throws ParseException {
     List<Part> out = new ArrayList<>(in.size());
     for (Part p : in) {
-      if (p.getClass() == UnparsedPart.class) {
-        UnparsedPart unparsed = (UnparsedPart) p;
-        if (unparsed.text().length() != 0) {
+      if (p instanceof UnparsedPart unparsed) {
+        String text = unparsed.text();
+        if (!text.isEmpty()) {
           checkGarbage(unparsed);
-          String text = Regex.PLACEHOLDER
-              .matcher(unparsed.text())
-              .replaceAll(EMPTY_STRING);
-          if (text.contains(Regex.PLACEHOLDER_START_END)) {
-            int idx = p.start()
-                + unparsed.text().indexOf(Regex.PLACEHOLDER_START_END);
-            throw PLACEHOLDER_NOT_CLOSED.getException(text, idx);
+          String purified = PLACEHOLDER.matcher(text).replaceAll("");
+          if (purified.contains(PLACEHOLDER_START_END)) {
+            int idx = p.start() + text.indexOf(PLACEHOLDER_START_END);
+            throw PLACEHOLDER_NOT_CLOSED.getException(src, idx);
           }
-          out.add(new TextPart(text, p.start()));
+          out.add(new TextPart(purified, p.start()));
         }
       } else {
         out.add(p);
@@ -289,6 +285,10 @@ final class Parser {
         INCLUDE_TAG_NOT_TERMINATED.getExceptionSupplier(src, off + idx));
   }
 
+  /*
+   * Remove the last line from text parts if, in the original template, it was the
+   * line containing ~%%begin:foo% (and nothing else).
+   */
   private static List<Part> suppressNewLines(List<Part> parts) {
     List<Part> out = new ArrayList<>(parts.size());
     for (int i = 0; i < parts.size(); ++i) {
