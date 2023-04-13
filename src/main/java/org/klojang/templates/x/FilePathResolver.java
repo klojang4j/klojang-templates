@@ -6,13 +6,12 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
-import java.util.Optional;
 
 public final class FilePathResolver implements PathResolver {
 
   @Override
-  public Optional<Boolean> isValidPath(String path) {
-    return new File(path).isFile() ? INVALID_PATH : VALID_PATH;
+  public boolean isValidPath(String path) {
+    return new File(path).isFile();
   }
 
   @Override

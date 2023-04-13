@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import static org.klojang.templates.ParseErrorCode.INVALID_INCLUDE_PATH;
-import static org.klojang.templates.PathResolver.INVALID_PATH;
 
 record TemplateLocation(String path, PathResolver resolver) {
 
@@ -20,8 +19,8 @@ record TemplateLocation(String path, PathResolver resolver) {
     this(null, resolver);
   }
 
-  boolean isInvalid() {
-    return resolver.isValidPath(path).equals(INVALID_PATH);
+  boolean isValid() {
+    return resolver.isValidPath(path);
   }
 
   String read() throws ParseException {

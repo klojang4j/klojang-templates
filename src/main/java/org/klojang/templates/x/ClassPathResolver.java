@@ -14,8 +14,8 @@ public final class ClassPathResolver implements PathResolver {
   }
 
   @Override
-  public Optional<Boolean> isValidPath(String path) {
-    return clazz.getResource(path) == null ? INVALID_PATH : VALID_PATH;
+  public boolean isValidPath(String path) {
+    return clazz.getResource(path) != null;
   }
 
   @Override

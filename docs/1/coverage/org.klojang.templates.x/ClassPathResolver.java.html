@@ -14,8 +14,8 @@ public final class ClassPathResolver implements PathResolver {
 <span class="fc" id="L14">  }</span>
 
   @Override
-  public Optional&lt;Boolean&gt; isValidPath(String path) {
-<span class="pc bpc" id="L18" title="1 of 2 branches missed.">    return clazz.getResource(path) == null ? INVALID_PATH : VALID_PATH;</span>
+  public boolean isValidPath(String path) {
+<span class="pc bpc" id="L18" title="1 of 2 branches missed.">    return clazz.getResource(path) != null;</span>
   }
 
   @Override

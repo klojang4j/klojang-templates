@@ -2,15 +2,14 @@ package org.klojang.templates;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Optional;
 
 /**
  * Path resolvers are used by the template parser to load the source code for a
  * template. Implementations are given the path string extracted from
  * {@code ~%%include:/path/to/resource.html%%} and must return an {@link InputStream}
  * to the source code. This enables you to implement and use a custom mechanism for
- * loading templates. Klojang Templates provides two implementations itself: one that
- * loads templates from the file system (used under the hood by
+ * loading templates. <i>Klojang Templates</i> provides two implementations itself:
+ * one that loads templates from the file system (used under the hood by
  * {@link Template#fromFile(String) Template.fromFile()}), and another one that loads
  * templates from the classpath (used by
  * {@link Template#fromResource(Class, String) Template.fromResource()}). You can use
@@ -28,33 +27,21 @@ import java.util.Optional;
 public interface PathResolver {
 
   /**
-   * An {@code Optional} containing {@code Boolean.TRUE}. Can be used as return value
-   * for {@link #isValidPath(String) isValidPath()}.
-   */
-  Optional<Boolean> VALID_PATH = Optional.of(Boolean.TRUE);
-  /**
-   * An {@code Optional} containing {@code Boolean.FALSE}. Can be used as return
-   * value for {@link #isValidPath(String) isValidPath()}.
-   */
-  Optional<Boolean> INVALID_PATH = Optional.of(Boolean.FALSE);
-
-  /**
    * Returns whether the path specified in an included template (like
    * {@code ~%%include:/path/to/foo.html%%}) points to an existing resource. If it is
    * expensive to determine this (e.g. it requires a database lookup or an FTP
-   * connection), you may return an empty {@code Optional}. If the {@code Optional}
-   * does contain a value and it is {@code Boolean.FALSE}, this will result in
-   * fail-fast behaviour; a {@link ParseException} is thrown immediately upon
-   * receiving {@code Boolean.FALSE}. When returning an empty {@code Optional},
-   * parsing will fail at a later point in the parsing process, which makes it
-   * somewhat harder to understand what was wrong with the template code. The default
-   * implementation returns an empty {@code Optional}.
+   * connection), you may simply return {@code true}. Parsing will still fail
+   * graciously when the path turns out to be invalid, but it will be some time after
+   * the included template was first encountered, which may make it harder to
+   * understand what was wrong with the template code. If this method returns
+   * {@code false}, parsing will be aborted immediately. The default implementation
+   * returns {@code true}.
    *
    * @param path the path to verify
    * @return whether it is a valid path
    */
-  default Optional<Boolean> isValidPath(String path) {
-    return Optional.empty();
+  default boolean isValidPath(String path) {
+    return true;
   }
 
   /**

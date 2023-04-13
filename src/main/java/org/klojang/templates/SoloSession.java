@@ -180,17 +180,15 @@ final class SoloSession implements RenderSession {
     }
     Accessor<T> acc = (Accessor<T>) config.getAccessor(data);
     for (String varName : varNames) {
-      if (!state.isSet(varName)) {
-        Object value;
-        try {
-          value = acc.access(data, varName);
-        } catch (RuntimeException e) {
-          throw ACCESS_EXCEPTION.getException(
-              getFQName(config.template(), varName), e);
-        }
-        if (value != UNDEFINED) {
-          setVar(varName, value, defGroup);
-        }
+      Object value;
+      try {
+        value = acc.access(data, varName);
+      } catch (RuntimeException e) {
+        String fqn = getFQName(config.template(), varName);
+        throw ACCESS_EXCEPTION.getException(fqn, e);
+      }
+      if (value != UNDEFINED) {
+        setVar(varName, value, defGroup);
       }
     }
   }

@@ -182,7 +182,7 @@ final class Parser {
       Check.that(name).isNot(in(), names,
           DUPLICATE_TMPL_NAME.getExceptionSupplier(src, offset + m.start(1), name));
       TemplateLocation loc = new TemplateLocation(path, location.resolver());
-      if (loc.isInvalid()) {
+      if (!loc.isValid()) {
         throw INVALID_INCLUDE_PATH.getException(src, offset + m.start(3), path);
       }
       names.add(name);

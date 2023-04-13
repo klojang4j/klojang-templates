@@ -182,7 +182,7 @@ final class Parser {
 <span class="fc" id="L182">      Check.that(name).isNot(in(), names,</span>
 <span class="fc" id="L183">          DUPLICATE_TMPL_NAME.getExceptionSupplier(src, offset + m.start(1), name));</span>
 <span class="fc" id="L184">      TemplateLocation loc = new TemplateLocation(path, location.resolver());</span>
-<span class="pc bpc" id="L185" title="1 of 2 branches missed.">      if (loc.isInvalid()) {</span>
+<span class="pc bpc" id="L185" title="1 of 2 branches missed.">      if (!loc.isValid()) {</span>
 <span class="nc" id="L186">        throw INVALID_INCLUDE_PATH.getException(src, offset + m.start(3), path);</span>
       }
 <span class="fc" id="L188">      names.add(name);</span>

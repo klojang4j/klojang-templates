@@ -92,9 +92,8 @@ public final class StringifierRegistry {
 
     private Builder(boolean std) {
       if (std) {
-        StandardStringifiers
-            .get()
-            .forEach((k, v) -> stringifiers.put(new StringifierId(k), v));
+        StandardStringifiers.get().forEach(
+            (k, v) -> stringifiers.put(new StringifierId(k), v));
       }
     }
 
