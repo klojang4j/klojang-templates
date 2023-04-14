@@ -169,7 +169,7 @@ final class Parser {
 <span class="fc" id="L169">    List&lt;Part&gt; parts = new ArrayList&lt;&gt;();</span>
 <span class="fc" id="L170">    int offset = unparsed.start(), end = 0;</span>
     do {
-<span class="pc bpc" id="L172" title="1 of 2 branches missed.">      if (m.start() &gt; end) {</span>
+<span class="fc bfc" id="L172" title="All 2 branches covered.">      if (m.start() &gt; end) {</span>
 <span class="fc" id="L173">        parts.add(todo(unparsed, end, m.start()));</span>
       }
 <span class="fc" id="L175">      String name = m.group(2);</span>
@@ -182,8 +182,8 @@ final class Parser {
 <span class="fc" id="L182">      Check.that(name).isNot(in(), names,</span>
 <span class="fc" id="L183">          DUPLICATE_TMPL_NAME.getExceptionSupplier(src, offset + m.start(1), name));</span>
 <span class="fc" id="L184">      TemplateLocation loc = new TemplateLocation(path, location.resolver());</span>
-<span class="pc bpc" id="L185" title="1 of 2 branches missed.">      if (!loc.isValid()) {</span>
-<span class="nc" id="L186">        throw INVALID_INCLUDE_PATH.getException(src, offset + m.start(3), path);</span>
+<span class="fc bfc" id="L185" title="All 2 branches covered.">      if (!loc.isValid()) {</span>
+<span class="fc" id="L186">        throw INVALID_INCLUDE_PATH.getException(src, offset + m.start(3), path);</span>
       }
 <span class="fc" id="L188">      names.add(name);</span>
 <span class="fc" id="L189">      Template nested = TemplateCache.INSTANCE.get(loc, name);</span>
@@ -218,8 +218,8 @@ final class Parser {
 <span class="fc bfc" id="L218" title="All 2 branches covered.">      String placeholder = variant == CMT_VARIABLE ? m.group(8) : null;</span>
 <span class="fc" id="L219">      Check.that(name).isNot(in(), names, VAR_NAME_WITH_TMPL_NAME</span>
 <span class="fc" id="L220">          .getExceptionSupplier(src, offset + m.start(3), name));</span>
-<span class="pc bpc" id="L221" title="1 of 4 branches missed.">      if (VarGroup.DEF.getName().equals(prefix) &amp;&amp; placeholder == null) {</span>
-<span class="nc" id="L222">        throw NO_PLACEHOLDER_DEFINED.getException(src, offset + m.start(3), name);</span>
+<span class="fc bfc" id="L221" title="All 4 branches covered.">      if (VarGroup.DEF.getName().equals(prefix) &amp;&amp; placeholder == null) {</span>
+<span class="fc" id="L222">        throw NO_PLACEHOLDER_DEFINED.getException(src, offset + m.start(3), name);</span>
       }
 <span class="fc" id="L224">      parts.add(new VariablePart(offset + m.start(), prefix, name, placeholder));</span>
 <span class="fc" id="L225">      end = m.end();</span>

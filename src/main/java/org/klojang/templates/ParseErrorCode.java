@@ -46,7 +46,7 @@ public enum ParseErrorCode {
    *
    * @see org.klojang.templates.PathResolver#isValidPath(String)
    */
-  INVALID_INCLUDE_PATH("Invalid include path: %s. %s"),
+  INVALID_INCLUDE_PATH("Invalid include path: %s"),
 
   /**
    * The character sequence {@code ~%%begin:} was found, but no terminating

@@ -1,5 +1,6 @@
 package org.klojang.templates;
 
+import org.klojang.templates.x.FilePathResolver;
 import org.klojang.util.IOMethods;
 
 import java.io.IOException;
@@ -12,7 +13,7 @@ record TemplateLocation(String path, PathResolver resolver) {
   static final TemplateLocation STRING = new TemplateLocation();
 
   private TemplateLocation() {
-    this(null, null);
+    this(new FilePathResolver());
   }
 
   TemplateLocation(PathResolver resolver) {

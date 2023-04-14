@@ -16,6 +16,7 @@ import java.util.*;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toUnmodifiableList;
 import static org.klojang.check.CommonChecks.*;
+import static org.klojang.templates.TemplateLocation.STRING;
 import static org.klojang.templates.x.Messages.ERR_NO_SUCH_TEMPLATE;
 import static org.klojang.util.CollectionMethods.implode;
 
@@ -56,7 +57,7 @@ public final class Template {
    */
   public static Template fromString(String source) throws ParseException {
     Check.notNull(source, Tag.SOURCE);
-    return new Parser(TemplateLocation.STRING, ROOT_TEMPLATE_NAME, source).parse();
+    return new Parser(STRING, ROOT_TEMPLATE_NAME, source).parse();
   }
 
   /**

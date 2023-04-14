@@ -249,8 +249,17 @@ final class SoloSession implements RenderSession {
   }
 
   @Override
-  public RenderSession in(String nestedTemplateName) {
-    Template t = getNestedTemplate(nestedTemplateName);
+  public RenderSession in(String fqn) {
+    Path path = Check.that(fqn).isNot(empty()).ok(Path::from);
+    RenderSession rs = in1(path.segment(0));
+    for (int i = 1; i < path.size(); ++i) {
+      rs = rs.in(path.segment(i));
+    }
+    return rs;
+  }
+
+  private RenderSession in1(String name) {
+    Template t = getNestedTemplate(name);
     SoloSession[] children = state.getChildSessions(t);
     if (children == null) {
       children = state.createChildSessions(t, 1);

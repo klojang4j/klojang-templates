@@ -10,12 +10,12 @@ import java.util.Optional;
  * @param name the name of the variable
  * @param varGroup an {@code Optional} containing the
  *     {@linkplain VarGroup variable group} corresponding to the group name prefix
- *     (as in {@code ~%html:foo%%}, or an empty {@code Optional} if there was no
- *     group name prefix
+ *     (as in {@code ~%myVarGroup:foo%}), or an empty {@code Optional} if there was
+ *     no group name prefix
  * @param placeholder an {@code Optional} containing the placeholder value for
- *     this occurrence (as in {@code <!-- ~%firstName% -->John<!--%-->}, or an empty
- *     {@code Optional} if no placeholder was specified (see {@link VarGroup#DEF} and
- *     {@link Regex#REGEX_CMT_VARIABLE}).
+ *     this occurrence (as in {@code <!-- ~%firstName% -->John<!--%-->}), or an empty
+ *     {@code Optional} if no placeholder was specified. (See {@link VarGroup#DEF}
+ *     and {@link Regex#REGEX_CMT_VARIABLE}.)
  * @param position the position (index) of this occurrence within the template
  */
 public record VariableOccurrence(String name,

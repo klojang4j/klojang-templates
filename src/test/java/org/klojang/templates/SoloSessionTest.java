@@ -340,6 +340,60 @@ public class SoloSessionTest {
     assertEquals("Hello &gt; John2", rs.render());
   }
 
+  @Test
+  public void in00() throws ParseException {
+    String src = """
+        ~%%begin:companies%
+          ~%%begin:departments%
+            ~%%begin:employees%
+              ~%foo%
+            ~%%end:employees%
+          ~%%end:departments%
+        ~%%end:companies%
+        """;
+    Template tmpl = Template.fromString(src);
+    RenderSession rs = tmpl.newRenderSession();
+    rs.in("companies").in("departments").in("employees").set("foo", "bar");
+    //System.out.println("*" + rs.render() + "*");
+    assertEquals("bar", rs.render().strip());
+  }
+
+  @Test
+  public void in01() throws ParseException {
+    String src = """
+        ~%%begin:companies%
+          ~%%begin:departments%
+            ~%%begin:employees%
+              ~%foo%
+            ~%%end:employees%
+          ~%%end:departments%
+        ~%%end:companies%
+        """;
+    Template tmpl = Template.fromString(src);
+    RenderSession rs = tmpl.newRenderSession();
+    rs.in("companies.departments.employees").set("foo", "bar");
+    //System.out.println("*" + rs.render() + "*");
+    assertEquals("bar", rs.render().strip());
+  }
+
+  @Test
+  public void in02() throws ParseException {
+    String src = """
+        ~%%begin:companies%
+          ~%%begin:companies%
+            ~%%begin:companies%
+              ~%foo%
+            ~%%end:companies%
+          ~%%end:companies%
+        ~%%end:companies%
+        """;
+    Template tmpl = Template.fromString(src);
+    RenderSession rs = tmpl.newRenderSession();
+    rs.in("companies.companies.companies").set("foo", "bar");
+    //System.out.println("*" + rs.render() + "*");
+    assertEquals("bar", rs.render().strip());
+  }
+
   private static String nospace(String s) {
     return s.replaceAll("\\s+", "");
   }

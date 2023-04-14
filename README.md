@@ -3,13 +3,14 @@
 _Klojang Templates_ is a Java templating API written with two goals in mind:
 
 1. Writing templates should be so simple that there is essentially no learning curve.
-2. Provide a rich en flexible API for populating the templates that more than
-   compensates for their simplicity.
+2. The API used to populate the templates, by contrast, should be rich, 
+   flexible and elegant, and more than make up for the simplicity of the 
+   templates.
 
 In short: leverage the skills of Java programmers, rather than make them learn a
 whole new skill.
 
-This solidly places _Klojang Templates_ in the _Zero Logic Templates_ camp of
+This solidly places _Klojang Templates_ in the _Zero-Logic Templates_ camp of
 templating approaches, alongside, for example,
 [Mustache](http://mustache.github.io/) &#8212; and on opposite sides of a template
 engine like [Thymeleaf](https://www.thymeleaf.org/).
@@ -44,14 +45,14 @@ To get started with _Klojang Templates_, add the following dependency to you pro
 <dependency>
     <groupId>org.klojang</groupId>
     <artifactId>klojang-templates</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
 </dependency>
 ```
 
 **Gradle**:
 
 ```
-implementation group: 'org.klojang', name: 'klojang-templates', version: '1.0.0'
+implementation group: 'org.klojang', name: 'klojang-templates', version: '1.0.1'
 ```
 
 ## Hello, World
@@ -161,8 +162,8 @@ between these two options. They are populated using the exact same methods.
 
 Inline templates are defined within the parent template itself. Here is an example of
 a template which contains an inline template ("companies"), which itself contains an
-inline template ("departments"), which also contains an inline template ("
-employees"). For clarity's sake, this is a non-HTML template.
+inline template ("departments"), which also contains an inline template 
+("employees"). For clarity's sake, this is a non-HTML template.
 
 _/views/company-overview.txt:_
 

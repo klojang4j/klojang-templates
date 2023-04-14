@@ -3,6 +3,7 @@ package org.klojang.templates;
 import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayInputStream;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -205,6 +206,29 @@ public class TemplateTest {
         """;
     Template tmpl = Template.fromString(getClass(), src);
     assertEquals(nospace(src), nospace(tmpl.toString()));
+  }
+
+  @Test
+  public void getVariableOccurrences00() throws ParseException {
+    String src = """
+        <html>
+        <head>
+          const name = '~%js:name%';
+        </head>
+        <body>
+          <p><!--~%def:name%-->John<!--%--></p>
+        </body>
+        </html>
+        """;
+    Template tmpl = Template.fromString(getClass(), src);
+    List<VariableOccurrence> occs = tmpl.getVariableOccurrences();
+    assertEquals(2, occs.size());
+    assertEquals("name", occs.get(0).name());
+    assertEquals(Optional.of(VarGroup.JS), occs.get(0).varGroup());
+    assertEquals(Optional.empty(), occs.get(0).placeholder());
+    assertEquals("name", occs.get(1).name());
+    assertEquals(Optional.of(VarGroup.DEF), occs.get(1).varGroup());
+    assertEquals(Optional.of("John"), occs.get(1).placeholder());
   }
 
   @Test

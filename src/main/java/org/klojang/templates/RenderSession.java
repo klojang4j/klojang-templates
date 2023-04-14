@@ -236,29 +236,27 @@ public sealed interface RenderSession permits SoloSession, MultiSession {
    * explicitly disabled (in other words: <i>not</i> rendered). Usually it is not
    * necessary to disable a nested template, because nested templates are anyhow only
    * rendered once you populate them. However, it can be useful in combination with a
-   * subsequent call to {@link #enable(String...) show()} and
-   * {@link #enableRecursive(String...) showRecursive()}.
+   * subsequent call to {@link #enable(String...) enable()} and
+   * {@link #enableRecursive(String...) enableRecursive()}.
    *
    * <p>Contrary to most of the other methods, this method does not return
-   * <i>this</i> {@code RenderSession}. Instead, it returns a {@code RenderSession}
-   * that works on all instances (repetitions) of the nested template. For example,
-   * if the nested template contains a variable {@code foo} and you set its value to
-   * "bar", then "bar" will appear in all instances of the template.
+   * <i>this</i> {@code RenderSession}. It is not part of the fluent interface.
+   * Instead, it returns a {@code RenderSession} for the nested template. This is a
+   * special implementation of {@code RenderSession} that works on all instances
+   * (repetitions) of the nested template. For example, if the nested template
+   * contains a variable {@code foo} and you set its value to "bar", then "bar" will
+   * appear in all instances of the template.
    *
-   * <p>You can still call {@link #populate(String, Object, String...) populate()}
-   * after a call to {@code repeat()}, but the number of source data objects you
-   * provide must be equal to {@code times}. Thus, if {@code times} equals three, you
-   * must provide a list or array containing three source data objects.
-   *
-   * <p>Beware of the exact effect of chaining calls to {@code repeat()}:
+   * <p>Beware of the effect of chaining calls to {@code repeat()}:
    *
    * <blockquote><pre>{@code
    * String src = """
    * ~%%begin:companies%
-   *        ~%%begin:departments%
-   *                ~%%begin:employees%
-   *                ~%%end:employees%
-   *        ~%%end:departments%
+   *     ~%%begin:departments%
+   *         ~%%begin:employees%
+   *             ~%firstName% ~%lastName%
+   *         ~%%end:employees%
+   *     ~%%end:departments%
    * ~%%end:companies%
    * """;
    * Template tmpl = Template.fromString(src);
@@ -273,33 +271,65 @@ public sealed interface RenderSession permits SoloSession, MultiSession {
    * @param times the number of times the template will repeat itself
    * @return a {@code RenderSession} that works on all instances (repetitions) of the
    *     nested template
+   * @see #in(String)
+   * @see #getChildSessions(String)
    */
   RenderSession repeat(String nestedTemplateName, int times);
 
   /**
-   * Returns a {@code RenderSession} for the specified nested template. If this is
-   * the first time the nested template is processed, this method behaves as though
-   * calling {@code repeat(nestedTemplateName, 1)}. Otherwise it returns a
+   * <p>
+   * Returns a {@code RenderSession} for the specified nested template. If the
+   * template has not been instantiated yet, this method behaves as though calling
+   * {@code repeat(nestedTemplateName, 1)}. Otherwise it returns a
    * {@code RenderSession} that works on all instances (repetitions) of the nested
-   * template.
-   *
+   * template. So, like the {@link #repeat(String, int) repeat()} method, this method
+   * does not return <i>this</i> {@code RenderSession}; it is not part of the fluent
+   * interface.
+   * </p>
    * <blockquote><pre>{@code
-   * Template template = Template.fromResource(getClass(), "/templates/company.html");
+   * Template template = Template.fromString("""
+   * ~%%begin:employees%
+   *     ~%firstName% ~%lastName%
+   * ~%%end:employees%
+   * """);
    * RenderSession session = template.newRenderSession();
-   * session.in("employees")
-   *  .set("firstName", "john")
-   *  .set("lastName", "Smith");
+   * session.in("employees").set("firstName", "john").set("lastName", "Smith");
+   * }</pre></blockquote>
+   * <p>
+   * The argument is allowed to be a fully-qualified name to a deeply nested
+   * template:
+   * </p>
+   * <blockquote><pre>{@code
+   * String src = """
+   * ~%%begin:companies%
+   *     ~%%begin:departments%
+   *         ~%%begin:employees%
+   *             ~%firstName% ~%lastName%
+   *         ~%%end:employees%
+   *     ~%%end:departments%
+   * ~%%end:companies%
+   * """;
+   * Template tmpl = Template.fromString(src);
+   * RenderSession rs = tmpl.newRenderSession();
+   * rs.in("companies.departments.employees").set("firstName", "John");
+   * }</pre></blockquote>
+   * <p>
+   * The last statement in the above example is equivalent to:
+   * </p>
+   * <blockquote><pre>{@code
+   * rs.in("companies").in("departments").in("employees").set("firstName", "John");
    * }</pre></blockquote>
    *
    * @param nestedTemplateName the name of the nested template
    * @return a {@code RenderSession} that works on all instances (repetitions) of the
    *     nested template
+   * @see TemplateUtils#getFQN(Template)
    */
   RenderSession in(String nestedTemplateName);
 
   /**
-   * Convenience method for rendering one ore more nested text-only templates.
-   * Equivalent to {@link #enable(int, String...) show(1, nestedTemplateNames)}.
+   * Convenience method for rendering one or more nested text-only templates.
+   * Equivalent to {@link #enable(int, String...) enable(1, nestedTemplateNames)}.
    *
    * @param nestedTemplateNames the names of the nested templates to be
    *     rendered.
@@ -322,24 +352,27 @@ public sealed interface RenderSession permits SoloSession, MultiSession {
    * of course, it <i>does</i> make sense to first explicitly disable the text-only
    * templates that should <i>not</i> be rendered.
    *
-   * <p>To enable a text-only template, you <i>could</i> also call:
+   * <p>To enable a single text-only template, you <i>could</i> also call:
    *
    * <ul>
+   * <li>{@code repeat(nestedTemplateName, 1)}
+   * <li>{@code in(nestedTemplateName)}
    * <li>{@code populate(nestedTemplateName, null)}
    * <li>{@code populate(nestedTemplateName, new Object())}
    * <li>{@code populate(nestedTemplateName, new Object[1])}
    * </ul>
    *
-   * <p>The {@code populate()} method would detect that there are no variables in the
-   * template, and hence has no need to, and will not query the source data object
-   * passed as the second argument (and hence the second argument may be anything you
-   * like, including {@code null}). However, the {@code show} method bypasses some
-   * code that is irrelevant for text-only templates.
+   * <p>(As for the calls to {@code populate()}: the {@code populate()} method would
+   * detect that there are no variables in the template. Therefore it has no need to,
+   * and will not query the source data object passed in as the second argument. And
+   * therefore the second argument may be anything, including {@code null}. But why
+   * bother?)
    *
    * @param repeats the number of times the nested template(s) must be repeated
    * @param nestedTemplateNames the names of the nested text-only templates to be
    *     rendered
    * @return this {@code RenderSession}
+   * @see Template#isTextOnly()
    */
   RenderSession enable(int repeats, String... nestedTemplateNames);
 
