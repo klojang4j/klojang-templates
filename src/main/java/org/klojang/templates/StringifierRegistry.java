@@ -418,31 +418,27 @@ public final class StringifierRegistry {
 
   Stringifier getStringifier(VariablePart part, VarGroup varGroup, Object value)
       throws RenderException {
-    StringifierId id;
     Stringifier sf;
     if (part.getVarGroup().isPresent()) {
       VarGroup vg = part.getVarGroup().get();
-      id = new StringifierId(vg);
-      if (null != (sf = stringifiers.get(id))) {
+      if (null != (sf = stringifiers.get(new StringifierId(vg)))) {
         return sf;
       }
-      // else the inline group name prefix is not associated with
+      // else the inline group name prefix was not associated with
       // a stringifier, which is pointless but allowed (in the future
       // we might want to use variable groups for other purposes).
-    } else if (varGroup != null) {
-      id = new StringifierId(varGroup);
-      if (null != (sf = stringifiers.get(id))) {
+    }
+    if (varGroup != null) {
+      if (null != (sf = stringifiers.get(new StringifierId(varGroup)))) {
         return sf;
       }
     }
     Template tmpl = part.getParentTemplate();
     String var = part.getName();
-    id = new StringifierId(tmpl, var);
-    if (null != (sf = stringifiers.get(id))) {
+    if (null != (sf = stringifiers.get(new StringifierId(tmpl, var)))) {
       return sf;
     }
-    id = new StringifierId(null, var);
-    if (null != (sf = stringifiers.get(id))) {
+    if (null != (sf = stringifiers.get(new StringifierId(null, var)))) {
       return sf;
     }
     for (Tuple2<String, Stringifier> partial : partialNames) {

@@ -413,7 +413,7 @@ public sealed interface RenderSession permits SoloSession, MultiSession {
    * @param nestedTemplateName the name of the nested template. <i>Must</i>
    *     contain exactly one variable
    * @param varGroup the variable group to assign the variable to if the variable
-   *     has no group name prefix. May be {@code null}.
+   *     has no group name prefix.
    * @param values the values to populate the instances of the specified template
    *     with
    * @return this {@code RenderSession}
@@ -471,8 +471,8 @@ public sealed interface RenderSession permits SoloSession, MultiSession {
   List<RenderSession> getChildSessions(String nestedTemplateName);
 
   /**
-   * Returns {@code true} if the template is fully populated. Note that you may not
-   * <i>want</i> the template to be fully populated.
+   * Returns {@code true} if all variables (at whatever nesting level) have been set.
+   * Note that you may not <i>want</i> the template to be fully populated.
    *
    * @return {@code true} if the template is fully populated
    */

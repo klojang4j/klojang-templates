@@ -418,55 +418,51 @@ public final class StringifierRegistry {
 
   Stringifier getStringifier(VariablePart part, VarGroup varGroup, Object value)
       throws RenderException {
-    StringifierId id;
     Stringifier sf;
-<span class="fc bfc" id="L423" title="All 2 branches covered.">    if (part.getVarGroup().isPresent()) {</span>
-<span class="fc" id="L424">      VarGroup vg = part.getVarGroup().get();</span>
-<span class="fc" id="L425">      id = new StringifierId(vg);</span>
-<span class="fc bfc" id="L426" title="All 2 branches covered.">      if (null != (sf = stringifiers.get(id))) {</span>
-<span class="fc" id="L427">        return sf;</span>
+<span class="fc bfc" id="L422" title="All 2 branches covered.">    if (part.getVarGroup().isPresent()) {</span>
+<span class="fc" id="L423">      VarGroup vg = part.getVarGroup().get();</span>
+<span class="fc bfc" id="L424" title="All 2 branches covered.">      if (null != (sf = stringifiers.get(new StringifierId(vg)))) {</span>
+<span class="fc" id="L425">        return sf;</span>
       }
-      // else the inline group name prefix is not associated with
+      // else the inline group name prefix was not associated with
       // a stringifier, which is pointless but allowed (in the future
       // we might want to use variable groups for other purposes).
-<span class="fc bfc" id="L432" title="All 2 branches covered.">    } else if (varGroup != null) {</span>
-<span class="fc" id="L433">      id = new StringifierId(varGroup);</span>
-<span class="pc bpc" id="L434" title="1 of 2 branches missed.">      if (null != (sf = stringifiers.get(id))) {</span>
-<span class="fc" id="L435">        return sf;</span>
+    }
+<span class="fc bfc" id="L431" title="All 2 branches covered.">    if (varGroup != null) {</span>
+<span class="fc bfc" id="L432" title="All 2 branches covered.">      if (null != (sf = stringifiers.get(new StringifierId(varGroup)))) {</span>
+<span class="fc" id="L433">        return sf;</span>
       }
     }
-<span class="fc" id="L438">    Template tmpl = part.getParentTemplate();</span>
-<span class="fc" id="L439">    String var = part.getName();</span>
-<span class="fc" id="L440">    id = new StringifierId(tmpl, var);</span>
-<span class="fc bfc" id="L441" title="All 2 branches covered.">    if (null != (sf = stringifiers.get(id))) {</span>
+<span class="fc" id="L436">    Template tmpl = part.getParentTemplate();</span>
+<span class="fc" id="L437">    String var = part.getName();</span>
+<span class="fc bfc" id="L438" title="All 2 branches covered.">    if (null != (sf = stringifiers.get(new StringifierId(tmpl, var)))) {</span>
+<span class="fc" id="L439">      return sf;</span>
+    }
+<span class="fc bfc" id="L441" title="All 2 branches covered.">    if (null != (sf = stringifiers.get(new StringifierId(null, var)))) {</span>
 <span class="fc" id="L442">      return sf;</span>
     }
-<span class="fc" id="L444">    id = new StringifierId(null, var);</span>
-<span class="fc bfc" id="L445" title="All 2 branches covered.">    if (null != (sf = stringifiers.get(id))) {</span>
-<span class="fc" id="L446">      return sf;</span>
-    }
-<span class="fc bfc" id="L448" title="All 2 branches covered.">    for (Tuple2&lt;String, Stringifier&gt; partial : partialNames) {</span>
-<span class="fc" id="L449">      String name = partial.first();</span>
-<span class="fc bfc" id="L450" title="All 2 branches covered.">      if (name.startsWith(&quot;*&quot;)) {</span>
-<span class="pc bpc" id="L451" title="1 of 4 branches missed.">        if (name.endsWith(&quot;*&quot;) &amp;&amp; var.contains(trim(name, &quot;*&quot;))) {</span>
-<span class="fc" id="L452">          return partial.second();</span>
-<span class="pc bpc" id="L453" title="1 of 2 branches missed.">        } else if (var.endsWith(ltrim(name, &quot;*&quot;))) {</span>
-<span class="nc" id="L454">          return partial.second();</span>
+<span class="fc bfc" id="L444" title="All 2 branches covered.">    for (Tuple2&lt;String, Stringifier&gt; partial : partialNames) {</span>
+<span class="fc" id="L445">      String name = partial.first();</span>
+<span class="fc bfc" id="L446" title="All 2 branches covered.">      if (name.startsWith(&quot;*&quot;)) {</span>
+<span class="pc bpc" id="L447" title="1 of 4 branches missed.">        if (name.endsWith(&quot;*&quot;) &amp;&amp; var.contains(trim(name, &quot;*&quot;))) {</span>
+<span class="fc" id="L448">          return partial.second();</span>
+<span class="pc bpc" id="L449" title="1 of 2 branches missed.">        } else if (var.endsWith(ltrim(name, &quot;*&quot;))) {</span>
+<span class="nc" id="L450">          return partial.second();</span>
         }
-<span class="fc bfc" id="L456" title="All 2 branches covered.">      } else if (var.startsWith(rtrim(name, &quot;*&quot;))) {</span>
-<span class="fc" id="L457">        return partial.second();</span>
+<span class="fc bfc" id="L452" title="All 2 branches covered.">      } else if (var.startsWith(rtrim(name, &quot;*&quot;))) {</span>
+<span class="fc" id="L453">        return partial.second();</span>
       }
-<span class="fc" id="L459">    }</span>
-<span class="fc" id="L460">    Class&lt;?&gt; type = typeLookup.get(Tuple2.of(tmpl, var));</span>
-<span class="fc bfc" id="L461" title="All 4 branches covered.">    if (type == null &amp;&amp; value != null) {</span>
-<span class="fc" id="L462">      type = value.getClass();</span>
+<span class="fc" id="L455">    }</span>
+<span class="fc" id="L456">    Class&lt;?&gt; type = typeLookup.get(Tuple2.of(tmpl, var));</span>
+<span class="fc bfc" id="L457" title="All 4 branches covered.">    if (type == null &amp;&amp; value != null) {</span>
+<span class="fc" id="L458">      type = value.getClass();</span>
     }
-<span class="fc bfc" id="L464" title="All 2 branches covered.">    if (type != null) {</span>
-<span class="fc bfc" id="L465" title="All 2 branches covered.">      if (null != (sf = typeStringifiers.get(type))) {</span>
-<span class="fc" id="L466">        return sf;</span>
+<span class="fc bfc" id="L460" title="All 2 branches covered.">    if (type != null) {</span>
+<span class="fc bfc" id="L461" title="All 2 branches covered.">      if (null != (sf = typeStringifiers.get(type))) {</span>
+<span class="fc" id="L462">        return sf;</span>
       }
     }
-<span class="fc" id="L469">    return defStringifier;</span>
+<span class="fc" id="L465">    return defStringifier;</span>
   }
 
 }
