@@ -22,6 +22,7 @@ import static org.klojang.templates.Accessor.UNDEFINED;
 import static org.klojang.templates.RenderErrorCode.*;
 import static org.klojang.templates.TemplateUtils.getFQN;
 import static org.klojang.templates.x.MTag.*;
+import static org.klojang.util.ArrayMethods.EMPTY_STRING_ARRAY;
 import static org.klojang.util.CollectionMethods.listify;
 import static org.klojang.util.ObjectMethods.isEmpty;
 
@@ -196,7 +197,7 @@ final class SoloSession implements RenderSession {
       try {
         value = acc.access(data, varName);
       } catch (RuntimeException e) {
-        String fqn = TemplateUtils.getFQN(config.template(), varName);
+        String fqn = getFQN(config.template(), varName);
         throw ACCESS_EXCEPTION.getException(fqn, e);
       }
       if (value != UNDEFINED) {
@@ -218,7 +219,7 @@ final class SoloSession implements RenderSession {
     for (String name : tmplNames) {
       Object nestedData = acc.access(data, name);
       if (nestedData != UNDEFINED) {
-        populate(name, nestedData, varGroup, names);
+        populate0(getNestedTemplate(name), nestedData, varGroup, names);
       }
     }
   }
@@ -227,28 +228,54 @@ final class SoloSession implements RenderSession {
   public RenderSession populate(String nestedTemplateName,
       Object data,
       String... names) {
-    return populate(nestedTemplateName, data, null, names);
+    Check.notNull(names, Tag.VARARGS);
+    Template tmpl = getNestedTemplate(nestedTemplateName);
+    return populate0(tmpl, data, null, names);
   }
 
   @Override
   public RenderSession populate(String nestedTemplateName,
-      Object sourceData,
+      Object data,
       VarGroup varGroup,
       String... names) {
-    if (sourceData == UNDEFINED) {
+    Check.notNull(varGroup, VAR_GROUP);
+    Check.notNull(names, Tag.VARARGS);
+    Template tmpl = getNestedTemplate(nestedTemplateName);
+    return populate0(tmpl, data, varGroup, names);
+  }
+
+  private RenderSession populate0(Template tmpl,
+      Object data,
+      VarGroup group,
+      String[] names) {
+    if (data == UNDEFINED) {
       return this;
-    } else if (sourceData instanceof Optional<?> opt) {
-      return opt.isPresent()
-          ? populate(nestedTemplateName, opt.get(), varGroup, names)
-          : this;
+    } else if (data instanceof Optional<?> opt) {
+      if (opt.isPresent()) {
+        return populate0(tmpl, opt.get(), group, names);
+      }
+      return this;
     }
-    Template t = getNestedTemplate(nestedTemplateName);
-    List<?> data = listify(sourceData);
-    if (t.isTextOnly()) {
-      return enable(data.size(), t);
+    List<?> list = listify(data);
+    if (tmpl.isTextOnly()) {
+      return enable(list.size(), tmpl);
     }
-    Check.that(data, Tag.DATA).is(deepNotNull());
-    return populate(t, data, varGroup, names);
+    SoloSession[] sessions = state.getOrCreateChildSessions(tmpl, list.size());
+    for (int i = 0; i < sessions.length; ++i) {
+      sessions[i].insert0(list.get(i), group, names);
+    }
+    return this;
+  }
+
+  private RenderSession populate(Template t,
+      List<?> list,
+      VarGroup group,
+      String[] names) {
+    SoloSession[] sessions = state.getOrCreateChildSessions(t, list.size());
+    for (int i = 0; i < sessions.length; ++i) {
+      sessions[i].insert0(list.get(i), group, names);
+    }
+    return this;
   }
 
   public RenderSession repeat(String nestedTemplateName, int times) {
@@ -366,7 +393,7 @@ final class SoloSession implements RenderSession {
         NOT_ONE_VAR_TEMPLATE.getExceptionSupplier(t.getName()));
     String var = t.getVariables().iterator().next();
     List<?> data = Arrays.stream(values).map(v -> singletonMap(var, v)).toList();
-    return populate(t, data, varGroup);
+    return populate0(t, data, varGroup, EMPTY_STRING_ARRAY);
   }
 
   @Override
@@ -386,7 +413,7 @@ final class SoloSession implements RenderSession {
     for (int i = 0; i < values.length; i += 2) {
       data.add(Map.of(vars[0], values[i], vars[1], values[i + 1]));
     }
-    return populate(t, data, varGroup);
+    return populate0(t, data, varGroup, EMPTY_STRING_ARRAY);
   }
 
   @Override
@@ -428,17 +455,6 @@ final class SoloSession implements RenderSession {
 
   RenderState getState() {
     return state;
-  }
-
-  private RenderSession populate(Template t,
-      List<?> data,
-      VarGroup varGroup,
-      String... names) {
-    SoloSession[] sessions = state.getOrCreateChildSessions(t, data.size());
-    for (int i = 0; i < sessions.length; ++i) {
-      sessions[i].insert0(data.get(i), varGroup, names);
-    }
-    return this;
   }
 
   private Template getNestedTemplate(String name) {
