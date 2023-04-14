@@ -21,8 +21,7 @@ import static org.klojang.check.CommonProperties.size;
 import static org.klojang.templates.Accessor.UNDEFINED;
 import static org.klojang.templates.RenderErrorCode.*;
 import static org.klojang.templates.TemplateUtils.getFQN;
-import static org.klojang.templates.x.MTag.VAR_GROUP;
-import static org.klojang.templates.x.MTag.VAR_NAME;
+import static org.klojang.templates.x.MTag.*;
 import static org.klojang.util.CollectionMethods.listify;
 import static org.klojang.util.ObjectMethods.isEmpty;
 
@@ -74,7 +73,9 @@ final class SoloSession implements RenderSession {
 
   @Override
   public RenderSession setDelayed(String varName, Supplier<Object> valueGenerator) {
-    return setDelayed(varName, valueGenerator, VarGroup.TEXT);
+    Check.notNull(varName, VAR_NAME);
+    Check.notNull(valueGenerator, VALUE_GENERATOR);
+    return setDelayed0(varName, valueGenerator, null);
   }
 
   @Override
@@ -82,23 +83,27 @@ final class SoloSession implements RenderSession {
       Supplier<Object> valueGenerator,
       VarGroup varGroup) {
     Check.notNull(varName, VAR_NAME);
-    Check.notNull(valueGenerator, "valueGenerator");
+    Check.notNull(valueGenerator, VALUE_GENERATOR);
     Check.notNull(varGroup, VAR_GROUP);
+    return setDelayed0(varName, valueGenerator, varGroup);
+  }
+
+  private RenderSession setDelayed0(String var,
+      Supplier<Object> func,
+      VarGroup group) {
     Template t = config.template();
-    Check.that(varName).is(keyIn(), t.variables(),
-        NO_SUCH_VARIABLE.getExceptionSupplier(TemplateUtils.getFQN(t, varName)));
-    IntList indices = t.variables().get(varName);
-    indices.forEachThrowing(i -> state.setVar(i,
-        new Lazy(valueGenerator, varGroup)));
-    state.done(varName);
+    Check.that(var).is(keyIn(), t.variables(),
+        NO_SUCH_VARIABLE.getExceptionSupplier(TemplateUtils.getFQN(t, var)));
+    IntList indices = t.variables().get(var);
+    indices.forEachThrowing(i -> state.setVar(i, new Lazy(func, group)));
+    state.done(var);
     return this;
   }
 
   @Override
   public RenderSession setNested(String path, IntFunction<Object> valueGenerator) {
-    Check.notNull(path, Tag.PATH);
-    Check.notNull(valueGenerator, "valueGenerator");
-    Path p = Path.from(path);
+    Path p = Check.notNull(path, Tag.PATH).ok(Path::from);
+    Check.notNull(valueGenerator, VALUE_GENERATOR);
     Check.that(p).has(Path::size, gt(), 1, "Not a nested variable: ${arg}");
     setNested(this, p, valueGenerator, null, true);
     return this;
@@ -109,9 +114,9 @@ final class SoloSession implements RenderSession {
       IntFunction<Object> valueGenerator,
       VarGroup varGroup,
       boolean force) {
-    Check.notNull(path, Tag.PATH);
-    Check.notNull(valueGenerator, "valueGenerator");
-    Path p = Path.from(path);
+    Path p = Check.notNull(path, Tag.PATH).ok(Path::from);
+    Check.notNull(valueGenerator, VALUE_GENERATOR);
+    Check.notNull(varGroup, VAR_GROUP);
     Check.that(p).has(Path::size, gt(), 1, "Not a nested variable: ${arg}");
     setNested(this, p, valueGenerator, varGroup, force);
     return this;
@@ -144,13 +149,20 @@ final class SoloSession implements RenderSession {
 
   @Override
   public RenderSession insert(Object data, String... names) {
-    return insert(data, null, names);
+    Check.notNull(names, Tag.VARARGS);
+    return insert0(data, null, names);
   }
 
   @Override
   public RenderSession insert(Object data,
       VarGroup varGroup,
       String... names) {
+    Check.notNull(varGroup, VAR_GROUP);
+    Check.notNull(names, Tag.VARARGS);
+    return insert0(data, varGroup, names);
+  }
+
+  private RenderSession insert0(Object data, VarGroup group, String[] names) {
     if (data == UNDEFINED) {
       return this;
     } else if (data == null) {
@@ -162,10 +174,10 @@ final class SoloSession implements RenderSession {
       // reason not to support it.
       return this;
     } else if (data instanceof Optional<?> opt) {
-      return opt.isPresent() ? insert(opt.get(), varGroup, names) : this;
+      return opt.isPresent() ? insert0(opt.get(), group, names) : this;
     }
-    processVars(data, varGroup, names);
-    processTmpls(data, varGroup, names);
+    processVars(data, group, names);
+    processTmpls(data, group, names);
     return this;
   }
 
@@ -424,7 +436,7 @@ final class SoloSession implements RenderSession {
       String... names) {
     SoloSession[] sessions = state.getOrCreateChildSessions(t, data.size());
     for (int i = 0; i < sessions.length; ++i) {
-      sessions[i].insert(data.get(i), varGroup, names);
+      sessions[i].insert0(data.get(i), varGroup, names);
     }
     return this;
   }
