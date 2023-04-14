@@ -151,7 +151,7 @@ final class SoloSession implements RenderSession {
   @Override
   public RenderSession insert(Object data, String... names) {
     Check.notNull(names, Tag.VARARGS);
-    return insert0(data, null, names);
+    return doInsert(data, null, names);
   }
 
   @Override
@@ -160,10 +160,10 @@ final class SoloSession implements RenderSession {
       String... names) {
     Check.notNull(varGroup, VAR_GROUP);
     Check.notNull(names, Tag.VARARGS);
-    return insert0(data, varGroup, names);
+    return doInsert(data, varGroup, names);
   }
 
-  private RenderSession insert0(Object data, VarGroup group, String[] names) {
+  private RenderSession doInsert(Object data, VarGroup group, String[] names) {
     if (data == UNDEFINED) {
       return this;
     } else if (data == null) {
@@ -175,7 +175,7 @@ final class SoloSession implements RenderSession {
       // reason not to support it.
       return this;
     } else if (data instanceof Optional<?> opt) {
-      return opt.isPresent() ? insert0(opt.get(), group, names) : this;
+      return opt.isPresent() ? doInsert(opt.get(), group, names) : this;
     }
     processVars(data, group, names);
     processTmpls(data, group, names);
@@ -225,23 +225,21 @@ final class SoloSession implements RenderSession {
   }
 
   @Override
-  public RenderSession populate(String nestedTemplateName,
+  public RenderSession populate(String tmpl,
       Object data,
       String... names) {
     Check.notNull(names, Tag.VARARGS);
-    Template tmpl = getNestedTemplate(nestedTemplateName);
-    return doPopulate(tmpl, data, null, names);
+    return doPopulate(getNestedTemplate(tmpl), data, null, names);
   }
 
   @Override
-  public RenderSession populate(String nestedTemplateName,
+  public RenderSession populate(String tmpl,
       Object data,
-      VarGroup varGroup,
+      VarGroup group,
       String... names) {
-    Check.notNull(varGroup, VAR_GROUP);
+    Check.notNull(group, VAR_GROUP);
     Check.notNull(names, Tag.VARARGS);
-    Template tmpl = getNestedTemplate(nestedTemplateName);
-    return doPopulate(tmpl, data, varGroup, names);
+    return doPopulate(getNestedTemplate(tmpl), data, group, names);
   }
 
   private RenderSession doPopulate(Template tmpl,
@@ -262,7 +260,7 @@ final class SoloSession implements RenderSession {
     }
     SoloSession[] sessions = state.getOrCreateChildSessions(tmpl, list.size());
     for (int i = 0; i < sessions.length; ++i) {
-      sessions[i].insert0(list.get(i), group, names);
+      sessions[i].doInsert(list.get(i), group, names);
     }
     return this;
   }
@@ -419,11 +417,11 @@ final class SoloSession implements RenderSession {
   }
 
   @Override
-  public List<RenderSession> getChildSessions(String nestedTemplateName) {
-    Template t = getNestedTemplate(nestedTemplateName);
-    RenderSession[] sessions = state.getChildSessions(t);
-    return Check.that(sessions).is(notNull(),
-        TEMPLATE_NOT_INSTANTIATED.getExceptionSupplier(t.getName())).ok(List::of);
+  public List<RenderSession> getChildSessions(String tmpl) {
+    Template t = getNestedTemplate(tmpl);
+    return Check.that(state.getChildSessions(t))
+        .is(notNull(), TEMPLATE_NOT_INSTANTIATED.getExceptionSupplier(t.getName()))
+        .ok(List::of);
   }
 
   /* RENDER METHODS */
