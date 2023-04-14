@@ -524,10 +524,14 @@ public class EmployeeResource {
 
 ## Conclusion
 
-That's it, really. The next paragraph will only be of interest of you if you want to
-write templates that render flawlessly in their raw, unprocessed state. The 
-[RenderSession](file:///home/ayco/git-repos/klojang/klojang-templates/target/apidocs/org.klojang.templates/org/klojang/templates/RenderSession.html)
-class contains quite a few more methods that help you populate a Klojang template, 
+That's it, really. The next paragraph will only be of interest to you if your goal is
+to write templates that are well-formed, valid and pleasing to the eye even in their
+raw, unprocessed state. The
+[RenderSession](https://klojang4j.github.io/klojang-templates/1/api/org.klojang.templates/org/klojang/templates/RenderSession.html)
+class contains quite a few more methods that help you populate a Klojang template,
+and we haven't yet covered every single way you can finetune the behaviour of
+_Klojang Templates_, but this is all covered in great detail in 
+the [javadocs](https://klojang4j.github.io/klojang-templates/1/api).
 
 ## Evolving the Raw Template
 
