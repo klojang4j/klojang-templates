@@ -219,7 +219,7 @@ final class SoloSession implements RenderSession {
     for (String name : tmplNames) {
       Object nestedData = acc.access(data, name);
       if (nestedData != UNDEFINED) {
-        populate0(getNestedTemplate(name), nestedData, varGroup, names);
+        doPopulate(getNestedTemplate(name), nestedData, varGroup, names);
       }
     }
   }
@@ -230,7 +230,7 @@ final class SoloSession implements RenderSession {
       String... names) {
     Check.notNull(names, Tag.VARARGS);
     Template tmpl = getNestedTemplate(nestedTemplateName);
-    return populate0(tmpl, data, null, names);
+    return doPopulate(tmpl, data, null, names);
   }
 
   @Override
@@ -241,10 +241,10 @@ final class SoloSession implements RenderSession {
     Check.notNull(varGroup, VAR_GROUP);
     Check.notNull(names, Tag.VARARGS);
     Template tmpl = getNestedTemplate(nestedTemplateName);
-    return populate0(tmpl, data, varGroup, names);
+    return doPopulate(tmpl, data, varGroup, names);
   }
 
-  private RenderSession populate0(Template tmpl,
+  private RenderSession doPopulate(Template tmpl,
       Object data,
       VarGroup group,
       String[] names) {
@@ -252,7 +252,7 @@ final class SoloSession implements RenderSession {
       return this;
     } else if (data instanceof Optional<?> opt) {
       if (opt.isPresent()) {
-        return populate0(tmpl, opt.get(), group, names);
+        return doPopulate(tmpl, opt.get(), group, names);
       }
       return this;
     }
@@ -267,37 +267,25 @@ final class SoloSession implements RenderSession {
     return this;
   }
 
-  private RenderSession populate(Template t,
-      List<?> list,
-      VarGroup group,
-      String[] names) {
-    SoloSession[] sessions = state.getOrCreateChildSessions(t, list.size());
-    for (int i = 0; i < sessions.length; ++i) {
-      sessions[i].insert0(list.get(i), group, names);
-    }
-    return this;
-  }
-
-  public RenderSession repeat(String nestedTemplateName, int times) {
+  public RenderSession repeat(String tmpl, int times) {
     Check.that(times).isNot(negative());
-    Template t = getNestedTemplate(nestedTemplateName);
+    Template t = getNestedTemplate(tmpl);
     Check.that(state.getChildSessions(t)).is(NULL(),
-        REPETITIONS_FIXED.getExceptionSupplier(nestedTemplateName));
-    SoloSession[] sessions = state.createChildSessions(t, times);
-    return new MultiSession(sessions);
+        REPETITIONS_FIXED.getExceptionSupplier(tmpl));
+    return new MultiSession(state.createChildSessions(t, times));
   }
 
   @Override
   public RenderSession in(String fqn) {
     Path path = Check.that(fqn).isNot(empty()).ok(Path::from);
-    RenderSession rs = in1(path.segment(0));
+    RenderSession rs = in0(path.segment(0));
     for (int i = 1; i < path.size(); ++i) {
       rs = rs.in(path.segment(i));
     }
     return rs;
   }
 
-  private RenderSession in1(String name) {
+  private RenderSession in0(String name) {
     Template t = getNestedTemplate(name);
     SoloSession[] children = state.getChildSessions(t);
     if (children == null) {
@@ -345,7 +333,7 @@ final class SoloSession implements RenderSession {
     if (nestedTemplateNames.length == 0) {
       for (Template t : config.template().getNestedTemplates()) {
         if (!state.isDisabled(t) && TemplateUtils.getVarsPerTemplate(t).isEmpty()) {
-          showAllRecursive(this, t);
+          enableRecursive(this, t);
         }
       }
     } else {
@@ -353,58 +341,72 @@ final class SoloSession implements RenderSession {
       for (Template t : config.template().getNestedTemplates()) {
         Check.that(TemplateUtils.getVarsPerTemplate(t)).is(empty(),
             NOT_TEXT_ONLY.getExceptionSupplier(t.getName()));
-        showSelectedRecursive(this, t, names);
+        enableRecursive(this, t, names);
       }
     }
     return this;
   }
 
-  private static void showAllRecursive(SoloSession s0, Template t0) {
+  private static void enableRecursive(SoloSession s0, Template t0) {
     s0.enable(1, t0);
     if (!t0.getNestedTemplates().isEmpty()) {
       SoloSession s = s0.state.getChildSessions(t0)[0];
-      t0.getNestedTemplates().forEach(t -> showAllRecursive(s, t));
+      t0.getNestedTemplates().forEach(t -> enableRecursive(s, t));
     }
   }
 
-  private static void showSelectedRecursive(SoloSession s0,
+  private static void enableRecursive(SoloSession s0,
       Template t0,
       Set<String> names) {
     if (names.contains(t0.getName())) {
       s0.enable(1, t0);
       if (!t0.getNestedTemplates().isEmpty()) {
         SoloSession s = s0.state.getChildSessions(t0)[0];
-        t0.getNestedTemplates().forEach(t -> showSelectedRecursive(s, t, names));
+        t0.getNestedTemplates().forEach(t -> enableRecursive(s, t, names));
       }
     }
   }
 
   @Override
   public RenderSession populate1(String nestedTemplateName, Object... values) {
-    return populate1(nestedTemplateName, null, values);
+    Check.that(values, Tag.VARARGS).isNot(empty());
+    return doPopulate1(nestedTemplateName, null, values);
   }
 
   @Override
   public RenderSession populate1(String nestedTemplateName,
       VarGroup varGroup, Object... values) {
+    Check.notNull(varGroup, VAR_GROUP);
     Check.that(values, Tag.VARARGS).isNot(empty());
-    Template t = getNestedTemplate(nestedTemplateName);
+    return doPopulate1(nestedTemplateName, varGroup, values);
+  }
+
+  private RenderSession doPopulate1(String tmpl, VarGroup group, Object[] values) {
+    Template t = getNestedTemplate(tmpl);
     Check.that(t.getVariables()).has(size(), eq(), 1,
         NOT_ONE_VAR_TEMPLATE.getExceptionSupplier(t.getName()));
     String var = t.getVariables().iterator().next();
     List<?> data = Arrays.stream(values).map(v -> singletonMap(var, v)).toList();
-    return populate0(t, data, varGroup, EMPTY_STRING_ARRAY);
+    return doPopulate(t, data, group, EMPTY_STRING_ARRAY);
   }
 
   @Override
   public RenderSession populate2(String nestedTemplateName, Object... values) {
-    return populate2(nestedTemplateName, null, values);
+    Check.that(values, Tag.VARARGS).isNot(empty()).has(length(), even());
+    return doPopulate2(nestedTemplateName, null, values);
   }
 
   @Override
   public RenderSession populate2(String nestedTemplateName,
       VarGroup varGroup, Object... values) {
+    Check.notNull(varGroup, VAR_GROUP);
     Check.that(values, Tag.VARARGS).isNot(empty()).has(length(), even());
+    return doPopulate2(nestedTemplateName, varGroup, values);
+  }
+
+  private RenderSession doPopulate2(String nestedTemplateName,
+      VarGroup varGroup,
+      Object[] values) {
     Template t = getNestedTemplate(nestedTemplateName);
     Check.that(t.getVariables()).has(size(), eq(), 2,
         NOT_TWO_VAR_TEMPLATE.getExceptionSupplier(t.getName()));
@@ -413,7 +415,7 @@ final class SoloSession implements RenderSession {
     for (int i = 0; i < values.length; i += 2) {
       data.add(Map.of(vars[0], values[i], vars[1], values[i + 1]));
     }
-    return populate0(t, data, varGroup, EMPTY_STRING_ARRAY);
+    return doPopulate(t, data, varGroup, EMPTY_STRING_ARRAY);
   }
 
   @Override
@@ -460,9 +462,9 @@ final class SoloSession implements RenderSession {
   private Template getNestedTemplate(String name) {
     Check.notNull(name, MTag.TEMPLATE_NAME);
     Template t = config.template();
-    return Check.that(name).is(elementOf(), t.getNestedTemplateNames(),
-            NO_SUCH_TEMPLATE.getExceptionSupplier(TemplateUtils.getFQN(t, name)))
-        .ok(t::getNestedTemplate);
+    Check.that(name).is(elementOf(), t.getNestedTemplateNames(),
+        NO_SUCH_TEMPLATE.getExceptionSupplier(getFQN(t, name)));
+    return t.getNestedTemplate(name);
   }
 
 }
