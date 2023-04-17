@@ -29,7 +29,8 @@ functionally equivalent. However, _Klojang Templates_ is unashamedly Java-only. 
 template syntax is carefully tuned to give the API maximum leverage over it. In
 particular, _Klojang Templates_ allows you to
 [nest templates](#nested-templates) inside other templates. As a consequence, 
-populating them with data via the API can be remarkably efficient and concise.
+the API can be remarkably efficient and concise when it comes to populating the 
+templates.
 
 In short, we hope (and think) that you'll find _Klojang Templates_ a worthwhile 
 addition to the Java templating landscape.
