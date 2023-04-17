@@ -3,9 +3,8 @@
 _Klojang Templates_ is a Java templating API written with two goals in mind:
 
 1. Writing templates should be so simple that there is essentially no learning curve.
-2. The API used to populate the templates, by contrast, should be rich, 
-   flexible and elegant, and more than make up for the simplicity of the 
-   templates.
+2. The API used to populate the templates, by contrast, should be rich and 
+   flexible, and more than make up for the simplicity of the templates.
 
 In short: leverage the skills of Java programmers, rather than make them learn a
 whole new skill.
@@ -20,13 +19,22 @@ render flawlessly within a browser. This allows the static HTML produced by UI
 designers to gradually evolve into fully dynamic pages while at no point entering
 an "unrenderable" phase. While this was not the primary motivation for developing
 _Klojang Templates_, it, too, lets you create templates that are well-formed and
-valid in their raw state.
+valid in their raw state. (See 
+[Evolving the Raw Template](#evolving-the-raw-template).)
 
 Klojang templates arguably are even simpler than Mustache templates. There are just
 five syntactical constructs. Three if you discount for the fact that two of them are
 comments-like constructs. Two if you consider that, of those three, two are
-functionally equivalent. Nevertheless, we hope and think that you'll find populating
-a Klojang template surprisingly efficient.
+functionally equivalent. However, _Klojang Templates_ is unashamedly Java-only. The
+template syntax is carefully tuned to give the API maximum leverage over it. In
+particular, _Klojang Templates_ allows you to
+[nest templates](#nested-templates) inside other templates. As a consequence, 
+populating them with data via the API can be remarkably efficient and concise.
+
+In short, we hope (and think) that you'll find _Klojang Templates_ a worthwhile 
+addition to the Java templating landscape.
+
+## Other Documentation
 
 - The **javadocs** for _Klojang Templates_ can be
   found [here](https://klojang4j.github.io/klojang-templates/1/api).
@@ -54,6 +62,11 @@ To get started with _Klojang Templates_, add the following dependency to you pro
 ```
 implementation group: 'org.klojang', name: 'klojang-templates', version: '1.0.1'
 ```
+
+_Klojang Templates_ is agnostic about the web or application framework you use. It
+does not "hook" into any of them in any deep way. You can use _Klojang Templates_
+with any of the Jakarta/JAX-RS based frameworks, but equally well with non-Servlet
+based frameworks like [Micronaut](https://micronaut.io/).
 
 ## Hello, World
 
