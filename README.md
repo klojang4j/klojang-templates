@@ -591,7 +591,7 @@ comments without this making a difference in how the template is rendered.
 `<!-- ~%foo% -->` is rendered just like `~%foo%`. _Klojang Templates_ will replace
 the _entire_ character sequence with whatever value `foo` was set to. The space
 character on either side of `~%foo%` is optional. You may also write `<!--~%foo%-->`,
-but multiple space characters, or any other character, are not allowed.
+but multiple space characters, or other characters, are not allowed.
 
 So your first attempt at turning the design into a dynamically populated page might
 look like this:
