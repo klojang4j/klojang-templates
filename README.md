@@ -15,12 +15,12 @@ templating approaches, alongside, for example,
 [Mustache](http://mustache.github.io/) &#8212; and on opposite sides of a template
 engine like [Thymeleaf](https://www.thymeleaf.org/).
 
-Nevertheless, one appealing feature of Thymeleaf is that raw, unprocessed Thymeleaf
-templates render flawlessly within a browser. This allows the static HTML produced by
-UI designers to gradually evolve into fully dynamic pages while at no point entering
+Yet, one appealing feature of Thymeleaf is that raw, unprocessed Thymeleaf templates
+render flawlessly within a browser. This allows the static HTML produced by UI
+designers to gradually evolve into fully dynamic pages while at no point entering
 an "unrenderable" phase. While this was not the primary motivation for developing
-_Klojang Templates_, it, too, lets you create templates that render just fine in
-their raw state.
+_Klojang Templates_, it, too, lets you create templates that are well-formed and
+valid in their raw state.
 
 Klojang templates arguably are even simpler than Mustache templates. There are just
 five syntactical constructs. Three if you discount for the fact that two of them are
@@ -145,8 +145,8 @@ public class EmployeeResource {
 }
 ```
 
-Note that the `john()` method returns a method reference to
-[RenderSession.render(OutputStream)](https://klojang4j.github.io/klojang-templates/1/api/org.klojang.emplates/org/klojang/templates/RenderSession.html#render(java.io.OutputStream)),
+Here, the `john()` method returns a method reference to
+[RenderSession.render(OutputStream)](https://klojang4j.github.io/klojang-templates/1/api/org.klojang.templates/org/klojang/templates/RenderSession.html#render(java.io.OutputStream))),
 which neatly targets the JAX-RS
 [StreamingOutput](https://docs.oracle.com/javaee/7/api/javax/ws/rs/core/StreamingOutput.html)
 interface.

@@ -46,7 +46,7 @@ public sealed interface RenderSession permits SoloSession, MultiSession {
    * @param varName the name of the variable to set
    * @param value the value
    * @param varGroup the variable group to assign the variable to if the variable
-   *     has no group name prefix. May be {@code null}.
+   *     has no group name prefix.
    * @return this {@code RenderSession}
    * @see StringifierRegistry.Builder#forVarGroup(String, Stringifier)
    */
@@ -150,9 +150,9 @@ public sealed interface RenderSession permits SoloSession, MultiSession {
    * @param data an object that provides data for all or some of the template
    *     variables and nested templates
    * @param names the names of the variables and nested templates that must be
-   *     populated. May be {@code null} or empty, in which case all variables and
-   *     nested templates will be checked to see if they can be populated from the
-   *     specified source data object
+   *     populated. May be empty, in which case all variables and nested templates
+   *     will be checked to see if they can be populated from the specified source
+   *     data object
    * @return this {@code RenderSession}
    */
   RenderSession insert(Object data, String... names);
@@ -167,11 +167,11 @@ public sealed interface RenderSession permits SoloSession, MultiSession {
    * @param data an object that provides data for all or some of the template
    *     variables and nested templates
    * @param varGroup the variable group to assign the template variables to if
-   *     they have no inline group name prefix. May be {@code null}.
+   *     they have no inline group name prefix.
    * @param names the names of the variables and nested templates that must be
-   *     populated. May be {@code null} or empty, in which case all variables and
-   *     nested templates will be checked to see if they can be populated from the
-   *     specified source data object
+   *     populated. May be empty, in which case all variables and nested templates
+   *     will be checked to see if they can be populated from the specified source
+   *     data object
    * @return this {@code RenderSession}
    */
   RenderSession insert(Object data, VarGroup varGroup, String... names);
@@ -220,7 +220,7 @@ public sealed interface RenderSession permits SoloSession, MultiSession {
    * @param data an object that provides data for all or some of the nested
    *     template's variables and nested templates
    * @param varGroup the variable group to assign the variables to if they have
-   *     no group name prefix. May be {@code null}.
+   *     no group name prefix.
    * @param names the names of the variables and doubly-nested templates that you
    *     want to be populated using the specified data object
    * @return this {@code RenderSession}
