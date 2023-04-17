@@ -473,10 +473,10 @@ being rendered.
 #### Optionals
 
 `Optional` objects containing some data model object are typically returned by the
-find-by-id method of data access objects (DAOs). With _Klojang Templates_ you can
-insert `Optional` objects as-is into a template. If the `Optional` is empty, the
-template will not be rendered. Otherwise it will be populated and rendered using the
-data model object.
+find-by-id method of data access objects. With _Klojang Templates_ you can insert
+`Optional` objects as-is into a template. If the `Optional` is empty, the template
+will not be rendered. Otherwise it will be populated and rendered using the data
+model object.
 
 ## Stringifiers and Variable Groups
 
