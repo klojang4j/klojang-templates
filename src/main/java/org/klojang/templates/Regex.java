@@ -129,9 +129,9 @@ public final class Regex {
    * However, the parser enforces an extra symmetry:
    * </p>
    * <ul>
-   * <li><span style="background-color:#dfdfdf">{@code <!-- ~%%begin:foo% -->}</span> <b>must</b> terminate with <span style="background-color:#dfdfdf">{@code <!-- ~%%end:foo% -->}</span>
-   * <li><span style="background-color:#dfdfdf">{@code <!-- ~%%begin:foo%}</span> <b>must</b> terminate with <span style="background-color:#dfdfdf">{@code ~%%end:foo% -->}</span>
-   * <li><span style="background-color:#dfdfdf">{@code ~%%begin:foo%}</span> <b>must</b> terminate with <span style="background-color:#dfdfdf">{@code ~%%end:foo%}</span>
+   * <li><span style="background-color:#e6e6e6">{@code <!-- ~%%begin:foo% -->}</span> <b>must</b> terminate with <span style="background-color:#e6e6e6">{@code <!-- ~%%end:foo% -->}</span>
+   * <li><span style="background-color:#e6e6e6">{@code <!-- ~%%begin:foo%}</span> <b>must</b> terminate with <span style="background-color:#e6e6e6">{@code ~%%end:foo% -->}</span>
+   * <li><span style="background-color:#e6e6e6">{@code ~%%begin:foo%}</span> <b>must</b> terminate with <span style="background-color:#e6e6e6">{@code ~%%end:foo%}</span>
    * </ul>
    * <p>
    * The space character following "&lt;!--" and/or preceding "--&gt;" is optional.
@@ -154,9 +154,9 @@ public final class Regex {
    * However, the parser enforces an extra symmetry:
    * </p>
    * <ul>
-   * <li><span style="background-color:#dfdfdf">{@code <!-- ~%%begin:foo% -->}</span> <b>must</b> terminate with <span style="background-color:#dfdfdf">{@code <!-- ~%%end:foo% -->}</span>
-   * <li><span style="background-color:#dfdfdf">{@code <!-- ~%%begin:foo%}</span> <b>must</b> terminate with <span style="background-color:#dfdfdf">{@code ~%%end:foo% -->}</span>
-   * <li><span style="background-color:#dfdfdf">{@code ~%%begin:foo%}</span> <b>must</b> terminate with <span style="background-color:#dfdfdf">{@code ~%%end:foo%}</span>
+   * <li><span style="background-color:#e6e6e6">{@code <!-- ~%%begin:foo% -->}</span> <b>must</b> terminate with <span style="background-color:#e6e6e6">{@code <!-- ~%%end:foo% -->}</span>
+   * <li><span style="background-color:#e6e6e6">{@code <!-- ~%%begin:foo%}</span> <b>must</b> terminate with <span style="background-color:#e6e6e6">{@code ~%%end:foo% -->}</span>
+   * <li><span style="background-color:#e6e6e6">{@code ~%%begin:foo%}</span> <b>must</b> terminate with <span style="background-color:#e6e6e6">{@code ~%%end:foo%}</span>
    * </ul>
    * <p>
    * The space character following "&lt;!--" and/or preceding "--&gt;" is optional.
