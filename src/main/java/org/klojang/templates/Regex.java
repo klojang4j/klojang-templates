@@ -127,8 +127,8 @@ public final class Regex {
    * </p>
    * <p>
    * However, the parser enforces an extra symmetry:<br/>
-   * {@code <!-- ~%%begin:foo% -->} <b>must</b> terminate with {@code <!-- ~%%end:foo% -->}<br/>
-   * {@code <!-- ~%%begin:foo%} <b>must</b> terminate with {@code ~%%end:foo% -->}<br/>
+   * <span style="background-color:#ccc">{@code <!-- ~%%begin:foo% -->}</span> <b>must</b> terminate with {@code <!-- ~%%end:foo% -->}<br/>
+   * <span style="background-color:#ccc">{@code <!-- ~%%begin:foo%}</span> <b>must</b> terminate with {@code ~%%end:foo% -->}<br/>
    * {@code ~%%begin:foo%} <b>must</b> terminate with {@code ~%%end:foo%}
    * </p>
    * <p>
