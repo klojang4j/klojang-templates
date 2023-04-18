@@ -18,8 +18,8 @@ Yet, one appealing feature of Thymeleaf is that raw, unprocessed Thymeleaf templ
 render flawlessly within a browser. This allows the static HTML produced by UI
 designers to gradually evolve into fully dynamic pages while at no point entering
 an "unrenderable" phase. While this was not the primary motivation for developing
-_Klojang Templates_, it, too, lets you create templates that are well-formed and
-valid in their raw state. (See 
+_Klojang Templates_, it does let you write templates that are well-formed and valid
+in their raw state. (See
 [Evolving the Raw Template](#evolving-the-raw-template).)
 
 Klojang templates arguably are even simpler than Mustache templates. There are just
@@ -27,10 +27,9 @@ five syntactical constructs. Three if you discount for the fact that two of them
 comments-like constructs. Two if you consider that, of those three, two are
 functionally equivalent. However, _Klojang Templates_ is unashamedly Java-only. The
 template syntax is carefully tuned to give the API maximum leverage over it. In
-particular, _Klojang Templates_ allows you to
-[nest templates](#nested-templates) inside other templates. As a consequence, 
-the API can be remarkably efficient and concise when it comes to populating the 
-templates.
+particular, _Klojang Templates_ allows you to [nest templates](#nested-templates)
+inside other templates. This can make the API can be very efficient and concise when
+it comes to populating the templates.
 
 In short, we hope (and think) that you'll find _Klojang Templates_ a worthwhile 
 addition to the Java templating landscape.
@@ -65,7 +64,7 @@ implementation group: 'org.klojang', name: 'klojang-templates', version: '1.0.1'
 ```
 
 _Klojang Templates_ is agnostic about the web or application framework you use. It
-does not "hook" into any of them in any deep way. You can use _Klojang Templates_
+does not hook into any of them in any deep way. You can use _Klojang Templates_
 with any of the Jakarta/JAX-RS based frameworks, but equally well with non-Servlet
 based frameworks like [Micronaut](https://micronaut.io/).
 
@@ -107,9 +106,9 @@ provide some extra help in case you are writing HTML templates.
 <!-- hello.html -->
 <html>
 <head>
-    <script>
-        const greeting = '~%js:greeting%';
-    </script>
+<script>
+    const greeting = '~%js:greeting%';
+</script>
 </head>
 <body>
 <p>~%html:greeting%</p>
@@ -159,7 +158,7 @@ public class EmployeeResource {
 }
 ```
 
-Here, the `john()` method returns a method reference to
+This time the resource method returns a method reference to
 [RenderSession.render(OutputStream)](https://klojang4j.github.io/klojang-templates/1/api/org.klojang.templates/org/klojang/templates/RenderSession.html#render(java.io.OutputStream))),
 which neatly targets the JAX-RS
 [StreamingOutput](https://docs.oracle.com/javaee/7/api/javax/ws/rs/core/StreamingOutput.html)
@@ -266,17 +265,19 @@ also use the following syntax:
 
 ## Using Nested Templates
 
-The nested-template feature almost literally turns a Klojang template into a mold
-into which you can sink objects with the same shape. If the structure of the template
-reflects the structure of the model object, you can fill up the entire template with
-a single call. The following code snippets illustrate this.
+The ability to nest templates in other templates almost literally turns a Klojang
+template into a mold into which you can sink objects with the same shape. If the
+structure of the template reflects the structure of the model object, you can fill up
+the entire template with a single call. The following code snippets illustrate this.
 
+_The Model:_
 ```java
 record Employee(int id, String firstName, String lastName, Address address) {}
 
 record Address(String line1, String zipCode, String city, State state) {}
 ```
 
+_The View:_
 ```html
 <!-- label.html -->
 <html>
@@ -290,6 +291,7 @@ record Address(String line1, String zipCode, String city, State state) {}
 </html>
 ```
 
+_The Controller:_
 ```java
 @Path("/print")
 public class LabelPrintResource {
@@ -309,9 +311,9 @@ public class LabelPrintResource {
 ```
 
 Notice how the address template gets mapped to the address property of `Employee`,
-and how, _inside_ the address template, you have access to the `Address`
+and how, inside the address template, you have access to the `Address`
 properties. In fact, inside the address template you are in a "different universe"
-and you can **only** access the `Address` properties.
+and you can _only_ access `Address` properties.
 
 ### Tables
 
@@ -324,17 +326,13 @@ Nested templates enable you to create tables and other repetitive structures.
 <table>
     <thead>
     <tr>
-        <th>First name</th>
-        <th>Last name</th>
-        <th>Birth date</th>
+        <th>First name</th><th>Last name</th><th>Birth date</th>
     </tr>
     </thead>
     <tbody>
     ~%%begin:employees%
     <tr>
-        <td>~%firstName%</td>
-        <td>~%lastName%</td>
-        <td>~%birthDate%</td>
+        <td>~%firstName%</td><td>~%lastName%</td><td>~%birthDate%</td>
     </tr>
     ~%%end:employees%
     </tbody>
@@ -381,26 +379,18 @@ above template would render somewhat like this:
 <table>
     <thead>
     <tr>
-        <th>First name</th>
-        <th>Last name</th>
-        <th>Birth date</th>
+        <th>First name</th><th>Last name</th><th>Birth date</th>
     </tr>
     </thead>
     <tbody>
     <tr>
-        <td>John</td>
-        <td>Smith</td>
-        <td>1980-06-13</td>
+        <td>John</td><td>Smith</td><td>1980-06-13</td>
     </tr>
     <tr>
-        <td>Mary</td>
-        <td>Bear</td>
-        <td>1977-11-10</td>
+        <td>Mary</td><td>Bear</td><td>1977-11-10</td>
     </tr>
     <tr>
-        <td>Tracey</td>
-        <td>Peterson</td>
-        <td>2001-04-03</td>
+        <td>Tracey</td><td>Peterson</td><td>2001-04-03</td>
     </tr>
     </tbody>
 </table>
@@ -473,10 +463,10 @@ being rendered.
 #### Optionals
 
 `Optional` objects containing some data model object are typically returned by the
-find-by-id method of data access objects. With _Klojang Templates_ you can insert
-`Optional` objects as-is into a template. If the `Optional` is empty, the template
-will not be rendered. Otherwise it will be populated and rendered using the data
-model object.
+find-by-id method of data access objects. With _Klojang Templates_ it is perfectly
+valid to insert an `Optional` into a template. If the `Optional` is empty, the
+template will not be rendered. Otherwise it will be populated and rendered using the
+data model object.
 
 ## Stringifiers and Variable Groups
 
@@ -620,15 +610,15 @@ look like this:
 
 ### Placeholders
 
-That's nice. The user won't see ugly `~%` sequences when viewing the raw template in
+That's nice. The user won't see ugly `~%` tokens when viewing the raw template in
 a browser. Unfortunately, the example row containing "John Smith" now has effectively
 disappeared from view.
 
 This can be remedied by using _placeholders_. A placeholder is a value that is placed
-inside a pair of `<!--%-->` sequences. Since `<!--%-->` is a self-closed HTML
-comment, any text inside a pair of these sequences will be visible in the browser.
-However, when _Klojang Templates_ renders the template, it will remove both
-the `<!--%-->` sequences and any text inside it.
+inside a pair of `<!--%-->` tokens. Since `<!--%-->` is a self-closed HTML comment,
+any text inside a pair of these tokens will be visible in the browser. However, when
+_Klojang Templates_ renders the template, it will remove the `<!--%-->` tokens and
+any text inside it.
 
 ```html
 <td>
@@ -699,7 +689,7 @@ It may have occurred to you that this won't work for included templates:
 </tbody>
 ```
 
-This, too, will be rendered just like
+This, too, _will_ be rendered just like
 `~%%include:employee:/views/employee-row.html%%` (without HTML comments), but the raw
 template now unfortunately simply has an empty table body.
 
@@ -719,11 +709,11 @@ In this case you can use _ditch blocks_ to restore renderability to the raw temp
 </tbody>
 ```
 
-Ditch blocks are pairs of `<!--%%-->` sequences and any text between them. As with
-placeholders (`<!--%-->`), these sequences are self-closed HTML comments, so the text
-between them will be visible in the browser. But when _Klojang Templates_
-renders the template, all ditch blocks will be removed from the template. (In fact,
-they will be removed very early on in the parsing phase. The
+Ditch blocks are pairs of `<!--%%-->` tokens and any text between them. As with
+placeholders (`<!--%-->`), these tokens are self-closed HTML comments, so the text
+between them will be visible in the browser. But when _Klojang Templates_ renders the
+template, all ditch blocks will be removed from the template. (In fact, they will 
+already happen very early in the parsing phase. The
 [Template](https://klojang4j.github.io/klojang-templates/1/api/org.klojang.templates/org/klojang/templates/Template.html)
 instance produced by the parser cannot tell you whether there were any ditch blocks
 in the template source.)
@@ -749,8 +739,27 @@ Ditch blocks can also be combined with inline templates to produce the same resu
 </tbody>
 ```
 
-Notice how, this time, it is not just the begin and end tags of the the inline
+Notice how, this time, it is not just the begin and end tags of the inline
 template that are placed inside HTML comments. It is the _entire_ inline template.
+
+#### Ditch Blocks vs. Placeholders
+Ditch blocks really are just comments &#8212; comparable to HTML or Java comments.
+You can even use ditch blocks to "comment out" nested templates:
+
+```
+<!--%%--> Not sure yet if this is a good idea
+    <!-- ~%%begin:employees% -->
+    <tr>
+        <td><!-- ~%firstName% -->John<!--%--></td>
+        <td><!-- ~%lastName% -->Smith<!--%--></td>
+    </tr>
+    <!-- ~%%end:employees% -->
+<!--%%-->
+```
+
+However, you cannot have ditch blocks _inside_ an inline template. For placeholders
+it's the other way round. They may appear inside nested templates, but you cannot
+place a pair of placeholder tokens _around_ a nested template.
 
 ## About
 
