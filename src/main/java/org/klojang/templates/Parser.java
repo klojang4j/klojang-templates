@@ -10,6 +10,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static org.klojang.check.CommonChecks.*;
+import static org.klojang.templates.InlineTemplateParser.CommentType;
 import static org.klojang.templates.ParseErrorCode.*;
 import static org.klojang.templates.ParseUtils.*;
 import static org.klojang.templates.Regex.*;
@@ -44,8 +45,11 @@ final class Parser {
     logParsing(name, location);
     // Accumulates template names for duplicate checks:
     Set<String> names = new HashSet<>();
+    InlineTemplateParser itp = new InlineTemplateParser(src, location);
     List<Part> parts = purgeDitchBlocks();
-    parts = parse(parts, names, this::parseInlineTemplates);
+    parts = parse(parts, names, (x, y) -> itp.parse(x, y, CommentType.TAGS));
+    parts = parse(parts, names, (x, y) -> itp.parse(x, y, CommentType.BLOCK));
+    parts = parse(parts, names, (x, y) -> itp.parse(x, y, CommentType.NONE));
     parts = parse(parts, names,
         (x, y) -> parseIncludedTemplates(x, y, CMT_INCLUDED_TEMPLATE));
     parts = parse(parts, names,
@@ -90,72 +94,6 @@ final class Parser {
       }
     }
     return out;
-  }
-
-  private List<Part> parseInlineTemplates(UnparsedPart unparsed, Set<String> names)
-      throws ParseException {
-    Matcher m = getMatcher(INLINE_TEMPLATE_BEGIN, unparsed);
-    if (!m.find()) {
-      return Collections.singletonList(unparsed);
-    }
-    List<Part> parts = new ArrayList<>();
-    int offset = unparsed.start(), end = 0;
-    do {
-      if (m.start() > end) {
-        parts.add(todo(unparsed, end, m.start()));
-      }
-      String name = m.group(2);
-      Check.that(name).isNot(equalTo(), ROOT_TEMPLATE_NAME,
-          ILLEGAL_TMPL_NAME.getExceptionSupplier(src, offset + m.start(2), name));
-      Check.that(name).isNot(in(), names,
-          DUPLICATE_TMPL_NAME.getExceptionSupplier(src, offset + m.start(2), name));
-      names.add(name);
-      EndTag endTag = getEndTag(unparsed, name, m.end(), 0);
-      String mySrc = unparsed.text().substring(m.end(), endTag.start());
-      // No path is associated with an inline template, but it inherits the
-      // PathResolver of the template in which it is nested
-      TemplateLocation loc = new TemplateLocation(location.resolver());
-      // If ~%%end:foo% is all by itself on a separate line, except possibly
-      // surrounded by whitespace, then that whole line will be removed.
-      if (onSeparateLine(unparsed.text(), endTag.start(), endTag.end())) {
-        mySrc = deleteEmptyLine(mySrc);
-      }
-      Parser parser = new Parser(loc, name, mySrc);
-      parts.add(new InlineTemplatePart(offset + m.start(),
-          parser.parse(),
-          onSeparateLine(unparsed.text(), m.start(), m.end())));
-      end = endTag.end();
-    } while (m.find(end));
-    if (end < unparsed.text().length()) {
-      parts.add(todo(unparsed, end, unparsed.text().length()));
-    }
-    return parts;
-  }
-
-  private record EndTag(int start, int end) {}
-
-  private EndTag getEndTag(UnparsedPart unparsed,
-      String tmplName,
-      int offset,
-      int level)
-      throws ParseException {
-    Matcher mEnd = getEndTagMatcher(unparsed, tmplName);
-    Check.that(mEnd.find(offset)).is(yes(),
-        MISSING_END_TAG.getExceptionSupplier(src, offset, tmplName));
-    Matcher mStart = getBeginTagMatcher(unparsed, tmplName);
-    if (!mStart.find(offset)) {
-      if (level == 0) {
-        return new EndTag(mEnd.start(), mEnd.end());
-      }
-      return getEndTag(unparsed, tmplName, mEnd.end(), --level);
-    }
-    if (mEnd.start() < mStart.start()) {
-      if (level == 0) {
-        return new EndTag(mEnd.start(), mEnd.end());
-      }
-      return getEndTag(unparsed, tmplName, mEnd.end(), --level);
-    }
-    return getEndTag(unparsed, tmplName, mStart.end(), ++level);
   }
 
   private List<Part> parseIncludedTemplates(UnparsedPart unparsed,

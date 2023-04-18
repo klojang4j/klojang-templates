@@ -126,9 +126,10 @@ public final class Regex {
    * {@code <!-- ~%%begin:foo% -->}
    * </p>
    * <p>
-   * Although {@code <!-- ~%%begin:foo%} is specifically meant to be used in
-   * combination with {@code ~%%end:foo% -->}, this is not enforced by the template
-   * parser.
+   * However, the parser enforces an extra symmetry:<br/>
+   * {@code <!-- ~%%begin:foo% -->} <b>must</b> terminate with {@code <!-- ~%%end:foo% -->}<br/>
+   * {@code <!-- ~%%begin:foo%} <b>must</b> terminate with {@code ~%%end:foo% -->}<br/>
+   * {@code ~%%begin:foo%} <b>must</b> terminate with {@code ~%%end:foo%}
    * </p>
    * <p>
    * The space character following "&lt;!--" and/or preceding "--&gt;" is optional.
@@ -148,8 +149,10 @@ public final class Regex {
    * {@code <!-- ~%%end:foo% -->}
    * </p>
    * <p>
-   * Although {@code ~%%end:foo% -->} is specifically meant to be preceded by
-   * {@code ~%%begin:foo% -->}, this is not enforced by the template parser.
+   * However, the parser enforces an extra symmetry:<br/>
+   * {@code <!-- ~%%begin:foo% -->} <b>must</b> terminate with {@code <!-- ~%%end:foo% -->}<br/>
+   * {@code <!-- ~%%begin:foo%} <b>must</b> terminate with {@code ~%%end:foo% -->}<br/>
+   * {@code ~%%begin:foo%} <b>must</b> terminate with {@code ~%%end:foo%}
    * </p>
    * <p>
    * The space character following "&lt;!--" and/or preceding "--&gt;" is optional.

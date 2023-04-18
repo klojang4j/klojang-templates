@@ -1,0 +1,251 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Regex.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Klojang Templates</a> &gt; <a href="index.source.html" class="el_package">org.klojang.templates</a> &gt; <span class="el_source">Regex.java</span></div><h1>Regex.java</h1><pre class="source lang-java linenums">package org.klojang.templates;
+
+import java.util.regex.Pattern;
+
+import static java.util.regex.Pattern.compile;
+
+/**
+ * Tokens and regular expressions used by the template parser to parse templates. For
+ * all intents and purposes, this is an internal class. However, by making this class
+ * and the constants defined in it public, the API documentation as a whole becomes
+ * more self-contained as it is the only class from which you can infer which
+ * syntactical constructs are available in a Klojang template. This class might also
+ * be useful for toolmakers (e.g. when writing a syntax highlighting plugin).
+ */
+public final class Regex {
+
+  private static final int MULTILINE = Pattern.MULTILINE | Pattern.DOTALL;
+
+  /**
+   * Regular expression for {@linkplain VarGroup variable group} names. Variable
+   * groups can be specified inline (within the template) using this syntax:
+   * {@code ~%vargroup:varname%}. For example: {@code ~%html:firstName%}. Variable
+   * group names must start with a letter and be followed by zero or more letters,
+   * digits, underscores or hyphens.
+   */
+  public static final String REGEX_VAR_GROUP = &quot;([a-zA-Z][a-zA-Z0-9_\\-]*)&quot;;
+
+  /**
+   * Regular expression for nested template names and path segments within a variable
+   * name. Since these names may correspond to keys in {@code Map} objects, there are
+   * very few constraints on what constitutes a valid name. They must consist of at
+   * least one character, and they must not contain any of the following characters:
+   * {@code ~%:.\n\r\0}. Of course, if the name are to correspond to, for example,
+   * bean properties, they are externally constrained: they must be valid Java
+   * identifiers.
+   */
+  public static final String REGEX_NAME = &quot;([^~%:.\\n\\r\u0000]+)&quot;;
+
+  /**
+   * &lt;p&gt;Regular expression for path strings. Variable names are paths through an
+   * object graph. For example: {@code ~%company.address.city%}. This variable would
+   * map to the {@code city} property of the {@code Address} object within the
+   * {@code Company} object within the object that you populate the template with.
+   * Each of the name segments must match {@link #REGEX_NAME}. In practice, you are
+   * more likely to use nested and doubly-nested templates, and then use simple names
+   * at the appropriate nesting level (e.g. {@code ~%city%}).
+   *
+   * &lt;p&gt;&lt;b&gt;Do not confuse this regular expression with
+   * {@link #REGEX_INCLUDE_PATH})&lt;/b&gt;. The latter is used for included templates, in
+   * which you specify a path to a file system or classpath resource.
+   *
+   * @see org.klojang.path.Path
+   */
+  public static final String REGEX_PATH
+      = &quot;(&quot;
+      + REGEX_NAME
+      + &quot;(\\.&quot; + REGEX_NAME + &quot;)*&quot;
+      + &quot;)&quot;;
+
+  /**
+   * Regular expression for template variables. The pattern for a variable name is:
+   * {@code ~%[vargroup:]varname%}, where {@code vargroup} is
+   * {@link #REGEX_VAR_GROUP} and {@code varname} is {@link #REGEX_PATH}.
+   */
+  public static final String REGEX_VARIABLE
+      = &quot;~%&quot;
+      + &quot;(&quot; + REGEX_VAR_GROUP + &quot;:)?&quot;
+      + REGEX_PATH
+      + &quot;%&quot;;
+
+  /**
+   * &lt;p&gt;Regular expression for a template variable that is placed inside an HTML
+   * comment. For example: {@code &lt;!-- ~%firstName% --&gt;}. This is rendered just like
+   * {@code ~%firstName%}. However, when using HTML comments, the raw, unprocessed
+   * template still renders nicely in a browser &amp;#8212; without &quot;odd&quot; tilde-percent
+   * sequences spoiling the HTML page. This works even better if you also provide a
+   * placeholder value, as in the following example:
+   * {@code &lt;!-- ~%firstName% --&gt;John&lt;!--%--&gt;}. This, too, renders just like
+   * {@code ~%firstName%}. Now, when the browser renders the raw template, it will
+   * display the string &quot;John&quot;, because it is outside any HTML comments. But when
+   * &lt;i&gt;Klojang Templates&lt;/i&gt; renders the template, &quot;John&quot; will have
+   * disappeared, and the only thing that remains is the value of {@code firstName}.
+   *
+   * &lt;p&gt;Note that the entire construct ({@code &lt;!-- ~%firstName% --&gt;John&lt;!--%--&gt;})
+   * &lt;b&gt;must&lt;/b&gt; be on a single line. If you want to provide a placeholder value
+   * that spans multiple lines, use the syntax in the example below:
+   *
+   * &lt;blockquote&gt;&lt;pre&gt;{@code
+   * &lt;tr&gt;
+   *   &lt;td&gt;
+   *   &lt;!-- ~%firstName% --&gt;
+   *   &lt;!--%--&gt;
+   *       This entire piece of text, and
+   *       the placeholder tags on either
+   *       side of it, will be gone when
+   *       the template is rendered
+   *   &lt;!--%--&gt;
+   *   &lt;/td&gt;
+   * &lt;/tr&gt;
+   * }&lt;/pre&gt;&lt;/blockquote&gt;
+   *
+   * &lt;p&gt;However, contrary to the single-line syntax, this value is not recorded
+   * &lt;i&gt;as the placeholder for&lt;/i&gt; the preceding variable. It is just something that
+   * will be visible in the raw template, but gone in the rendered version.
+   *
+   * &lt;p&gt;The space character surrounding the variable (as in
+   * {@code &lt;!-- ~%firstName% --&gt;}) is optional. You may also omit it
+   * ({@code &lt;!--~%firstName%--&gt;}). Multiple spaces or other characters are not
+   * allowed.
+   *
+   * @see VarGroup#DEF
+   * @see #REGEX_PLACEHOLDER
+   */
+  public static final String REGEX_CMT_VARIABLE
+      = &quot;&lt;!-- ?&quot;
+      + REGEX_VARIABLE
+      + &quot; ?--&gt;((.*?)&lt;!--%--&gt;)?&quot;;
+
+  /**
+   * &lt;p&gt;
+   * Regular expression for inline templates begin tags. The following examples are
+   * all valid begin tags:
+   * &lt;/p&gt;
+   * &lt;p&gt;
+   * {@code ~%%begin:foo%}&lt;br/&gt;{@code &lt;!-- ~%%begin:foo%}&lt;br/&gt;
+   * {@code &lt;!-- ~%%begin:foo% --&gt;}
+   * &lt;/p&gt;
+   * &lt;p&gt;
+   * However, the parser enforces an extra symmetry:&lt;br/&gt;
+   * {@code &lt;!-- ~%%begin:foo% --&gt;} &lt;b&gt;must&lt;/b&gt; terminate with {@code &lt;!-- ~%%end:foo% --&gt;}&lt;br/&gt;
+   * {@code &lt;!-- ~%%begin:foo%} &lt;b&gt;must&lt;/b&gt; terminate with {@code ~%%end:foo% --&gt;}&lt;br/&gt;
+   * {@code ~%%begin:foo%} &lt;b&gt;must&lt;/b&gt; terminate with {@code ~%%end:foo%}
+   * &lt;/p&gt;
+   * &lt;p&gt;
+   * The space character following &quot;&amp;lt;!--&quot; and/or preceding &quot;--&amp;gt;&quot; is optional.
+   * Multiple spaces or other characters are not allowed.
+   * &lt;/p&gt;
+   */
+  public static final String REGEX_INLINE_TEMPLATE_BEGIN
+      = &quot;(&lt;!-- ?)?~%%begin:&quot; + REGEX_NAME + &quot;%( ?--&gt;)?&quot;;
+
+  /**
+   * &lt;p&gt;
+   * Regular expression for inline templates end tags. The following examples are all
+   * valid end tags:
+   * &lt;/p&gt;
+   * &lt;p&gt;
+   * {@code ~%%end:foo%}&lt;br/&gt;{@code ~%%end:foo% --&gt;}&lt;br/&gt;
+   * {@code &lt;!-- ~%%end:foo% --&gt;}
+   * &lt;/p&gt;
+   * &lt;p&gt;
+   * However, the parser enforces an extra symmetry:&lt;br/&gt;
+   * {@code &lt;!-- ~%%begin:foo% --&gt;} &lt;b&gt;must&lt;/b&gt; terminate with {@code &lt;!-- ~%%end:foo% --&gt;}&lt;br/&gt;
+   * {@code &lt;!-- ~%%begin:foo%} &lt;b&gt;must&lt;/b&gt; terminate with {@code ~%%end:foo% --&gt;}&lt;br/&gt;
+   * {@code ~%%begin:foo%} &lt;b&gt;must&lt;/b&gt; terminate with {@code ~%%end:foo%}
+   * &lt;/p&gt;
+   * &lt;p&gt;
+   * The space character following &quot;&amp;lt;!--&quot; and/or preceding &quot;--&amp;gt;&quot; is optional.
+   * Multiple spaces or other characters are not allowed.
+   * &lt;/p&gt;
+   */
+  public static final String REGEX_INLINE_TEMPLATE_END
+      = &quot;(&lt;!-- ?)?~%%end:&quot; + REGEX_NAME + &quot;%( ?--&gt;)?&quot;;
+
+  /**
+   * Regular expression for the path specified in an included template. Templates are
+   * included in another template using this syntax:
+   * {@code ~%%include:/path/to/template.html%%} or
+   * {@code ~%%include:template-name:/path/to/template.html%%}. The path is a
+   * sequence of one more valid URL characters. So: letters, digits and:
+   * {@code _-~:;/?#!$&amp;%,@+.=[]()}.
+   */
+  public static final String REGEX_INCLUDE_PATH
+      = &quot;([a-zA-Z0-9_~:;/?#!$&amp;%,@+.=\\-\\[\\]()]+?)&quot;;
+
+  /**
+   * Regular expression for included templates. This is the basic pattern:
+   * {@code ~%%include:[template-name:]path%%}. If no name is provided, the template
+   * name will be the base name of the last path element. So for
+   * {@code ~%%include:/path/to/foo.html%%} that would be &quot;foo&quot;.
+   */
+  public static final String REGEX_INCLUDED_TEMPLATE
+      = &quot;~%%include:&quot;
+      + &quot;(&quot; + REGEX_NAME + &quot;:)?&quot;
+      + REGEX_INCLUDE_PATH
+      + &quot;%%&quot;;
+
+  /**
+   * Regular expression for an included template that is placed inside an HTML
+   * comment. For example: {@code &lt;!-- ~%%include:/path/to/foo.html%% --&gt;}.
+   */
+  public static final String REGEX_CMT_INCLUDED_TEMPLATE
+      = &quot;&lt;!-- ?&quot;
+      + REGEX_INCLUDED_TEMPLATE
+      + &quot; ?--&gt;&quot;;
+
+  // Used only for syntax error detection:
+  static final String REGEX_DITCH_TAG = &quot;&lt;!--%%--&gt;&quot;;
+
+  /**
+   * Regular expression for ditch blocks. A ditch block is a pair of
+   * {@code &lt;!--%%--&gt;} tags and any text between them. A ditch block is the
+   * &lt;i&gt;Klojang Templates&lt;/i&gt; equivalent of an HTML or Java comment. Ditch blocks
+   * can be used to &quot;comment out&quot; nested templates, template variables, or anything
+   * else. They cannot themselves be nested inside any syntactical construct provided
+   * by &lt;i&gt;Klojang Templates&lt;/i&gt;, including nested templates.
+   */
+  public static final String REGEX_DITCH_BLOCK = &quot;&lt;!--%%--&gt;(.*?)&lt;!--%%--&gt;&quot;;
+
+  /**
+   * Regular expression for placeholders. A placeholder is a pair of {@code &lt;!--%--&gt;}
+   * tags and any text between them. When a template is rendered by &lt;i&gt;Klojang
+   * Templates&lt;/i&gt;, these tokens, and any text between them are erased from the
+   * template. However, since {@code &lt;!--%--&gt;} is a self-closed HTML comment, a
+   * browser would display what is between these tokens when rendering the raw,
+   * unprocessed template. Contrary to {@link #REGEX_DITCH_BLOCK ditch blocks},
+   * placeholders may appear inside a nested template.
+   */
+  public static final String REGEX_PLACEHOLDER = &quot;&lt;!--%--&gt;(.*?)&lt;!--%--&gt;&quot;;
+<span class="fc" id="L220">  static final Pattern VARIABLE = compile(REGEX_VARIABLE);</span>
+<span class="fc" id="L221">  static final Pattern CMT_VARIABLE = compile(REGEX_CMT_VARIABLE);</span>
+<span class="fc" id="L222">  static final Pattern INLINE_TEMPLATE_BEGIN = compile(REGEX_INLINE_TEMPLATE_BEGIN);</span>
+<span class="fc" id="L223">  static final Pattern INLINE_TEMPLATE_END = compile(REGEX_INLINE_TEMPLATE_END);</span>
+<span class="fc" id="L224">  static final Pattern INCLUDED_TEMPLATE = compile(REGEX_INCLUDED_TEMPLATE);</span>
+<span class="fc" id="L225">  static final Pattern CMT_INCLUDED_TEMPLATE = compile(REGEX_CMT_INCLUDED_TEMPLATE);</span>
+  // Only used for syntax error reporting
+<span class="fc" id="L227">  static final Pattern DITCH_TAG = compile(REGEX_DITCH_TAG, MULTILINE);</span>
+<span class="fc" id="L228">  static final Pattern DITCH_BLOCK = compile(REGEX_DITCH_BLOCK, MULTILINE);</span>
+<span class="fc" id="L229">  static final Pattern PLACEHOLDER = compile(REGEX_PLACEHOLDER, MULTILINE);</span>
+  static final String PLACEHOLDER_START_END = &quot;&lt;!--%--&gt;&quot;;
+
+  /**
+   * Prints the regular expressions.
+   */
+  public static void printAll() {
+<span class="fc" id="L236">    System.out.println(&quot;VARIABLE ................: &quot; + VARIABLE);</span>
+<span class="fc" id="L237">    System.out.println(&quot;CMT_VARIABLE ............: &quot; + CMT_VARIABLE);</span>
+<span class="fc" id="L238">    System.out.println(&quot;INLINE_TEMPLATE_BEGIN ...: &quot; + INLINE_TEMPLATE_BEGIN);</span>
+<span class="fc" id="L239">    System.out.println(&quot;INLINE_TEMPLATE_END .....: &quot; + INLINE_TEMPLATE_END);</span>
+<span class="fc" id="L240">    System.out.println(&quot;INCLUDED_TEMPLATE .......: &quot; + INCLUDED_TEMPLATE);</span>
+<span class="fc" id="L241">    System.out.println(&quot;CMT_INCLUDED_TEMPLATE ...: &quot; + CMT_INCLUDED_TEMPLATE);</span>
+<span class="fc" id="L242">    System.out.println(&quot;DITCH_BLOCK .............: &quot; + DITCH_BLOCK);</span>
+<span class="fc" id="L243">    System.out.println(&quot;PLACEHOLDER .............: &quot; + PLACEHOLDER);</span>
+<span class="fc" id="L244">  }</span>
+
+<span class="nc" id="L246">  private Regex() {</span>
+<span class="nc" id="L247">    throw new UnsupportedOperationException();</span>
+  }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

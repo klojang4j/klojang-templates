@@ -49,13 +49,7 @@ final class ParseUtils {
         .matcher(unparsed.text());
   }
 
-  static Matcher getEndTagMatcher(UnparsedPart unparsed, String tmplName) {
-    return Pattern
-        .compile("(<!-- ?)?~%%end:" + tmplName + "%( ?-->)?")
-        .matcher(unparsed.text());
-  }
-
-  static UnparsedPart todo(UnparsedPart p, int from, int to) {
+   static UnparsedPart todo(UnparsedPart p, int from, int to) {
     String s = p.text().substring(from, to);
     return new UnparsedPart(s, p.start() + from);
   }
