@@ -149,7 +149,7 @@ public final class Regex {
    * </p>
    * <ul>
    *   <li>{@code ~%%end:foo%}
-   *   <li>{@code ~%%begin:foo% -->}
+   *   <li>{@code ~%%end:foo% -->}
    *   <li>{@code <!-- ~%%end:foo% -->}
    * </ul>
    * <p>
