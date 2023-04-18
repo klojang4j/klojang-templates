@@ -57,7 +57,7 @@ final class Parser {
 <span class="fc" id="L57">    parts = parse(parts, names, (x, y) -&gt; parseVars(x, y, CMT_VARIABLE));</span>
 <span class="fc" id="L58">    parts = parse(parts, names, (x, y) -&gt; parseVars(x, y, VARIABLE));</span>
 <span class="fc" id="L59">    parts = collectTextParts(parts);</span>
-<span class="fc" id="L60">    parts = suppressNewLines(parts);</span>
+<span class="fc" id="L60">    parts = deleteEmptyLastLine(parts);</span>
 <span class="fc" id="L61">    return parts;</span>
   }
 
@@ -215,44 +215,17 @@ final class Parser {
 <span class="fc" id="L215">        INCLUDE_TAG_NOT_TERMINATED.getExceptionSupplier(src, off + idx));</span>
 <span class="fc" id="L216">  }</span>
 
-  /*
-   * Remove the last line from text parts if, in the original template, it was the
-   * line containing ~%%begin:foo% (and nothing else).
-   */
-  private static List&lt;Part&gt; suppressNewLines(List&lt;Part&gt; parts) {
-<span class="fc" id="L223">    List&lt;Part&gt; out = new ArrayList&lt;&gt;(parts.size());</span>
-<span class="fc bfc" id="L224" title="All 2 branches covered.">    for (int i = 0; i &lt; parts.size(); ++i) {</span>
-<span class="fc" id="L225">      Part part = parts.get(i);</span>
-<span class="fc bfc" id="L226" title="All 2 branches covered.">      if (part instanceof TextPart tp) {</span>
-<span class="fc bfc" id="L227" title="All 2 branches covered.">        if (i &lt; parts.size() - 1</span>
-<span class="fc bfc" id="L228" title="All 2 branches covered.">            &amp;&amp; parts.get(i + 1) instanceof InlineTemplatePart itp</span>
-<span class="fc bfc" id="L229" title="All 2 branches covered.">            &amp;&amp; itp.isStartTagOnSeparateLine()</span>
-        ) {
-<span class="fc" id="L231">          String trimmed = deleteEmptyLine(tp.getText());</span>
-<span class="fc bfc" id="L232" title="All 2 branches covered.">          if (!trimmed.isEmpty()) {</span>
-<span class="fc" id="L233">            out.add(new TextPart(trimmed, part.start()));</span>
-          }
-<span class="fc" id="L235">        } else {</span>
-<span class="fc" id="L236">          out.add(part);</span>
-        }
-      } else {
-<span class="fc" id="L239">        out.add(part);</span>
-      }
-    }
-<span class="fc" id="L242">    return out;</span>
-  }
-
   static void logParsing(String name, TemplateLocation location) {
-<span class="pc bpc" id="L246" title="1 of 2 branches missed.">    if (LOG.isTraceEnabled()) {</span>
-<span class="nc bnc" id="L247" title="All 2 branches missed.">      if (name.equals(ROOT_TEMPLATE_NAME)) {</span>
-<span class="nc" id="L248">        LOG.trace(&quot;Parsing root template&quot;);</span>
-<span class="nc bnc" id="L249" title="All 2 branches missed.">      } else if (location.isString()) {</span>
-<span class="nc" id="L250">        LOG.trace(&quot;Parsing inline template \&quot;{}\&quot;&quot;, name);</span>
+<span class="pc bpc" id="L219" title="1 of 2 branches missed.">    if (LOG.isTraceEnabled()) {</span>
+<span class="nc bnc" id="L220" title="All 2 branches missed.">      if (name.equals(ROOT_TEMPLATE_NAME)) {</span>
+<span class="nc" id="L221">        LOG.trace(&quot;Parsing root template&quot;);</span>
+<span class="nc bnc" id="L222" title="All 2 branches missed.">      } else if (location.isString()) {</span>
+<span class="nc" id="L223">        LOG.trace(&quot;Parsing inline template \&quot;{}\&quot;&quot;, name);</span>
       } else {
-<span class="nc" id="L252">        LOG.trace(&quot;Parsing included template \&quot;{}\&quot;&quot;, name);</span>
+<span class="nc" id="L225">        LOG.trace(&quot;Parsing included template \&quot;{}\&quot;&quot;, name);</span>
       }
     }
-<span class="fc" id="L255">  }</span>
+<span class="fc" id="L228">  }</span>
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

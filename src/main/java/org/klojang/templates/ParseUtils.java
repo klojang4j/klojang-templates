@@ -2,6 +2,8 @@ package org.klojang.templates;
 
 import org.klojang.util.StringMethods;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -29,7 +31,21 @@ final class ParseUtils {
     return true;
   }
 
-  static String deleteEmptyLine(String txt) {
+  static Matcher getMatcher(Pattern pattern, UnparsedPart unparsed) {
+    return pattern.matcher(unparsed.text());
+  }
+
+  static UnparsedPart todo(UnparsedPart p, int from, int to) {
+    String s = p.text().substring(from, to);
+    return new UnparsedPart(s, p.start() + from);
+  }
+
+  /**
+   * Remove the first line of an inline template if it was the containing
+   * ~%%begin:foo%, followed by a newline character (which would belong to the inline
+   * template).
+   */
+  static String deleteEmptyFirstLine(String txt) {
     String s = StringMethods.rtrim(txt, " \t");
     if (s.endsWith("\r\n")) {
       return s.substring(0, s.length() - 2);
@@ -39,19 +55,32 @@ final class ParseUtils {
     return s;
   }
 
-  static Matcher getMatcher(Pattern pattern, UnparsedPart unparsed) {
-    return pattern.matcher(unparsed.text());
-  }
-
-  static Matcher getBeginTagMatcher(UnparsedPart unparsed, String tmplName) {
-    return Pattern
-        .compile("(<!-- ?)?~%%begin:" + tmplName + "%( ?-->)?")
-        .matcher(unparsed.text());
-  }
-
-   static UnparsedPart todo(UnparsedPart p, int from, int to) {
-    String s = p.text().substring(from, to);
-    return new UnparsedPart(s, p.start() + from);
+  /**
+   * Remove the last line from text parts if, in the original template source, it was
+   * a line containing the begin tag of an inline template (and nothing else but
+   * whitespace).
+   */
+  static List<Part> deleteEmptyLastLine(List<Part> parts) {
+    List<Part> out = new ArrayList<>(parts.size());
+    for (int i = 0; i < parts.size(); ++i) {
+      Part part = parts.get(i);
+      if (part instanceof TextPart tp) {
+        if (i < parts.size() - 1
+            && parts.get(i + 1) instanceof InlineTemplatePart itp
+            && itp.isStartTagOnSeparateLine()
+        ) {
+          String trimmed = deleteEmptyFirstLine(tp.getText());
+          if (!trimmed.isEmpty()) {
+            out.add(new TextPart(trimmed, part.start()));
+          }
+        } else {
+          out.add(part);
+        }
+      } else {
+        out.add(part);
+      }
+    }
+    return out;
   }
 
 }

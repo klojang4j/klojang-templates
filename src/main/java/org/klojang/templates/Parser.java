@@ -57,7 +57,7 @@ final class Parser {
     parts = parse(parts, names, (x, y) -> parseVars(x, y, CMT_VARIABLE));
     parts = parse(parts, names, (x, y) -> parseVars(x, y, VARIABLE));
     parts = collectTextParts(parts);
-    parts = suppressNewLines(parts);
+    parts = deleteEmptyLastLine(parts);
     return parts;
   }
 
@@ -213,33 +213,6 @@ final class Parser {
     idx = str.indexOf("~%%include:");
     Check.that(idx).is(eq(), -1,
         INCLUDE_TAG_NOT_TERMINATED.getExceptionSupplier(src, off + idx));
-  }
-
-  /*
-   * Remove the last line from text parts if, in the original template, it was the
-   * line containing ~%%begin:foo% (and nothing else).
-   */
-  private static List<Part> suppressNewLines(List<Part> parts) {
-    List<Part> out = new ArrayList<>(parts.size());
-    for (int i = 0; i < parts.size(); ++i) {
-      Part part = parts.get(i);
-      if (part instanceof TextPart tp) {
-        if (i < parts.size() - 1
-            && parts.get(i + 1) instanceof InlineTemplatePart itp
-            && itp.isStartTagOnSeparateLine()
-        ) {
-          String trimmed = deleteEmptyLine(tp.getText());
-          if (!trimmed.isEmpty()) {
-            out.add(new TextPart(trimmed, part.start()));
-          }
-        } else {
-          out.add(part);
-        }
-      } else {
-        out.add(part);
-      }
-    }
-    return out;
   }
 
   static void logParsing(String name, TemplateLocation location) {

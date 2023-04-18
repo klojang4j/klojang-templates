@@ -2,10 +2,12 @@
 
 import org.klojang.util.StringMethods;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-<span class="nc" id="L8">final class ParseUtils {</span>
+<span class="nc" id="L10">final class ParseUtils {</span>
 
   /*
    * Determines whether the text between from and to finds itself on an otherwise
@@ -15,43 +17,70 @@ import java.util.regex.Pattern;
    */
   static boolean onSeparateLine(String src, int from, int to) {
     char c;
-<span class="pc bpc" id="L18" title="1 of 6 branches missed.">    for (int i = from - 1; i &gt;= 0 &amp;&amp; (c = src.charAt(i)) != '\n' &amp;&amp; c != '\r'; --i) {</span>
-<span class="pc bpc" id="L19" title="1 of 4 branches missed.">      if (c != ' ' &amp;&amp; c != '\t') {</span>
-<span class="fc" id="L20">        return false;</span>
+<span class="pc bpc" id="L20" title="1 of 6 branches missed.">    for (int i = from - 1; i &gt;= 0 &amp;&amp; (c = src.charAt(i)) != '\n' &amp;&amp; c != '\r'; --i) {</span>
+<span class="pc bpc" id="L21" title="1 of 4 branches missed.">      if (c != ' ' &amp;&amp; c != '\t') {</span>
+<span class="fc" id="L22">        return false;</span>
       }
     }
-<span class="fc" id="L23">    int len = src.length();</span>
-<span class="pc bpc" id="L24" title="1 of 6 branches missed.">    for (int i = to; i &lt; len &amp;&amp; (c = src.charAt(i)) != '\n' &amp;&amp; c != '\r'; ++i) {</span>
-<span class="pc bpc" id="L25" title="1 of 4 branches missed.">      if (c != ' ' &amp;&amp; c != '\t') {</span>
-<span class="fc" id="L26">        return false;</span>
+<span class="fc" id="L25">    int len = src.length();</span>
+<span class="pc bpc" id="L26" title="1 of 6 branches missed.">    for (int i = to; i &lt; len &amp;&amp; (c = src.charAt(i)) != '\n' &amp;&amp; c != '\r'; ++i) {</span>
+<span class="pc bpc" id="L27" title="1 of 4 branches missed.">      if (c != ' ' &amp;&amp; c != '\t') {</span>
+<span class="fc" id="L28">        return false;</span>
       }
     }
-<span class="fc" id="L29">    return true;</span>
-  }
-
-  static String deleteEmptyLine(String txt) {
-<span class="fc" id="L33">    String s = StringMethods.rtrim(txt, &quot; \t&quot;);</span>
-<span class="pc bpc" id="L34" title="1 of 2 branches missed.">    if (s.endsWith(&quot;\r\n&quot;)) {</span>
-<span class="nc" id="L35">      return s.substring(0, s.length() - 2);</span>
-<span class="pc bpc" id="L36" title="3 of 4 branches missed.">    } else if (s.endsWith(&quot;\n&quot;) || s.endsWith(&quot;\r&quot;)) {</span>
-<span class="fc" id="L37">      return s.substring(0, s.length() - 1);</span>
-    }
-<span class="nc" id="L39">    return s;</span>
+<span class="fc" id="L31">    return true;</span>
   }
 
   static Matcher getMatcher(Pattern pattern, UnparsedPart unparsed) {
-<span class="fc" id="L43">    return pattern.matcher(unparsed.text());</span>
+<span class="fc" id="L35">    return pattern.matcher(unparsed.text());</span>
   }
 
-  static Matcher getBeginTagMatcher(UnparsedPart unparsed, String tmplName) {
-<span class="nc" id="L47">    return Pattern</span>
-<span class="nc" id="L48">        .compile(&quot;(&lt;!-- ?)?~%%begin:&quot; + tmplName + &quot;%( ?--&gt;)?&quot;)</span>
-<span class="nc" id="L49">        .matcher(unparsed.text());</span>
+  static UnparsedPart todo(UnparsedPart p, int from, int to) {
+<span class="fc" id="L39">    String s = p.text().substring(from, to);</span>
+<span class="fc" id="L40">    return new UnparsedPart(s, p.start() + from);</span>
   }
 
-   static UnparsedPart todo(UnparsedPart p, int from, int to) {
-<span class="fc" id="L53">    String s = p.text().substring(from, to);</span>
-<span class="fc" id="L54">    return new UnparsedPart(s, p.start() + from);</span>
+  /**
+   * Remove the first line of an inline template if it was the containing
+   * ~%%begin:foo%, followed by a newline character (which would belong to the inline
+   * template).
+   */
+  static String deleteEmptyFirstLine(String txt) {
+<span class="fc" id="L49">    String s = StringMethods.rtrim(txt, &quot; \t&quot;);</span>
+<span class="pc bpc" id="L50" title="1 of 2 branches missed.">    if (s.endsWith(&quot;\r\n&quot;)) {</span>
+<span class="nc" id="L51">      return s.substring(0, s.length() - 2);</span>
+<span class="pc bpc" id="L52" title="3 of 4 branches missed.">    } else if (s.endsWith(&quot;\n&quot;) || s.endsWith(&quot;\r&quot;)) {</span>
+<span class="fc" id="L53">      return s.substring(0, s.length() - 1);</span>
+    }
+<span class="nc" id="L55">    return s;</span>
+  }
+
+  /**
+   * Remove the last line from text parts if, in the original template source, it was
+   * a line containing the begin tag of an inline template (and nothing else but
+   * whitespace).
+   */
+  static List&lt;Part&gt; deleteEmptyLastLine(List&lt;Part&gt; parts) {
+<span class="fc" id="L64">    List&lt;Part&gt; out = new ArrayList&lt;&gt;(parts.size());</span>
+<span class="fc bfc" id="L65" title="All 2 branches covered.">    for (int i = 0; i &lt; parts.size(); ++i) {</span>
+<span class="fc" id="L66">      Part part = parts.get(i);</span>
+<span class="fc bfc" id="L67" title="All 2 branches covered.">      if (part instanceof TextPart tp) {</span>
+<span class="fc bfc" id="L68" title="All 2 branches covered.">        if (i &lt; parts.size() - 1</span>
+<span class="fc bfc" id="L69" title="All 2 branches covered.">            &amp;&amp; parts.get(i + 1) instanceof InlineTemplatePart itp</span>
+<span class="fc bfc" id="L70" title="All 2 branches covered.">            &amp;&amp; itp.isStartTagOnSeparateLine()</span>
+        ) {
+<span class="fc" id="L72">          String trimmed = deleteEmptyFirstLine(tp.getText());</span>
+<span class="fc bfc" id="L73" title="All 2 branches covered.">          if (!trimmed.isEmpty()) {</span>
+<span class="fc" id="L74">            out.add(new TextPart(trimmed, part.start()));</span>
+          }
+<span class="fc" id="L76">        } else {</span>
+<span class="fc" id="L77">          out.add(part);</span>
+        }
+      } else {
+<span class="fc" id="L80">        out.add(part);</span>
+      }
+    }
+<span class="fc" id="L83">    return out;</span>
   }
 
 }

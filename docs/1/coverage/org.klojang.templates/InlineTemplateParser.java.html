@@ -82,7 +82,7 @@ final class InlineTemplateParser {
       // If ~%%end:foo% is all by itself on a separate line, except possibly
       // surrounded by whitespace, then that whole line will be removed.
 <span class="fc bfc" id="L84" title="All 2 branches covered.">      if (onSeparateLine(unparsed.text(), endTag.start(), endTag.end())) {</span>
-<span class="fc" id="L85">        mySrc = deleteEmptyLine(mySrc);</span>
+<span class="fc" id="L85">        mySrc = deleteEmptyFirstLine(mySrc);</span>
       }
 <span class="fc" id="L87">      Parser parser = new Parser(myLoc, name, mySrc);</span>
 <span class="fc" id="L88">      parts.add(new InlineTemplatePart(offset + m.start(),</span>
