@@ -77,7 +77,8 @@ final class InlineTemplateParser {
       EndTag endTag = getEndTag(type, unparsed, name, m.end(), 0);
       String mySrc = unparsed.text().substring(m.end(), endTag.start());
       // No path is associated with an inline template, but it inherits the
-      // PathResolver of the template in which it is nested
+      // PathResolver of the template in which it is nested, in case the inline
+      // template again contains included templates.
       TemplateLocation myLoc = new TemplateLocation(loc.resolver());
       // If ~%%end:foo% is all by itself on a separate line, except possibly
       // surrounded by whitespace, then that whole line will be removed.

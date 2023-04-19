@@ -209,12 +209,24 @@ public sealed interface RenderSession permits SoloSession, MultiSession {
    *
    * <h4>Conditional Rendering</h4>
    *
-   * <p>If the specified object is an empty array or an empty {@code Collection},
-   * the template will not be rendered at all. This allows for conditional rendering:
-   * "populate" the nested template with an empty array or {@code Collection} and the
-   * template will not be rendered. Note, however, that by default neither variables
-   * nor nested templates are rendered, so you could also just not call
-   * {@code populate} for the nested template.
+   * <p>By default, nested templates are not rendered. It takes an explicit call to
+   * {@link #repeat(String, int) repeat()}, {@code populate()} or other
+   * {@code RenderSession} methods to force the template to become visible. However,
+   * you can make it more explicit that you <i>do not</i> want the template to become
+   * visible. If you pass an empty array or collection to the {@code populate()}
+   * method, the template is going to be repeated zero times. In other words it will
+   * remain invisible. This can be useful in combination with a subsequent call to
+   * {@link #enable(int, String...) enable()} or
+   * {@link #enableRecursive(String...) enableRecursive()}.
+   *
+   * <h4>Optionals</h4>
+   *
+   * <p>It is valid and legitimate to populate a nested template (or the main
+   * template for that matter) with an {@code Optional}. {@code Optional} objects are
+   * typically returned from the ubiquitous find-by-id method of a data access object
+   * (DAO). If the {@code Optional} is empty, the template is explicitly disabled, as
+   * though by a call to {@link #repeat(String, int) repeat(nestedTemplateName, 0)};
+   * otherwise the template is populated with the contents of the {@code Optional}.
    *
    * @param nestedTemplateName the name of the nested template
    * @param data an object that provides data for all or some of the nested
@@ -351,22 +363,6 @@ public sealed interface RenderSession permits SoloSession, MultiSession {
    * templates that have not been explicitly enabled or disabled yet. In that case,
    * of course, it <i>does</i> make sense to first explicitly disable the text-only
    * templates that should <i>not</i> be rendered.
-   *
-   * <p>To enable a single text-only template, you <i>could</i> also call:
-   *
-   * <ul>
-   * <li>{@code repeat(nestedTemplateName, 1)}
-   * <li>{@code in(nestedTemplateName)}
-   * <li>{@code populate(nestedTemplateName, null)}
-   * <li>{@code populate(nestedTemplateName, new Object())}
-   * <li>{@code populate(nestedTemplateName, new Object[1])}
-   * </ul>
-   *
-   * <p>(As for the calls to {@code populate()}: the {@code populate()} method would
-   * detect that there are no variables in the template. Therefore it has no need to,
-   * and will not query the source data object passed in as the second argument. And
-   * therefore the second argument may be anything, including {@code null}. But why
-   * bother?)
    *
    * @param repeats the number of times the nested template(s) must be repeated
    * @param nestedTemplateNames the names of the nested text-only templates to be

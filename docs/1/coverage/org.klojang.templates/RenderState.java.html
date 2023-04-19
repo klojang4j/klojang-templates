@@ -36,8 +36,8 @@ final class RenderState {
 
   SoloSession[] createChildSessions(Template t, int repeats) {
     SoloSession[] children;
-<span class="pc bpc" id="L39" title="1 of 2 branches missed.">    if (repeats == 0) {</span>
-<span class="nc" id="L40">      children = ZERO_SESSIONS;</span>
+<span class="fc bfc" id="L39" title="All 2 branches covered.">    if (repeats == 0) {</span>
+<span class="fc" id="L40">      children = ZERO_SESSIONS;</span>
     } else {
 <span class="fc" id="L42">      children = new SoloSession[repeats];</span>
 <span class="fc bfc" id="L43" title="All 2 branches covered.">      for (int i = 0; i &lt; repeats; ++i) {</span>

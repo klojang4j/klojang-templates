@@ -252,6 +252,9 @@ final class SoloSession implements RenderSession {
       if (opt.isPresent()) {
         return doPopulate(tmpl, opt.get(), group, names);
       }
+      if (!state.isProcessed(tmpl)) {
+        state.createChildSessions(tmpl, 0);
+      }
       return this;
     }
     List<?> list = listify(data);

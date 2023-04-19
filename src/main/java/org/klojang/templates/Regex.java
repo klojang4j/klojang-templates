@@ -30,7 +30,7 @@ public final class Regex {
    * name. Since these names may correspond to keys in {@code Map} objects, there are
    * very few constraints on what constitutes a valid name. They must consist of at
    * least one character, and they must not contain any of the following characters:
-   * {@code ~%:.\n\r\0}. Of course, if the name are to correspond to, for example,
+   * {@code ~%:.\n\r\0}. Of course, if the names are to correspond to, for example,
    * bean properties, they are externally constrained: they must be valid Java
    * identifiers.
    */
