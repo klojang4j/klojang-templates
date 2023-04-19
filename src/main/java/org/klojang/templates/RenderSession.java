@@ -93,20 +93,26 @@ public sealed interface RenderSession permits SoloSession, MultiSession {
   RenderSession setNested(String path, IntFunction<Object> valueGenerator);
 
   /**
-   * Sets the value of the specified variable. The variable must reside in a nested
-   * template, and it may be a deeply nested template. For example
-   * {@code setNested("companies.departments.employees.firstName", idx -> "John")}
-   * sets the {@code ~%firstName%} variable within the {@code employees} template
+   * <p>Sets the value of the specified variable. The variable must reside in a
+   * nested template, and it may be a deeply nested template. For example
+   *
+   * <blockquote><pre>{@code
+   * setNested("companies.departments.employees.firstName", idx -> "John")
+   * }</pre></blockquote>
+   *
+   * <p>sets the {@code ~%firstName%} variable within the {@code employees} template
    * within the {@code departments} template within the {@code companies} template
-   * within the template managed by this {@code RenderSession} to "John". Because the
-   * {@code employees} template may be repeating, the value for each instance is set
-   * via an {@link IntFunction}. The function is given the array index of the
-   * instance and produces the value for that particular instance. If {@code force}
-   * equals {@code false}, then the variable will only be set if the template
-   * containing it had already been made visible via other means, e.g. via
+   * within the template managed by this {@code RenderSession} to "John".
+   *
+   * <p>Because the {@code employees} template may be repeating, the value for each
+   * instance is set via an {@link IntFunction}. The function is given the array
+   * index of the instance and must produce a value for that particular instance. If
+   * {@code force} equals {@code false}, then the variable will only be set if the
+   * template containing it had already been made visible via other means, e.g. via
    * {@link #repeat(String, int) repeat()} or
-   * {@link #populate(String, Object, String...) populate()}. Otherwise
-   * {@code setNested} will itself cause the template to become visible.
+   * {@link #populate(String, Object, String...) populate()}. If {@code force} equals
+   * {@code true}, the variable will always be set and {@code setNested()} will
+   * itself cause the template to become visible.
    *
    * @param path a path to a potentially deeply-nested variable
    * @param valueGenerator a function which is given the array index of the
