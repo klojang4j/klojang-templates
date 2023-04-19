@@ -210,12 +210,12 @@ public sealed interface RenderSession permits SoloSession, MultiSession {
    * <h4>Conditional Rendering</h4>
    *
    * <p>By default, nested templates are not rendered. It takes an explicit call to
-   * {@link #repeat(String, int) repeat()}, {@code populate()} or other
-   * {@code RenderSession} methods to force the template to become visible. However,
-   * you can make it more explicit that you <i>do not</i> want the template to become
-   * visible. If you pass an empty array or collection to the {@code populate()}
-   * method, the template is going to be repeated zero times. In other words it will
-   * remain invisible. This can be useful in combination with a subsequent call to
+   * {@link #repeat(String, int) repeat()} or {@code populate()} to force the
+   * template to become visible. However, you can make it more explicit that you
+   * <i>do not</i> want the template to become visible. If you pass an empty array
+   * or collection to the {@code populate()} method, the template is going to be
+   * repeated zero times. In other words it will remain invisible. This can be useful
+   * in combination with a subsequent call to
    * {@link #enable(int, String...) enable()} or
    * {@link #enableRecursive(String...) enableRecursive()}.
    *
@@ -224,9 +224,10 @@ public sealed interface RenderSession permits SoloSession, MultiSession {
    * <p>It is valid and legitimate to populate a nested template (or the main
    * template for that matter) with an {@code Optional}. {@code Optional} objects are
    * typically returned from the ubiquitous find-by-id method of a data access object
-   * (DAO). If the {@code Optional} is empty, the template is explicitly disabled, as
-   * though by a call to {@link #repeat(String, int) repeat(nestedTemplateName, 0)};
-   * otherwise the template is populated with the contents of the {@code Optional}.
+   * (DAO). If the {@code Optional} is empty, the nested template is explicitly
+   * disabled, as though by a call to
+   * {@link #repeat(String, int) repeat(nestedTemplateName, 0)}. Otherwise the
+   * template is populated with the contents of the {@code Optional}.
    *
    * @param nestedTemplateName the name of the nested template
    * @param data an object that provides data for all or some of the nested
