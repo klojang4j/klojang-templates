@@ -31,7 +31,7 @@ final class RenderState {
     this.config = config;
     int sz = config.template().countNestedTemplates();
     this.sessions = new IdentityHashMap<>(sz);
-    this.varValues = new HashMap<>(sz);
+    this.varValues = HashMap.newHashMap(sz);
     this.todo = new HashSet<>(config.template().getVariables());
   }
 
@@ -116,11 +116,11 @@ final class RenderState {
         .allMatch(RenderState::ready);
   }
 
-  void unset(String varName) {
-    IntList il = config.template().variables().get(varName);
-    Check.that(il).is(notNull(), NO_SUCH_VARIABLE.getExceptionSupplier(varName));
-    todo.add(varName);
-    varValues.keySet().removeAll(il.toGenericList());
+  void unset(String var) {
+    IntList il = config.template().variables().get(var);
+    Check.that(il).is(notNull(), NO_SUCH_VARIABLE.getExceptionSupplier(var));
+    todo.add(var);
+    il.toGenericList().forEach(varValues.keySet()::remove);
   }
 
   void clear(Template tmpl) {

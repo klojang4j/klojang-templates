@@ -31,7 +31,7 @@ final class RenderState {
 <span class="fc" id="L31">    this.config = config;</span>
 <span class="fc" id="L32">    int sz = config.template().countNestedTemplates();</span>
 <span class="fc" id="L33">    this.sessions = new IdentityHashMap&lt;&gt;(sz);</span>
-<span class="fc" id="L34">    this.varValues = new HashMap&lt;&gt;(sz);</span>
+<span class="fc" id="L34">    this.varValues = HashMap.newHashMap(sz);</span>
 <span class="fc" id="L35">    this.todo = new HashSet&lt;&gt;(config.template().getVariables());</span>
 <span class="fc" id="L36">  }</span>
 
@@ -116,11 +116,11 @@ final class RenderState {
 <span class="fc" id="L116">        .allMatch(RenderState::ready);</span>
   }
 
-  void unset(String varName) {
-<span class="fc" id="L120">    IntList il = config.template().variables().get(varName);</span>
-<span class="fc" id="L121">    Check.that(il).is(notNull(), NO_SUCH_VARIABLE.getExceptionSupplier(varName));</span>
-<span class="fc" id="L122">    todo.add(varName);</span>
-<span class="fc" id="L123">    varValues.keySet().removeAll(il.toGenericList());</span>
+  void unset(String var) {
+<span class="fc" id="L120">    IntList il = config.template().variables().get(var);</span>
+<span class="fc" id="L121">    Check.that(il).is(notNull(), NO_SUCH_VARIABLE.getExceptionSupplier(var));</span>
+<span class="fc" id="L122">    todo.add(var);</span>
+<span class="fc" id="L123">    il.toGenericList().forEach(varValues.keySet()::remove);</span>
 <span class="fc" id="L124">  }</span>
 
   void clear(Template tmpl) {
