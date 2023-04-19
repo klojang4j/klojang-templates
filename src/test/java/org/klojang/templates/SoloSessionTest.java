@@ -5,7 +5,7 @@ import org.klojang.util.MutableInt;
 
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class SoloSessionTest {
 
@@ -392,6 +392,48 @@ public class SoloSessionTest {
     rs.in("companies.companies.companies").set("foo", "bar");
     //System.out.println("*" + rs.render() + "*");
     assertEquals("bar", rs.render().strip());
+  }
+
+  @Test
+  public void unset00() throws ParseException {
+    String src = "~%foo%";
+    Template tmpl = Template.fromString(src);
+    RenderSession rs = tmpl.newRenderSession();
+    rs.set("foo", "bar");
+    assertTrue(rs.isFullyPopulated());
+    rs.set("foo", "");
+    assertTrue(rs.isFullyPopulated());
+    rs.unset("foo");
+    assertFalse(rs.isFullyPopulated());
+  }
+
+  @Test
+  public void unset01() throws ParseException {
+    String src = "~%foo% ~%bar%";
+    Template tmpl = Template.fromString(src);
+    RenderSession rs = tmpl.newRenderSession();
+    rs.set("foo", "foo");
+    assertFalse(rs.isFullyPopulated());
+    rs.set("bar", "bar");
+    assertTrue(rs.isFullyPopulated());
+    rs.unset("foo", "bar");
+    assertFalse(rs.isFullyPopulated());
+  }
+
+  @Test
+  public void clear00() throws ParseException {
+    String src = "~%%begin:foo% ~%bar% ~%%end:foo%";
+    Template tmpl = Template.fromString(src);
+    RenderSession rs = tmpl.newRenderSession();
+    rs.insert(Map.of("foo", Map.of("bar", "bozo")));
+    assertTrue(rs.isFullyPopulated());
+    rs.clear("foo");
+    assertFalse(rs.isFullyPopulated());
+    rs.repeat("foo", 2);
+    rs.setNested("foo.bar", i -> "bar" + i);
+    assertTrue(rs.isFullyPopulated());
+    rs.clear("foo");
+    assertFalse(rs.isFullyPopulated());
   }
 
   private static String nospace(String s) {

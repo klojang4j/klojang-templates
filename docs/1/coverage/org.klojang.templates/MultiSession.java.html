@@ -172,28 +172,40 @@ final class MultiSession implements RenderSession {
   }
 
   @Override
+  public RenderSession unset(String... variables) {
+<span class="fc" id="L176">    Arrays.stream(sessions).forEach(s -&gt; s.unset(variables));</span>
+<span class="fc" id="L177">    return this;</span>
+  }
+
+  @Override
+  public RenderSession clear(String... nestedTemplateNames) {
+<span class="fc" id="L182">    Arrays.stream(sessions).forEach(s -&gt; s.clear(nestedTemplateNames));</span>
+<span class="fc" id="L183">    return this;</span>
+  }
+
+  @Override
   public List&lt;RenderSession&gt; getChildSessions(String nestedTemplateName) {
-<span class="fc" id="L176">    List&lt;RenderSession&gt; flat = new ArrayList&lt;&gt;();</span>
-<span class="fc" id="L177">    Arrays.stream(sessions).forEach(</span>
-<span class="fc" id="L178">        s -&gt; flat.addAll(s.getChildSessions(nestedTemplateName)));</span>
-<span class="fc" id="L179">    return flat;</span>
+<span class="fc" id="L188">    List&lt;RenderSession&gt; flat = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L189">    Arrays.stream(sessions).forEach(</span>
+<span class="fc" id="L190">        s -&gt; flat.addAll(s.getChildSessions(nestedTemplateName)));</span>
+<span class="fc" id="L191">    return flat;</span>
   }
 
   @Override
   public void render(OutputStream out) {
-<span class="nc" id="L184">    Arrays.stream(sessions).forEach(s -&gt; s.render(out));</span>
-<span class="nc" id="L185">  }</span>
+<span class="nc" id="L196">    Arrays.stream(sessions).forEach(s -&gt; s.render(out));</span>
+<span class="nc" id="L197">  }</span>
 
   @Override
   public void render(StringBuilder sb) {
-<span class="nc" id="L189">    Arrays.stream(sessions).forEach(s -&gt; s.render(sb));</span>
-<span class="nc" id="L190">  }</span>
+<span class="nc" id="L201">    Arrays.stream(sessions).forEach(s -&gt; s.render(sb));</span>
+<span class="nc" id="L202">  }</span>
 
   @Override
   public String render() {
-<span class="fc" id="L194">    StringBuilder sb = new StringBuilder(255);</span>
-<span class="fc" id="L195">    Arrays.stream(sessions).forEach(s -&gt; s.render(sb));</span>
-<span class="fc" id="L196">    return sb.toString();</span>
+<span class="fc" id="L206">    StringBuilder sb = new StringBuilder(255);</span>
+<span class="fc" id="L207">    Arrays.stream(sessions).forEach(s -&gt; s.render(sb));</span>
+<span class="fc" id="L208">    return sb.toString();</span>
   }
 
 }

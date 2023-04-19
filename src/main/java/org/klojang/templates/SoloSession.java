@@ -434,6 +434,18 @@ final class SoloSession implements RenderSession {
     return state.isFullyPopulated();
   }
 
+  public RenderSession unset(String... vars) {
+    Check.notNull(vars, Tag.VARARGS);
+    Arrays.stream(vars).forEach(state::unset);
+    return this;
+  }
+
+  public RenderSession clear(String... tmpls) {
+    Check.notNull(tmpls, Tag.VARARGS);
+    Arrays.stream(tmpls).map(this::getNestedTemplate).forEach(state::clear);
+    return this;
+  }
+
   @Override
   public void render(OutputStream out) {
     Check.notNull(out).then(x -> new Renderer(state).render(x));
@@ -456,7 +468,7 @@ final class SoloSession implements RenderSession {
     return String.format("RenderSession[template=%s]", getFQN(config.template()));
   }
 
-  RenderState getState() {
+  RenderState state() {
     return state;
   }
 

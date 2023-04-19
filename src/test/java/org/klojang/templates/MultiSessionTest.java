@@ -811,6 +811,42 @@ public class MultiSessionTest {
     assertEquals("22", out.toString());
   }
 
+  @Test
+  public void unset00() throws ParseException {
+    String src = "~%%begin:companies% ~%var% ~%%end:companies%";
+    Template tmpl = Template.fromString(src);
+    RenderSession rs = tmpl.newRenderSession();
+    RenderSession rs2 = rs.repeat("companies", 2).set("var", 2);
+    assertTrue(rs.isFullyPopulated());
+    assertTrue(rs2.isFullyPopulated());
+    rs2.unset("var");
+    assertFalse(rs.isFullyPopulated());
+    assertFalse(rs2.isFullyPopulated());
+  }
+
+  @Test
+  public void clear00() throws ParseException {
+    String src = """
+        ~%%begin:companies%
+          ~%%begin:departments%
+            ~%name%
+          ~%%end:departments%
+        ~%%end:companies%
+        """;
+    Template tmpl = Template.fromString(src);
+    RenderSession rs = tmpl.newRenderSession();
+    RenderSession rs2 = rs.repeat("companies", 2);
+    RenderSession rs3 = rs2.repeat("departments", 3);
+    rs.setNested("companies.departments.name", i -> "D" + i);
+    assertTrue(rs.isFullyPopulated());
+    assertTrue(rs2.isFullyPopulated());
+    assertTrue(rs3.isFullyPopulated());
+    rs2.clear("departments");
+    assertFalse(rs.isFullyPopulated());
+    assertFalse(rs2.isFullyPopulated());
+    assertFalse(rs3.isFullyPopulated());
+  }
+
   private static String nospace(String s) {
     return s.replaceAll("\\s+", "");
   }

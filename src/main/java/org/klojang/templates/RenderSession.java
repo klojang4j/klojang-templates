@@ -67,9 +67,9 @@ public sealed interface RenderSession permits SoloSession, MultiSession {
 
   /**
    * Sets the specified variable to the value produced by the specified
-   * {@code Supplier}. The supplier's {@code get()} method will be called when the
-   * template is actually {@linkplain #render(OutputStream) rendered}. This may be
-   * useful if you plan to render the template multiple times using the same
+   * {@code Supplier}. The supplier's {@code get()} method will be called eah time
+   * the template is actually {@linkplain #render(OutputStream) rendered}. This may
+   * be useful if you plan to render the template multiple times using the same
    * {@code RenderSession}.
    *
    * @param varName the name of the variable to set
@@ -480,6 +480,25 @@ public sealed interface RenderSession permits SoloSession, MultiSession {
    * @return {@code true} if the template is fully populated
    */
   boolean isFullyPopulated();
+
+  /**
+   * Unsets the specified variables. You could also simply set their value to the
+   * empty string and get the exact same result when rendering. However, this method
+   * more thoroughly unregisters the variables, which will likely affect the outcome
+   * of, for example, {@link #isFullyPopulated()}.
+   *
+   * @param variables the variables to unset
+   * @return this {@code RenderSession}
+   */
+  RenderSession unset(String... variables);
+
+  /**
+   * Depopulates and hides the specified nested templates.
+   *
+   * @param nestedTemplateNames the nested templates to depopulate
+   * @return this {@code RenderSession}
+   */
+  RenderSession clear(String... nestedTemplateNames);
 
   /**
    * Renders the template.

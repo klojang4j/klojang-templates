@@ -172,6 +172,18 @@ final class MultiSession implements RenderSession {
   }
 
   @Override
+  public RenderSession unset(String... variables) {
+    Arrays.stream(sessions).forEach(s -> s.unset(variables));
+    return this;
+  }
+
+  @Override
+  public RenderSession clear(String... nestedTemplateNames) {
+    Arrays.stream(sessions).forEach(s -> s.clear(nestedTemplateNames));
+    return this;
+  }
+
+  @Override
   public List<RenderSession> getChildSessions(String nestedTemplateName) {
     List<RenderSession> flat = new ArrayList<>();
     Arrays.stream(sessions).forEach(

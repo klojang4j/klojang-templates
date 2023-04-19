@@ -434,38 +434,50 @@ final class SoloSession implements RenderSession {
 <span class="fc" id="L434">    return state.isFullyPopulated();</span>
   }
 
+  public RenderSession unset(String... vars) {
+<span class="fc" id="L438">    Check.notNull(vars, Tag.VARARGS);</span>
+<span class="fc" id="L439">    Arrays.stream(vars).forEach(state::unset);</span>
+<span class="fc" id="L440">    return this;</span>
+  }
+
+  public RenderSession clear(String... tmpls) {
+<span class="fc" id="L444">    Check.notNull(tmpls, Tag.VARARGS);</span>
+<span class="fc" id="L445">    Arrays.stream(tmpls).map(this::getNestedTemplate).forEach(state::clear);</span>
+<span class="fc" id="L446">    return this;</span>
+  }
+
   @Override
   public void render(OutputStream out) {
-<span class="fc" id="L439">    Check.notNull(out).then(x -&gt; new Renderer(state).render(x));</span>
-<span class="fc" id="L440">  }</span>
+<span class="fc" id="L451">    Check.notNull(out).then(x -&gt; new Renderer(state).render(x));</span>
+<span class="fc" id="L452">  }</span>
 
   @Override
   public void render(StringBuilder sb) {
-<span class="fc" id="L444">    Check.notNull(sb).then(x -&gt; new Renderer(state).render(x));</span>
-<span class="fc" id="L445">  }</span>
+<span class="fc" id="L456">    Check.notNull(sb).then(x -&gt; new Renderer(state).render(x));</span>
+<span class="fc" id="L457">  }</span>
 
   @Override
   public String render() {
-<span class="fc" id="L449">    ByteArrayOutputStream out = new ByteArrayOutputStream(1024);</span>
-<span class="fc" id="L450">    new Renderer(state).render(out);</span>
-<span class="fc" id="L451">    return out.toString(UTF_8);</span>
+<span class="fc" id="L461">    ByteArrayOutputStream out = new ByteArrayOutputStream(1024);</span>
+<span class="fc" id="L462">    new Renderer(state).render(out);</span>
+<span class="fc" id="L463">    return out.toString(UTF_8);</span>
   }
 
   @Override
   public String toString() {
-<span class="nc" id="L456">    return String.format(&quot;RenderSession[template=%s]&quot;, getFQN(config.template()));</span>
+<span class="nc" id="L468">    return String.format(&quot;RenderSession[template=%s]&quot;, getFQN(config.template()));</span>
   }
 
-  RenderState getState() {
-<span class="fc" id="L460">    return state;</span>
+  RenderState state() {
+<span class="fc" id="L472">    return state;</span>
   }
 
   private Template getNestedTemplate(String name) {
-<span class="fc" id="L464">    Check.notNull(name, MTag.TEMPLATE_NAME);</span>
-<span class="fc" id="L465">    Template t = config.template();</span>
-<span class="fc" id="L466">    Check.that(name).is(elementOf(), t.getNestedTemplateNames(),</span>
-<span class="fc" id="L467">        NO_SUCH_TEMPLATE.getExceptionSupplier(getFQN(t, name)));</span>
-<span class="fc" id="L468">    return t.getNestedTemplate(name);</span>
+<span class="fc" id="L476">    Check.notNull(name, MTag.TEMPLATE_NAME);</span>
+<span class="fc" id="L477">    Template t = config.template();</span>
+<span class="fc" id="L478">    Check.that(name).is(elementOf(), t.getNestedTemplateNames(),</span>
+<span class="fc" id="L479">        NO_SUCH_TEMPLATE.getExceptionSupplier(getFQN(t, name)));</span>
+<span class="fc" id="L480">    return t.getNestedTemplate(name);</span>
   }
 
 }

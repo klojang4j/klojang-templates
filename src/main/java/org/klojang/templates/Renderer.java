@@ -82,7 +82,7 @@ final class Renderer {
         }
       } else {
         for (SoloSession s : sessions) {
-          render(s.getState(), out);
+          render(s.state(), out);
         }
       }
     }

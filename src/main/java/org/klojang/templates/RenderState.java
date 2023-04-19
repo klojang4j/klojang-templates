@@ -1,7 +1,12 @@
 package org.klojang.templates;
 
+import org.klojang.check.Check;
+import org.klojang.util.collection.IntList;
+
 import java.util.*;
 
+import static org.klojang.check.CommonChecks.notNull;
+import static org.klojang.templates.RenderErrorCode.NO_SUCH_VARIABLE;
 import static org.klojang.templates.RenderErrorCode.REPETITION_MISMATCH;
 import static org.klojang.templates.TemplateUtils.getFQN;
 
@@ -9,18 +14,18 @@ final class RenderState {
 
   private static final SoloSession[] ZERO_SESSIONS = new SoloSession[0];
 
-  private final SessionConfig config;
+  final SessionConfig config;
 
   // variables that have not been set yet
-  private final Set<String> todo;
+  final Set<String> todo;
 
-  private final Map<Template, SoloSession[]> sessions;
+  final Map<Template, SoloSession[]> sessions;
 
   // variable occurrence values. A variable may occur multiple times
   // within the same template, and occurrences may end up having
   // different values due to being escaped differently. The keys in
   // the map are the indices of VarPart parts.
-  private final Map<Integer, Object> varValues;
+  final Map<Integer, Object> varValues;
 
   RenderState(SessionConfig config) {
     this.config = config;
@@ -107,8 +112,27 @@ final class RenderState {
         .values()
         .stream()
         .flatMap(Arrays::stream)
-        .map(SoloSession::getState)
+        .map(SoloSession::state)
         .allMatch(RenderState::ready);
+  }
+
+  void unset(String varName) {
+    IntList il = config.template().variables().get(varName);
+    Check.that(il).is(notNull(), NO_SUCH_VARIABLE.getExceptionSupplier(varName));
+    todo.add(varName);
+    varValues.keySet().removeAll(il.toGenericList());
+  }
+
+  void clear(Template tmpl) {
+    for (SoloSession session : sessions.get(tmpl)) {
+      clear(session);
+    }
+    sessions.remove(tmpl);
+  }
+
+  private static void clear(SoloSession session) {
+    session.state().config.template().getVariables().forEach(session::unset);
+    session.state().sessions.keySet().forEach(tmpl -> session.state().clear(tmpl));
   }
 
 }
