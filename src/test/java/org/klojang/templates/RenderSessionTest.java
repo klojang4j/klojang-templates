@@ -734,11 +734,11 @@ public class RenderSessionTest {
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
     rs.set("message", "hi");
-    assertFalse(rs.isFullyPopulated());
+    assertFalse(rs.allSet());
     rs.repeat("foo", 1).set("bar", "teapot");
-    assertFalse(rs.isFullyPopulated());
+    assertFalse(rs.allSet());
     rs.in("foo").set("bozo", "coffeepot");
-    assertTrue(rs.isFullyPopulated());
+    assertTrue(rs.allSet());
   }
 
   @Test

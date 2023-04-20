@@ -18,10 +18,49 @@ package org.klojang.templates;
 public interface Accessor<T> {
 
   /**
+   * <p>
    * The value that <b>should</b> be returned by accessors if a template variable
    * cannot be mapped to a value in the source data object. {@code Accessor}
    * implementations should not throw an exception and they should not return
    * {@code null} in this case.
+   * </p>
+   * <h4>Null vs. UNDEFINED</h4>
+   * <p>
+   * There is a subtle difference in how a {@link RenderSession} treats {@code null}
+   * values versus how it treats {@code UNDEFINED}. {@code null} is a valid and
+   * legitimate value for a template variable. If the bean property or map key
+   * corresponding to the variable is {@code null}, the variable will be set to
+   * whatever {@code null} is stringified to &#8212; the
+   * {@linkplain Stringifier#DEFAULT default stringifier} will stringify it to an
+   * empty string. If, on the other hand, the {@code RenderSession} receives
+   * {@code UNDEFINED} as the value for a template variable, it will just skip
+   * setting that variable. By itself this will make no difference when the template
+   * is rendered. An unset variable will also result in replacing the variable with
+   * nothing (i.e. an empty string). However, it <i>does</i> make a difference if you
+   * want to set all unset variables to some (default) value after you have populated
+   * your template with model objects, hash maps, and/or anything else for which you
+   * have defined an accessor:
+   * </p>
+   * <blockquote><pre>{@code
+   * CompanyDao dao = new CompanyDao();
+   * Template template = Template.fromResource(getClass(), "/views/companies.html");
+   * RenderSession session = template.newRenderSession();
+   * session.populate("companies", dao.list());
+   * session.getAllUnsetVariables().forEach(var -> session.setNested(var, "(unknown)");
+   * }</pre></blockquote>
+   * <p>
+   * You can make the {@code RenderSession} treat {@code null} just like
+   * {@code UNDEFINED}:
+   * </p>
+   * <blockquote><pre>{@code
+   * AccessorRegistry accessors = AccessorRegistry.build()
+   *    .nullEqualsUndefined(true);
+   *    .freeze();
+   * Template template = Template.fromResource(getClass(), "/views/companies.html");
+   * RenderSession session = template.newRenderSession(accessors);
+   * }</pre></blockquote>
+   * 
+   * @see AccessorRegistry.Builder#nullEqualsUndefined(boolean) 
    */
   Object UNDEFINED = new Object();
 

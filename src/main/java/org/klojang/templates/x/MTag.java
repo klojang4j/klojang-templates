@@ -31,6 +31,6 @@ public final class MTag {
 
   public static final String FQN = "fully-qualified name";
 
-  public static final String VALUE_GENERATOR = "valueGenerator";
+  public static final String VALUE_GENERATOR = "value generator";
 
 }

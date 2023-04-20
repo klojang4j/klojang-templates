@@ -214,9 +214,9 @@ public class MultiSessionTest {
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
     rs.repeat("companies", 3).set("name", "Shell");
-    assertFalse(rs.in("companies").isFullyPopulated());
+    assertFalse(rs.in("companies").allSet());
     rs.in("companies").repeat("departments", 3).set("name", "HR");
-    assertTrue(rs.in("companies").isFullyPopulated());
+    assertTrue(rs.in("companies").allSet());
   }
 
   @Test
@@ -232,16 +232,16 @@ public class MultiSessionTest {
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
     rs.repeat("companies", 3).set("name", "Shell");
-    assertFalse(rs.isFullyPopulated());
-    assertFalse(rs.in("companies").isFullyPopulated());
+    assertFalse(rs.allSet());
+    assertFalse(rs.in("companies").allSet());
     rs.in("companies").repeat("departments", 3);
-    assertFalse(rs.isFullyPopulated());
-    assertFalse(rs.in("companies").isFullyPopulated());
-    assertFalse(rs.in("companies").in("departments").isFullyPopulated());
+    assertFalse(rs.allSet());
+    assertFalse(rs.in("companies").allSet());
+    assertFalse(rs.in("companies").in("departments").allSet());
     rs.in("companies").in("departments").set("name", "HR");
-    assertTrue(rs.isFullyPopulated());
-    assertTrue(rs.in("companies").isFullyPopulated());
-    assertTrue(rs.in("companies").in("departments").isFullyPopulated());
+    assertTrue(rs.allSet());
+    assertTrue(rs.in("companies").allSet());
+    assertTrue(rs.in("companies").in("departments").allSet());
   }
 
   @Test
@@ -817,11 +817,11 @@ public class MultiSessionTest {
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
     RenderSession rs2 = rs.repeat("companies", 2).set("var", 2);
-    assertTrue(rs.isFullyPopulated());
-    assertTrue(rs2.isFullyPopulated());
+    assertTrue(rs.allSet());
+    assertTrue(rs2.allSet());
     rs2.unset("var");
-    assertFalse(rs.isFullyPopulated());
-    assertFalse(rs2.isFullyPopulated());
+    assertFalse(rs.allSet());
+    assertFalse(rs2.allSet());
   }
 
   @Test
@@ -838,13 +838,13 @@ public class MultiSessionTest {
     RenderSession rs2 = rs.repeat("companies", 2);
     RenderSession rs3 = rs2.repeat("departments", 3);
     rs.setNested("companies.departments.name", i -> "D" + i);
-    assertTrue(rs.isFullyPopulated());
-    assertTrue(rs2.isFullyPopulated());
-    assertTrue(rs3.isFullyPopulated());
+    assertTrue(rs.allSet());
+    assertTrue(rs2.allSet());
+    assertTrue(rs3.allSet());
     rs2.clear("departments");
-    assertFalse(rs.isFullyPopulated());
-    assertFalse(rs2.isFullyPopulated());
-    assertFalse(rs3.isFullyPopulated());
+    assertFalse(rs.allSet());
+    assertFalse(rs2.allSet());
+    assertFalse(rs3.allSet());
   }
 
   private static String nospace(String s) {

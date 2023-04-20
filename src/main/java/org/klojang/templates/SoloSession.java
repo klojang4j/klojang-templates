@@ -52,7 +52,8 @@ final class SoloSession implements RenderSession {
   }
 
   private RenderSession setVar(String varName, Object value, VarGroup varGroup) {
-    if (value != UNDEFINED) {
+    if (value != UNDEFINED &&
+        (value != null || !config.accessors().nullEqualsUndefined())) {
       Template t = config.template();
       Check.that(varName).is(keyIn(), t.variables(),
           NO_SUCH_VARIABLE.getExceptionSupplier(TemplateUtils.getFQN(t, varName)));
@@ -105,8 +106,11 @@ final class SoloSession implements RenderSession {
   public RenderSession setNested(String path, IntFunction<Object> valueGenerator) {
     Path p = Check.notNull(path, Tag.PATH).ok(Path::from);
     Check.notNull(valueGenerator, VALUE_GENERATOR);
-    Check.that(p).has(Path::size, gt(), 1, "Not a nested variable: ${arg}");
-    setNested(this, p, valueGenerator, null, true);
+    if (p.size() == 1) {
+      setVar(p.segment(0), valueGenerator.apply(0), null);
+    } else {
+      setNested(this, p, valueGenerator, null, true);
+    }
     return this;
   }
 
@@ -118,8 +122,11 @@ final class SoloSession implements RenderSession {
     Path p = Check.notNull(path, Tag.PATH).ok(Path::from);
     Check.notNull(valueGenerator, VALUE_GENERATOR);
     Check.notNull(varGroup, VAR_GROUP);
-    Check.that(p).has(Path::size, gt(), 1, "Not a nested variable: ${arg}");
-    setNested(this, p, valueGenerator, varGroup, force);
+    if (p.size() == 1) {
+      setVar(p.segment(0), valueGenerator.apply(0), null);
+    } else {
+      setNested(this, p, valueGenerator, varGroup, force);
+    }
     return this;
   }
 
@@ -146,6 +153,22 @@ final class SoloSession implements RenderSession {
         setNested(child, path.shift(), valueGenerator, varGroup, force);
       }
     }
+  }
+
+  @Override
+  public RenderSession ifNotSet(String varName, Supplier<Object> valueGenerator) {
+    if (state.todo.contains(varName)) {
+      setVar(varName, valueGenerator.get(), null);
+    }
+    return this;
+  }
+
+  @Override
+  public RenderSession ifNotSet(String varName, Supplier<Object> valueGenerator, VarGroup varGroup) {
+    if (state.todo.contains(varName)) {
+      setVar(varName, valueGenerator.get(), varGroup);
+    }
+    return this;
   }
 
   @Override
@@ -200,9 +223,7 @@ final class SoloSession implements RenderSession {
         String fqn = getFQN(config.template(), varName);
         throw ACCESS_EXCEPTION.getException(fqn, e);
       }
-      if (value != UNDEFINED) {
-        setVar(varName, value, defGroup);
-      }
+      setVar(varName, value, defGroup);
     }
   }
 
@@ -268,6 +289,8 @@ final class SoloSession implements RenderSession {
     return this;
   }
 
+
+  @Override
   public RenderSession repeat(String tmpl, int times) {
     Check.that(times).isNot(negative());
     Template t = getNestedTemplate(tmpl);
@@ -427,10 +450,18 @@ final class SoloSession implements RenderSession {
         .ok(List::of);
   }
 
-  /* RENDER METHODS */
+  @Override
+  public List<String> getUnsetVariables() {
+    return List.copyOf(state.todo);
+  }
 
   @Override
-  public boolean isFullyPopulated() {
+  public List<String> getAllUnsetVariables() {
+    return state.getAllUnsetVariables();
+  }
+
+  @Override
+  public boolean allSet() {
     return state.isFullyPopulated();
   }
 

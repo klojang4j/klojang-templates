@@ -97,47 +97,58 @@ final class RenderState {
 <span class="fc" id="L97">    todo.remove(var);</span>
 <span class="fc" id="L98">  }</span>
 
+  List&lt;String&gt; getAllUnsetVariables() {
+<span class="nc" id="L101">    List&lt;String&gt; vars = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L102">    collectUnsetVariables(this, vars);</span>
+<span class="nc" id="L103">    return vars;</span>
+  }
+
+  private static void collectUnsetVariables(RenderState state0, List&lt;String&gt; vars) {
+<span class="nc" id="L107">    vars.addAll(state0.todo);</span>
+<span class="nc" id="L108">    state0.sessions.values().stream()</span>
+<span class="nc" id="L109">        .flatMap(Arrays::stream)</span>
+<span class="nc" id="L110">        .map(SoloSession::state)</span>
+<span class="nc" id="L111">        .forEach(s -&gt; collectUnsetVariables(s, vars));</span>
+<span class="nc" id="L112">  }</span>
+
   boolean isFullyPopulated() {
-<span class="fc" id="L101">    return ready(this);</span>
+<span class="fc" id="L115">    return ready(this);</span>
   }
 
   private static boolean ready(RenderState state0) {
-<span class="fc bfc" id="L105" title="All 2 branches covered.">    if (state0.todo.size() &gt; 0) {</span>
-<span class="fc" id="L106">      return false;</span>
+<span class="fc bfc" id="L119" title="All 2 branches covered.">    if (state0.todo.size() &gt; 0) {</span>
+<span class="fc" id="L120">      return false;</span>
     }
-<span class="fc bfc" id="L108" title="All 2 branches covered.">    if (state0.config.template().countNestedTemplates() &gt; state0.sessions.size()) {</span>
-<span class="fc" id="L109">      return false;</span>
+<span class="fc bfc" id="L122" title="All 2 branches covered.">    if (state0.config.template().countNestedTemplates() &gt; state0.sessions.size()) {</span>
+<span class="fc" id="L123">      return false;</span>
     }
-<span class="fc" id="L111">    return state0</span>
-        .sessions
-<span class="fc" id="L113">        .values()</span>
-<span class="fc" id="L114">        .stream()</span>
-<span class="fc" id="L115">        .flatMap(Arrays::stream)</span>
-<span class="fc" id="L116">        .map(SoloSession::state)</span>
-<span class="fc" id="L117">        .allMatch(RenderState::ready);</span>
+<span class="fc" id="L125">    return state0.sessions.values().stream()</span>
+<span class="fc" id="L126">        .flatMap(Arrays::stream)</span>
+<span class="fc" id="L127">        .map(SoloSession::state)</span>
+<span class="fc" id="L128">        .allMatch(RenderState::ready);</span>
   }
 
   void unset(String var) {
-<span class="fc" id="L121">    IntList il = config.template().variables().get(var);</span>
-<span class="fc" id="L122">    Check.that(il).is(notNull(), NO_SUCH_VARIABLE.getExceptionSupplier(var));</span>
-<span class="fc" id="L123">    todo.add(var);</span>
-<span class="fc" id="L124">    il.toGenericList().forEach(varValues.keySet()::remove);</span>
-<span class="fc" id="L125">  }</span>
+<span class="fc" id="L132">    IntList il = config.template().variables().get(var);</span>
+<span class="fc" id="L133">    Check.that(il).is(notNull(), NO_SUCH_VARIABLE.getExceptionSupplier(var));</span>
+<span class="fc" id="L134">    todo.add(var);</span>
+<span class="fc" id="L135">    il.toGenericList().forEach(varValues.keySet()::remove);</span>
+<span class="fc" id="L136">  }</span>
 
   void clear(Template tmpl) {
-<span class="fc bfc" id="L128" title="All 2 branches covered.">    for (SoloSession session : sessions.get(tmpl)) {</span>
-<span class="fc" id="L129">      clear(session);</span>
+<span class="fc bfc" id="L139" title="All 2 branches covered.">    for (SoloSession session : sessions.get(tmpl)) {</span>
+<span class="fc" id="L140">      clear(session);</span>
     }
-<span class="fc" id="L131">    sessions.remove(tmpl);</span>
-<span class="fc" id="L132">  }</span>
+<span class="fc" id="L142">    sessions.remove(tmpl);</span>
+<span class="fc" id="L143">  }</span>
 
   private void clear(SoloSession session) {
-<span class="fc" id="L135">    RenderState state = session.state();</span>
-<span class="fc" id="L136">    state.varValues.clear();</span>
-<span class="fc" id="L137">    state.todo.addAll(state.config.template().getVariables());</span>
-<span class="fc" id="L138">    state.sessions.values().stream().flatMap(Arrays::stream).forEach(this::clear);</span>
-<span class="fc" id="L139">    state.sessions.clear();</span>
-<span class="fc" id="L140">  }</span>
+<span class="fc" id="L146">    RenderState state = session.state();</span>
+<span class="fc" id="L147">    state.varValues.clear();</span>
+<span class="fc" id="L148">    state.todo.addAll(state.config.template().getVariables());</span>
+<span class="fc" id="L149">    state.sessions.values().stream().flatMap(Arrays::stream).forEach(this::clear);</span>
+<span class="fc" id="L150">    state.sessions.clear();</span>
+<span class="fc" id="L151">  }</span>
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

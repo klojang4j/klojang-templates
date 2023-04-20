@@ -97,6 +97,20 @@ final class RenderState {
     todo.remove(var);
   }
 
+  List<String> getAllUnsetVariables() {
+    List<String> vars = new ArrayList<>();
+    collectUnsetVariables(this, vars);
+    return vars;
+  }
+
+  private static void collectUnsetVariables(RenderState state0, List<String> vars) {
+    vars.addAll(state0.todo);
+    state0.sessions.values().stream()
+        .flatMap(Arrays::stream)
+        .map(SoloSession::state)
+        .forEach(s -> collectUnsetVariables(s, vars));
+  }
+
   boolean isFullyPopulated() {
     return ready(this);
   }
@@ -108,10 +122,7 @@ final class RenderState {
     if (state0.config.template().countNestedTemplates() > state0.sessions.size()) {
       return false;
     }
-    return state0
-        .sessions
-        .values()
-        .stream()
+    return state0.sessions.values().stream()
         .flatMap(Arrays::stream)
         .map(SoloSession::state)
         .allMatch(RenderState::ready);

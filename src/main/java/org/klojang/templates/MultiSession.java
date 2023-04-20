@@ -55,10 +55,22 @@ final class MultiSession implements RenderSession {
       IntFunction<Object> valueGenerator,
       VarGroup varGroup,
       boolean force) {
-    Arrays.stream(sessions).forEach(s -> s.setNested(path,
-        valueGenerator,
-        varGroup,
-        force));
+    Arrays.stream(sessions).forEach(
+        s -> s.setNested(path, valueGenerator, varGroup, force));
+    return this;
+  }
+
+  @Override
+  public RenderSession ifNotSet(String varName, Supplier<Object> valueGenerator) {
+    Arrays.stream(sessions).forEach(s -> s.ifNotSet(varName, valueGenerator));
+    return this;
+  }
+
+  @Override
+  public RenderSession ifNotSet(String varName, Supplier<Object> valueGenerator,
+      VarGroup varGroup) {
+    Arrays.stream(sessions).forEach(
+        s -> s.ifNotSet(varName, valueGenerator, varGroup));
     return this;
   }
 
@@ -80,9 +92,8 @@ final class MultiSession implements RenderSession {
   public RenderSession populate(String nestedTemplateName,
       Object data,
       String... names) {
-    Arrays.stream(sessions).forEach(s -> s.populate(nestedTemplateName,
-        data,
-        names));
+    Arrays.stream(sessions).forEach(
+        s -> s.populate(nestedTemplateName, data, names));
     return this;
   }
 
@@ -91,9 +102,8 @@ final class MultiSession implements RenderSession {
       Object data,
       VarGroup varGroup,
       String... names) {
-    Arrays.stream(sessions).forEach(s -> s.populate(nestedTemplateName,
-        data,
-        names));
+    Arrays.stream(sessions).forEach(
+        s -> s.populate(nestedTemplateName, data, names));
     return this;
   }
 
@@ -167,8 +177,24 @@ final class MultiSession implements RenderSession {
   }
 
   @Override
-  public boolean isFullyPopulated() {
-    return Arrays.stream(sessions).allMatch(RenderSession::isFullyPopulated);
+  public List<String> getUnsetVariables() {
+    if (sessions.length == 0) {
+      return List.of();
+    }
+    return sessions[0].getUnsetVariables();
+  }
+
+  @Override
+  public List<String> getAllUnsetVariables() {
+    if (sessions.length == 0) {
+      return List.of();
+    }
+    return sessions[0].getAllUnsetVariables();
+  }
+
+  @Override
+  public boolean allSet() {
+    return Arrays.stream(sessions).allMatch(RenderSession::allSet);
   }
 
   @Override

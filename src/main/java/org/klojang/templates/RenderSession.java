@@ -83,18 +83,22 @@ public sealed interface RenderSession permits SoloSession, MultiSession {
       VarGroup varGroup);
 
   /**
-   * Equivalent to {@code setNested(path, valueGenerator, VarGroup.TEXT, true)}.
+   * Sets the value of the specified variable. The variable may be (deeply) nested
+   * and is specified using its
+   * {@linkplain TemplateUtils#getFQN(Template, String) fully-qualified  name}.
    *
    * @param path a path to a potentially deeply-nested variable
    * @param valueGenerator a function which is given the array index of the
    *     template instance for which to produce a value
    * @return this {@code RenderSession}
+   * @see #setNested(String, IntFunction, VarGroup, boolean)
+   * @see TemplateUtils#getFQN(Template, String)
    */
   RenderSession setNested(String path, IntFunction<Object> valueGenerator);
 
   /**
-   * <p>Sets the value of the specified variable. The variable must reside in a
-   * nested template, and it may be a deeply nested template. For example
+   * <p>Sets the value of the specified variable. The variable may be (deeply)
+   * nested. For example
    *
    * <blockquote><pre>{@code
    * setNested("companies.departments.employees.firstName", idx -> "John")
@@ -121,11 +125,38 @@ public sealed interface RenderSession permits SoloSession, MultiSession {
    *     has no group name prefix.
    * @param force if {@code}
    * @return this {@code RenderSession}
+   * @see TemplateUtils#getFQN(Template, String)
    */
   RenderSession setNested(String path,
       IntFunction<Object> valueGenerator,
       VarGroup varGroup,
       boolean force);
+
+  /**
+   * Sets the specified variable to the value produced by the specified supplier
+   * <i>if</i> the variable has not already been set.
+   *
+   * @param varName the name of the variable to set
+   * @param valueGenerator the supplier of the value
+   * @return this {@code RenderSession}
+   * @see Accessor#UNDEFINED
+   */
+  RenderSession ifNotSet(String varName, Supplier<Object> valueGenerator);
+
+  /**
+   * Sets the specified variable to the value produced by the specified supplier
+   * <i>if</i> the variable has not already been set.
+   *
+   * @param varName the name of the variable to set
+   * @param valueGenerator the supplier of the value
+   * @param varGroup the variable group to assign the variable to if the variable
+   *     has no group name prefix.
+   * @return this {@code RenderSession}
+   * @see Accessor#UNDEFINED
+   */
+  RenderSession ifNotSet(String varName,
+      Supplier<Object> valueGenerator,
+      VarGroup varGroup);
 
   /**
    * <p>Populates the template with values extracted from the specified object. For
@@ -474,18 +505,42 @@ public sealed interface RenderSession permits SoloSession, MultiSession {
   List<RenderSession> getChildSessions(String nestedTemplateName);
 
   /**
+   * Returns all variables that have not been set yet in the template managed by this
+   * {@code RenderSession}. Variables in nested templates are not checked.
+   *
+   * @return all variables that have not been set yet in the template managed by this
+   *     {@code RenderSession}
+   * @see Accessor#UNDEFINED
+   * @see #allSet()
+   */
+  List<String> getUnsetVariables();
+
+  /**
+   * Returns all variables that have not been set yet in the template managed by this
+   * {@code RenderSession} and all templates nested inside it (recursively). The
+   * variable names will be
+   * {@linkplain TemplateUtils#getFQN(Template, String) fully-qualified}.
+   *
+   * @return all variables that have not been set yet in the template managed by this
+   *     {@code RenderSession} and all templates nested inside it
+   * @see Accessor#UNDEFINED
+   * @see #allSet()
+   */
+  List<String> getAllUnsetVariables();
+
+  /**
    * Returns {@code true} if all variables (at whatever nesting level) have been set.
    * Note that you may not <i>want</i> the template to be fully populated.
    *
    * @return {@code true} if the template is fully populated
    */
-  boolean isFullyPopulated();
+  boolean allSet();
 
   /**
    * Unsets the specified variables. You could also simply set their value to the
    * empty string and get the exact same result when rendering. However, this method
    * more thoroughly unregisters the variables, which will likely affect the outcome
-   * of, for example, {@link #isFullyPopulated()}.
+   * of, for example, {@link #allSet()}.
    *
    * @param variables the variables to unset
    * @return this {@code RenderSession}

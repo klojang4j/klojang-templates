@@ -96,6 +96,37 @@ public final class AccessorRegistry {
 <span class="fc" id="L96">    return configure().setDefaultNameMapper(nameMapper).freeze();</span>
   }
 
+  /**
+   * Returns an {@code AccessorRegistry} that should be sufficient for most use
+   * cases.
+   *
+   * @param nullEqualsUndefined whether {@code null} values should be treated the
+   *     same way as {@link Accessor#UNDEFINED}
+   * @return an {@code AccessorRegistry} the should sufficient for most use cases
+   */
+  public static AccessorRegistry standard(boolean nullEqualsUndefined) {
+<span class="nc" id="L108">    return configure().nullEqualsUndefined(nullEqualsUndefined).freeze();</span>
+  }
+
+  /**
+   * Returns an {@code AccessorRegistry} that should be sufficient for most use
+   * cases. It allows you to specify one global {@link NameMapper} for mapping the
+   * template variables to the names used in source data objects.
+   *
+   * @param nameMapper the {@code NameMapper} to be used to map template
+   *     variables to bean properties and/or map keys.
+   * @param nullEqualsUndefined whether {@code null} values should be treated the
+   *     same way as {@link Accessor#UNDEFINED}
+   * @return an {@code AccessorRegistry} the should sufficient for most use cases
+   */
+  public static AccessorRegistry standard(NameMapper nameMapper,
+      boolean nullEqualsUndefined) {
+<span class="nc" id="L124">    return configure()</span>
+<span class="nc" id="L125">        .setDefaultNameMapper(nameMapper)</span>
+<span class="nc" id="L126">        .nullEqualsUndefined(nullEqualsUndefined)</span>
+<span class="nc" id="L127">        .freeze();</span>
+  }
+
   /* ++++++++++++++++++++[ BEGIN BUILDER CLASS ]+++++++++++++++++ */
 
   /**
@@ -116,11 +147,12 @@ public final class AccessorRegistry {
     private static final String TYPE_ALREADY_SET =
         &quot;${arg} has already been associated with an accessor&quot;;
 
-<span class="fc" id="L119">    private NameMapper defMapper = NameMapper.AS_IS;</span>
-<span class="fc" id="L120">    private final Map&lt;Class&lt;?&gt;, Map&lt;Template, Accessor&lt;?&gt;&gt;&gt; accs = new HashMap&lt;&gt;();</span>
-<span class="fc" id="L121">    private final Map&lt;Template, NameMapper&gt; mappers = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L150">    private NameMapper defMapper = NameMapper.AS_IS;</span>
+<span class="fc" id="L151">    private boolean nullEqualsUndefined = false;</span>
+<span class="fc" id="L152">    private final Map&lt;Class&lt;?&gt;, Map&lt;Template, Accessor&lt;?&gt;&gt;&gt; accs = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L153">    private final Map&lt;Template, NameMapper&gt; mappers = new HashMap&lt;&gt;();</span>
 
-<span class="fc" id="L123">    private Builder() {}</span>
+<span class="fc" id="L155">    private Builder() {}</span>
 
     /**
      * Sets the default {@code NameMapper} used to map template variables to bean
@@ -131,8 +163,22 @@ public final class AccessorRegistry {
      * @return this {@code Builder} instance
      */
     public Builder setDefaultNameMapper(NameMapper nameMapper) {
-<span class="fc" id="L134">      defMapper = Check.notNull(nameMapper).ok();</span>
-<span class="fc" id="L135">      return this;</span>
+<span class="fc" id="L166">      defMapper = Check.notNull(nameMapper).ok();</span>
+<span class="fc" id="L167">      return this;</span>
+    }
+
+    /**
+     * Determines whether {@code null} values should be treated just like
+     * {@link Accessor#UNDEFINED}. By default this is not the case.
+     *
+     * @param b whether {@code null} values should be treated just like
+     *     {@link Accessor#UNDEFINED}
+     * @return this {@code Builder} instance
+     * @see Accessor#UNDEFINED
+     */
+    public Builder nullEqualsUndefined(boolean b) {
+<span class="nc" id="L180">      nullEqualsUndefined = b;</span>
+<span class="nc" id="L181">      return this;</span>
     }
 
     /**
@@ -143,11 +189,11 @@ public final class AccessorRegistry {
      * @return this {@code Builder} instance
      */
     public Builder setNameMapper(Template template, NameMapper nameMapper) {
-<span class="fc" id="L146">      Check.notNull(template, TEMPLATE)</span>
-<span class="fc" id="L147">          .isNot(keyIn(), mappers, MAPPER_ALREADY_SET, template.getName());</span>
-<span class="fc" id="L148">      Check.notNull(nameMapper, NAME_MAPPER);</span>
-<span class="fc" id="L149">      mappers.put(template, nameMapper);</span>
-<span class="fc" id="L150">      return this;</span>
+<span class="fc" id="L192">      Check.notNull(template, TEMPLATE)</span>
+<span class="fc" id="L193">          .isNot(keyIn(), mappers, MAPPER_ALREADY_SET, template.getName());</span>
+<span class="fc" id="L194">      Check.notNull(nameMapper, NAME_MAPPER);</span>
+<span class="fc" id="L195">      mappers.put(template, nameMapper);</span>
+<span class="fc" id="L196">      return this;</span>
     }
 
     /**
@@ -159,9 +205,9 @@ public final class AccessorRegistry {
      * @return this {@code Builder} instance
      */
     public &lt;T&gt; Builder register(Accessor&lt;T&gt; accessor, Class&lt;T&gt; forType) {
-<span class="fc" id="L162">      Check.notNull(accessor, ACCESSOR);</span>
-<span class="fc" id="L163">      Check.notNull(forType, TYPE);</span>
-<span class="fc" id="L164">      return register0(accessor, forType, null);</span>
+<span class="fc" id="L208">      Check.notNull(accessor, ACCESSOR);</span>
+<span class="fc" id="L209">      Check.notNull(forType, TYPE);</span>
+<span class="fc" id="L210">      return register0(accessor, forType, null);</span>
     }
 
     /**
@@ -176,10 +222,10 @@ public final class AccessorRegistry {
      */
     public &lt;T&gt; Builder register(Accessor&lt;T&gt; accessor, Class&lt;T&gt; forType,
         Template template) {
-<span class="fc" id="L179">      Check.notNull(forType, TYPE);</span>
-<span class="fc" id="L180">      Check.notNull(template, TEMPLATE);</span>
-<span class="fc" id="L181">      Check.notNull(accessor, ACCESSOR);</span>
-<span class="fc" id="L182">      return register0(accessor, forType, template);</span>
+<span class="fc" id="L225">      Check.notNull(forType, TYPE);</span>
+<span class="fc" id="L226">      Check.notNull(template, TEMPLATE);</span>
+<span class="fc" id="L227">      Check.notNull(accessor, ACCESSOR);</span>
+<span class="fc" id="L228">      return register0(accessor, forType, template);</span>
     }
 
     /**
@@ -193,7 +239,7 @@ public final class AccessorRegistry {
      * @return this {@code Builder} instance
      */
     public &lt;T&gt; Builder register(BeanReader&lt;T&gt; br) {
-<span class="fc" id="L196">      return register(br, defMapper);</span>
+<span class="fc" id="L242">      return register(br, defMapper);</span>
     }
 
     /**
@@ -209,7 +255,7 @@ public final class AccessorRegistry {
      * @return this {@code Builder} instance
      */
     public &lt;T&gt; Builder register(BeanReader&lt;T&gt; beanReader, Template template) {
-<span class="fc" id="L212">      return register(beanReader, template, defMapper);</span>
+<span class="fc" id="L258">      return register(beanReader, template, defMapper);</span>
     }
 
     /**
@@ -225,9 +271,9 @@ public final class AccessorRegistry {
      * @return this {@code Builder} instance
      */
     public &lt;T&gt; Builder register(BeanReader&lt;T&gt; br, NameMapper nameMapper) {
-<span class="fc" id="L228">      Check.notNull(br, &quot;BeanReader&quot;);</span>
-<span class="fc" id="L229">      Check.notNull(nameMapper, NAME_MAPPER);</span>
-<span class="fc" id="L230">      return register0(new BeanAccessor&lt;&gt;(br, nameMapper), br.getBeanClass(), null);</span>
+<span class="fc" id="L274">      Check.notNull(br, &quot;BeanReader&quot;);</span>
+<span class="fc" id="L275">      Check.notNull(nameMapper, NAME_MAPPER);</span>
+<span class="fc" id="L276">      return register0(new BeanAccessor&lt;&gt;(br, nameMapper), br.getBeanClass(), null);</span>
     }
 
     /**
@@ -247,11 +293,11 @@ public final class AccessorRegistry {
     public &lt;T&gt; Builder register(BeanReader&lt;T&gt; beanReader,
         Template template,
         NameMapper nameMapper) {
-<span class="fc" id="L250">      Check.notNull(beanReader, &quot;BeanReader&quot;);</span>
-<span class="fc" id="L251">      Check.notNull(template, TEMPLATE);</span>
-<span class="fc" id="L252">      Check.notNull(nameMapper, NAME_MAPPER);</span>
-<span class="fc" id="L253">      return register0(new BeanAccessor&lt;&gt;(beanReader, nameMapper),</span>
-<span class="fc" id="L254">          beanReader.getBeanClass(),</span>
+<span class="fc" id="L296">      Check.notNull(beanReader, &quot;BeanReader&quot;);</span>
+<span class="fc" id="L297">      Check.notNull(template, TEMPLATE);</span>
+<span class="fc" id="L298">      Check.notNull(nameMapper, NAME_MAPPER);</span>
+<span class="fc" id="L299">      return register0(new BeanAccessor&lt;&gt;(beanReader, nameMapper),</span>
+<span class="fc" id="L300">          beanReader.getBeanClass(),</span>
           template
       );
     }
@@ -262,23 +308,22 @@ public final class AccessorRegistry {
      * @return an {@code AccessorRegistry} with the configured accessors
      */
     public AccessorRegistry freeze() {
-<span class="fc" id="L265">      return new AccessorRegistry(accs, defMapper, mappers);</span>
+<span class="fc" id="L311">      return new AccessorRegistry(accs, defMapper, nullEqualsUndefined, mappers);</span>
     }
 
     private &lt;T&gt; Builder register0(Accessor&lt;T&gt; acc, Class&lt;T&gt; clazz, Template tmpl) {
-<span class="fc" id="L269">      Map&lt;Template, Accessor&lt;?&gt;&gt; map = accs.get(clazz);</span>
-<span class="fc bfc" id="L270" title="All 2 branches covered.">      if (map == null) {</span>
-<span class="fc" id="L271">        accs.put(clazz, map = new HashMap&lt;&gt;());</span>
-<span class="fc bfc" id="L272" title="All 2 branches covered.">      } else if (tmpl == null) {</span>
+<span class="fc" id="L315">      Map&lt;Template, Accessor&lt;?&gt;&gt; map = accs.get(clazz);</span>
+<span class="fc bfc" id="L316" title="All 2 branches covered.">      if (map == null) {</span>
+<span class="fc" id="L317">        accs.put(clazz, map = new HashMap&lt;&gt;());</span>
+<span class="fc bfc" id="L318" title="All 2 branches covered.">      } else if (tmpl == null) {</span>
         // allowed - template-agnostic accessor
-<span class="fc" id="L274">        Check.that(map.containsKey(null)).is(no(),</span>
-            TYPE_ALREADY_SET, clazz);
+<span class="fc" id="L320">        Check.that(map.containsKey(null)).is(no(), TYPE_ALREADY_SET, clazz);</span>
       } else {
-<span class="fc" id="L277">        Check.that(map.containsKey(tmpl)).is(no(),</span>
-<span class="fc" id="L278">            TEMPLATE_ALREADY_SET, tmpl.getName(), clazz);</span>
+<span class="fc" id="L322">        Check.that(map.containsKey(tmpl)).is(no(),</span>
+<span class="fc" id="L323">            TEMPLATE_ALREADY_SET, tmpl.getName(), clazz);</span>
       }
-<span class="fc" id="L280">      map.put(tmpl, acc);</span>
-<span class="fc" id="L281">      return this;</span>
+<span class="fc" id="L325">      map.put(tmpl, acc);</span>
+<span class="fc" id="L326">      return this;</span>
     }
 
   }
@@ -293,36 +338,43 @@ public final class AccessorRegistry {
    *     {@code AccessorRegistry}
    */
   public static Builder configure() {
-<span class="fc" id="L296">    return new Builder();</span>
+<span class="fc" id="L341">    return new Builder();</span>
   }
 
   private final Map&lt;Class&lt;?&gt;, Map&lt;Template, Accessor&lt;?&gt;&gt;&gt; accs;
   private final NameMapper defMapper;
+  private final boolean nullEqualsUndefined;
   private final Map&lt;Template, NameMapper&gt; mappers;
 
   private AccessorRegistry(Map&lt;Class&lt;?&gt;, Map&lt;Template, Accessor&lt;?&gt;&gt;&gt; accs,
       NameMapper defMapper,
-<span class="fc" id="L305">      Map&lt;Template, NameMapper&gt; mappers) {</span>
-<span class="fc bfc" id="L306" title="All 2 branches covered.">    this.accs = accs.isEmpty() ? emptyMap() : TypeMap.fixedTypeMap(accs);</span>
-<span class="fc" id="L307">    this.defMapper = defMapper;</span>
-<span class="fc" id="L308">    this.mappers = Map.copyOf(mappers);</span>
-<span class="fc" id="L309">  }</span>
+      boolean nullEqualsUndefined,
+<span class="fc" id="L352">      Map&lt;Template, NameMapper&gt; mappers) {</span>
+<span class="fc bfc" id="L353" title="All 2 branches covered.">    this.accs = accs.isEmpty() ? emptyMap() : TypeMap.fixedTypeMap(accs);</span>
+<span class="fc" id="L354">    this.defMapper = defMapper;</span>
+<span class="fc" id="L355">    this.nullEqualsUndefined = nullEqualsUndefined;</span>
+<span class="fc" id="L356">    this.mappers = Map.copyOf(mappers);</span>
+<span class="fc" id="L357">  }</span>
+
+  boolean nullEqualsUndefined() {
+<span class="fc" id="L360">    return nullEqualsUndefined;</span>
+  }
 
   Accessor&lt;?&gt; getAccessor(Object obj, Template template) {
-<span class="fc" id="L312">    Class&lt;?&gt; type = obj.getClass();</span>
-<span class="fc" id="L313">    Map&lt;Template, Accessor&lt;?&gt;&gt; m = accs.get(type);</span>
-<span class="fc" id="L314">    Accessor&lt;?&gt; acc = null;</span>
-<span class="fc bfc" id="L315" title="All 2 branches covered.">    if (m != null) {</span>
-<span class="fc" id="L316">      acc = m.get(template);</span>
-<span class="fc bfc" id="L317" title="All 2 branches covered.">      if (acc == null) {</span>
-<span class="fc" id="L318">        acc = m.get(null);</span>
+<span class="fc" id="L364">    Class&lt;?&gt; type = obj.getClass();</span>
+<span class="fc" id="L365">    Map&lt;Template, Accessor&lt;?&gt;&gt; m = accs.get(type);</span>
+<span class="fc" id="L366">    Accessor&lt;?&gt; acc = null;</span>
+<span class="fc bfc" id="L367" title="All 2 branches covered.">    if (m != null) {</span>
+<span class="fc" id="L368">      acc = m.get(template);</span>
+<span class="fc bfc" id="L369" title="All 2 branches covered.">      if (acc == null) {</span>
+<span class="fc" id="L370">        acc = m.get(null);</span>
       }
     }
-<span class="fc bfc" id="L321" title="All 2 branches covered.">    if (acc == null) {</span>
-<span class="fc" id="L322">      NameMapper nm = mappers.getOrDefault(template, defMapper);</span>
-<span class="fc" id="L323">      acc = new PathAccessor(nm);</span>
+<span class="fc bfc" id="L373" title="All 2 branches covered.">    if (acc == null) {</span>
+<span class="fc" id="L374">      NameMapper nm = mappers.getOrDefault(template, defMapper);</span>
+<span class="fc" id="L375">      acc = new PathAccessor(nm);</span>
     }
-<span class="fc" id="L325">    return acc;</span>
+<span class="fc" id="L377">    return acc;</span>
   }
 
 }

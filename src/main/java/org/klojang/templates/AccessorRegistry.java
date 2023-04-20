@@ -96,6 +96,37 @@ public final class AccessorRegistry {
     return configure().setDefaultNameMapper(nameMapper).freeze();
   }
 
+  /**
+   * Returns an {@code AccessorRegistry} that should be sufficient for most use
+   * cases.
+   *
+   * @param nullEqualsUndefined whether {@code null} values should be treated the
+   *     same way as {@link Accessor#UNDEFINED}
+   * @return an {@code AccessorRegistry} the should sufficient for most use cases
+   */
+  public static AccessorRegistry standard(boolean nullEqualsUndefined) {
+    return configure().nullEqualsUndefined(nullEqualsUndefined).freeze();
+  }
+
+  /**
+   * Returns an {@code AccessorRegistry} that should be sufficient for most use
+   * cases. It allows you to specify one global {@link NameMapper} for mapping the
+   * template variables to the names used in source data objects.
+   *
+   * @param nameMapper the {@code NameMapper} to be used to map template
+   *     variables to bean properties and/or map keys.
+   * @param nullEqualsUndefined whether {@code null} values should be treated the
+   *     same way as {@link Accessor#UNDEFINED}
+   * @return an {@code AccessorRegistry} the should sufficient for most use cases
+   */
+  public static AccessorRegistry standard(NameMapper nameMapper,
+      boolean nullEqualsUndefined) {
+    return configure()
+        .setDefaultNameMapper(nameMapper)
+        .nullEqualsUndefined(nullEqualsUndefined)
+        .freeze();
+  }
+
   /* ++++++++++++++++++++[ BEGIN BUILDER CLASS ]+++++++++++++++++ */
 
   /**
@@ -117,6 +148,7 @@ public final class AccessorRegistry {
         "${arg} has already been associated with an accessor";
 
     private NameMapper defMapper = NameMapper.AS_IS;
+    private boolean nullEqualsUndefined = false;
     private final Map<Class<?>, Map<Template, Accessor<?>>> accs = new HashMap<>();
     private final Map<Template, NameMapper> mappers = new HashMap<>();
 
@@ -132,6 +164,20 @@ public final class AccessorRegistry {
      */
     public Builder setDefaultNameMapper(NameMapper nameMapper) {
       defMapper = Check.notNull(nameMapper).ok();
+      return this;
+    }
+
+    /**
+     * Determines whether {@code null} values should be treated just like
+     * {@link Accessor#UNDEFINED}. By default this is not the case.
+     *
+     * @param b whether {@code null} values should be treated just like
+     *     {@link Accessor#UNDEFINED}
+     * @return this {@code Builder} instance
+     * @see Accessor#UNDEFINED
+     */
+    public Builder nullEqualsUndefined(boolean b) {
+      nullEqualsUndefined = b;
       return this;
     }
 
@@ -262,7 +308,7 @@ public final class AccessorRegistry {
      * @return an {@code AccessorRegistry} with the configured accessors
      */
     public AccessorRegistry freeze() {
-      return new AccessorRegistry(accs, defMapper, mappers);
+      return new AccessorRegistry(accs, defMapper, nullEqualsUndefined, mappers);
     }
 
     private <T> Builder register0(Accessor<T> acc, Class<T> clazz, Template tmpl) {
@@ -271,8 +317,7 @@ public final class AccessorRegistry {
         accs.put(clazz, map = new HashMap<>());
       } else if (tmpl == null) {
         // allowed - template-agnostic accessor
-        Check.that(map.containsKey(null)).is(no(),
-            TYPE_ALREADY_SET, clazz);
+        Check.that(map.containsKey(null)).is(no(), TYPE_ALREADY_SET, clazz);
       } else {
         Check.that(map.containsKey(tmpl)).is(no(),
             TEMPLATE_ALREADY_SET, tmpl.getName(), clazz);
@@ -298,14 +343,21 @@ public final class AccessorRegistry {
 
   private final Map<Class<?>, Map<Template, Accessor<?>>> accs;
   private final NameMapper defMapper;
+  private final boolean nullEqualsUndefined;
   private final Map<Template, NameMapper> mappers;
 
   private AccessorRegistry(Map<Class<?>, Map<Template, Accessor<?>>> accs,
       NameMapper defMapper,
+      boolean nullEqualsUndefined,
       Map<Template, NameMapper> mappers) {
     this.accs = accs.isEmpty() ? emptyMap() : TypeMap.fixedTypeMap(accs);
     this.defMapper = defMapper;
+    this.nullEqualsUndefined = nullEqualsUndefined;
     this.mappers = Map.copyOf(mappers);
+  }
+
+  boolean nullEqualsUndefined() {
+    return nullEqualsUndefined;
   }
 
   Accessor<?> getAccessor(Object obj, Template template) {

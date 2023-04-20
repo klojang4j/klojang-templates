@@ -297,7 +297,7 @@ public class SoloSessionTest {
         false);
     rs.setNested("companies.departments.employees.lastName", i -> "Smith" + i);
     String out = rs.render();
-    System.out.println(out);
+    //System.out.println(out);
     String expected = """
         <html><body>
         <p></p>
@@ -400,11 +400,11 @@ public class SoloSessionTest {
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
     rs.set("foo", "bar");
-    assertTrue(rs.isFullyPopulated());
+    assertTrue(rs.allSet());
     rs.set("foo", "");
-    assertTrue(rs.isFullyPopulated());
+    assertTrue(rs.allSet());
     rs.unset("foo");
-    assertFalse(rs.isFullyPopulated());
+    assertFalse(rs.allSet());
   }
 
   @Test
@@ -413,11 +413,11 @@ public class SoloSessionTest {
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
     rs.set("foo", "foo");
-    assertFalse(rs.isFullyPopulated());
+    assertFalse(rs.allSet());
     rs.set("bar", "bar");
-    assertTrue(rs.isFullyPopulated());
+    assertTrue(rs.allSet());
     rs.unset("foo", "bar");
-    assertFalse(rs.isFullyPopulated());
+    assertFalse(rs.allSet());
   }
 
   @Test
@@ -426,14 +426,36 @@ public class SoloSessionTest {
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
     rs.insert(Map.of("foo", Map.of("bar", "bozo")));
-    assertTrue(rs.isFullyPopulated());
+    assertTrue(rs.allSet());
     rs.clear("foo");
-    assertFalse(rs.isFullyPopulated());
+    assertFalse(rs.allSet());
     rs.repeat("foo", 2);
     rs.setNested("foo.bar", i -> "bar" + i);
-    assertTrue(rs.isFullyPopulated());
+    assertTrue(rs.allSet());
     rs.clear("foo");
-    assertFalse(rs.isFullyPopulated());
+    assertFalse(rs.allSet());
+  }
+
+  @Test
+  public void clear01() throws ParseException {
+    String src = """
+        ~%%begin:foo0%
+          ~%%begin:foo1% ~%bar% ~%%end:foo1%
+          ~%%begin:foo2% ~%bar% ~%%end:foo2%
+        ~%%end:foo0%
+        """;
+    Template tmpl = Template.fromString(src);
+    RenderSession rs = tmpl.newRenderSession();
+    rs.in("foo0").populate("foo1", Map.of("bar", "bozo"));
+    assertFalse(rs.allSet());
+    assertFalse(rs.in("foo0").allSet());
+    assertTrue(rs.in("foo0.foo1").allSet());
+    rs.in("foo0").in("foo2").set("bar","bozo");
+    assertTrue(rs.allSet());
+    rs.clear("foo0");
+    assertFalse(rs.in("foo0.foo1").allSet());
+    assertFalse(rs.in("foo0.foo2").allSet());
+
   }
 
   private static String nospace(String s) {
