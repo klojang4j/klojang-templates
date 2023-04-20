@@ -31,6 +31,7 @@ final class RenderState {
     this.config = config;
     int sz = config.template().countNestedTemplates();
     this.sessions = new IdentityHashMap<>(sz);
+    sz = config.template().countVariableOccurrences();
     this.varValues = HashMap.newHashMap(sz);
     this.todo = new HashSet<>(config.template().getVariables());
   }
@@ -130,9 +131,12 @@ final class RenderState {
     sessions.remove(tmpl);
   }
 
-  private static void clear(SoloSession session) {
-    session.state().config.template().getVariables().forEach(session::unset);
-    session.state().sessions.keySet().forEach(tmpl -> session.state().clear(tmpl));
+  private void clear(SoloSession session) {
+    RenderState state = session.state();
+    state.varValues.clear();
+    state.todo.addAll(state.config.template().getVariables());
+    state.sessions.values().stream().flatMap(Arrays::stream).forEach(this::clear);
+    state.sessions.clear();
   }
 
 }
