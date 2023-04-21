@@ -8,6 +8,7 @@ import java.util.*;
 import static org.klojang.check.CommonChecks.notNull;
 import static org.klojang.templates.RenderErrorCode.NO_SUCH_VARIABLE;
 import static org.klojang.templates.RenderErrorCode.REPETITION_MISMATCH;
+import static org.klojang.templates.TemplateUtils.getAllVariableFQNames;
 import static org.klojang.templates.TemplateUtils.getFQN;
 
 final class RenderState {
@@ -104,11 +105,18 @@ final class RenderState {
   }
 
   private static void collectUnsetVariables(RenderState state0, List<String> vars) {
-    vars.addAll(state0.todo);
-    state0.sessions.values().stream()
-        .flatMap(Arrays::stream)
-        .map(SoloSession::state)
-        .forEach(s -> collectUnsetVariables(s, vars));
+    Template myTmpl = state0.config.template();
+    state0.todo.stream().map(var -> getFQN(myTmpl, var)).forEach(vars::add);
+    myTmpl.getNestedTemplates().forEach(t -> {
+      if (state0.sessions.containsKey(t)) {
+        state0.sessions.values().stream()
+            .flatMap(Arrays::stream)
+            .map(SoloSession::state)
+            .forEach(s -> collectUnsetVariables(s, vars));
+      } else {
+        vars.addAll(getAllVariableFQNames(myTmpl));
+      }
+    });
   }
 
   boolean isFullyPopulated() {

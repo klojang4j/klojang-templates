@@ -450,12 +450,12 @@ final class SoloSession implements RenderSession {
 
   @Override
   public List&lt;String&gt; getUnsetVariables() {
-<span class="nc" id="L453">    return List.copyOf(state.todo);</span>
+<span class="fc" id="L453">    return List.copyOf(state.todo);</span>
   }
 
   @Override
   public List&lt;String&gt; getAllUnsetVariables() {
-<span class="nc" id="L458">    return state.getAllUnsetVariables();</span>
+<span class="fc" id="L458">    return state.getAllUnsetVariables();</span>
   }
 
   @Override
@@ -516,7 +516,7 @@ final class SoloSession implements RenderSession {
 
   private boolean mustProcess(Object data) {
 <span class="fc bfc" id="L518" title="All 4 branches covered.">    return data != UNDEFINED &amp;&amp;</span>
-<span class="pc bpc" id="L519" title="1 of 2 branches missed.">        (data != null || !config.accessors().nullEqualsUndefined());</span>
+<span class="fc bfc" id="L519" title="All 2 branches covered.">        (data != null || !config.accessors().nullEqualsUndefined());</span>
   }
 
 }

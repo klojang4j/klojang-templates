@@ -455,7 +455,6 @@ public class SoloSessionTest {
     rs.clear("foo0");
     assertFalse(rs.in("foo0.foo1").allSet());
     assertFalse(rs.in("foo0.foo2").allSet());
-
   }
 
   private static String nospace(String s) {

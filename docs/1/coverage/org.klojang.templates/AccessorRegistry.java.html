@@ -105,7 +105,7 @@ public final class AccessorRegistry {
    * @return an {@code AccessorRegistry} the should sufficient for most use cases
    */
   public static AccessorRegistry standard(boolean nullEqualsUndefined) {
-<span class="nc" id="L108">    return configure().nullEqualsUndefined(nullEqualsUndefined).freeze();</span>
+<span class="fc" id="L108">    return configure().nullEqualsUndefined(nullEqualsUndefined).freeze();</span>
   }
 
   /**
@@ -121,10 +121,10 @@ public final class AccessorRegistry {
    */
   public static AccessorRegistry standard(NameMapper nameMapper,
       boolean nullEqualsUndefined) {
-<span class="nc" id="L124">    return configure()</span>
-<span class="nc" id="L125">        .setDefaultNameMapper(nameMapper)</span>
-<span class="nc" id="L126">        .nullEqualsUndefined(nullEqualsUndefined)</span>
-<span class="nc" id="L127">        .freeze();</span>
+<span class="fc" id="L124">    return configure()</span>
+<span class="fc" id="L125">        .setDefaultNameMapper(nameMapper)</span>
+<span class="fc" id="L126">        .nullEqualsUndefined(nullEqualsUndefined)</span>
+<span class="fc" id="L127">        .freeze();</span>
   }
 
   /* ++++++++++++++++++++[ BEGIN BUILDER CLASS ]+++++++++++++++++ */
@@ -177,8 +177,8 @@ public final class AccessorRegistry {
      * @see Accessor#UNDEFINED
      */
     public Builder nullEqualsUndefined(boolean b) {
-<span class="nc" id="L180">      nullEqualsUndefined = b;</span>
-<span class="nc" id="L181">      return this;</span>
+<span class="fc" id="L180">      nullEqualsUndefined = b;</span>
+<span class="fc" id="L181">      return this;</span>
     }
 
     /**

@@ -4,10 +4,11 @@ import org.junit.jupiter.api.Test;
 import org.klojang.invoke.BeanReader;
 import org.klojang.path.util.MapBuilder;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class AccessorRegistryTest {
 
@@ -314,6 +315,58 @@ public class AccessorRegistryTest {
     String out = rs.render();
     out = out.replaceAll("\\s+", " ").strip();
     assertEquals("id: 10 name: John", out);
+  }
+
+  @Test
+  public void nullEqualsUndefined00() throws ParseException {
+    String src = "~%foo%";
+    Template t = Template.fromString(src);
+    AccessorRegistry ar = AccessorRegistry.standard(true);
+    RenderSession rs = t.newRenderSession(ar);
+    rs.set("foo", Accessor.UNDEFINED);
+    assertFalse(rs.allSet());
+    assertEquals(List.of("foo"), rs.getUnsetVariables());
+    assertEquals(List.of("foo"), rs.getAllUnsetVariables());
+    rs.set("foo", null);
+    assertFalse(rs.allSet());
+    assertEquals(List.of("foo"), rs.getUnsetVariables());
+    assertEquals(List.of("foo"), rs.getAllUnsetVariables());
+    rs.set("foo", "bar");
+    assertTrue(rs.allSet());
+    assertEquals(List.of(), rs.getUnsetVariables());
+    assertEquals(List.of(), rs.getAllUnsetVariables());
+    rs.unset("foo");
+    assertFalse(rs.allSet());
+    assertEquals(List.of("foo"), rs.getUnsetVariables());
+    assertEquals(List.of("foo"), rs.getAllUnsetVariables());
+  }
+
+  @Test
+  public void nullEqualsUndefined01() throws ParseException {
+    String src = "~%foo%";
+    Template t = Template.fromString(src);
+    AccessorRegistry ar = AccessorRegistry.standard(false);
+    RenderSession rs = t.newRenderSession(ar);
+    rs.set("foo", Accessor.UNDEFINED);
+    assertFalse(rs.allSet());
+    assertEquals(List.of("foo"), rs.getUnsetVariables());
+    assertEquals(List.of("foo"), rs.getAllUnsetVariables());
+    rs.set("foo", null);
+    assertTrue(rs.allSet());
+    assertEquals(List.of(), rs.getUnsetVariables());
+    assertEquals(List.of(), rs.getAllUnsetVariables());
+  }
+
+  @Test
+  public void nullEqualsUndefined02() throws ParseException {
+    String src = "~%FOO%";
+    Template t = Template.fromString(src);
+    AccessorRegistry ar = AccessorRegistry.standard(String::toLowerCase, false);
+    RenderSession rs = t.newRenderSession(ar);
+    rs.insert(Map.of("foo", Accessor.UNDEFINED));
+    assertFalse(rs.allSet());
+    assertEquals(List.of("FOO"), rs.getUnsetVariables());
+    assertEquals(List.of("FOO"), rs.getAllUnsetVariables());
   }
 
 }
