@@ -36,8 +36,6 @@ final class SoloSession implements RenderSession {
     this.state = new RenderState(config);
   }
 
-  /* METHODS FOR SETTING A SINGLE TEMPLATE VARIABLE */
-
   @Override
   public RenderSession set(String varName, Object value) {
     Check.notNull(varName, VAR_NAME);
@@ -52,11 +50,10 @@ final class SoloSession implements RenderSession {
   }
 
   private RenderSession setVar(String varName, Object value, VarGroup varGroup) {
-    if (value != UNDEFINED &&
-        (value != null || !config.accessors().nullEqualsUndefined())) {
+    if (mustProcess(value)) {
       Template t = config.template();
       Check.that(varName).is(keyIn(), t.variables(),
-          NO_SUCH_VARIABLE.getExceptionSupplier(TemplateUtils.getFQN(t, varName)));
+          NO_SUCH_VARIABLE.getExceptionSupplier(getFQN(t, varName)));
       IntList indices = t.variables().get(varName);
       indices.forEachThrowing(i -> setVar(i, value, varGroup));
       state.done(varName);
@@ -95,7 +92,7 @@ final class SoloSession implements RenderSession {
       VarGroup group) {
     Template t = config.template();
     Check.that(var).is(keyIn(), t.variables(),
-        NO_SUCH_VARIABLE.getExceptionSupplier(TemplateUtils.getFQN(t, var)));
+        NO_SUCH_VARIABLE.getExceptionSupplier(getFQN(t, var)));
     IntList indices = t.variables().get(var);
     indices.forEachThrowing(i -> state.setVar(i, new Lazy(func, group)));
     state.done(var);
@@ -164,7 +161,9 @@ final class SoloSession implements RenderSession {
   }
 
   @Override
-  public RenderSession ifNotSet(String varName, Supplier<Object> valueGenerator, VarGroup varGroup) {
+  public RenderSession ifNotSet(String varName,
+      Supplier<Object> valueGenerator,
+      VarGroup varGroup) {
     if (state.todo.contains(varName)) {
       setVar(varName, valueGenerator.get(), varGroup);
     }
@@ -187,7 +186,7 @@ final class SoloSession implements RenderSession {
   }
 
   private RenderSession doInsert(Object data, VarGroup group, String[] names) {
-    if (data == UNDEFINED) {
+    if (dontProcess(data)) {
       return this;
     } else if (data == null) {
       Template t = config.template();
@@ -239,7 +238,7 @@ final class SoloSession implements RenderSession {
     Accessor<T> acc = (Accessor<T>) config.getAccessor(data);
     for (String name : tmplNames) {
       Object nestedData = acc.access(data, name);
-      if (nestedData != UNDEFINED) {
+      if (mustProcess(nestedData)) {
         doPopulate(getNestedTemplate(name), nestedData, varGroup, names);
       }
     }
@@ -267,7 +266,7 @@ final class SoloSession implements RenderSession {
       Object data,
       VarGroup group,
       String[] names) {
-    if (data == UNDEFINED) {
+    if (dontProcess(data)) {
       return this;
     } else if (data instanceof Optional<?> opt) {
       if (opt.isPresent()) {
@@ -288,7 +287,6 @@ final class SoloSession implements RenderSession {
     }
     return this;
   }
-
 
   @Override
   public RenderSession repeat(String tmpl, int times) {
@@ -509,6 +507,16 @@ final class SoloSession implements RenderSession {
     Check.that(name).is(elementOf(), t.getNestedTemplateNames(),
         NO_SUCH_TEMPLATE.getExceptionSupplier(getFQN(t, name)));
     return t.getNestedTemplate(name);
+  }
+
+  private boolean dontProcess(Object data) {
+    return data == UNDEFINED ||
+        (data == null && config.accessors().nullEqualsUndefined());
+  }
+
+  private boolean mustProcess(Object data) {
+    return data != UNDEFINED &&
+        (data != null || !config.accessors().nullEqualsUndefined());
   }
 
 }
