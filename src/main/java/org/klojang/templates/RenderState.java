@@ -109,12 +109,12 @@ final class RenderState {
     state0.todo.stream().map(var -> getFQN(myTmpl, var)).forEach(vars::add);
     myTmpl.getNestedTemplates().forEach(t -> {
       if (state0.sessions.containsKey(t)) {
-        state0.sessions.values().stream()
-            .flatMap(Arrays::stream)
+        Arrays.stream(state0.sessions.get(t))
+            .limit(1)
             .map(SoloSession::state)
-            .forEach(s -> collectUnsetVariables(s, vars));
+            .forEach(s -> vars.addAll(s.getAllUnsetVariables()));
       } else {
-        vars.addAll(getAllVariableFQNames(myTmpl));
+        vars.addAll(getAllVariableFQNames(t));
       }
     });
   }

@@ -108,13 +108,13 @@ final class RenderState {
 <span class="fc" id="L108">    Template myTmpl = state0.config.template();</span>
 <span class="fc" id="L109">    state0.todo.stream().map(var -&gt; getFQN(myTmpl, var)).forEach(vars::add);</span>
 <span class="fc" id="L110">    myTmpl.getNestedTemplates().forEach(t -&gt; {</span>
-<span class="pc bpc" id="L111" title="1 of 2 branches missed.">      if (state0.sessions.containsKey(t)) {</span>
-<span class="nc" id="L112">        state0.sessions.values().stream()</span>
-<span class="nc" id="L113">            .flatMap(Arrays::stream)</span>
-<span class="nc" id="L114">            .map(SoloSession::state)</span>
-<span class="nc" id="L115">            .forEach(s -&gt; collectUnsetVariables(s, vars));</span>
+<span class="fc bfc" id="L111" title="All 2 branches covered.">      if (state0.sessions.containsKey(t)) {</span>
+<span class="fc" id="L112">        Arrays.stream(state0.sessions.get(t))</span>
+<span class="fc" id="L113">            .limit(1)</span>
+<span class="fc" id="L114">            .map(SoloSession::state)</span>
+<span class="fc" id="L115">            .forEach(s -&gt; vars.addAll(s.getAllUnsetVariables()));</span>
       } else {
-<span class="fc" id="L117">        vars.addAll(getAllVariableFQNames(myTmpl));</span>
+<span class="fc" id="L117">        vars.addAll(getAllVariableFQNames(t));</span>
       }
 <span class="fc" id="L119">    });</span>
 <span class="fc" id="L120">  }</span>

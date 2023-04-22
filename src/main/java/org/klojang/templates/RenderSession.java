@@ -85,7 +85,10 @@ public sealed interface RenderSession permits SoloSession, MultiSession {
   /**
    * Sets the value of the specified variable. The variable may be (deeply) nested
    * and is specified using its
-   * {@linkplain TemplateUtils#getFQN(Template, String) fully-qualified  name}.
+   * {@linkplain TemplateUtils#getFQN(Template, String) fully-qualified  name}. If
+   * the variable is a top-level variable (the path consists of just one path
+   * segment), this method behaves just like {@link #set(String, Object)} &#8212;
+   * with 0 (zero) passed to the {@code IntFunction}.
    *
    * @param path a path to a potentially deeply-nested variable
    * @param valueGenerator a function which is given the array index of the
@@ -117,6 +120,10 @@ public sealed interface RenderSession permits SoloSession, MultiSession {
    * {@link #populate(String, Object, String...) populate()}. If {@code force} equals
    * {@code true}, the variable will always be set and {@code setNested()} will
    * itself cause the template to become visible.
+   *
+   * <p>If the variable is a top-level variable (the path consists of just one path
+   * segment), this method behaves just like {@link #set(String, Object, VarGroup)}
+   * &#8212; with 0 (zero) passed to the {@code IntFunction}.
    *
    * @param path a path to a potentially deeply-nested variable
    * @param valueGenerator a function which is given the array index of the
@@ -506,24 +513,26 @@ public sealed interface RenderSession permits SoloSession, MultiSession {
 
   /**
    * Returns all variables that have not been set yet in the template managed by this
-   * {@code RenderSession}. Variables in nested templates are not checked.
+   * {@code RenderSession}. Variables in nested templates are not considered.
    *
    * @return all variables that have not been set yet in the template managed by this
    *     {@code RenderSession}
    * @see Accessor#UNDEFINED
+   * @see AccessorRegistry.Builder#nullEqualsUndefined(boolean)
    * @see #allSet()
    */
   List<String> getUnsetVariables();
 
   /**
-   * Returns all variables that have not been set yet in the template managed by this
-   * {@code RenderSession} and all templates nested inside it (recursively). The
-   * variable names will be
-   * {@linkplain TemplateUtils#getFQN(Template, String) fully-qualified}.
+   * Returns the
+   * {@linkplain TemplateUtils#getFQN(Template, String) fully-qualified names} of all
+   * variables that have not been set yet in the template managed by this
+   * {@code RenderSession} and all templates nested inside it (recursively).
    *
    * @return all variables that have not been set yet in the template managed by this
    *     {@code RenderSession} and all templates nested inside it
    * @see Accessor#UNDEFINED
+   * @see AccessorRegistry.Builder#nullEqualsUndefined(boolean)
    * @see #allSet()
    */
   List<String> getAllUnsetVariables();

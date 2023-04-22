@@ -2,10 +2,9 @@ package org.klojang.templates;
 
 import org.junit.jupiter.api.Test;
 
-import java.util.Map;
+import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class RenderStateTest {
 
@@ -26,6 +25,11 @@ public class RenderStateTest {
         """;
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
+    assertEquals(List.of(), rs.getUnsetVariables());
+    assertEquals(List.of("foo0.foo1.bar", "foo0.foo1.foo1.bar", "foo0.foo2.bar"),
+        rs.getAllUnsetVariables());
+    rs.setNested("foo0.foo1.bar", i -> "hello");
     System.out.println(rs.getAllUnsetVariables());
   }
+
 }

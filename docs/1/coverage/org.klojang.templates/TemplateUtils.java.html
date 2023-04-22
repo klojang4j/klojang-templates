@@ -153,14 +153,16 @@ public final class TemplateUtils {
 <span class="fc" id="L153">    return getNestedTemplate(template, FQN, FQN.split(&quot;\\.&quot;));</span>
   }
 
-  private static Template getNestedTemplate(Template t0, String FQN, String[] names) {
-<span class="fc bfc" id="L157" title="All 2 branches covered.">    if (names.length == 0) {</span>
-<span class="fc" id="L158">      return t0;</span>
+  private static Template getNestedTemplate(Template t0,
+      String FQN,
+      String[] names) {
+<span class="fc bfc" id="L159" title="All 2 branches covered.">    if (names.length == 0) {</span>
+<span class="fc" id="L160">      return t0;</span>
     }
-<span class="fc" id="L160">    Check.that(names[0]).is(in(), t0.getNestedTemplateNames(),</span>
+<span class="fc" id="L162">    Check.that(names[0]).is(in(), t0.getNestedTemplateNames(),</span>
         ERR_NO_SUCH_TEMPLATE, FQN);
-<span class="fc" id="L162">    t0 = t0.getNestedTemplate(names[0]);</span>
-<span class="fc" id="L163">    return getNestedTemplate(t0, FQN, copyOfRange(names, 1, names.length));</span>
+<span class="fc" id="L164">    t0 = t0.getNestedTemplate(names[0]);</span>
+<span class="fc" id="L165">    return getNestedTemplate(t0, FQN, copyOfRange(names, 1, names.length));</span>
   }
 
   /**
@@ -177,13 +179,13 @@ public final class TemplateUtils {
    *     specified fully-qualified name
    */
   public static Template getContainingTemplate(Template template, String FQN) {
-<span class="fc" id="L180">    Check.notNull(template, MTag.TEMPLATE);</span>
-<span class="fc" id="L181">    Check.that(FQN, MTag.FQN).isNot(empty());</span>
-<span class="fc bfc" id="L182" title="All 2 branches covered.">    if (count(FQN, &quot;.&quot;) == 0) {</span>
-<span class="fc" id="L183">      Check.that(FQN).is(in(), template.getNames(), ERR_BAD_NAME, FQN);</span>
-<span class="fc" id="L184">      return template;</span>
+<span class="fc" id="L182">    Check.notNull(template, MTag.TEMPLATE);</span>
+<span class="fc" id="L183">    Check.that(FQN, MTag.FQN).isNot(empty());</span>
+<span class="fc bfc" id="L184" title="All 2 branches covered.">    if (count(FQN, &quot;.&quot;) == 0) {</span>
+<span class="fc" id="L185">      Check.that(FQN).is(in(), template.getNames(), ERR_BAD_NAME, FQN);</span>
+<span class="fc" id="L186">      return template;</span>
     }
-<span class="fc" id="L186">    return getNestedTemplate(template, substringBefore(FQN, &quot;.&quot;, 1));</span>
+<span class="fc" id="L188">    return getNestedTemplate(template, substringBefore(FQN, &quot;.&quot;, 1));</span>
   }
 
   /**
@@ -198,29 +200,37 @@ public final class TemplateUtils {
    *     inside it
    */
   public static List&lt;Tuple2&lt;Template, String&gt;&gt; getVarsPerTemplate(Template template) {
-<span class="fc" id="L201">    Check.notNull(template, MTag.TEMPLATE);</span>
-<span class="fc" id="L202">    ArrayList&lt;Tuple2&lt;Template, String&gt;&gt; tuples = new ArrayList&lt;&gt;();</span>
-<span class="fc" id="L203">    collectVarsPerTemplate(template, tuples);</span>
-<span class="fc" id="L204">    return tuples;</span>
+<span class="fc" id="L203">    Check.notNull(template, MTag.TEMPLATE);</span>
+<span class="fc" id="L204">    ArrayList&lt;Tuple2&lt;Template, String&gt;&gt; tuples = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L205">    collectVarsPerTemplate(template, tuples);</span>
+<span class="fc" id="L206">    return tuples;</span>
   }
 
   private static void collectVarsPerTemplate(Template t0,
       ArrayList&lt;Tuple2&lt;Template, String&gt;&gt; tuples) {
-<span class="fc" id="L209">    t0.getVariables().stream().map(s -&gt; Tuple2.of(t0, s)).forEach(tuples::add);</span>
-<span class="fc" id="L210">    t0.getNestedTemplates().forEach(t -&gt; collectVarsPerTemplate(t, tuples));</span>
-<span class="fc" id="L211">  }</span>
+<span class="fc" id="L211">    t0.getVariables().stream().map(s -&gt; Tuple2.of(t0, s)).forEach(tuples::add);</span>
+<span class="fc" id="L212">    t0.getNestedTemplates().forEach(t -&gt; collectVarsPerTemplate(t, tuples));</span>
+<span class="fc" id="L213">  }</span>
 
+  /**
+   * Returns the fully-qualified names of all variables in the specified template and
+   * all templates descending from the specified template.
+   *
+   * @param template the template for which to retrieve the variable names
+   * @return the fully-qualified variable names in this {@code Template} and the
+   *     templates nested inside it
+   */
   public static List&lt;String&gt; getAllVariableFQNames(Template template) {
-<span class="fc" id="L214">    Check.notNull(template, MTag.TEMPLATE);</span>
-<span class="fc" id="L215">    ArrayList&lt;String&gt; fqns = new ArrayList&lt;&gt;();</span>
-<span class="fc" id="L216">    collectFQNs(template, fqns);</span>
-<span class="fc" id="L217">    return fqns;</span>
+<span class="fc" id="L224">    Check.notNull(template, MTag.TEMPLATE);</span>
+<span class="fc" id="L225">    ArrayList&lt;String&gt; fqns = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L226">    collectFQNs(template, fqns);</span>
+<span class="fc" id="L227">    return fqns;</span>
   }
 
   private static void collectFQNs(Template t0, ArrayList&lt;String&gt; fqns) {
-<span class="fc" id="L221">    t0.getVariables().stream().map(s -&gt; getFQN(t0, s)).forEach(fqns::add);</span>
-<span class="fc" id="L222">    t0.getNestedTemplates().forEach(t -&gt; collectFQNs(t, fqns));</span>
-<span class="fc" id="L223">  }</span>
+<span class="fc" id="L231">    t0.getVariables().stream().map(s -&gt; getFQN(t0, s)).forEach(fqns::add);</span>
+<span class="fc" id="L232">    t0.getNestedTemplates().forEach(t -&gt; collectFQNs(t, fqns));</span>
+<span class="fc" id="L233">  }</span>
 
   /**
    * Prints out the constituent parts of the specified {@code Template}. Can be used
@@ -230,8 +240,8 @@ public final class TemplateUtils {
    * @param out the {@code PrintStream} to which to print
    */
   public static void printParts(Template template, PrintStream out) {
-<span class="fc" id="L233">    new PartsPrinter(template).printParts(out);</span>
-<span class="fc" id="L234">  }</span>
+<span class="fc" id="L243">    new PartsPrinter(template).printParts(out);</span>
+<span class="fc" id="L244">  }</span>
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

@@ -153,7 +153,9 @@ public final class TemplateUtils {
     return getNestedTemplate(template, FQN, FQN.split("\\."));
   }
 
-  private static Template getNestedTemplate(Template t0, String FQN, String[] names) {
+  private static Template getNestedTemplate(Template t0,
+      String FQN,
+      String[] names) {
     if (names.length == 0) {
       return t0;
     }
@@ -210,6 +212,14 @@ public final class TemplateUtils {
     t0.getNestedTemplates().forEach(t -> collectVarsPerTemplate(t, tuples));
   }
 
+  /**
+   * Returns the fully-qualified names of all variables in the specified template and
+   * all templates descending from the specified template.
+   *
+   * @param template the template for which to retrieve the variable names
+   * @return the fully-qualified variable names in this {@code Template} and the
+   *     templates nested inside it
+   */
   public static List<String> getAllVariableFQNames(Template template) {
     Check.notNull(template, MTag.TEMPLATE);
     ArrayList<String> fqns = new ArrayList<>();
