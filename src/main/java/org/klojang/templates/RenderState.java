@@ -119,7 +119,7 @@ final class RenderState {
     });
   }
 
-  boolean isFullyPopulated() {
+  boolean allSet() {
     return ready(this);
   }
 

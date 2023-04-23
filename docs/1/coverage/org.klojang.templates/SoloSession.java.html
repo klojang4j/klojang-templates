@@ -103,8 +103,8 @@ final class SoloSession implements RenderSession {
   public RenderSession setNested(String path, IntFunction&lt;Object&gt; valueGenerator) {
 <span class="fc" id="L104">    Path p = Check.notNull(path, Tag.PATH).ok(Path::from);</span>
 <span class="fc" id="L105">    Check.notNull(valueGenerator, VALUE_GENERATOR);</span>
-<span class="pc bpc" id="L106" title="1 of 2 branches missed.">    if (p.size() == 1) {</span>
-<span class="nc" id="L107">      setVar(p.segment(0), valueGenerator.apply(0), null);</span>
+<span class="fc bfc" id="L106" title="All 2 branches covered.">    if (p.size() == 1) {</span>
+<span class="fc" id="L107">      setVar(p.segment(0), valueGenerator.apply(0), null);</span>
     } else {
 <span class="fc" id="L109">      setNested(this, p, valueGenerator, null, true);</span>
     }
@@ -460,7 +460,7 @@ final class SoloSession implements RenderSession {
 
   @Override
   public boolean allSet() {
-<span class="fc" id="L463">    return state.isFullyPopulated();</span>
+<span class="fc" id="L463">    return state.allSet();</span>
   }
 
   public RenderSession unset(String... vars) {

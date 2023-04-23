@@ -3,12 +3,15 @@ package org.klojang.templates;
 import org.klojang.check.Check;
 import org.klojang.check.Tag;
 import org.klojang.collections.WiredList;
+import org.klojang.path.Path;
 import org.klojang.templates.x.MTag;
 import org.klojang.util.Tuple2;
 
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 import static java.util.Arrays.copyOfRange;
 import static org.klojang.check.CommonChecks.empty;
@@ -214,7 +217,9 @@ public final class TemplateUtils {
 
   /**
    * Returns the fully-qualified names of all variables in the specified template and
-   * all templates descending from the specified template.
+   * all templates descending from the specified template. The names are
+   * fully-qualified relative to the root template of the specified template (not to
+   * the specified template itself).
    *
    * @param template the template for which to retrieve the variable names
    * @return the fully-qualified variable names in this {@code Template} and the
@@ -227,9 +232,37 @@ public final class TemplateUtils {
     return fqns;
   }
 
-  private static void collectFQNs(Template t0, ArrayList<String> fqns) {
-    t0.getVariables().stream().map(s -> getFQN(t0, s)).forEach(fqns::add);
-    t0.getNestedTemplates().forEach(t -> collectFQNs(t, fqns));
+  private static void collectFQNs(Template t0, ArrayList<String> vars) {
+    t0.getVariables().stream().map(s -> getFQN(t0, s)).forEach(vars::add);
+    t0.getNestedTemplates().forEach(t -> collectFQNs(t, vars));
+  }
+
+  /**
+   * Returns the fully-qualified names of all variables in the specified template and
+   * all templates descending from the specified template.
+   *
+   * @param template the template for which to retrieve the variable names
+   * @param relative if {@code true}, the names are fully-qualified relative to
+   *     the specified template, otherwise relative to the root template of the
+   *     specified template
+   * @return the fully-qualified variable names in this {@code Template} and the
+   *     templates nested inside it
+   */
+  public static List<String> getAllVariableFQNames(Template template,
+      boolean relative) {
+    if (relative) {
+      Check.notNull(template, MTag.TEMPLATE);
+      ArrayList<Path> paths = new ArrayList<>();
+      collectFQNs(template, paths, Path.empty());
+      return paths.stream().map(Objects::toString).collect(Collectors.toList());
+    }
+    return getAllVariableFQNames(template);
+  }
+
+  private static void collectFQNs(Template t0, ArrayList<Path> vars, Path path) {
+    t0.getVariables().stream().map(path::append).forEach(vars::add);
+    t0.getNestedTemplates().forEach(
+        t -> collectFQNs(t, vars, path.append(t.getName())));
   }
 
   /**

@@ -3,12 +3,15 @@
 import org.klojang.check.Check;
 import org.klojang.check.Tag;
 import org.klojang.collections.WiredList;
+import org.klojang.path.Path;
 import org.klojang.templates.x.MTag;
 import org.klojang.util.Tuple2;
 
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 import static java.util.Arrays.copyOfRange;
 import static org.klojang.check.CommonChecks.empty;
@@ -26,8 +29,8 @@ import static org.klojang.util.StringMethods.substringBefore;
  */
 public final class TemplateUtils {
 
-<span class="nc" id="L29">  private TemplateUtils() {</span>
-<span class="nc" id="L30">    throw new UnsupportedOperationException();</span>
+<span class="nc" id="L32">  private TemplateUtils() {</span>
+<span class="nc" id="L33">    throw new UnsupportedOperationException();</span>
   }
 
   /**
@@ -58,15 +61,15 @@ public final class TemplateUtils {
    * @return the fully-qualified name of the template
    */
   public static String getFQN(Template template) {
-<span class="fc" id="L61">    Check.notNull(template);</span>
-<span class="fc bfc" id="L62" title="All 2 branches covered.">    if (template.getParent() == null) {</span>
-<span class="fc" id="L63">      return template.getName();</span>
+<span class="fc" id="L64">    Check.notNull(template);</span>
+<span class="fc bfc" id="L65" title="All 2 branches covered.">    if (template.getParent() == null) {</span>
+<span class="fc" id="L66">      return template.getName();</span>
     }
-<span class="fc" id="L65">    WiredList&lt;String&gt; wl = new WiredList&lt;&gt;();</span>
-<span class="fc bfc" id="L66" title="All 2 branches covered.">    for (Template t = template; t.getParent() != null; t = t.getParent()) {</span>
-<span class="fc" id="L67">      wl.prepend(t.getName());</span>
+<span class="fc" id="L68">    WiredList&lt;String&gt; wl = new WiredList&lt;&gt;();</span>
+<span class="fc bfc" id="L69" title="All 2 branches covered.">    for (Template t = template; t.getParent() != null; t = t.getParent()) {</span>
+<span class="fc" id="L70">      wl.prepend(t.getName());</span>
     }
-<span class="fc" id="L69">    return implode(wl, &quot;.&quot;);</span>
+<span class="fc" id="L72">    return implode(wl, &quot;.&quot;);</span>
   }
 
   /**
@@ -81,9 +84,9 @@ public final class TemplateUtils {
    * @return its fully-qualified name
    */
   public static String getFQN(Template template, String name) {
-<span class="fc" id="L84">    Check.notNull(template, MTag.TEMPLATE);</span>
-<span class="fc" id="L85">    Check.notNull(name, Tag.NAME);</span>
-<span class="fc bfc" id="L86" title="All 2 branches covered.">    return (template.getParent() == null) ? name : getFQN(template) + '.' + name;</span>
+<span class="fc" id="L87">    Check.notNull(template, MTag.TEMPLATE);</span>
+<span class="fc" id="L88">    Check.notNull(name, Tag.NAME);</span>
+<span class="fc bfc" id="L89" title="All 2 branches covered.">    return (template.getParent() == null) ? name : getFQN(template) + '.' + name;</span>
   }
 
   /**
@@ -95,22 +98,22 @@ public final class TemplateUtils {
    *     template
    */
   public static List&lt;VariableOccurrence&gt; getAllVariableOccurrences(Template template) {
-<span class="fc" id="L98">    Check.notNull(template);</span>
-<span class="fc" id="L99">    ArrayList&lt;VariableOccurrence&gt; list = new ArrayList&lt;&gt;();</span>
-<span class="fc" id="L100">    collectOccurrences(template, list);</span>
-<span class="fc" id="L101">    return list;</span>
+<span class="fc" id="L101">    Check.notNull(template);</span>
+<span class="fc" id="L102">    ArrayList&lt;VariableOccurrence&gt; list = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L103">    collectOccurrences(template, list);</span>
+<span class="fc" id="L104">    return list;</span>
   }
 
   private static void collectOccurrences(Template template,
       ArrayList&lt;VariableOccurrence&gt; list) {
-<span class="fc bfc" id="L106" title="All 2 branches covered.">    for (Part part : template.parts()) {</span>
-<span class="fc bfc" id="L107" title="All 2 branches covered.">      if (part instanceof VariablePart vp) {</span>
-<span class="fc" id="L108">        list.add(vp.toOccurrence());</span>
-<span class="fc bfc" id="L109" title="All 2 branches covered.">      } else if (part instanceof NestedTemplatePart ntp) {</span>
-<span class="fc" id="L110">        collectOccurrences(ntp.getTemplate(), list);</span>
+<span class="fc bfc" id="L109" title="All 2 branches covered.">    for (Part part : template.parts()) {</span>
+<span class="fc bfc" id="L110" title="All 2 branches covered.">      if (part instanceof VariablePart vp) {</span>
+<span class="fc" id="L111">        list.add(vp.toOccurrence());</span>
+<span class="fc bfc" id="L112" title="All 2 branches covered.">      } else if (part instanceof NestedTemplatePart ntp) {</span>
+<span class="fc" id="L113">        collectOccurrences(ntp.getTemplate(), list);</span>
       }
-<span class="fc" id="L112">    }</span>
-<span class="fc" id="L113">  }</span>
+<span class="fc" id="L115">    }</span>
+<span class="fc" id="L116">  }</span>
 
   /**
    * Returns the specified template and all templates descending from it. The
@@ -122,17 +125,17 @@ public final class TemplateUtils {
    * @return a {@code List} containing the {@code Template} and its descendants
    */
   public static List&lt;Template&gt; getTemplateHierarchy(Template template) {
-<span class="fc" id="L125">    Check.notNull(template);</span>
-<span class="fc" id="L126">    ArrayList&lt;Template&gt; tmpls = new ArrayList&lt;&gt;();</span>
-<span class="fc" id="L127">    tmpls.add(template);</span>
-<span class="fc" id="L128">    collectTemplates(template, tmpls);</span>
-<span class="fc" id="L129">    return tmpls;</span>
+<span class="fc" id="L128">    Check.notNull(template);</span>
+<span class="fc" id="L129">    ArrayList&lt;Template&gt; tmpls = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L130">    tmpls.add(template);</span>
+<span class="fc" id="L131">    collectTemplates(template, tmpls);</span>
+<span class="fc" id="L132">    return tmpls;</span>
   }
 
   private static void collectTemplates(Template t0, ArrayList&lt;Template&gt; tmpls) {
-<span class="fc" id="L133">    tmpls.addAll(t0.getNestedTemplates());</span>
-<span class="fc" id="L134">    t0.getNestedTemplates().forEach(t -&gt; collectTemplates(t, tmpls));</span>
-<span class="fc" id="L135">  }</span>
+<span class="fc" id="L136">    tmpls.addAll(t0.getNestedTemplates());</span>
+<span class="fc" id="L137">    t0.getNestedTemplates().forEach(t -&gt; collectTemplates(t, tmpls));</span>
+<span class="fc" id="L138">  }</span>
 
   /**
    * Returns the nested template corresponding to the specified fully-qualified name.
@@ -148,21 +151,21 @@ public final class TemplateUtils {
    *     fully-qualified name
    */
   public static Template getNestedTemplate(Template template, String FQN) {
-<span class="fc" id="L151">    Check.notNull(template, MTag.TEMPLATE);</span>
-<span class="fc" id="L152">    Check.that(FQN, MTag.FQN).isNot(empty());</span>
-<span class="fc" id="L153">    return getNestedTemplate(template, FQN, FQN.split(&quot;\\.&quot;));</span>
+<span class="fc" id="L154">    Check.notNull(template, MTag.TEMPLATE);</span>
+<span class="fc" id="L155">    Check.that(FQN, MTag.FQN).isNot(empty());</span>
+<span class="fc" id="L156">    return getNestedTemplate(template, FQN, FQN.split(&quot;\\.&quot;));</span>
   }
 
   private static Template getNestedTemplate(Template t0,
       String FQN,
       String[] names) {
-<span class="fc bfc" id="L159" title="All 2 branches covered.">    if (names.length == 0) {</span>
-<span class="fc" id="L160">      return t0;</span>
+<span class="fc bfc" id="L162" title="All 2 branches covered.">    if (names.length == 0) {</span>
+<span class="fc" id="L163">      return t0;</span>
     }
-<span class="fc" id="L162">    Check.that(names[0]).is(in(), t0.getNestedTemplateNames(),</span>
+<span class="fc" id="L165">    Check.that(names[0]).is(in(), t0.getNestedTemplateNames(),</span>
         ERR_NO_SUCH_TEMPLATE, FQN);
-<span class="fc" id="L164">    t0 = t0.getNestedTemplate(names[0]);</span>
-<span class="fc" id="L165">    return getNestedTemplate(t0, FQN, copyOfRange(names, 1, names.length));</span>
+<span class="fc" id="L167">    t0 = t0.getNestedTemplate(names[0]);</span>
+<span class="fc" id="L168">    return getNestedTemplate(t0, FQN, copyOfRange(names, 1, names.length));</span>
   }
 
   /**
@@ -179,13 +182,13 @@ public final class TemplateUtils {
    *     specified fully-qualified name
    */
   public static Template getContainingTemplate(Template template, String FQN) {
-<span class="fc" id="L182">    Check.notNull(template, MTag.TEMPLATE);</span>
-<span class="fc" id="L183">    Check.that(FQN, MTag.FQN).isNot(empty());</span>
-<span class="fc bfc" id="L184" title="All 2 branches covered.">    if (count(FQN, &quot;.&quot;) == 0) {</span>
-<span class="fc" id="L185">      Check.that(FQN).is(in(), template.getNames(), ERR_BAD_NAME, FQN);</span>
-<span class="fc" id="L186">      return template;</span>
+<span class="fc" id="L185">    Check.notNull(template, MTag.TEMPLATE);</span>
+<span class="fc" id="L186">    Check.that(FQN, MTag.FQN).isNot(empty());</span>
+<span class="fc bfc" id="L187" title="All 2 branches covered.">    if (count(FQN, &quot;.&quot;) == 0) {</span>
+<span class="fc" id="L188">      Check.that(FQN).is(in(), template.getNames(), ERR_BAD_NAME, FQN);</span>
+<span class="fc" id="L189">      return template;</span>
     }
-<span class="fc" id="L188">    return getNestedTemplate(template, substringBefore(FQN, &quot;.&quot;, 1));</span>
+<span class="fc" id="L191">    return getNestedTemplate(template, substringBefore(FQN, &quot;.&quot;, 1));</span>
   }
 
   /**
@@ -200,37 +203,67 @@ public final class TemplateUtils {
    *     inside it
    */
   public static List&lt;Tuple2&lt;Template, String&gt;&gt; getVarsPerTemplate(Template template) {
-<span class="fc" id="L203">    Check.notNull(template, MTag.TEMPLATE);</span>
-<span class="fc" id="L204">    ArrayList&lt;Tuple2&lt;Template, String&gt;&gt; tuples = new ArrayList&lt;&gt;();</span>
-<span class="fc" id="L205">    collectVarsPerTemplate(template, tuples);</span>
-<span class="fc" id="L206">    return tuples;</span>
+<span class="fc" id="L206">    Check.notNull(template, MTag.TEMPLATE);</span>
+<span class="fc" id="L207">    ArrayList&lt;Tuple2&lt;Template, String&gt;&gt; tuples = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L208">    collectVarsPerTemplate(template, tuples);</span>
+<span class="fc" id="L209">    return tuples;</span>
   }
 
   private static void collectVarsPerTemplate(Template t0,
       ArrayList&lt;Tuple2&lt;Template, String&gt;&gt; tuples) {
-<span class="fc" id="L211">    t0.getVariables().stream().map(s -&gt; Tuple2.of(t0, s)).forEach(tuples::add);</span>
-<span class="fc" id="L212">    t0.getNestedTemplates().forEach(t -&gt; collectVarsPerTemplate(t, tuples));</span>
-<span class="fc" id="L213">  }</span>
+<span class="fc" id="L214">    t0.getVariables().stream().map(s -&gt; Tuple2.of(t0, s)).forEach(tuples::add);</span>
+<span class="fc" id="L215">    t0.getNestedTemplates().forEach(t -&gt; collectVarsPerTemplate(t, tuples));</span>
+<span class="fc" id="L216">  }</span>
 
   /**
    * Returns the fully-qualified names of all variables in the specified template and
-   * all templates descending from the specified template.
+   * all templates descending from the specified template. The names are
+   * fully-qualified relative to the root template of the specified template (not to
+   * the specified template itself).
    *
    * @param template the template for which to retrieve the variable names
    * @return the fully-qualified variable names in this {@code Template} and the
    *     templates nested inside it
    */
   public static List&lt;String&gt; getAllVariableFQNames(Template template) {
-<span class="fc" id="L224">    Check.notNull(template, MTag.TEMPLATE);</span>
-<span class="fc" id="L225">    ArrayList&lt;String&gt; fqns = new ArrayList&lt;&gt;();</span>
-<span class="fc" id="L226">    collectFQNs(template, fqns);</span>
-<span class="fc" id="L227">    return fqns;</span>
+<span class="fc" id="L229">    Check.notNull(template, MTag.TEMPLATE);</span>
+<span class="fc" id="L230">    ArrayList&lt;String&gt; fqns = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L231">    collectFQNs(template, fqns);</span>
+<span class="fc" id="L232">    return fqns;</span>
   }
 
-  private static void collectFQNs(Template t0, ArrayList&lt;String&gt; fqns) {
-<span class="fc" id="L231">    t0.getVariables().stream().map(s -&gt; getFQN(t0, s)).forEach(fqns::add);</span>
-<span class="fc" id="L232">    t0.getNestedTemplates().forEach(t -&gt; collectFQNs(t, fqns));</span>
-<span class="fc" id="L233">  }</span>
+  private static void collectFQNs(Template t0, ArrayList&lt;String&gt; vars) {
+<span class="fc" id="L236">    t0.getVariables().stream().map(s -&gt; getFQN(t0, s)).forEach(vars::add);</span>
+<span class="fc" id="L237">    t0.getNestedTemplates().forEach(t -&gt; collectFQNs(t, vars));</span>
+<span class="fc" id="L238">  }</span>
+
+  /**
+   * Returns the fully-qualified names of all variables in the specified template and
+   * all templates descending from the specified template.
+   *
+   * @param template the template for which to retrieve the variable names
+   * @param relative if {@code true}, the names are fully-qualified relative to
+   *     the specified template, otherwise relative to the root template of the
+   *     specified template
+   * @return the fully-qualified variable names in this {@code Template} and the
+   *     templates nested inside it
+   */
+  public static List&lt;String&gt; getAllVariableFQNames(Template template,
+      boolean relative) {
+<span class="fc bfc" id="L253" title="All 2 branches covered.">    if (relative) {</span>
+<span class="fc" id="L254">      Check.notNull(template, MTag.TEMPLATE);</span>
+<span class="fc" id="L255">      ArrayList&lt;Path&gt; paths = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L256">      collectFQNs(template, paths, Path.empty());</span>
+<span class="fc" id="L257">      return paths.stream().map(Objects::toString).collect(Collectors.toList());</span>
+    }
+<span class="fc" id="L259">    return getAllVariableFQNames(template);</span>
+  }
+
+  private static void collectFQNs(Template t0, ArrayList&lt;Path&gt; vars, Path path) {
+<span class="fc" id="L263">    t0.getVariables().stream().map(path::append).forEach(vars::add);</span>
+<span class="fc" id="L264">    t0.getNestedTemplates().forEach(</span>
+<span class="fc" id="L265">        t -&gt; collectFQNs(t, vars, path.append(t.getName())));</span>
+<span class="fc" id="L266">  }</span>
 
   /**
    * Prints out the constituent parts of the specified {@code Template}. Can be used
@@ -240,8 +273,8 @@ public final class TemplateUtils {
    * @param out the {@code PrintStream} to which to print
    */
   public static void printParts(Template template, PrintStream out) {
-<span class="fc" id="L243">    new PartsPrinter(template).printParts(out);</span>
-<span class="fc" id="L244">  }</span>
+<span class="fc" id="L276">    new PartsPrinter(template).printParts(out);</span>
+<span class="fc" id="L277">  }</span>
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

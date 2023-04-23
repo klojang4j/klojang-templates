@@ -46,8 +46,8 @@ final class MultiSession implements RenderSession {
 
   @Override
   public RenderSession setNested(String path, IntFunction&lt;Object&gt; valueGenerator) {
-<span class="nc" id="L49">    Arrays.stream(sessions).forEach(s -&gt; s.setNested(path, valueGenerator));</span>
-<span class="nc" id="L50">    return this;</span>
+<span class="fc" id="L49">    Arrays.stream(sessions).forEach(s -&gt; s.setNested(path, valueGenerator));</span>
+<span class="fc" id="L50">    return this;</span>
   }
 
   @Override
@@ -186,10 +186,10 @@ final class MultiSession implements RenderSession {
 
   @Override
   public List&lt;String&gt; getAllUnsetVariables() {
-<span class="nc bnc" id="L189" title="All 2 branches missed.">    if (sessions.length == 0) {</span>
+<span class="pc bpc" id="L189" title="1 of 2 branches missed.">    if (sessions.length == 0) {</span>
 <span class="nc" id="L190">      return List.of();</span>
     }
-<span class="nc" id="L192">    return sessions[0].getAllUnsetVariables();</span>
+<span class="fc" id="L192">    return sessions[0].getAllUnsetVariables();</span>
   }
 
   @Override

@@ -460,7 +460,7 @@ final class SoloSession implements RenderSession {
 
   @Override
   public boolean allSet() {
-    return state.isFullyPopulated();
+    return state.allSet();
   }
 
   public RenderSession unset(String... vars) {
