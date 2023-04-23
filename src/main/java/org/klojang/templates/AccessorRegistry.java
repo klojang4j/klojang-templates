@@ -47,11 +47,11 @@ import static org.klojang.templates.x.MTag.TEMPLATE;
  *       case "birthDate" : return person.getBirthDate();
  *       default : return Accessor.UNDEFINED;
  *   };
- * AccessorRegistry reg = AccessorRegistry
+ * AccessorRegistry accessors = AccessorRegistry
  *   .configure()
  *   .register(Person.class, new PersonAccessor())
  *   .freeze();
- * RenderSession session = template.newRenderSession(reg);
+ * RenderSession session = template.newRenderSession(accessors);
  * }</pre></blockquote>
  *
  * <p>A slightly less verbose, but still fully reflection-free alternative is to use
@@ -64,12 +64,17 @@ import static org.klojang.templates.x.MTag.TEMPLATE;
  *    .withString("firstName", "lastName")
  *    .with(LocalDate.class, "birthDate"))
  *    .build();
- * AccessorRegistry reg = AccessorRegistry
+ * AccessorRegistry accessors = AccessorRegistry
  *   .configure()
  *   .register(beanReader)
  *   .freeze();
- * RenderSession session = template.newRenderSession(reg);
+ * RenderSession session = template.newRenderSession(accessors);
  * }</pre></blockquote>
+ *
+ * <p>In practice, you would likely create just a single {@code AccessorRegistry}
+ * instance for your entire application, when it starts up, and pass that instance
+ * to all calls to
+ * {@link Template#newRenderSession(AccessorRegistry) Template.newRenderSession()}.
  *
  * @author Ayco Holleman
  * @see Template#newRenderSession(AccessorRegistry)

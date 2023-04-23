@@ -21,16 +21,27 @@ import static org.klojang.util.StringMethods.*;
 /**
  * A registry of {@linkplain Stringifier stringifiers} used by the
  * {@link RenderSession} to stringify the values coming back from the data access
- * layer. If you need to configure stringifiers, your code would broadly look like
- * this:
+ * layer. Stringifiers can be used, for example, to apply non-standard formatting to
+ * dates and numbers, or to apply some sort of escaping (e.g.
+ * {@linkplain VarGroup#HTML HTML escaping}), or to stringify objects whose
+ * {@code toString()} method does not satisfy your needs. If you need to configure
+ * stringifiers, your code might look something like this:
  *
  * <blockquote><pre>{@code
  * StringifierRegistry stringifiers = StringifierRegistry.configure()
- *    .forType(int.class, new SpecialIntStringifier())
+ *    .forType(int.class, obj -> String.valueOf((int) obj + 10))
  *    .freeze();
- * Template template = Template.fromResource(getClass(), "/path/to/foo.html");
+ * Template template = Template.fromString("~%foo%");
  * RenderSession session = template.newRenderSession(stringifiers);
+ * String out = session.set("foo", 32).render(); // 42
  * }</pre></blockquote>
+ *
+ * <p>In practice, you are more likely to create just a single
+ * {@code StringifierRegistry} instance for your entire application, when it starts
+ * up, and pass that instance to all calls to
+ * {@link Template#newRenderSession(StringifierRegistry)
+ * Template.newRenderSession()}.
+ *
  *
  * <p>This is how a {@link StringifierRegistry} decides which stringifier to use for
  * a template variable:
