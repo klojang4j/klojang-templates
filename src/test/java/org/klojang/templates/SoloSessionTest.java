@@ -317,6 +317,38 @@ public class SoloSessionTest {
   }
 
   @Test
+  public void setNested03() throws ParseException {
+    String src = """
+        ~%%begin:companies%
+            ~%%begin:departments%
+                ~%%begin:employees%
+                    ~%%begin:roles%
+                        ~%role%
+                    ~%%end:roles%
+                ~%%end:employees%
+            ~%%end:departments%
+        ~%%end:companies%
+        """;
+    Template tmpl = Template.fromString(src);
+    RenderSession rs = tmpl.newRenderSession();
+    rs.setNested("companies.departments.employees.roles.role",
+        i -> "director");
+    assertEquals("director", rs.render().strip());
+    rs.in("companies").setNested("departments.employees.roles.role",
+        i -> "CIO");
+    assertEquals("CIO", rs.render().strip());
+    rs.in("companies.departments").setNested("employees.roles.role",
+        i -> "programmer");
+    assertEquals("programmer", rs.render().strip());
+    rs.in("companies.departments.employees").setNested("roles.role",
+        i -> "project manager");
+    assertEquals("project manager", rs.render().strip());
+    rs.in("companies.departments.employees.roles").setNested("role",
+        i -> "analyst");
+    assertEquals("analyst", rs.render().strip());
+  }
+
+  @Test
   public void setDelayed00() throws ParseException {
     String src = "Hello ~%name%";
     Template tmpl = Template.fromString(src);
@@ -450,11 +482,31 @@ public class SoloSessionTest {
     assertFalse(rs.allSet());
     assertFalse(rs.in("foo0").allSet());
     assertTrue(rs.in("foo0.foo1").allSet());
-    rs.in("foo0").in("foo2").set("bar","bozo");
+    rs.in("foo0").in("foo2").set("bar", "bozo");
     assertTrue(rs.allSet());
     rs.clear("foo0");
     assertFalse(rs.in("foo0.foo1").allSet());
     assertFalse(rs.in("foo0.foo2").allSet());
+  }
+
+  @Test
+  public void getAllUnsetVariables00() throws ParseException {
+    String src = """
+        ~%%begin:companies%
+            ~%%begin:departments%
+                ~%%begin:employees%
+                    ~%%begin:roles%
+                        ~%role%
+                    ~%%end:roles%
+                ~%%end:employees%
+            ~%%end:departments%
+        ~%%end:companies%
+        """;
+    Template tmpl = Template.fromString(src);
+    RenderSession rs = tmpl.newRenderSession();
+    assertEquals("companies.departments.employees.roles.role",
+        rs.getAllUnsetVariables().get(0));
+    System.out.println(rs.in("companies").getAllUnsetVariables());
   }
 
   private static String nospace(String s) {
