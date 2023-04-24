@@ -229,6 +229,24 @@ public class MultiSessionTest {
   }
 
   @Test
+  public void setPath09() throws ParseException {
+    String src = """
+        ~%%begin:companies%
+            ~%%begin:departments%
+                ~%name%
+            ~%%end:departments%
+        ~%%end:companies%
+        """;
+    Template tmpl = Template.fromString(src);
+    RenderSession rs = tmpl.newRenderSession();
+    rs.in("companies")
+        .repeat("departments", 2).
+        setPath("name", i -> "Foo", VarGroup.HTML, true);
+    String out = rs.render();
+    assertEquals("FooFoo", nospace(out));
+  }
+
+  @Test
   public void ifNotSet00() throws ParseException {
     String src = """
         ~%%begin:companies%
@@ -267,6 +285,86 @@ public class MultiSessionTest {
     rs.in("companies").ifNotSet("departments.employees.roles.role",
         i -> "Programmer");
     assertEquals("ProgrammerProgrammer", nospace(rs.render()));
+  }
+
+  @Test
+  public void ifNotSet02() throws ParseException {
+    String src = """
+        ~%%begin:companies%
+            ~%%begin:departments%
+                ~%%begin:employees%
+                    ~%%begin:roles%
+                        ~%role%
+                    ~%%end:roles%
+                ~%%end:employees%
+            ~%%end:departments%
+        ~%%end:companies%
+        """;
+    Template tmpl = Template.fromString(src);
+    RenderSession rs = tmpl.newRenderSession();
+
+    rs.repeat("companies", 2).ifNotSet("departments.employees.roles.role",
+        i -> "Director");
+    assertEquals("DirectorDirector", nospace(rs.render()));
+    rs.in("companies").ifNotSet("departments.employees.roles.role",
+        i -> "Programmer");
+    assertEquals("DirectorDirector", nospace(rs.render()));
+    rs.in("companies").unset("departments.employees.roles.role");
+    rs.in("companies").ifNotSet("departments.employees.roles.role",
+        i -> "Programmer");
+    assertEquals("ProgrammerProgrammer", nospace(rs.render()));
+  }
+
+  @Test
+  public void ifNotSet03() throws ParseException {
+    String src = """
+        ~%global_var%
+        ~%%begin:companies%
+            ~%company_var%
+            ~%%begin:departments%
+                ~%department_var%
+                ~%%begin:employees%
+                   ~%employee_var%
+                    ~%%begin:roles%
+                        ~%role%
+                    ~%%end:roles%
+                ~%%end:employees%
+            ~%%end:departments%
+        ~%%end:companies%
+        """;
+    Template tmpl = Template.fromString(src);
+    RenderSession rs = tmpl.newRenderSession();
+
+    rs.ifNotSet("global_var", i -> "Foo");
+    assertEquals("Foo", nospace(rs.render()));
+    rs.ifNotSet("global_var", i -> "Bar");
+    assertEquals("Foo", nospace(rs.render()));
+    rs.unset("global_var");
+    rs.ifNotSet("global_var", i -> "Bar");
+    assertEquals("Bar", nospace(rs.render()));
+    rs.unset("global_var");
+
+    rs.repeat("companies", 2).ifNotSet("company_var", i -> "Foo", VarGroup.TEXT);
+    assertEquals("FooFoo", nospace(rs.render()));
+    rs.in("companies").ifNotSet("company_var", i -> "Bar");
+    assertEquals("FooFoo", nospace(rs.render()));
+    rs.unset("companies.company_var");
+    rs.in("companies").ifNotSet("company_var", i -> "Bar");
+    assertEquals("BarBar", nospace(rs.render()));
+
+    rs.clear("companies");
+
+    rs.in("companies")
+        .repeat("departments", 3)
+        .ifNotSet("department_var", i -> "Pooh");
+    assertEquals("PoohPoohPooh", nospace(rs.render()));
+    rs.in("companies").unset("departments.department_var");
+
+    rs.in("companies.departments").ifNotSet("employees.employee_var", i -> "Bar");
+    assertEquals("BarBarBar", nospace(rs.render()));
+
+    rs.in("companies.departments.employees").unset("employee_var");
+
 
   }
 

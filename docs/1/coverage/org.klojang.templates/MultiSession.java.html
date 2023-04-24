@@ -65,9 +65,9 @@ import java.util.function.Supplier;
       VarGroup group,
       boolean force) {
 <span class="fc" id="L67">    Path p = Check.notNull(path, Tag.PATH).ok(Path::from);</span>
-<span class="pc bpc" id="L68" title="1 of 2 branches missed.">    if (p.size() == 1) {</span>
-<span class="nc bnc" id="L69" title="All 2 branches missed.">      for (int i = 0; i &lt; sessions.length; ++i) {</span>
-<span class="nc" id="L70">        sessions[i].set(path, val.apply(i), group);</span>
+<span class="fc bfc" id="L68" title="All 2 branches covered.">    if (p.size() == 1) {</span>
+<span class="fc bfc" id="L69" title="All 2 branches covered.">      for (int i = 0; i &lt; sessions.length; ++i) {</span>
+<span class="fc" id="L70">        sessions[i].set(path, val.apply(i), group);</span>
       }
     } else {
 <span class="fc" id="L73">      Arrays.stream(sessions).forEach(s -&gt; s.setPath(path, val, group, force));</span>
@@ -78,10 +78,10 @@ import java.util.function.Supplier;
   @Override
   public RenderSession ifNotSet(String path, IntFunction&lt;Object&gt; val) {
 <span class="fc" id="L80">    Path p = Check.notNull(path, Tag.PATH).ok(Path::from);</span>
-<span class="pc bpc" id="L81" title="1 of 2 branches missed.">    if (p.size() == 1) {</span>
-<span class="nc bnc" id="L82" title="All 2 branches missed.">      for (int i = 0; i &lt; sessions.length; ++i) {</span>
-<span class="nc bnc" id="L83" title="All 2 branches missed.">        if (!sessions[i].state().isSet(p)) {</span>
-<span class="nc" id="L84">          sessions[i].set(path, val.apply(i));</span>
+<span class="fc bfc" id="L81" title="All 2 branches covered.">    if (p.size() == 1) {</span>
+<span class="fc bfc" id="L82" title="All 2 branches covered.">      for (int i = 0; i &lt; sessions.length; ++i) {</span>
+<span class="fc bfc" id="L83" title="All 2 branches covered.">        if (!sessions[i].state().isSet(p)) {</span>
+<span class="fc" id="L84">          sessions[i].set(path, val.apply(i));</span>
         }
       }
     } else {
@@ -93,17 +93,17 @@ import java.util.function.Supplier;
   @Override
   public RenderSession ifNotSet(String path, IntFunction&lt;Object&gt; val,
       VarGroup group) {
-<span class="nc" id="L96">    Path p = Check.notNull(path, Tag.PATH).ok(Path::from);</span>
-<span class="nc bnc" id="L97" title="All 2 branches missed.">    if (p.size() == 1) {</span>
-<span class="nc bnc" id="L98" title="All 2 branches missed.">      for (int i = 0; i &lt; sessions.length; ++i) {</span>
-<span class="nc bnc" id="L99" title="All 2 branches missed.">        if (!sessions[i].state().isSet(p)) {</span>
-<span class="nc" id="L100">          sessions[i].set(path, val.apply(i));</span>
+<span class="fc" id="L96">    Path p = Check.notNull(path, Tag.PATH).ok(Path::from);</span>
+<span class="pc bpc" id="L97" title="1 of 2 branches missed.">    if (p.size() == 1) {</span>
+<span class="fc bfc" id="L98" title="All 2 branches covered.">      for (int i = 0; i &lt; sessions.length; ++i) {</span>
+<span class="pc bpc" id="L99" title="1 of 2 branches missed.">        if (!sessions[i].state().isSet(p)) {</span>
+<span class="fc" id="L100">          sessions[i].set(path, val.apply(i));</span>
         }
       }
     } else {
 <span class="nc" id="L104">      Arrays.stream(sessions).forEach(s -&gt; s.ifNotSet(path, val, group));</span>
     }
-<span class="nc" id="L106">    return this;</span>
+<span class="fc" id="L106">    return this;</span>
   }
 
   @Override
