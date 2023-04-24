@@ -90,7 +90,7 @@ public class MultiSessionTest {
   }
 
   @Test
-  public void setNested00() throws ParseException {
+  public void setPath00() throws ParseException {
     String src = """
         ~%%begin:companies%
              ~%%begin:departments%~%name%~%%end:departments%
@@ -105,7 +105,7 @@ public class MultiSessionTest {
   }
 
   @Test
-  public void setNested01() throws ParseException {
+  public void setPath01() throws ParseException {
     String src = """
         ~%%begin:companies%
              ~%%begin:departments%~%name%~%%end:departments%
@@ -120,7 +120,7 @@ public class MultiSessionTest {
   }
 
   @Test
-  public void setNested02() throws ParseException {
+  public void setPath02() throws ParseException {
     String src = """
         ~%%begin:companies%
              ~%%begin:departments%~%name%~%%end:departments%
@@ -136,7 +136,7 @@ public class MultiSessionTest {
   }
 
   @Test
-  public void setNested03() throws ParseException {
+  public void setPath03() throws ParseException {
     String src = """
         ~%%begin:companies%
              ~%%begin:departments%~%name%~%%end:departments%
@@ -152,7 +152,7 @@ public class MultiSessionTest {
   }
 
   @Test
-  public void setNested04() throws ParseException {
+  public void setPath04() throws ParseException {
     String src = """
         ~%%begin:companies%
              ~%%begin:departments%~%name%~%%end:departments%
@@ -168,7 +168,7 @@ public class MultiSessionTest {
   }
 
   @Test
-  public void setNested05() throws ParseException {
+  public void setPath05() throws ParseException {
     String src = """
         ~%%begin:companies%
             ~%name%
@@ -183,7 +183,7 @@ public class MultiSessionTest {
   }
 
   @Test
-  public void setNested06() throws ParseException {
+  public void setPath06() throws ParseException {
     String src = """
         ~%%begin:companies%
             ~%name%
@@ -194,6 +194,38 @@ public class MultiSessionTest {
     rs.setPath("companies.name", i -> "foo", VarGroup.HTML, false);
     String out = rs.render();
     assertEquals("", nospace(out));
+  }
+
+  @Test
+  public void setPath07() throws ParseException {
+    String src = """
+        ~%%begin:companies%
+            ~%%begin:departments%
+                ~%name%
+            ~%%end:departments%
+        ~%%end:companies%
+        """;
+    Template tmpl = Template.fromString(src);
+    RenderSession rs = tmpl.newRenderSession();
+    rs.in("companies").setPath("departments.name", i -> "foo", VarGroup.HTML, false);
+    String out = rs.render();
+    assertEquals("", nospace(out));
+  }
+
+  @Test
+  public void setPath08() throws ParseException {
+    String src = """
+        ~%%begin:companies%
+            ~%%begin:departments%
+                ~%name%
+            ~%%end:departments%
+        ~%%end:companies%
+        """;
+    Template tmpl = Template.fromString(src);
+    RenderSession rs = tmpl.newRenderSession();
+    rs.in("companies").setPath("departments.name", i -> "foo", VarGroup.HTML, true);
+    String out = rs.render();
+    assertEquals("foo", nospace(out));
   }
 
   @Test
