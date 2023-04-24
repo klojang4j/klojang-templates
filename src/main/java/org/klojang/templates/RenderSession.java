@@ -131,8 +131,8 @@ public sealed interface RenderSession permits SoloSession, MultiSession {
    *     template instance for which to produce a value
    * @param varGroup the variable group to assign the variable to if the variable
    *     has no group name prefix.
-   * @param force whether or not to set the variable even if the containing
-   *     template had not been made visible yet via other means
+   * @param force whether to set the variable even if the containing template had
+   *     not been made visible yet via other means
    * @return this {@code RenderSession}
    * @see TemplateUtils#getFQN(Template, String)
    * @see org.klojang.path.Path

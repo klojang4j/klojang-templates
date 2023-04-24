@@ -26,14 +26,11 @@ import static org.klojang.util.ArrayMethods.EMPTY_STRING_ARRAY;
 import static org.klojang.util.CollectionMethods.listify;
 import static org.klojang.util.ObjectMethods.isEmpty;
 
-final class SoloSession implements RenderSession {
-
-  private final SessionConfig config;
-  private final RenderState state;
+record SoloSession(SessionConfig config, RenderState state) implements
+    RenderSession {
 
   SoloSession(SessionConfig config) {
-    this.config = config;
-    this.state = new RenderState(config);
+    this(config, new RenderState(config));
   }
 
   @Override
@@ -494,10 +491,6 @@ final class SoloSession implements RenderSession {
     ByteArrayOutputStream out = new ByteArrayOutputStream(1024);
     new Renderer(state).render(out);
     return out.toString(UTF_8);
-  }
-
-  RenderState state() {
-    return state;
   }
 
   private Template getNestedTemplate(String name) {
