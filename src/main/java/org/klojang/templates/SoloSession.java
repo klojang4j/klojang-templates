@@ -493,6 +493,11 @@ record SoloSession(SessionConfig config, RenderState state) implements
     return out.toString(UTF_8);
   }
 
+  @Override
+  public Template getTemplate() {
+    return config.template();
+  }
+
   private Template getNestedTemplate(String name) {
     Check.notNull(name, MTag.TEMPLATE_NAME);
     Template t = config.template();

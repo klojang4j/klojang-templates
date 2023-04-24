@@ -18,7 +18,7 @@ import java.util.function.Supplier;
 
   @Override
   public RenderSession set(String var, Object value, VarGroup group) {
-<span class="fc" id="L21">    Arrays.stream(sessions).forEach(s -&gt; s.set(var, value));</span>
+<span class="fc" id="L21">    Arrays.stream(sessions).forEach(s -&gt; s.set(var, value, group));</span>
 <span class="fc" id="L22">    return this;</span>
   }
 
@@ -87,7 +87,7 @@ import java.util.function.Supplier;
       Object data,
       VarGroup group,
       String... names) {
-<span class="fc" id="L90">    Arrays.stream(sessions).forEach(s -&gt; s.populate(tmplName, data, names));</span>
+<span class="fc" id="L90">    Arrays.stream(sessions).forEach(s -&gt; s.populate(tmplName, data, group, names));</span>
 <span class="fc" id="L91">    return this;</span>
   }
 
@@ -212,6 +212,11 @@ import java.util.function.Supplier;
 <span class="fc" id="L212">    StringBuilder sb = new StringBuilder(255);</span>
 <span class="fc" id="L213">    Arrays.stream(sessions).forEach(s -&gt; s.render(sb));</span>
 <span class="fc" id="L214">    return sb.toString();</span>
+  }
+
+  @Override
+  public Template getTemplate() {
+<span class="nc" id="L219">    return template;</span>
   }
 
 }

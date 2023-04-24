@@ -18,7 +18,7 @@ record MultiSession(Template template, SoloSession[] sessions) implements
 
   @Override
   public RenderSession set(String var, Object value, VarGroup group) {
-    Arrays.stream(sessions).forEach(s -> s.set(var, value));
+    Arrays.stream(sessions).forEach(s -> s.set(var, value, group));
     return this;
   }
 
@@ -87,7 +87,7 @@ record MultiSession(Template template, SoloSession[] sessions) implements
       Object data,
       VarGroup group,
       String... names) {
-    Arrays.stream(sessions).forEach(s -> s.populate(tmplName, data, names));
+    Arrays.stream(sessions).forEach(s -> s.populate(tmplName, data, group, names));
     return this;
   }
 
@@ -212,6 +212,11 @@ record MultiSession(Template template, SoloSession[] sessions) implements
     StringBuilder sb = new StringBuilder(255);
     Arrays.stream(sessions).forEach(s -> s.render(sb));
     return sb.toString();
+  }
+
+  @Override
+  public Template getTemplate() {
+    return template;
   }
 
 }

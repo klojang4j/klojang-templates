@@ -149,13 +149,17 @@ public sealed interface RenderSession permits SoloSession, MultiSession {
    * @param varName the name of the variable to set
    * @param valueGenerator the supplier of the value
    * @return this {@code RenderSession}
-   * @see Accessor#UNDEFINED
+   * @see #ifNotSet(String, Supplier, VarGroup)
    */
   RenderSession ifNotSet(String varName, Supplier<Object> valueGenerator);
 
   /**
    * Sets the specified variable to the value produced by the specified supplier
-   * <i>if</i> the variable has not already been set.
+   * <i>if</i> the variable has not already been set. This method is especially
+   * meant after a call to {@link #insert(Object, String...) insert()} or
+   * {@link #populate(String, Object, String...) populate()}, to set any variables
+   * for which the source data object passed to these methods did not provide a
+   * value.
    *
    * @param varName the name of the variable to set
    * @param valueGenerator the supplier of the value
@@ -163,6 +167,7 @@ public sealed interface RenderSession permits SoloSession, MultiSession {
    *     has no group name prefix.
    * @return this {@code RenderSession}
    * @see Accessor#UNDEFINED
+   * @see AccessorRegistry.Builder#nullEqualsUndefined(boolean)
    */
   RenderSession ifNotSet(String varName,
       Supplier<Object> valueGenerator,
@@ -622,5 +627,12 @@ public sealed interface RenderSession permits SoloSession, MultiSession {
    * @return the populated template (UTF8-encoded)
    */
   String render();
+
+  /**
+   * Returns the template being populated by this {@code RenderSession}.
+   *
+   * @return the template being populated by this {@code RenderSession}
+   */
+  Template getTemplate();
 
 }

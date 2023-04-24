@@ -254,9 +254,9 @@ import static org.klojang.util.ObjectMethods.isEmpty;
       Object data,
       VarGroup group,
       String... names) {
-<span class="nc" id="L257">    Check.notNull(group, VAR_GROUP);</span>
-<span class="nc" id="L258">    Check.notNull(names, Tag.VARARGS);</span>
-<span class="nc" id="L259">    return doPopulate(getNestedTemplate(tmpl), data, group, names);</span>
+<span class="fc" id="L257">    Check.notNull(group, VAR_GROUP);</span>
+<span class="fc" id="L258">    Check.notNull(names, Tag.VARARGS);</span>
+<span class="fc" id="L259">    return doPopulate(getNestedTemplate(tmpl), data, group, names);</span>
   }
 
   private RenderSession doPopulate(Template tmpl,
@@ -493,22 +493,27 @@ import static org.klojang.util.ObjectMethods.isEmpty;
 <span class="fc" id="L493">    return out.toString(UTF_8);</span>
   }
 
+  @Override
+  public Template getTemplate() {
+<span class="nc" id="L498">    return config.template();</span>
+  }
+
   private Template getNestedTemplate(String name) {
-<span class="fc" id="L497">    Check.notNull(name, MTag.TEMPLATE_NAME);</span>
-<span class="fc" id="L498">    Template t = config.template();</span>
-<span class="fc" id="L499">    Check.that(name).is(elementOf(), t.getNestedTemplateNames(),</span>
-<span class="fc" id="L500">        NO_SUCH_TEMPLATE.getExceptionSupplier(getFQN(t, name)));</span>
-<span class="fc" id="L501">    return t.getNestedTemplate(name);</span>
+<span class="fc" id="L502">    Check.notNull(name, MTag.TEMPLATE_NAME);</span>
+<span class="fc" id="L503">    Template t = config.template();</span>
+<span class="fc" id="L504">    Check.that(name).is(elementOf(), t.getNestedTemplateNames(),</span>
+<span class="fc" id="L505">        NO_SUCH_TEMPLATE.getExceptionSupplier(getFQN(t, name)));</span>
+<span class="fc" id="L506">    return t.getNestedTemplate(name);</span>
   }
 
   private boolean dontProcess(Object data) {
-<span class="fc bfc" id="L505" title="All 4 branches covered.">    return data == UNDEFINED ||</span>
-<span class="pc bpc" id="L506" title="1 of 2 branches missed.">        (data == null &amp;&amp; config.accessors().nullEqualsUndefined());</span>
+<span class="fc bfc" id="L510" title="All 4 branches covered.">    return data == UNDEFINED ||</span>
+<span class="pc bpc" id="L511" title="1 of 2 branches missed.">        (data == null &amp;&amp; config.accessors().nullEqualsUndefined());</span>
   }
 
   private boolean mustProcess(Object data) {
-<span class="fc bfc" id="L510" title="All 4 branches covered.">    return data != UNDEFINED &amp;&amp;</span>
-<span class="fc bfc" id="L511" title="All 2 branches covered.">        (data != null || !config.accessors().nullEqualsUndefined());</span>
+<span class="fc bfc" id="L515" title="All 4 branches covered.">    return data != UNDEFINED &amp;&amp;</span>
+<span class="fc bfc" id="L516" title="All 2 branches covered.">        (data != null || !config.accessors().nullEqualsUndefined());</span>
   }
 
 }
