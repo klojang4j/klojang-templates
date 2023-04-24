@@ -201,18 +201,18 @@ import java.util.function.Supplier;
 
   @Override
   public List&lt;String&gt; getUnsetVariables() {
-<span class="nc bnc" id="L204" title="All 2 branches missed.">    return sessions.length == 0 ? List.of() : sessions[0].getUnsetVariables();</span>
+<span class="pc bpc" id="L204" title="1 of 2 branches missed.">    return sessions.length == 0 ? List.of() : sessions[0].getUnsetVariables();</span>
   }
 
   @Override
   public List&lt;String&gt; getAllUnsetVariables() {
-<span class="nc bnc" id="L209" title="All 2 branches missed.">    return sessions.length == 0 ? List.of() : sessions[0].getAllUnsetVariables();</span>
+<span class="pc bpc" id="L209" title="1 of 2 branches missed.">    return sessions.length == 0 ? List.of() : sessions[0].getAllUnsetVariables();</span>
   }
 
   public List&lt;String&gt; getAllUnsetVariables(boolean relative) {
-<span class="nc bnc" id="L213" title="All 2 branches missed.">    return sessions.length == 0</span>
+<span class="pc bpc" id="L213" title="1 of 2 branches missed.">    return sessions.length == 0</span>
 <span class="nc" id="L214">        ? List.of()</span>
-<span class="nc" id="L215">        : sessions[0].getAllUnsetVariables(relative);</span>
+<span class="fc" id="L215">        : sessions[0].getAllUnsetVariables(relative);</span>
   }
 
   @Override

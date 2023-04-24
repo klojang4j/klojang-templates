@@ -5,6 +5,7 @@ import org.klojang.util.MutableInt;
 
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
+import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -364,7 +365,13 @@ public class MultiSessionTest {
     assertEquals("BarBarBar", nospace(rs.render()));
 
     rs.in("companies.departments.employees").unset("employee_var");
-
+    rs.in("companies.departments").ifNotSet("employees.roles.role", i -> "Boom");
+    assertEquals("BoomBoomBoom", nospace(rs.render()));
+    rs.in("companies.departments.employees.roles").ifNotSet("role", i -> "Foo");
+    assertEquals("BoomBoomBoom", nospace(rs.render()));
+    rs.unset("companies.departments.employees.roles.role");
+    rs.in("companies.departments.employees").ifNotSet("roles.role", i -> "Ship");
+    assertEquals("ShipShipShip", nospace(rs.render()));
 
   }
 
@@ -723,7 +730,7 @@ public class MultiSessionTest {
   }
 
   @Test
-  public void showRecursive00() throws ParseException {
+  public void enableRecursive00() throws ParseException {
     String src = """
         <html><body>
         ~%%begin:companies%
@@ -750,7 +757,7 @@ public class MultiSessionTest {
   }
 
   @Test
-  public void showRecursive01() throws ParseException {
+  public void enableRecursive01() throws ParseException {
     String src = """
         <html><body>
         ~%%begin:companies%
@@ -774,7 +781,7 @@ public class MultiSessionTest {
   }
 
   @Test
-  public void showRecursive02() throws ParseException {
+  public void enableRecursive02() throws ParseException {
     String src = """
         <html><body>
         ~%%begin:companies%
@@ -1065,6 +1072,75 @@ public class MultiSessionTest {
     assertEquals("employees", tmpl.newRenderSession()
         .in("companies.departments.employees")
         .getTemplate().getName());
+  }
+
+  @Test
+  public void getUnsetVars00() throws ParseException {
+    String src = """
+        ~%global_var%
+        ~%%begin:companies%
+            ~%company_var%
+            ~%%begin:departments%
+                ~%department_var%
+                ~%%begin:employees%
+                   ~%employee_var%
+                    ~%%begin:roles%
+                        ~%role%
+                    ~%%end:roles%
+                ~%%end:employees%
+            ~%%end:departments%
+        ~%%end:companies%
+        """;
+    Template tmpl = Template.fromString(src);
+    RenderSession rs = tmpl.newRenderSession();
+    List<String> vars = rs.repeat("companies", 2).getUnsetVariables();
+    assertEquals(List.of("company_var"), vars);
+
+    //System.out.println(vars);
+  }
+
+  @Test
+  public void getAllUnsetVars00() throws ParseException {
+    String src = """
+        ~%global_var%
+        ~%%begin:companies%
+            ~%company_var%
+            ~%%begin:departments%
+                ~%department_var%
+                ~%%begin:employees%
+                   ~%employee_var%
+                    ~%%begin:roles%
+                        ~%role%
+                    ~%%end:roles%
+                ~%%end:employees%
+            ~%%end:departments%
+        ~%%end:companies%
+        """;
+    Template tmpl = Template.fromString(src);
+    RenderSession rs = tmpl.newRenderSession();
+    List<String> vars = rs.repeat("companies", 2).getAllUnsetVariables();
+    assertEquals(List.of(
+            "companies.company_var",
+            "companies.departments.department_var",
+            "companies.departments.employees.employee_var",
+            "companies.departments.employees.roles.role"),
+        vars);
+    vars = rs.in("companies").getAllUnsetVariables(true);
+    assertEquals(List.of(
+            "company_var",
+            "departments.department_var",
+            "departments.employees.employee_var",
+            "departments.employees.roles.role"),
+        vars);
+    rs.setPath("companies.company_var", i -> "Foo");
+    vars = rs.in("companies").getAllUnsetVariables(false);
+    assertEquals(List.of(
+            "companies.departments.department_var",
+            "companies.departments.employees.employee_var",
+            "companies.departments.employees.roles.role"),
+        vars);
+
+    //System.out.println(vars);
   }
 
   private static String nospace(String s) {
