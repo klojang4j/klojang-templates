@@ -1,5 +1,9 @@
 package org.klojang.templates;
 
+import org.klojang.check.Check;
+import org.klojang.check.Tag;
+import org.klojang.path.Path;
+
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -36,9 +40,22 @@ record MultiSession(Template template, SoloSession[] sessions) implements
     return this;
   }
 
+  /*
+   * setNested() is about the only method where we don't immediately delegate to
+   * SoloSession. We use the happy fact that we have an IntFunction to (potentially)
+   * set different values for different instances of the template managed by THIS
+   * MultiSession.
+   */
   @Override
   public RenderSession setNested(String path, IntFunction<Object> val) {
-    Arrays.stream(sessions).forEach(s -> s.setNested(path, val));
+    Path p = Check.notNull(path, Tag.PATH).ok(Path::from);
+    if (p.size() == 1) {
+      for (int i = 0; i < sessions.length; ++i) {
+        sessions[i].set(path, val.apply(i));
+      }
+    } else { // do delegate to SoloSession
+      Arrays.stream(sessions).forEach(s -> s.setNested(path, val));
+    }
     return this;
   }
 
@@ -47,7 +64,14 @@ record MultiSession(Template template, SoloSession[] sessions) implements
       IntFunction<Object> val,
       VarGroup group,
       boolean force) {
-    Arrays.stream(sessions).forEach(s -> s.setNested(path, val, group, force));
+    Path p = Check.notNull(path, Tag.PATH).ok(Path::from);
+    if (p.size() == 1) {
+      for (int i = 0; i < sessions.length; ++i) {
+        sessions[i].set(path, val.apply(i), group);
+      }
+    } else {
+      Arrays.stream(sessions).forEach(s -> s.setNested(path, val, group, force));
+    }
     return this;
   }
 

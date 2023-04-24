@@ -100,8 +100,8 @@ import static org.klojang.util.ObjectMethods.isEmpty;
   public RenderSession setNested(String path, IntFunction&lt;Object&gt; valueGenerator) {
 <span class="fc" id="L101">    Path p = Check.notNull(path, Tag.PATH).ok(Path::from);</span>
 <span class="fc" id="L102">    Check.notNull(valueGenerator, VALUE_GENERATOR);</span>
-<span class="fc bfc" id="L103" title="All 2 branches covered.">    if (p.size() == 1) {</span>
-<span class="fc" id="L104">      setVar(p.segment(0), valueGenerator.apply(0), null);</span>
+<span class="pc bpc" id="L103" title="1 of 2 branches missed.">    if (p.size() == 1) {</span>
+<span class="nc" id="L104">      setVar(p.segment(0), valueGenerator.apply(0), null);</span>
     } else {
 <span class="fc" id="L106">      setNested(this, p, valueGenerator, null, true);</span>
     }
