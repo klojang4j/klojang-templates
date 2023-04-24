@@ -742,6 +742,21 @@ public class MultiSessionTest {
   }
 
   @Test
+  public void enable07() throws ParseException {
+    String src = """
+        ~%%begin:companies%
+            ~%%begin:departments%
+                Foo
+            ~%%end:departments%
+        ~%%end:companies%
+        """;
+    Template tmpl = Template.fromString(src);
+    RenderSession rs = tmpl.newRenderSession();
+    rs.repeat("companies", 3).enable(2, "departments");
+     assertEquals("FooFooFooFooFooFoo", nospace(rs.render()));
+  }
+
+  @Test
   public void enableRecursive00() throws ParseException {
     String src = """
         <html><body>
