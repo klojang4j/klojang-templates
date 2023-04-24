@@ -4,7 +4,9 @@ import org.junit.jupiter.api.Test;
 import org.klojang.path.util.MapBuilder;
 
 import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.time.LocalDate;
+import java.util.Locale;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -20,14 +22,30 @@ public class StringifierRegistryTest {
   public static final Stringifier typer =
       obj -> obj == null ? "[null]" : obj.getClass().getSimpleName() + '@' + obj;
 
+
+  static final NumberFormat NF1=NumberFormat.getInstance(Locale.US);
+  static final NumberFormat NF2=NumberFormat.getInstance(Locale.US);
+
+  static {
+    NF1.setMinimumIntegerDigits(1);
+    NF1.setMinimumFractionDigits(4);
+    NF1.setMaximumFractionDigits(4);
+    NF1.setGroupingUsed(false);
+    NF2.setMinimumIntegerDigits(0);
+    NF2.setMinimumFractionDigits(0);
+    NF2.setMaximumFractionDigits(4);
+    NF2.setGroupingUsed(false);
+
+  }
+
   public static final Stringifier decimal1 = obj ->
       obj == null
           ? "0.0000"
-          : new DecimalFormat("0.0000").format(Double.valueOf(obj.toString()));
+          : NF1.format(Double.valueOf(obj.toString()));
   public static final Stringifier decimal2 = obj ->
       obj == null
           ? "0"
-          : new DecimalFormat("#.####").format(Double.valueOf(obj.toString()));
+          : NF2.format(Double.valueOf(obj.toString()));
 
   @Test
   public void test00() throws ParseException {
