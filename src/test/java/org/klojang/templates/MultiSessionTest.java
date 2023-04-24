@@ -241,8 +241,8 @@ public class MultiSessionTest {
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
     rs.in("companies")
-        .repeat("departments", 2).
-        setPath("name", i -> "Foo", VarGroup.HTML, true);
+        .repeat("departments", 2)
+        .setPath("name", i -> "Foo", VarGroup.HTML, true);
     String out = rs.render();
     assertEquals("FooFoo", nospace(out));
   }
@@ -365,7 +365,8 @@ public class MultiSessionTest {
     assertEquals("BarBarBar", nospace(rs.render()));
 
     rs.in("companies.departments.employees").unset("employee_var");
-    rs.in("companies.departments").ifNotSet("employees.roles.role", i -> "Boom");
+    rs.in("companies.departments")
+        .ifNotSet("employees.roles.role", i -> "Boom", VarGroup.TEXT);
     assertEquals("BoomBoomBoom", nospace(rs.render()));
     rs.in("companies.departments.employees.roles").ifNotSet("role", i -> "Foo");
     assertEquals("BoomBoomBoom", nospace(rs.render()));
@@ -727,6 +728,17 @@ public class MultiSessionTest {
     StringBuilder out = new StringBuilder();
     rs.render(out);
     assertEquals("22", out.toString());
+  }
+
+  @Test
+  public void enable06() throws ParseException {
+    String src = "~%%begin:foo%Foo~%%end:foo%";
+    Template tmpl = Template.fromString(src);
+    RenderSession rs = tmpl.newRenderSession();
+    rs.enable(2, "foo");
+    StringBuilder out = new StringBuilder();
+    rs.render(out);
+    assertEquals("FooFoo", out.toString());
   }
 
   @Test
@@ -1095,8 +1107,29 @@ public class MultiSessionTest {
     RenderSession rs = tmpl.newRenderSession();
     List<String> vars = rs.repeat("companies", 2).getUnsetVariables();
     assertEquals(List.of("company_var"), vars);
+  }
 
-    //System.out.println(vars);
+  @Test
+  public void getUnsetVars01() throws ParseException {
+    String src = """
+        ~%%begin:companies%
+            ~%company_var%
+            ~%%begin:departments%
+                ~%department_var%
+                ~%%begin:employees%
+                   ~%employee_var%
+                    ~%%begin:roles%
+                        ~%role%
+                    ~%%end:roles%
+                ~%%end:employees%
+            ~%%end:departments%
+        ~%%end:companies%
+        """;
+    Template tmpl = Template.fromString(src);
+    RenderSession rs = tmpl.newRenderSession();
+    assertEquals(List.of(), rs.repeat("companies", 0).getUnsetVariables());
+    assertEquals(List.of(),
+        rs.in("companies").repeat("departments", 0).getUnsetVariables());
   }
 
   @Test
@@ -1140,7 +1173,48 @@ public class MultiSessionTest {
             "companies.departments.employees.roles.role"),
         vars);
 
+    rs.in("companies.departments").setPath("employees.employee_var", i -> "Bar");
+
+    vars = rs.in("companies.departments").getAllUnsetVariables(true);
     //System.out.println(vars);
+    assertEquals(List.of(
+            "department_var",
+            "employees.roles.role"),
+        vars);
+
+    vars = rs.in("companies.departments").getAllUnsetVariables(false);
+    //System.out.println(vars);
+    assertEquals(List.of(
+            "companies.departments.department_var",
+            "companies.departments.employees.roles.role"),
+        vars);
+  }
+
+  @Test
+  public void getAllUnsetVars01() throws ParseException {
+    String src = """
+        ~%%begin:companies%
+            ~%company_var%
+            ~%%begin:departments%
+                ~%department_var%
+                ~%%begin:employees%
+                   ~%employee_var%
+                    ~%%begin:roles%
+                        ~%role%
+                    ~%%end:roles%
+                ~%%end:employees%
+            ~%%end:departments%
+        ~%%end:companies%
+        """;
+    Template tmpl = Template.fromString(src);
+    RenderSession rs = tmpl.newRenderSession();
+    assertEquals(List.of(), rs.repeat("companies", 0).getAllUnsetVariables());
+    assertEquals(List.of(),
+        rs.in("companies").repeat("departments", 0).getAllUnsetVariables());
+    assertEquals(List.of(),
+        rs.in("companies.departments").getAllUnsetVariables(false));
+    assertEquals(List.of(),
+        rs.in("companies.departments").getAllUnsetVariables(true));
   }
 
   private static String nospace(String s) {
