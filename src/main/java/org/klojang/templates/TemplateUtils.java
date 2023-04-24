@@ -14,6 +14,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static java.util.Arrays.copyOfRange;
+import static java.util.stream.Collectors.toList;
 import static org.klojang.check.CommonChecks.empty;
 import static org.klojang.check.CommonChecks.in;
 import static org.klojang.templates.x.Messages.ERR_BAD_NAME;
@@ -254,12 +255,12 @@ public final class TemplateUtils {
       Check.notNull(template, MTag.TEMPLATE);
       ArrayList<Path> paths = new ArrayList<>();
       collectFQNs(template, paths, Path.empty());
-      return paths.stream().map(Objects::toString).collect(Collectors.toList());
+      return paths.stream().map(Path::toString).collect(toList());
     }
     return getAllVariableFQNames(template);
   }
 
-  private static void collectFQNs(Template t0, ArrayList<Path> vars, Path path) {
+  static void collectFQNs(Template t0, ArrayList<Path> vars, Path path) {
     t0.getVariables().stream().map(path::append).forEach(vars::add);
     t0.getNestedTemplates().forEach(
         t -> collectFQNs(t, vars, path.append(t.getName())));

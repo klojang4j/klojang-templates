@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>RenderState.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Klojang Templates</a> &gt; <a href="index.source.html" class="el_package">org.klojang.templates</a> &gt; <span class="el_source">RenderState.java</span></div><h1>RenderState.java</h1><pre class="source lang-java linenums">package org.klojang.templates;
 
 import org.klojang.check.Check;
+import org.klojang.path.Path;
 import org.klojang.util.collection.IntList;
 
 import java.util.*;
 
+import static java.util.stream.Collectors.toList;
 import static org.klojang.check.CommonChecks.notNull;
 import static org.klojang.templates.RenderErrorCode.NO_SUCH_VARIABLE;
 import static org.klojang.templates.RenderErrorCode.REPETITION_MISMATCH;
@@ -13,7 +15,7 @@ import static org.klojang.templates.TemplateUtils.getFQN;
 
 final class RenderState {
 
-<span class="fc" id="L16">  private static final SoloSession[] ZERO_SESSIONS = new SoloSession[0];</span>
+<span class="fc" id="L18">  private static final SoloSession[] ZERO_SESSIONS = new SoloSession[0];</span>
 
   final SessionConfig config;
 
@@ -28,135 +30,158 @@ final class RenderState {
   // the map are the indices of VarPart parts.
   final Map&lt;Integer, Object&gt; varValues;
 
-<span class="fc" id="L31">  RenderState(SessionConfig config) {</span>
-<span class="fc" id="L32">    this.config = config;</span>
-<span class="fc" id="L33">    int sz = config.template().countNestedTemplates();</span>
-<span class="fc" id="L34">    this.sessions = new IdentityHashMap&lt;&gt;(sz);</span>
-<span class="fc" id="L35">    sz = config.template().countVariableOccurrences();</span>
-<span class="fc" id="L36">    this.varValues = HashMap.newHashMap(sz);</span>
-<span class="fc" id="L37">    this.todo = new HashSet&lt;&gt;(config.template().getVariables());</span>
-<span class="fc" id="L38">  }</span>
+<span class="fc" id="L33">  RenderState(SessionConfig config) {</span>
+<span class="fc" id="L34">    this.config = config;</span>
+<span class="fc" id="L35">    int sz = config.template().countNestedTemplates();</span>
+<span class="fc" id="L36">    this.sessions = new IdentityHashMap&lt;&gt;(sz);</span>
+<span class="fc" id="L37">    sz = config.template().countVariableOccurrences();</span>
+<span class="fc" id="L38">    this.varValues = HashMap.newHashMap(sz);</span>
+<span class="fc" id="L39">    this.todo = new HashSet&lt;&gt;(config.template().getVariables());</span>
+<span class="fc" id="L40">  }</span>
 
   SessionConfig getSessionConfig() {
-<span class="fc" id="L41">    return config;</span>
+<span class="fc" id="L43">    return config;</span>
   }
 
   SoloSession[] createChildSessions(Template t, int repeats) {
     SoloSession[] children;
-<span class="fc bfc" id="L46" title="All 2 branches covered.">    if (repeats == 0) {</span>
-<span class="fc" id="L47">      children = ZERO_SESSIONS;</span>
+<span class="fc bfc" id="L48" title="All 2 branches covered.">    if (repeats == 0) {</span>
+<span class="fc" id="L49">      children = ZERO_SESSIONS;</span>
     } else {
-<span class="fc" id="L49">      children = new SoloSession[repeats];</span>
-<span class="fc bfc" id="L50" title="All 2 branches covered.">      for (int i = 0; i &lt; repeats; ++i) {</span>
-<span class="fc" id="L51">        children[i] = config.newChildSession(t);</span>
+<span class="fc" id="L51">      children = new SoloSession[repeats];</span>
+<span class="fc bfc" id="L52" title="All 2 branches covered.">      for (int i = 0; i &lt; repeats; ++i) {</span>
+<span class="fc" id="L53">        children[i] = config.newChildSession(t);</span>
       }
     }
-<span class="fc" id="L54">    sessions.put(t, children);</span>
-<span class="fc" id="L55">    return children;</span>
+<span class="fc" id="L56">    sessions.put(t, children);</span>
+<span class="fc" id="L57">    return children;</span>
   }
 
   SoloSession[] getOrCreateChildSessions(Template t, int repeats) {
-<span class="fc" id="L59">    SoloSession[] children = sessions.get(t);</span>
-<span class="fc bfc" id="L60" title="All 2 branches covered.">    if (children == null) {</span>
-<span class="pc bpc" id="L61" title="1 of 2 branches missed.">      if (repeats == 0) {</span>
-<span class="nc" id="L62">        children = ZERO_SESSIONS;</span>
+<span class="fc" id="L61">    SoloSession[] children = sessions.get(t);</span>
+<span class="fc bfc" id="L62" title="All 2 branches covered.">    if (children == null) {</span>
+<span class="pc bpc" id="L63" title="1 of 2 branches missed.">      if (repeats == 0) {</span>
+<span class="nc" id="L64">        children = ZERO_SESSIONS;</span>
       } else {
-<span class="fc" id="L64">        children = new SoloSession[repeats];</span>
-<span class="fc bfc" id="L65" title="All 2 branches covered.">        for (int i = 0; i &lt; repeats; ++i) {</span>
-<span class="fc" id="L66">          children[i] = config.newChildSession(t);</span>
+<span class="fc" id="L66">        children = new SoloSession[repeats];</span>
+<span class="fc bfc" id="L67" title="All 2 branches covered.">        for (int i = 0; i &lt; repeats; ++i) {</span>
+<span class="fc" id="L68">          children[i] = config.newChildSession(t);</span>
         }
       }
-<span class="fc" id="L69">      sessions.put(t, children);</span>
+<span class="fc" id="L71">      sessions.put(t, children);</span>
     }
-<span class="fc bfc" id="L71" title="All 2 branches covered.">    if (repeats != children.length) {</span>
-<span class="fc" id="L72">      throw REPETITION_MISMATCH.getException(getFQN(t), children.length, repeats);</span>
+<span class="fc bfc" id="L73" title="All 2 branches covered.">    if (repeats != children.length) {</span>
+<span class="fc" id="L74">      throw REPETITION_MISMATCH.getException(getFQN(t), children.length, repeats);</span>
     }
-<span class="fc" id="L74">    return children;</span>
+<span class="fc" id="L76">    return children;</span>
   }
 
   boolean isProcessed(Template template) {
-<span class="pc bpc" id="L78" title="1 of 2 branches missed.">    return sessions.get(template) != null;</span>
+<span class="pc bpc" id="L80" title="1 of 2 branches missed.">    return sessions.get(template) != null;</span>
   }
 
   boolean isDisabled(Template template) {
-<span class="pc bpc" id="L82" title="3 of 4 branches missed.">    return isProcessed(template) &amp;&amp; sessions.get(template).length == 0;</span>
+<span class="pc bpc" id="L84" title="3 of 4 branches missed.">    return isProcessed(template) &amp;&amp; sessions.get(template).length == 0;</span>
   }
 
   SoloSession[] getChildSessions(Template template) {
-<span class="fc" id="L86">    return sessions.get(template);</span>
+<span class="fc" id="L88">    return sessions.get(template);</span>
   }
 
   Object getVar(int partIndex) {
-<span class="fc" id="L90">    return varValues.get(partIndex);</span>
+<span class="fc" id="L92">    return varValues.get(partIndex);</span>
   }
 
   void setVar(int partIndex, Object value) {
-<span class="fc" id="L94">    varValues.put(partIndex, value);</span>
-<span class="fc" id="L95">  }</span>
+<span class="fc" id="L96">    varValues.put(partIndex, value);</span>
+<span class="fc" id="L97">  }</span>
 
   void done(String var) {
-<span class="fc" id="L98">    todo.remove(var);</span>
-<span class="fc" id="L99">  }</span>
+<span class="fc" id="L100">    todo.remove(var);</span>
+<span class="fc" id="L101">  }</span>
 
-  List&lt;String&gt; getAllUnsetVariables() {
-<span class="fc" id="L102">    List&lt;String&gt; vars = new ArrayList&lt;&gt;();</span>
-<span class="fc" id="L103">    collectUnsetVariables(this, vars);</span>
-<span class="fc" id="L104">    return vars;</span>
+  List&lt;String&gt; getAllUnsetVariables(boolean relative) {
+<span class="pc bpc" id="L104" title="1 of 2 branches missed.">    if (relative) {</span>
+<span class="nc" id="L105">      ArrayList&lt;Path&gt; paths = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L106">      collectUnsetVariables(this, paths, Path.empty());</span>
+<span class="nc" id="L107">      return paths.stream().map(Path::toString).collect(toList());</span>
+    }
+<span class="fc" id="L109">    ArrayList&lt;String&gt; vars = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L110">    collectUnsetVariables(this, vars);</span>
+<span class="fc" id="L111">    return vars;</span>
   }
 
-  private static void collectUnsetVariables(RenderState state0, List&lt;String&gt; vars) {
-<span class="fc" id="L108">    Template myTmpl = state0.config.template();</span>
-<span class="fc" id="L109">    state0.todo.stream().map(var -&gt; getFQN(myTmpl, var)).forEach(vars::add);</span>
-<span class="fc" id="L110">    myTmpl.getNestedTemplates().forEach(t -&gt; {</span>
-<span class="fc bfc" id="L111" title="All 2 branches covered.">      if (state0.sessions.containsKey(t)) {</span>
-<span class="fc" id="L112">        Arrays.stream(state0.sessions.get(t))</span>
-<span class="fc" id="L113">            .limit(1)</span>
-<span class="fc" id="L114">            .map(SoloSession::state)</span>
-<span class="fc" id="L115">            .forEach(s -&gt; vars.addAll(s.getAllUnsetVariables()));</span>
+  private static void collectUnsetVariables(RenderState state0,
+      ArrayList&lt;String&gt; vars) {
+<span class="fc" id="L116">    Template myTmpl = state0.config.template();</span>
+<span class="fc" id="L117">    state0.todo.stream().map(var -&gt; getFQN(myTmpl, var)).forEach(vars::add);</span>
+<span class="fc" id="L118">    myTmpl.getNestedTemplates().forEach(t -&gt; {</span>
+<span class="fc bfc" id="L119" title="All 2 branches covered.">      if (state0.sessions.containsKey(t)) {</span>
+<span class="fc" id="L120">        Arrays.stream(state0.sessions.get(t))</span>
+<span class="fc" id="L121">            .limit(1)</span>
+<span class="fc" id="L122">            .map(SoloSession::state)</span>
+<span class="fc" id="L123">            .forEach(s -&gt; collectUnsetVariables(s, vars));</span>
       } else {
-<span class="fc" id="L117">        vars.addAll(getAllVariableFQNames(t));</span>
+<span class="fc" id="L125">        vars.addAll(getAllVariableFQNames(t));</span>
       }
-<span class="fc" id="L119">    });</span>
-<span class="fc" id="L120">  }</span>
+<span class="fc" id="L127">    });</span>
+<span class="fc" id="L128">  }</span>
+
+  private static void collectUnsetVariables(RenderState state0,
+      ArrayList&lt;Path&gt; vars,
+      Path path) {
+<span class="nc" id="L133">    Template myTmpl = state0.config.template();</span>
+<span class="nc" id="L134">    state0.todo.stream().map(path::append).forEach(vars::add);</span>
+<span class="nc" id="L135">    myTmpl.getNestedTemplates().forEach(t -&gt; {</span>
+<span class="nc bnc" id="L136" title="All 2 branches missed.">      if (state0.sessions.containsKey(t)) {</span>
+<span class="nc" id="L137">        Arrays.stream(state0.sessions.get(t))</span>
+<span class="nc" id="L138">            .limit(1)</span>
+<span class="nc" id="L139">            .map(SoloSession::state)</span>
+<span class="nc" id="L140">            .forEach(s -&gt; collectUnsetVariables(s, vars, path.append(t.getName())));</span>
+      } else {
+<span class="nc" id="L142">        TemplateUtils.collectFQNs(t, vars, path.append(t.getName()));</span>
+      }
+<span class="nc" id="L144">    });</span>
+<span class="nc" id="L145">  }</span>
 
   boolean allSet() {
-<span class="fc" id="L123">    return ready(this);</span>
+<span class="fc" id="L148">    return ready(this);</span>
   }
 
   private static boolean ready(RenderState state0) {
-<span class="fc bfc" id="L127" title="All 2 branches covered.">    if (state0.todo.size() &gt; 0) {</span>
-<span class="fc" id="L128">      return false;</span>
+<span class="fc bfc" id="L152" title="All 2 branches covered.">    if (state0.todo.size() &gt; 0) {</span>
+<span class="fc" id="L153">      return false;</span>
     }
-<span class="fc bfc" id="L130" title="All 2 branches covered.">    if (state0.config.template().countNestedTemplates() &gt; state0.sessions.size()) {</span>
-<span class="fc" id="L131">      return false;</span>
+<span class="fc bfc" id="L155" title="All 2 branches covered.">    if (state0.config.template().countNestedTemplates() &gt; state0.sessions.size()) {</span>
+<span class="fc" id="L156">      return false;</span>
     }
-<span class="fc" id="L133">    return state0.sessions.values().stream()</span>
-<span class="fc" id="L134">        .flatMap(Arrays::stream)</span>
-<span class="fc" id="L135">        .map(SoloSession::state)</span>
-<span class="fc" id="L136">        .allMatch(RenderState::ready);</span>
+<span class="fc" id="L158">    return state0.sessions.values().stream()</span>
+<span class="fc" id="L159">        .flatMap(Arrays::stream)</span>
+<span class="fc" id="L160">        .map(SoloSession::state)</span>
+<span class="fc" id="L161">        .allMatch(RenderState::ready);</span>
   }
 
   void unset(String var) {
-<span class="fc" id="L140">    IntList il = config.template().variables().get(var);</span>
-<span class="fc" id="L141">    Check.that(il).is(notNull(), NO_SUCH_VARIABLE.getExceptionSupplier(var));</span>
-<span class="fc" id="L142">    todo.add(var);</span>
-<span class="fc" id="L143">    il.toGenericList().forEach(varValues.keySet()::remove);</span>
-<span class="fc" id="L144">  }</span>
+<span class="fc" id="L165">    IntList il = config.template().variables().get(var);</span>
+<span class="fc" id="L166">    Check.that(il).is(notNull(), NO_SUCH_VARIABLE.getExceptionSupplier(var));</span>
+<span class="fc" id="L167">    todo.add(var);</span>
+<span class="fc" id="L168">    il.toGenericList().forEach(varValues.keySet()::remove);</span>
+<span class="fc" id="L169">  }</span>
 
   void clear(Template tmpl) {
-<span class="fc bfc" id="L147" title="All 2 branches covered.">    for (SoloSession session : sessions.get(tmpl)) {</span>
-<span class="fc" id="L148">      clear(session);</span>
+<span class="fc bfc" id="L172" title="All 2 branches covered.">    for (SoloSession session : sessions.get(tmpl)) {</span>
+<span class="fc" id="L173">      clear(session);</span>
     }
-<span class="fc" id="L150">    sessions.remove(tmpl);</span>
-<span class="fc" id="L151">  }</span>
+<span class="fc" id="L175">    sessions.remove(tmpl);</span>
+<span class="fc" id="L176">  }</span>
 
   private void clear(SoloSession session) {
-<span class="fc" id="L154">    RenderState state = session.state();</span>
-<span class="fc" id="L155">    state.varValues.clear();</span>
-<span class="fc" id="L156">    state.todo.addAll(state.config.template().getVariables());</span>
-<span class="fc" id="L157">    state.sessions.values().stream().flatMap(Arrays::stream).forEach(this::clear);</span>
-<span class="fc" id="L158">    state.sessions.clear();</span>
-<span class="fc" id="L159">  }</span>
+<span class="fc" id="L179">    RenderState state = session.state();</span>
+<span class="fc" id="L180">    state.varValues.clear();</span>
+<span class="fc" id="L181">    state.todo.addAll(state.config.template().getVariables());</span>
+<span class="fc" id="L182">    state.sessions.values().stream().flatMap(Arrays::stream).forEach(this::clear);</span>
+<span class="fc" id="L183">    state.sessions.clear();</span>
+<span class="fc" id="L184">  }</span>
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

@@ -7,70 +7,60 @@ import java.util.List;
 import java.util.function.IntFunction;
 import java.util.function.Supplier;
 
-final class MultiSession implements RenderSession {
-
-  final SoloSession[] sessions;
-
-  MultiSession(SoloSession[] sessions) {
-    this.sessions = sessions;
-  }
+record MultiSession(Template template, SoloSession[] sessions) implements
+    RenderSession {
 
   @Override
-  public RenderSession set(String varName, Object value) {
-    Arrays.stream(sessions).forEach(s -> s.set(varName, value));
+  public RenderSession set(String var, Object value) {
+    Arrays.stream(sessions).forEach(s -> s.set(var, value));
     return this;
   }
 
   @Override
-  public RenderSession set(String varName, Object value, VarGroup varGroup) {
-    Arrays.stream(sessions).forEach(s -> s.set(varName, value));
+  public RenderSession set(String var, Object value, VarGroup group) {
+    Arrays.stream(sessions).forEach(s -> s.set(var, value));
     return this;
   }
 
   @Override
-  public RenderSession setDelayed(String varName,
-      Supplier<Object> valueGenerator) {
-    Arrays.stream(sessions).forEach(s -> s.setDelayed(varName, valueGenerator));
+  public RenderSession setDelayed(String var, Supplier<Object> val) {
+    Arrays.stream(sessions).forEach(s -> s.setDelayed(var, val));
     return this;
   }
 
   @Override
-  public RenderSession setDelayed(String varName,
-      Supplier<Object> valueGenerator,
-      VarGroup varGroup) {
-    Arrays.stream(sessions).forEach(s -> s.setDelayed(varName,
-        valueGenerator,
-        varGroup));
+  public RenderSession setDelayed(String var,
+      Supplier<Object> val,
+      VarGroup group) {
+    Arrays.stream(sessions).forEach(s -> s.setDelayed(var, val, group));
     return this;
   }
 
   @Override
-  public RenderSession setNested(String path, IntFunction<Object> valueGenerator) {
-    Arrays.stream(sessions).forEach(s -> s.setNested(path, valueGenerator));
+  public RenderSession setNested(String path, IntFunction<Object> val) {
+    Arrays.stream(sessions).forEach(s -> s.setNested(path, val));
     return this;
   }
 
   @Override
   public RenderSession setNested(String path,
-      IntFunction<Object> valueGenerator,
-      VarGroup varGroup,
+      IntFunction<Object> val,
+      VarGroup group,
       boolean force) {
-    Arrays.stream(sessions).forEach(
-        s -> s.setNested(path, valueGenerator, varGroup, force));
+    Arrays.stream(sessions).forEach(s -> s.setNested(path, val, group, force));
     return this;
   }
 
   @Override
-  public RenderSession ifNotSet(String varName, Supplier<Object> valueGenerator) {
-    Arrays.stream(sessions).forEach(s -> s.ifNotSet(varName, valueGenerator));
+  public RenderSession ifNotSet(String var, Supplier<Object> val) {
+    Arrays.stream(sessions).forEach(s -> s.ifNotSet(var, val));
     return this;
   }
 
   @Override
-  public RenderSession ifNotSet(String varName, Supplier<Object> valueGenerator,
-      VarGroup varGroup) {
-    Arrays.stream(sessions).forEach(
-        s -> s.ifNotSet(varName, valueGenerator, varGroup));
+  public RenderSession ifNotSet(String var, Supplier<Object> val,
+      VarGroup group) {
+    Arrays.stream(sessions).forEach(s -> s.ifNotSet(var, val, group));
     return this;
   }
 
@@ -81,115 +71,106 @@ final class MultiSession implements RenderSession {
   }
 
   @Override
-  public RenderSession insert(Object data,
-      VarGroup varGroup,
-      String... names) {
-    Arrays.stream(sessions).forEach(s -> s.insert(data, varGroup, names));
+  public RenderSession insert(Object data, VarGroup group, String... names) {
+    Arrays.stream(sessions).forEach(s -> s.insert(data, group, names));
     return this;
   }
 
   @Override
-  public RenderSession populate(String nestedTemplateName,
+  public RenderSession populate(String tmplName, Object data, String... names) {
+    Arrays.stream(sessions).forEach(s -> s.populate(tmplName, data, names));
+    return this;
+  }
+
+  @Override
+  public RenderSession populate(String tmplName,
       Object data,
+      VarGroup group,
       String... names) {
-    Arrays.stream(sessions).forEach(
-        s -> s.populate(nestedTemplateName, data, names));
+    Arrays.stream(sessions).forEach(s -> s.populate(tmplName, data, names));
     return this;
   }
 
   @Override
-  public RenderSession populate(String nestedTemplateName,
-      Object data,
-      VarGroup varGroup,
-      String... names) {
-    Arrays.stream(sessions).forEach(
-        s -> s.populate(nestedTemplateName, data, names));
-    return this;
-  }
-
-  @Override
-  public RenderSession repeat(String nestedTemplateName, int times) {
-    List<SoloSession> list = new ArrayList<>();
+  public RenderSession repeat(String tmplName, int times) {
+    Template nested = template.getNestedTemplate(tmplName);
+    ArrayList<SoloSession> list = new ArrayList<>();
     for (RenderSession rs : sessions) {
-      RenderSession ms = rs.repeat(nestedTemplateName, times);
+      RenderSession ms = rs.repeat(tmplName, times);
       SoloSession[] ss = ((MultiSession) ms).sessions;
       list.addAll(Arrays.asList(ss));
     }
-    return new MultiSession(list.toArray(SoloSession[]::new));
+    return new MultiSession(nested, list.toArray(SoloSession[]::new));
   }
 
   @Override
-  public RenderSession in(String nestedTemplateName) {
-    List<SoloSession> list = new ArrayList<>();
+  public RenderSession in(String tmplName) {
+    Template nested = template.getNestedTemplate(tmplName);
+    ArrayList<SoloSession> list = new ArrayList<>();
     for (RenderSession rs : sessions) {
-      SoloSession[] ss = ((MultiSession) rs.in(nestedTemplateName)).sessions;
+      SoloSession[] ss = ((MultiSession) rs.in(tmplName)).sessions;
       list.addAll(Arrays.asList(ss));
     }
-    return new MultiSession(list.toArray(SoloSession[]::new));
+    return new MultiSession(nested, list.toArray(SoloSession[]::new));
   }
 
   @Override
-  public RenderSession enable(String... nestedTemplateNames) {
-    Arrays.stream(sessions).forEach(s -> s.enable(nestedTemplateNames));
+  public RenderSession enable(String... tmplNames) {
+    Arrays.stream(sessions).forEach(s -> s.enable(tmplNames));
     return this;
   }
 
   @Override
-  public RenderSession enable(int repeats, String... nestedTemplateNames) {
-    Arrays.stream(sessions).forEach(s -> s.enable(repeats, nestedTemplateNames));
+  public RenderSession enable(int repeats, String... tmplNames) {
+    Arrays.stream(sessions).forEach(s -> s.enable(repeats, tmplNames));
     return this;
   }
 
   @Override
-  public RenderSession enableRecursive(String... nestedTemplateNames) {
-    Arrays.stream(sessions).forEach(s -> s.enableRecursive(nestedTemplateNames));
+  public RenderSession enableRecursive(String... tmplNames) {
+    Arrays.stream(sessions).forEach(s -> s.enableRecursive(tmplNames));
     return this;
   }
 
   @Override
-  public RenderSession populate1(String nestedTemplateName, Object... values) {
-    Arrays.stream(sessions).forEach(s -> s.populate1(nestedTemplateName, values));
+  public RenderSession populate1(String tmplName, Object... values) {
+    Arrays.stream(sessions).forEach(s -> s.populate1(tmplName, values));
     return this;
   }
 
   @Override
-  public RenderSession populate1(String nestedTemplateName,
-      VarGroup varGroup,
-      Object... values) {
+  public RenderSession populate1(String tmplName, VarGroup group, Object... values) {
     Arrays.stream(sessions).forEach(
-        s -> s.populate1(nestedTemplateName, varGroup, values));
+        s -> s.populate1(tmplName, group, values));
     return this;
   }
 
   @Override
-  public RenderSession populate2(String nestedTemplateName,
-      Object... values) {
-    Arrays.stream(sessions).forEach(s -> s.populate2(nestedTemplateName, values));
+  public RenderSession populate2(String tmplName, Object... values) {
+    Arrays.stream(sessions).forEach(s -> s.populate2(tmplName, values));
     return this;
   }
 
   @Override
-  public RenderSession populate2(String nestedTemplateName,
-      VarGroup varGroup, Object... values) {
-    Arrays.stream(sessions).forEach(
-        s -> s.populate2(nestedTemplateName, varGroup, values));
+  public RenderSession populate2(String tmplName, VarGroup group, Object... values) {
+    Arrays.stream(sessions).forEach(s -> s.populate2(tmplName, group, values));
     return this;
   }
 
   @Override
   public List<String> getUnsetVariables() {
-    if (sessions.length == 0) {
-      return List.of();
-    }
-    return sessions[0].getUnsetVariables();
+    return sessions.length == 0 ? List.of() : sessions[0].getUnsetVariables();
   }
 
   @Override
   public List<String> getAllUnsetVariables() {
-    if (sessions.length == 0) {
-      return List.of();
-    }
-    return sessions[0].getAllUnsetVariables();
+    return sessions.length == 0 ? List.of() : sessions[0].getAllUnsetVariables();
+  }
+
+  public List<String> getAllUnsetVariables(boolean relative) {
+    return sessions.length == 0
+        ? List.of()
+        : sessions[0].getAllUnsetVariables(relative);
   }
 
   @Override
@@ -204,16 +185,15 @@ final class MultiSession implements RenderSession {
   }
 
   @Override
-  public RenderSession clear(String... nestedTemplateNames) {
-    Arrays.stream(sessions).forEach(s -> s.clear(nestedTemplateNames));
+  public RenderSession clear(String... tmplNames) {
+    Arrays.stream(sessions).forEach(s -> s.clear(tmplNames));
     return this;
   }
 
   @Override
-  public List<RenderSession> getChildSessions(String nestedTemplateName) {
-    List<RenderSession> flat = new ArrayList<>();
-    Arrays.stream(sessions).forEach(
-        s -> flat.addAll(s.getChildSessions(nestedTemplateName)));
+  public List<RenderSession> getChildSessions(String tmplName) {
+    ArrayList<RenderSession> flat = new ArrayList<>();
+    Arrays.stream(sessions).forEach(s -> flat.addAll(s.getChildSessions(tmplName)));
     return flat;
   }
 

@@ -294,7 +294,7 @@ final class SoloSession implements RenderSession {
     Template t = getNestedTemplate(tmpl);
     Check.that(state.getChildSessions(t)).is(NULL(),
         REPETITIONS_FIXED.getExceptionSupplier(tmpl));
-    return new MultiSession(state.createChildSessions(t, times));
+    return new MultiSession(t, state.createChildSessions(t, times));
   }
 
   @Override
@@ -313,7 +313,7 @@ final class SoloSession implements RenderSession {
     if (children == null) {
       children = state.createChildSessions(t, 1);
     }
-    return new MultiSession(children);
+    return new MultiSession(t, children);
   }
 
   @Override
@@ -455,7 +455,11 @@ final class SoloSession implements RenderSession {
 
   @Override
   public List<String> getAllUnsetVariables() {
-    return state.getAllUnsetVariables();
+    return state.getAllUnsetVariables(false);
+  }
+
+  public List<String> getAllUnsetVariables(boolean relative) {
+    return state.getAllUnsetVariables(relative);
   }
 
   @Override
@@ -490,11 +494,6 @@ final class SoloSession implements RenderSession {
     ByteArrayOutputStream out = new ByteArrayOutputStream(1024);
     new Renderer(state).render(out);
     return out.toString(UTF_8);
-  }
-
-  @Override
-  public String toString() {
-    return String.format("RenderSession[template=%s]", getFQN(config.template()));
   }
 
   RenderState state() {

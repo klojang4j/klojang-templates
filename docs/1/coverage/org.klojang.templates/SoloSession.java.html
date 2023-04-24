@@ -294,7 +294,7 @@ final class SoloSession implements RenderSession {
 <span class="fc" id="L294">    Template t = getNestedTemplate(tmpl);</span>
 <span class="fc" id="L295">    Check.that(state.getChildSessions(t)).is(NULL(),</span>
 <span class="fc" id="L296">        REPETITIONS_FIXED.getExceptionSupplier(tmpl));</span>
-<span class="fc" id="L297">    return new MultiSession(state.createChildSessions(t, times));</span>
+<span class="fc" id="L297">    return new MultiSession(t, state.createChildSessions(t, times));</span>
   }
 
   @Override
@@ -313,7 +313,7 @@ final class SoloSession implements RenderSession {
 <span class="fc bfc" id="L313" title="All 2 branches covered.">    if (children == null) {</span>
 <span class="fc" id="L314">      children = state.createChildSessions(t, 1);</span>
     }
-<span class="fc" id="L316">    return new MultiSession(children);</span>
+<span class="fc" id="L316">    return new MultiSession(t, children);</span>
   }
 
   @Override
@@ -455,68 +455,67 @@ final class SoloSession implements RenderSession {
 
   @Override
   public List&lt;String&gt; getAllUnsetVariables() {
-<span class="fc" id="L458">    return state.getAllUnsetVariables();</span>
+<span class="fc" id="L458">    return state.getAllUnsetVariables(false);</span>
+  }
+
+  public List&lt;String&gt; getAllUnsetVariables(boolean relative) {
+<span class="nc" id="L462">    return state.getAllUnsetVariables(relative);</span>
   }
 
   @Override
   public boolean allSet() {
-<span class="fc" id="L463">    return state.allSet();</span>
+<span class="fc" id="L467">    return state.allSet();</span>
   }
 
   public RenderSession unset(String... vars) {
-<span class="fc" id="L467">    Check.notNull(vars, Tag.VARARGS);</span>
-<span class="fc" id="L468">    Arrays.stream(vars).forEach(state::unset);</span>
-<span class="fc" id="L469">    return this;</span>
+<span class="fc" id="L471">    Check.notNull(vars, Tag.VARARGS);</span>
+<span class="fc" id="L472">    Arrays.stream(vars).forEach(state::unset);</span>
+<span class="fc" id="L473">    return this;</span>
   }
 
   public RenderSession clear(String... tmpls) {
-<span class="fc" id="L473">    Check.notNull(tmpls, Tag.VARARGS);</span>
-<span class="fc" id="L474">    Arrays.stream(tmpls).map(this::getNestedTemplate).forEach(state::clear);</span>
-<span class="fc" id="L475">    return this;</span>
+<span class="fc" id="L477">    Check.notNull(tmpls, Tag.VARARGS);</span>
+<span class="fc" id="L478">    Arrays.stream(tmpls).map(this::getNestedTemplate).forEach(state::clear);</span>
+<span class="fc" id="L479">    return this;</span>
   }
 
   @Override
   public void render(OutputStream out) {
-<span class="fc" id="L480">    Check.notNull(out).then(x -&gt; new Renderer(state).render(x));</span>
-<span class="fc" id="L481">  }</span>
+<span class="fc" id="L484">    Check.notNull(out).then(x -&gt; new Renderer(state).render(x));</span>
+<span class="fc" id="L485">  }</span>
 
   @Override
   public void render(StringBuilder sb) {
-<span class="fc" id="L485">    Check.notNull(sb).then(x -&gt; new Renderer(state).render(x));</span>
-<span class="fc" id="L486">  }</span>
+<span class="fc" id="L489">    Check.notNull(sb).then(x -&gt; new Renderer(state).render(x));</span>
+<span class="fc" id="L490">  }</span>
 
   @Override
   public String render() {
-<span class="fc" id="L490">    ByteArrayOutputStream out = new ByteArrayOutputStream(1024);</span>
-<span class="fc" id="L491">    new Renderer(state).render(out);</span>
-<span class="fc" id="L492">    return out.toString(UTF_8);</span>
-  }
-
-  @Override
-  public String toString() {
-<span class="nc" id="L497">    return String.format(&quot;RenderSession[template=%s]&quot;, getFQN(config.template()));</span>
+<span class="fc" id="L494">    ByteArrayOutputStream out = new ByteArrayOutputStream(1024);</span>
+<span class="fc" id="L495">    new Renderer(state).render(out);</span>
+<span class="fc" id="L496">    return out.toString(UTF_8);</span>
   }
 
   RenderState state() {
-<span class="fc" id="L501">    return state;</span>
+<span class="fc" id="L500">    return state;</span>
   }
 
   private Template getNestedTemplate(String name) {
-<span class="fc" id="L505">    Check.notNull(name, MTag.TEMPLATE_NAME);</span>
-<span class="fc" id="L506">    Template t = config.template();</span>
-<span class="fc" id="L507">    Check.that(name).is(elementOf(), t.getNestedTemplateNames(),</span>
-<span class="fc" id="L508">        NO_SUCH_TEMPLATE.getExceptionSupplier(getFQN(t, name)));</span>
-<span class="fc" id="L509">    return t.getNestedTemplate(name);</span>
+<span class="fc" id="L504">    Check.notNull(name, MTag.TEMPLATE_NAME);</span>
+<span class="fc" id="L505">    Template t = config.template();</span>
+<span class="fc" id="L506">    Check.that(name).is(elementOf(), t.getNestedTemplateNames(),</span>
+<span class="fc" id="L507">        NO_SUCH_TEMPLATE.getExceptionSupplier(getFQN(t, name)));</span>
+<span class="fc" id="L508">    return t.getNestedTemplate(name);</span>
   }
 
   private boolean dontProcess(Object data) {
-<span class="fc bfc" id="L513" title="All 4 branches covered.">    return data == UNDEFINED ||</span>
-<span class="pc bpc" id="L514" title="1 of 2 branches missed.">        (data == null &amp;&amp; config.accessors().nullEqualsUndefined());</span>
+<span class="fc bfc" id="L512" title="All 4 branches covered.">    return data == UNDEFINED ||</span>
+<span class="pc bpc" id="L513" title="1 of 2 branches missed.">        (data == null &amp;&amp; config.accessors().nullEqualsUndefined());</span>
   }
 
   private boolean mustProcess(Object data) {
-<span class="fc bfc" id="L518" title="All 4 branches covered.">    return data != UNDEFINED &amp;&amp;</span>
-<span class="fc bfc" id="L519" title="All 2 branches covered.">        (data != null || !config.accessors().nullEqualsUndefined());</span>
+<span class="fc bfc" id="L517" title="All 4 branches covered.">    return data != UNDEFINED &amp;&amp;</span>
+<span class="fc bfc" id="L518" title="All 2 branches covered.">        (data != null || !config.accessors().nullEqualsUndefined());</span>
   }
 
 }

@@ -530,15 +530,49 @@ public sealed interface RenderSession permits SoloSession, MultiSession {
    * Returns the
    * {@linkplain TemplateUtils#getFQN(Template, String) fully-qualified names} of all
    * variables that have not been set yet in the template managed by this
-   * {@code RenderSession} and all templates nested inside it (recursively).
+   * {@code RenderSession} and all templates descending from it. Equivalent to
+   * calling {@code getAllUnsetVariables(false)}.
    *
    * @return all variables that have not been set yet in the template managed by this
    *     {@code RenderSession} and all templates nested inside it
-   * @see Accessor#UNDEFINED
+   * @see #getAllUnsetVariables(boolean)
+   */
+  List<String> getAllUnsetVariables();
+
+  /**
+   * <p>Returns the
+   * {@linkplain TemplateUtils#getFQN(Template, String) fully-qualified names} of all
+   * variables that have not been set yet in the template managed by this
+   * {@code RenderSession} and all templates descending from it. If
+   * {@code relativePaths} equals {@code true}, the names will be fully-qualified
+   * relative to the template being populated by <i>this</i> {@code RenderSession}.
+   * If you find yourself in a child session, as you would after a call to
+   * {@link #in(String) in()} or {@link #repeat(String, int) repeat()}, that is
+   * <i>not</i> the template that is ultimately being populated. It is a template
+   * nested somewhere inside that template. If {@code relativePaths} equals
+   * {@code false}, all paths will be absolute, i.e. relative to the template
+   * ultimately being populated.
+   *
+   * <p>Note that there is a certain indeterminacy in the result. One of the
+   * descendent templates may be a repeating template, and it may have received
+   * {@link Accessor#UNDEFINED} for a variable in one of the instances, but a regular
+   * value for the same variable in another instance. In other words, the variable is
+   * not set in one instance of the template, but set in another instance of the same
+   * template. You need to establish whether this can actually happen in your case
+   * and, if so, whether it has any practical effect (again, see
+   * {@link Accessor#UNDEFINED}). This method only looks at the first instance of a
+   * repeating template. If you need more precision, you will have to drill down into
+   * the child template using methods like {@link #in(String) in()} or
+   * {@link #getChildSessions(String) getChildSessions()}.
+   *
+   * @param relativePaths whether to return paths relative to the template being
+   *     populated by this {@code RenderSession}
+   * @return all variables that have not been set yet in the template managed by this
+   *     {@code RenderSession} and all templates nested inside it
    * @see AccessorRegistry.Builder#nullEqualsUndefined(boolean)
    * @see #allSet()
    */
-  List<String> getAllUnsetVariables();
+  List<String> getAllUnsetVariables(boolean relativePaths);
 
   /**
    * Returns {@code true} if all variables (at whatever nesting level) have been set.

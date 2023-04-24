@@ -1,10 +1,12 @@
 package org.klojang.templates;
 
 import org.klojang.check.Check;
+import org.klojang.path.Path;
 import org.klojang.util.collection.IntList;
 
 import java.util.*;
 
+import static java.util.stream.Collectors.toList;
 import static org.klojang.check.CommonChecks.notNull;
 import static org.klojang.templates.RenderErrorCode.NO_SUCH_VARIABLE;
 import static org.klojang.templates.RenderErrorCode.REPETITION_MISMATCH;
@@ -98,13 +100,19 @@ final class RenderState {
     todo.remove(var);
   }
 
-  List<String> getAllUnsetVariables() {
-    List<String> vars = new ArrayList<>();
+  List<String> getAllUnsetVariables(boolean relative) {
+    if (relative) {
+      ArrayList<Path> paths = new ArrayList<>();
+      collectUnsetVariables(this, paths, Path.empty());
+      return paths.stream().map(Path::toString).collect(toList());
+    }
+    ArrayList<String> vars = new ArrayList<>();
     collectUnsetVariables(this, vars);
     return vars;
   }
 
-  private static void collectUnsetVariables(RenderState state0, List<String> vars) {
+  private static void collectUnsetVariables(RenderState state0,
+      ArrayList<String> vars) {
     Template myTmpl = state0.config.template();
     state0.todo.stream().map(var -> getFQN(myTmpl, var)).forEach(vars::add);
     myTmpl.getNestedTemplates().forEach(t -> {
@@ -112,9 +120,26 @@ final class RenderState {
         Arrays.stream(state0.sessions.get(t))
             .limit(1)
             .map(SoloSession::state)
-            .forEach(s -> vars.addAll(s.getAllUnsetVariables()));
+            .forEach(s -> collectUnsetVariables(s, vars));
       } else {
         vars.addAll(getAllVariableFQNames(t));
+      }
+    });
+  }
+
+  private static void collectUnsetVariables(RenderState state0,
+      ArrayList<Path> vars,
+      Path path) {
+    Template myTmpl = state0.config.template();
+    state0.todo.stream().map(path::append).forEach(vars::add);
+    myTmpl.getNestedTemplates().forEach(t -> {
+      if (state0.sessions.containsKey(t)) {
+        Arrays.stream(state0.sessions.get(t))
+            .limit(1)
+            .map(SoloSession::state)
+            .forEach(s -> collectUnsetVariables(s, vars, path.append(t.getName())));
+      } else {
+        TemplateUtils.collectFQNs(t, vars, path.append(t.getName()));
       }
     });
   }
