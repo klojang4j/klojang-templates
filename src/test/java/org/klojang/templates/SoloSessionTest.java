@@ -197,7 +197,7 @@ public class SoloSessionTest {
   }
 
   @Test
-  public void setNested00() throws ParseException {
+  public void setPath00() throws ParseException {
     String src = """
         <html><body>
         <p>~%greeting%</p>
@@ -238,7 +238,7 @@ public class SoloSessionTest {
   }
 
   @Test
-  public void setNested01() throws ParseException {
+  public void setPath01() throws ParseException {
     String src = """
         <html><body>
          ~%%begin:companies%
@@ -270,7 +270,7 @@ public class SoloSessionTest {
   }
 
   @Test
-  public void setNested02() throws ParseException {
+  public void setPath02() throws ParseException {
     String src = """
         <html><body>
         <p>~%greeting%</p>
@@ -317,7 +317,7 @@ public class SoloSessionTest {
   }
 
   @Test
-  public void setNested03() throws ParseException {
+  public void setPath03() throws ParseException {
     String src = """
         ~%%begin:companies%
             ~%%begin:departments%
@@ -346,6 +346,45 @@ public class SoloSessionTest {
     rs.in("companies.departments.employees.roles").setPath("role",
         i -> "analyst");
     assertEquals("analyst", rs.render().strip());
+  }
+
+  public void ifNotSet00() throws ParseException {
+    String src = """
+        ~%greeting%
+        ~%%begin:companies%
+            ~%%begin:departments%
+                ~%%begin:employees%
+                    ~%%begin:roles%
+                        ~%role%
+                    ~%%end:roles%
+                ~%%end:employees%
+            ~%%end:departments%
+        ~%%end:companies%
+        """;
+    Template tmpl = Template.fromString(src);
+    RenderSession rs = tmpl.newRenderSession();
+
+    rs.ifNotSet("greeting", i -> "Hello, World", VarGroup.TEXT);
+    assertEquals("Hello, World", rs.render().strip());
+    rs.ifNotSet("greeting", i -> "Hello, Moon", VarGroup.TEXT);
+    assertEquals("Hello, World", rs.render().strip());
+    rs.unset("greeting");
+    rs.ifNotSet("greeting", i -> "Hello, Moon", VarGroup.TEXT);
+    assertEquals("Hello, Moon", rs.render().strip());
+
+    rs.unset("greeting");
+
+    rs.ifNotSet("companies.departments.employees.roles.role",
+        i -> "director");
+    assertEquals("director", rs.render().strip());
+    rs.ifNotSet("companies.departments.employees.roles.role",
+        i -> "programmer");
+    assertEquals("director", rs.render().strip());
+    rs.unset("companies.departments.employees.roles.role");
+    rs.ifNotSet("companies.departments.employees.roles.role",
+        i -> "programmer");
+    assertEquals("programmer", rs.render().strip());
+
   }
 
   @Test

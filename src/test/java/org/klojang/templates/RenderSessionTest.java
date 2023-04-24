@@ -717,7 +717,7 @@ public class RenderSessionTest {
   }
 
   @Test
-  public void isFullyPopulated00() throws ParseException {
+  public void allSet00() throws ParseException {
     String src = """
         <html><body>
         <p>~%message%</p>

@@ -166,7 +166,7 @@ import static org.klojang.util.ObjectMethods.isEmpty;
       Path path,
       IntFunction&lt;Object&gt; valueGenerator,
       VarGroup varGroup) {
-<span class="pc bpc" id="L169" title="1 of 2 branches missed.">    if (!session.state.isSet(path)) {</span>
+<span class="fc bfc" id="L169" title="All 2 branches covered.">    if (!session.state.isSet(path)) {</span>
 <span class="fc" id="L170">      setPath(session, path, valueGenerator, varGroup, true);</span>
     }
 <span class="fc" id="L172">    return session;</span>
@@ -471,7 +471,7 @@ import static org.klojang.util.ObjectMethods.isEmpty;
 
   public RenderSession unset(String... vars) {
 <span class="fc" id="L473">    Check.notNull(vars, Tag.VARARGS);</span>
-<span class="fc" id="L474">    Arrays.stream(vars).forEach(state::unset);</span>
+<span class="fc" id="L474">    Arrays.stream(vars).map(Path::from).forEach(state::unset);</span>
 <span class="fc" id="L475">    return this;</span>
   }
 

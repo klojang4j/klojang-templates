@@ -110,13 +110,13 @@ final class RenderState {
     return vars;
   }
 
-  private static void collectUnsetVariables(RenderState state0,
+  private static void collectUnsetVariables(RenderState state,
       ArrayList<String> vars) {
-    Template myTmpl = state0.config.template();
-    state0.todo.stream().map(var -> getFQN(myTmpl, var)).forEach(vars::add);
+    Template myTmpl = state.config.template();
+    state.todo.stream().map(var -> getFQN(myTmpl, var)).forEach(vars::add);
     myTmpl.getNestedTemplates().forEach(t -> {
-      if (state0.sessions.containsKey(t)) {
-        Arrays.stream(state0.sessions.get(t))
+      if (state.sessions.containsKey(t)) {
+        Arrays.stream(state.sessions.get(t))
             .limit(1)
             .map(SoloSession::state)
             .forEach(s -> collectUnsetVariables(s, vars));
@@ -147,24 +147,41 @@ final class RenderState {
     return ready(this);
   }
 
-  private static boolean ready(RenderState state0) {
-    if (state0.todo.size() > 0) {
+  private static boolean ready(RenderState state) {
+    if (state.todo.size() > 0) {
       return false;
     }
-    if (state0.config.template().countNestedTemplates() > state0.sessions.size()) {
+    if (state.config.template().countNestedTemplates() > state.sessions.size()) {
       return false;
     }
-    return state0.sessions.values().stream()
+    return state.sessions.values().stream()
         .flatMap(Arrays::stream)
         .map(SoloSession::state)
         .allMatch(RenderState::ready);
   }
 
-  void unset(String var) {
-    IntList il = config.template().variables().get(var);
-    Check.that(il).is(notNull(), NO_SUCH_VARIABLE.getExceptionSupplier(var));
-    todo.add(var);
-    il.toGenericList().forEach(varValues.keySet()::remove);
+  void unset(Path path) {
+    unset(this, path);
+  }
+
+  private static void unset(RenderState state, Path path) {
+    String name = path.segment(0);
+    if (path.size() == 1) {
+      IntList occurrences = state.config.template().variables().get(name);
+      Check.that(occurrences).is(notNull(),
+          NO_SUCH_VARIABLE.getExceptionSupplier(name));
+      state.todo.add(name);
+      occurrences.toGenericList().forEach(state.varValues.keySet()::remove);
+    } else {
+      Template tmpl = state.config.template();
+      Check.that(name).is(in(), tmpl.getNestedTemplateNames(),
+          NO_SUCH_TEMPLATE.getExceptionSupplier(getFQN(tmpl, name)));
+      Template nested = tmpl.getNestedTemplate(name);
+      SoloSession[] childSessions = state.sessions.get(nested);
+      if (childSessions != null) {
+        Arrays.stream(childSessions).forEach(s -> unset(s.state(), path.shift()));
+      }
+    }
   }
 
   void clear(Template tmpl) {
@@ -186,22 +203,22 @@ final class RenderState {
     return isSet(this, path);
   }
 
-  private static boolean isSet(RenderState state0, Path path) {
+  private static boolean isSet(RenderState state, Path path) {
     String name = path.segment(0);
     if (path.size() == 1) {
-      if (state0.todo.contains(name)) {
+      if (state.todo.contains(name)) {
         return false;
       }
-      Template tmpl = state0.config.template();
+      Template tmpl = state.config.template();
       Check.that(name).is(keyIn(), tmpl.variables(),
           NO_SUCH_VARIABLE.getExceptionSupplier(getFQN(tmpl, name)));
       return true;
     }
-    Template tmpl = state0.config.template();
+    Template tmpl = state.config.template();
     Check.that(name).is(in(), tmpl.getNestedTemplateNames(),
         NO_SUCH_TEMPLATE.getExceptionSupplier(getFQN(tmpl, name)));
     Template nested = tmpl.getNestedTemplate(name);
-    SoloSession[] childSessions = state0.sessions.get(nested);
+    SoloSession[] childSessions = state.sessions.get(nested);
     if (childSessions == null) {
       return false;
     } else if (childSessions.length == 0) {

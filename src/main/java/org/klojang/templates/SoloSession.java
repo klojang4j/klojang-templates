@@ -471,7 +471,7 @@ record SoloSession(SessionConfig config, RenderState state) implements
 
   public RenderSession unset(String... vars) {
     Check.notNull(vars, Tag.VARARGS);
-    Arrays.stream(vars).forEach(state::unset);
+    Arrays.stream(vars).map(Path::from).forEach(state::unset);
     return this;
   }
 

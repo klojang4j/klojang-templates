@@ -210,6 +210,35 @@ public class MultiSessionTest {
   }
 
   @Test
+  public void ifNotSet01() throws ParseException {
+    String src = """
+        ~%%begin:companies%
+            ~%%begin:departments%
+                ~%%begin:employees%
+                    ~%%begin:roles%
+                        ~%role%
+                    ~%%end:roles%
+                ~%%end:employees%
+            ~%%end:departments%
+        ~%%end:companies%
+        """;
+    Template tmpl = Template.fromString(src);
+    RenderSession rs = tmpl.newRenderSession();
+
+    rs.repeat("companies", 2).ifNotSet("departments.employees.roles.role",
+        i -> "Director");
+    assertEquals("DirectorDirector", nospace(rs.render()));
+    rs.in("companies").ifNotSet("departments.employees.roles.role",
+        i -> "Programmer");
+    assertEquals("DirectorDirector", nospace(rs.render()));
+    rs.in("companies").unset("departments.employees.roles.role");
+    rs.in("companies").ifNotSet("departments.employees.roles.role",
+        i -> "Programmer");
+    assertEquals("ProgrammerProgrammer", nospace(rs.render()));
+
+  }
+
+  @Test
   public void repeat00() throws ParseException {
     String src = """
         <html><body>
@@ -244,7 +273,7 @@ public class MultiSessionTest {
   }
 
   @Test
-  public void isFullyPopulated00() throws ParseException {
+  public void allSet00() throws ParseException {
     String src = """
         <html><body>
         ~%%begin:companies%
@@ -262,7 +291,7 @@ public class MultiSessionTest {
   }
 
   @Test
-  public void isFullyPopulated01() throws ParseException {
+  public void allSet01() throws ParseException {
     String src = """
         <html><body>
         ~%%begin:companies%
@@ -435,7 +464,7 @@ public class MultiSessionTest {
   }
 
   @Test
-  public void show00() throws ParseException {
+  public void enable00() throws ParseException {
     String src = """
         <html><body>
         ~%%begin:companies%
@@ -461,7 +490,7 @@ public class MultiSessionTest {
   }
 
   @Test
-  public void show01() throws ParseException {
+  public void enable01() throws ParseException {
     String src = """
         <html><body>
         ~%%begin:companies%
@@ -485,7 +514,7 @@ public class MultiSessionTest {
   }
 
   @Test
-  public void show02() throws ParseException {
+  public void enable02() throws ParseException {
     String src = """
         <html><body>
         ~%%begin:companies%
@@ -514,7 +543,7 @@ public class MultiSessionTest {
   }
 
   @Test
-  public void show03() throws ParseException {
+  public void enable03() throws ParseException {
     String src = """
         <html><body>
         ~%%begin:companies%
@@ -542,14 +571,25 @@ public class MultiSessionTest {
   }
 
   @Test
-  public void show04() throws ParseException {
+  public void enable04() throws ParseException {
     String src = " ~%%begin:companies% Hello ~%%end:companies%";
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
     String out = rs.enable(3, "companies").render();
-    System.out.println(out);
+    //System.out.println(out);
     String expected = "Hello Hello Hello";
     assertEquals(nospace(expected), nospace(out));
+  }
+
+  @Test
+  public void enable05() throws ParseException {
+    String src = "~%%begin:foo%~%%begin:bar%2~%%end:bar%~%%end:foo%";
+    Template tmpl = Template.fromString(src);
+    RenderSession rs = tmpl.newRenderSession();
+    rs.repeat("foo", 2).enable("bar");
+    StringBuilder out = new StringBuilder();
+    rs.render(out);
+    assertEquals("22", out.toString());
   }
 
   @Test
@@ -730,7 +770,7 @@ public class MultiSessionTest {
         "Shell",
         "UK");
     String out = rs.render();
-    System.out.println(out);
+    //System.out.println(out);
     String expected = """
         <html><body>
         <p>MacDonald&lt;&lt;&lt;s (USA)</p>
@@ -837,17 +877,6 @@ public class MultiSessionTest {
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
     rs.repeat("companies", 2).set("var", 2);
-    StringBuilder out = new StringBuilder();
-    rs.render(out);
-    assertEquals("22", out.toString());
-  }
-
-  @Test
-  public void enable00() throws ParseException {
-    String src = "~%%begin:foo%~%%begin:bar%2~%%end:bar%~%%end:foo%";
-    Template tmpl = Template.fromString(src);
-    RenderSession rs = tmpl.newRenderSession();
-    rs.repeat("foo", 2).enable("bar");
     StringBuilder out = new StringBuilder();
     rs.render(out);
     assertEquals("22", out.toString());
