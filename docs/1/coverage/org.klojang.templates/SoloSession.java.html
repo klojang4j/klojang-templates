@@ -97,156 +97,161 @@ import static org.klojang.util.ObjectMethods.isEmpty;
   }
 
   @Override
-  public RenderSession setNested(String path, IntFunction&lt;Object&gt; valueGenerator) {
+  public RenderSession setPath(String path, IntFunction&lt;Object&gt; valueGenerator) {
 <span class="fc" id="L101">    Path p = Check.notNull(path, Tag.PATH).ok(Path::from);</span>
 <span class="fc" id="L102">    Check.notNull(valueGenerator, VALUE_GENERATOR);</span>
-<span class="pc bpc" id="L103" title="1 of 2 branches missed.">    if (p.size() == 1) {</span>
-<span class="nc" id="L104">      setVar(p.segment(0), valueGenerator.apply(0), null);</span>
-    } else {
-<span class="fc" id="L106">      setNested(this, p, valueGenerator, null, true);</span>
-    }
-<span class="fc" id="L108">    return this;</span>
+<span class="fc" id="L103">    setPath(this, p, valueGenerator, null, true);</span>
+<span class="fc" id="L104">    return this;</span>
   }
 
   @Override
-  public RenderSession setNested(String path,
+  public RenderSession setPath(String path,
       IntFunction&lt;Object&gt; valueGenerator,
       VarGroup varGroup,
       boolean force) {
-<span class="fc" id="L116">    Path p = Check.notNull(path, Tag.PATH).ok(Path::from);</span>
-<span class="fc" id="L117">    Check.notNull(valueGenerator, VALUE_GENERATOR);</span>
-<span class="fc" id="L118">    Check.notNull(varGroup, VAR_GROUP);</span>
-<span class="pc bpc" id="L119" title="1 of 2 branches missed.">    if (p.size() == 1) {</span>
-<span class="nc" id="L120">      setVar(p.segment(0), valueGenerator.apply(0), null);</span>
-    } else {
-<span class="fc" id="L122">      setNested(this, p, valueGenerator, varGroup, force);</span>
-    }
-<span class="fc" id="L124">    return this;</span>
+<span class="fc" id="L112">    Path p = Check.notNull(path, Tag.PATH).ok(Path::from);</span>
+<span class="fc" id="L113">    Check.notNull(valueGenerator, VALUE_GENERATOR);</span>
+<span class="fc" id="L114">    Check.notNull(varGroup, VAR_GROUP);</span>
+<span class="fc" id="L115">    setPath(this, p, valueGenerator, varGroup, force);</span>
+<span class="fc" id="L116">    return this;</span>
   }
 
-  private static void setNested(
+  private static void setPath(
       SoloSession session,
       Path path,
       IntFunction&lt;Object&gt; valueGenerator,
       VarGroup varGroup,
       boolean force) {
-<span class="fc" id="L133">    Template t = session.getNestedTemplate(path.segment(0));</span>
-<span class="fc" id="L134">    SoloSession[] children = session.state.getChildSessions(t);</span>
-<span class="fc bfc" id="L135" title="All 2 branches covered.">    if (children == null) {</span>
-<span class="fc bfc" id="L136" title="All 2 branches covered.">      if (!force) {</span>
-<span class="fc" id="L137">        return;</span>
-      }
-<span class="fc" id="L139">      children = session.state.createChildSessions(t, 1);</span>
-    }
-<span class="fc bfc" id="L141" title="All 2 branches covered.">    if (path.size() == 2) {</span>
-<span class="fc bfc" id="L142" title="All 2 branches covered.">      for (int i = 0; i &lt; children.length; ++i) {</span>
-<span class="fc" id="L143">        children[i].setVar(path.segment(1), valueGenerator.apply(i), varGroup);</span>
-      }
+<span class="fc bfc" id="L125" title="All 2 branches covered.">    if (path.size() == 1) {</span>
+<span class="fc" id="L126">      session.setVar(path.segment(0), valueGenerator.apply(0), varGroup);</span>
     } else {
-<span class="fc bfc" id="L146" title="All 2 branches covered.">      for (SoloSession child : children) {</span>
-<span class="fc" id="L147">        setNested(child, path.shift(), valueGenerator, varGroup, force);</span>
+<span class="fc" id="L128">      Template t = session.getNestedTemplate(path.segment(0));</span>
+<span class="fc" id="L129">      SoloSession[] children = session.state.getChildSessions(t);</span>
+<span class="fc bfc" id="L130" title="All 2 branches covered.">      if (children == null) {</span>
+<span class="fc bfc" id="L131" title="All 2 branches covered.">        if (!force) {</span>
+<span class="fc" id="L132">          return;</span>
+        }
+<span class="fc" id="L134">        children = session.state.createChildSessions(t, 1);</span>
+      }
+<span class="fc bfc" id="L136" title="All 2 branches covered.">      if (path.size() == 2) {</span>
+<span class="fc bfc" id="L137" title="All 2 branches covered.">        for (int i = 0; i &lt; children.length; ++i) {</span>
+<span class="fc" id="L138">          children[i].setVar(path.segment(1), valueGenerator.apply(i), varGroup);</span>
+        }
+      } else {
+<span class="fc bfc" id="L141" title="All 2 branches covered.">        for (SoloSession child : children) {</span>
+<span class="fc" id="L142">          setPath(child, path.shift(), valueGenerator, varGroup, force);</span>
+        }
       }
     }
-<span class="fc" id="L150">  }</span>
+<span class="fc" id="L146">  }</span>
 
   @Override
-  public RenderSession ifNotSet(String varName, Supplier&lt;Object&gt; valueGenerator) {
-<span class="nc bnc" id="L154" title="All 2 branches missed.">    if (state.todo.contains(varName)) {</span>
-<span class="nc" id="L155">      setVar(varName, valueGenerator.get(), null);</span>
-    }
-<span class="nc" id="L157">    return this;</span>
+  public RenderSession ifNotSet(String path, IntFunction&lt;Object&gt; valueGenerator) {
+<span class="fc" id="L150">    Path p = Check.notNull(path, Tag.PATH).ok(Path::from);</span>
+<span class="fc" id="L151">    Check.notNull(valueGenerator, VALUE_GENERATOR);</span>
+<span class="fc" id="L152">    return ifNotSet(this, p, valueGenerator, null);</span>
   }
 
   @Override
-  public RenderSession ifNotSet(String varName,
-      Supplier&lt;Object&gt; valueGenerator,
+  public RenderSession ifNotSet(String path,
+      IntFunction&lt;Object&gt; valueGenerator,
       VarGroup varGroup) {
-<span class="nc bnc" id="L164" title="All 2 branches missed.">    if (state.todo.contains(varName)) {</span>
-<span class="nc" id="L165">      setVar(varName, valueGenerator.get(), varGroup);</span>
+<span class="nc" id="L159">    Path p = Check.notNull(path, Tag.PATH).ok(Path::from);</span>
+<span class="nc" id="L160">    Check.notNull(valueGenerator, VALUE_GENERATOR);</span>
+<span class="nc" id="L161">    Check.notNull(varGroup, VAR_GROUP);</span>
+<span class="nc" id="L162">    return ifNotSet(this, p, valueGenerator, varGroup);</span>
+  }
+
+  private static RenderSession ifNotSet(SoloSession session,
+      Path path,
+      IntFunction&lt;Object&gt; valueGenerator,
+      VarGroup varGroup) {
+<span class="pc bpc" id="L169" title="1 of 2 branches missed.">    if (!session.state.isSet(path)) {</span>
+<span class="fc" id="L170">      setPath(session, path, valueGenerator, varGroup, true);</span>
     }
-<span class="nc" id="L167">    return this;</span>
+<span class="fc" id="L172">    return session;</span>
   }
 
   @Override
   public RenderSession insert(Object data, String... names) {
-<span class="fc" id="L172">    Check.notNull(names, Tag.VARARGS);</span>
-<span class="fc" id="L173">    return doInsert(data, null, names);</span>
+<span class="fc" id="L177">    Check.notNull(names, Tag.VARARGS);</span>
+<span class="fc" id="L178">    return doInsert(data, null, names);</span>
   }
 
   @Override
   public RenderSession insert(Object data,
       VarGroup varGroup,
       String... names) {
-<span class="fc" id="L180">    Check.notNull(varGroup, VAR_GROUP);</span>
-<span class="fc" id="L181">    Check.notNull(names, Tag.VARARGS);</span>
-<span class="fc" id="L182">    return doInsert(data, varGroup, names);</span>
+<span class="fc" id="L185">    Check.notNull(varGroup, VAR_GROUP);</span>
+<span class="fc" id="L186">    Check.notNull(names, Tag.VARARGS);</span>
+<span class="fc" id="L187">    return doInsert(data, varGroup, names);</span>
   }
 
   private RenderSession doInsert(Object data, VarGroup group, String[] names) {
-<span class="pc bpc" id="L186" title="1 of 2 branches missed.">    if (dontProcess(data)) {</span>
-<span class="nc" id="L187">      return this;</span>
-<span class="fc bfc" id="L188" title="All 2 branches covered.">    } else if (data == null) {</span>
-<span class="fc" id="L189">      Template t = config.template();</span>
-<span class="fc" id="L190">      Check.that(t.isTextOnly())</span>
-<span class="fc" id="L191">          .is(yes(), NOT_TEXT_ONLY.getExceptionSupplier(t.getName()));</span>
+<span class="pc bpc" id="L191" title="1 of 2 branches missed.">    if (dontProcess(data)) {</span>
+<span class="nc" id="L192">      return this;</span>
+<span class="fc bfc" id="L193" title="All 2 branches covered.">    } else if (data == null) {</span>
+<span class="fc" id="L194">      Template t = config.template();</span>
+<span class="fc" id="L195">      Check.that(t.isTextOnly())</span>
+<span class="fc" id="L196">          .is(yes(), NOT_TEXT_ONLY.getExceptionSupplier(t.getName()));</span>
       // If we get past this check, the entire template is in fact
       // static HTML. Expensive way to render static HTML, but no
       // reason not to support it.
-<span class="fc" id="L195">      return this;</span>
-<span class="fc bfc" id="L196" title="All 2 branches covered.">    } else if (data instanceof Optional&lt;?&gt; opt) {</span>
-<span class="fc bfc" id="L197" title="All 2 branches covered.">      return opt.isPresent() ? doInsert(opt.get(), group, names) : this;</span>
+<span class="fc" id="L200">      return this;</span>
+<span class="fc bfc" id="L201" title="All 2 branches covered.">    } else if (data instanceof Optional&lt;?&gt; opt) {</span>
+<span class="fc bfc" id="L202" title="All 2 branches covered.">      return opt.isPresent() ? doInsert(opt.get(), group, names) : this;</span>
     }
-<span class="fc" id="L199">    processVars(data, group, names);</span>
-<span class="fc" id="L200">    processTmpls(data, group, names);</span>
-<span class="fc" id="L201">    return this;</span>
+<span class="fc" id="L204">    processVars(data, group, names);</span>
+<span class="fc" id="L205">    processTmpls(data, group, names);</span>
+<span class="fc" id="L206">    return this;</span>
   }
 
   @SuppressWarnings(&quot;unchecked&quot;)
   private &lt;T&gt; void processVars(T data, VarGroup defGroup, String[] names) {
     Set&lt;String&gt; varNames;
-<span class="fc bfc" id="L207" title="All 2 branches covered.">    if (isEmpty(names)) {</span>
-<span class="fc" id="L208">      varNames = config.template().getVariables();</span>
+<span class="fc bfc" id="L212" title="All 2 branches covered.">    if (isEmpty(names)) {</span>
+<span class="fc" id="L213">      varNames = config.template().getVariables();</span>
     } else {
-<span class="fc" id="L210">      varNames = new HashSet&lt;&gt;(config.template().getVariables());</span>
-<span class="fc" id="L211">      varNames.retainAll(List.of(names));</span>
+<span class="fc" id="L215">      varNames = new HashSet&lt;&gt;(config.template().getVariables());</span>
+<span class="fc" id="L216">      varNames.retainAll(List.of(names));</span>
     }
-<span class="fc" id="L213">    Accessor&lt;T&gt; acc = (Accessor&lt;T&gt;) config.getAccessor(data);</span>
-<span class="fc bfc" id="L214" title="All 2 branches covered.">    for (String varName : varNames) {</span>
+<span class="fc" id="L218">    Accessor&lt;T&gt; acc = (Accessor&lt;T&gt;) config.getAccessor(data);</span>
+<span class="fc bfc" id="L219" title="All 2 branches covered.">    for (String varName : varNames) {</span>
       Object value;
       try {
-<span class="fc" id="L217">        value = acc.access(data, varName);</span>
-<span class="fc" id="L218">      } catch (RuntimeException e) {</span>
-<span class="fc" id="L219">        String fqn = getFQN(config.template(), varName);</span>
-<span class="fc" id="L220">        throw ACCESS_EXCEPTION.getException(fqn, e);</span>
-<span class="fc" id="L221">      }</span>
-<span class="fc" id="L222">      setVar(varName, value, defGroup);</span>
-<span class="fc" id="L223">    }</span>
-<span class="fc" id="L224">  }</span>
+<span class="fc" id="L222">        value = acc.access(data, varName);</span>
+<span class="fc" id="L223">      } catch (RuntimeException e) {</span>
+<span class="fc" id="L224">        String fqn = getFQN(config.template(), varName);</span>
+<span class="fc" id="L225">        throw ACCESS_EXCEPTION.getException(fqn, e);</span>
+<span class="fc" id="L226">      }</span>
+<span class="fc" id="L227">      setVar(varName, value, defGroup);</span>
+<span class="fc" id="L228">    }</span>
+<span class="fc" id="L229">  }</span>
 
   @SuppressWarnings(&quot;unchecked&quot;)
   private &lt;T&gt; void processTmpls(T data, VarGroup varGroup, String[] names) {
     Set&lt;String&gt; tmplNames;
-<span class="fc bfc" id="L229" title="All 2 branches covered.">    if (isEmpty(names)) {</span>
-<span class="fc" id="L230">      tmplNames = config.template().getNestedTemplateNames();</span>
+<span class="fc bfc" id="L234" title="All 2 branches covered.">    if (isEmpty(names)) {</span>
+<span class="fc" id="L235">      tmplNames = config.template().getNestedTemplateNames();</span>
     } else {
-<span class="fc" id="L232">      tmplNames = new HashSet&lt;&gt;(config.template().getNestedTemplateNames());</span>
-<span class="fc" id="L233">      tmplNames.retainAll(List.of(names));</span>
+<span class="fc" id="L237">      tmplNames = new HashSet&lt;&gt;(config.template().getNestedTemplateNames());</span>
+<span class="fc" id="L238">      tmplNames.retainAll(List.of(names));</span>
     }
-<span class="fc" id="L235">    Accessor&lt;T&gt; acc = (Accessor&lt;T&gt;) config.getAccessor(data);</span>
-<span class="fc bfc" id="L236" title="All 2 branches covered.">    for (String name : tmplNames) {</span>
-<span class="fc" id="L237">      Object nestedData = acc.access(data, name);</span>
-<span class="fc bfc" id="L238" title="All 2 branches covered.">      if (mustProcess(nestedData)) {</span>
-<span class="fc" id="L239">        doPopulate(getNestedTemplate(name), nestedData, varGroup, names);</span>
+<span class="fc" id="L240">    Accessor&lt;T&gt; acc = (Accessor&lt;T&gt;) config.getAccessor(data);</span>
+<span class="fc bfc" id="L241" title="All 2 branches covered.">    for (String name : tmplNames) {</span>
+<span class="fc" id="L242">      Object nestedData = acc.access(data, name);</span>
+<span class="fc bfc" id="L243" title="All 2 branches covered.">      if (mustProcess(nestedData)) {</span>
+<span class="fc" id="L244">        doPopulate(getNestedTemplate(name), nestedData, varGroup, names);</span>
       }
-<span class="fc" id="L241">    }</span>
-<span class="fc" id="L242">  }</span>
+<span class="fc" id="L246">    }</span>
+<span class="fc" id="L247">  }</span>
 
   @Override
   public RenderSession populate(String tmpl,
       Object data,
       String... names) {
-<span class="fc" id="L248">    Check.notNull(names, Tag.VARARGS);</span>
-<span class="fc" id="L249">    return doPopulate(getNestedTemplate(tmpl), data, null, names);</span>
+<span class="fc" id="L253">    Check.notNull(names, Tag.VARARGS);</span>
+<span class="fc" id="L254">    return doPopulate(getNestedTemplate(tmpl), data, null, names);</span>
   }
 
   @Override
@@ -254,266 +259,266 @@ import static org.klojang.util.ObjectMethods.isEmpty;
       Object data,
       VarGroup group,
       String... names) {
-<span class="fc" id="L257">    Check.notNull(group, VAR_GROUP);</span>
-<span class="fc" id="L258">    Check.notNull(names, Tag.VARARGS);</span>
-<span class="fc" id="L259">    return doPopulate(getNestedTemplate(tmpl), data, group, names);</span>
+<span class="fc" id="L262">    Check.notNull(group, VAR_GROUP);</span>
+<span class="fc" id="L263">    Check.notNull(names, Tag.VARARGS);</span>
+<span class="fc" id="L264">    return doPopulate(getNestedTemplate(tmpl), data, group, names);</span>
   }
 
   private RenderSession doPopulate(Template tmpl,
       Object data,
       VarGroup group,
       String[] names) {
-<span class="fc bfc" id="L266" title="All 2 branches covered.">    if (dontProcess(data)) {</span>
-<span class="fc" id="L267">      return this;</span>
-<span class="fc bfc" id="L268" title="All 2 branches covered.">    } else if (data instanceof Optional&lt;?&gt; opt) {</span>
-<span class="fc bfc" id="L269" title="All 2 branches covered.">      if (opt.isPresent()) {</span>
-<span class="fc" id="L270">        return doPopulate(tmpl, opt.get(), group, names);</span>
+<span class="fc bfc" id="L271" title="All 2 branches covered.">    if (dontProcess(data)) {</span>
+<span class="fc" id="L272">      return this;</span>
+<span class="fc bfc" id="L273" title="All 2 branches covered.">    } else if (data instanceof Optional&lt;?&gt; opt) {</span>
+<span class="fc bfc" id="L274" title="All 2 branches covered.">      if (opt.isPresent()) {</span>
+<span class="fc" id="L275">        return doPopulate(tmpl, opt.get(), group, names);</span>
       }
-<span class="pc bpc" id="L272" title="1 of 2 branches missed.">      if (!state.isProcessed(tmpl)) {</span>
-<span class="fc" id="L273">        state.createChildSessions(tmpl, 0);</span>
+<span class="pc bpc" id="L277" title="1 of 2 branches missed.">      if (!state.isProcessed(tmpl)) {</span>
+<span class="fc" id="L278">        state.createChildSessions(tmpl, 0);</span>
       }
-<span class="fc" id="L275">      return this;</span>
+<span class="fc" id="L280">      return this;</span>
     }
-<span class="fc" id="L277">    List&lt;?&gt; list = listify(data);</span>
-<span class="fc bfc" id="L278" title="All 2 branches covered.">    if (tmpl.isTextOnly()) {</span>
-<span class="fc" id="L279">      return enable(list.size(), tmpl);</span>
+<span class="fc" id="L282">    List&lt;?&gt; list = listify(data);</span>
+<span class="fc bfc" id="L283" title="All 2 branches covered.">    if (tmpl.isTextOnly()) {</span>
+<span class="fc" id="L284">      return enable(list.size(), tmpl);</span>
     }
-<span class="fc" id="L281">    SoloSession[] sessions = state.getOrCreateChildSessions(tmpl, list.size());</span>
-<span class="fc bfc" id="L282" title="All 2 branches covered.">    for (int i = 0; i &lt; sessions.length; ++i) {</span>
-<span class="fc" id="L283">      sessions[i].doInsert(list.get(i), group, names);</span>
+<span class="fc" id="L286">    SoloSession[] sessions = state.getOrCreateChildSessions(tmpl, list.size());</span>
+<span class="fc bfc" id="L287" title="All 2 branches covered.">    for (int i = 0; i &lt; sessions.length; ++i) {</span>
+<span class="fc" id="L288">      sessions[i].doInsert(list.get(i), group, names);</span>
     }
-<span class="fc" id="L285">    return this;</span>
+<span class="fc" id="L290">    return this;</span>
   }
 
   @Override
   public RenderSession repeat(String tmpl, int times) {
-<span class="fc" id="L290">    Check.that(times).isNot(negative());</span>
-<span class="fc" id="L291">    Template t = getNestedTemplate(tmpl);</span>
-<span class="fc" id="L292">    Check.that(state.getChildSessions(t)).is(NULL(),</span>
-<span class="fc" id="L293">        REPETITIONS_FIXED.getExceptionSupplier(tmpl));</span>
-<span class="fc" id="L294">    return new MultiSession(t, state.createChildSessions(t, times));</span>
+<span class="fc" id="L295">    Check.that(times).isNot(negative());</span>
+<span class="fc" id="L296">    Template t = getNestedTemplate(tmpl);</span>
+<span class="fc" id="L297">    Check.that(state.getChildSessions(t)).is(NULL(),</span>
+<span class="fc" id="L298">        REPETITIONS_FIXED.getExceptionSupplier(tmpl));</span>
+<span class="fc" id="L299">    return new MultiSession(t, state.createChildSessions(t, times));</span>
   }
 
   @Override
   public RenderSession in(String fqn) {
-<span class="fc" id="L299">    Path path = Check.that(fqn).isNot(empty()).ok(Path::from);</span>
-<span class="fc" id="L300">    RenderSession rs = in0(path.segment(0));</span>
-<span class="fc bfc" id="L301" title="All 2 branches covered.">    for (int i = 1; i &lt; path.size(); ++i) {</span>
-<span class="fc" id="L302">      rs = rs.in(path.segment(i));</span>
+<span class="fc" id="L304">    Path path = Check.that(fqn).isNot(empty()).ok(Path::from);</span>
+<span class="fc" id="L305">    RenderSession rs = in0(path.segment(0));</span>
+<span class="fc bfc" id="L306" title="All 2 branches covered.">    for (int i = 1; i &lt; path.size(); ++i) {</span>
+<span class="fc" id="L307">      rs = rs.in(path.segment(i));</span>
     }
-<span class="fc" id="L304">    return rs;</span>
+<span class="fc" id="L309">    return rs;</span>
   }
 
   private RenderSession in0(String name) {
-<span class="fc" id="L308">    Template t = getNestedTemplate(name);</span>
-<span class="fc" id="L309">    SoloSession[] children = state.getChildSessions(t);</span>
-<span class="fc bfc" id="L310" title="All 2 branches covered.">    if (children == null) {</span>
-<span class="fc" id="L311">      children = state.createChildSessions(t, 1);</span>
+<span class="fc" id="L313">    Template t = getNestedTemplate(name);</span>
+<span class="fc" id="L314">    SoloSession[] children = state.getChildSessions(t);</span>
+<span class="fc bfc" id="L315" title="All 2 branches covered.">    if (children == null) {</span>
+<span class="fc" id="L316">      children = state.createChildSessions(t, 1);</span>
     }
-<span class="fc" id="L313">    return new MultiSession(t, children);</span>
+<span class="fc" id="L318">    return new MultiSession(t, children);</span>
   }
 
   @Override
   public RenderSession enable(String... nestedTemplateNames) {
-<span class="fc" id="L318">    return enable(1, nestedTemplateNames);</span>
+<span class="fc" id="L323">    return enable(1, nestedTemplateNames);</span>
   }
 
   @Override
   public RenderSession enable(int repeats, String... nestedTemplateNames) {
-<span class="fc" id="L323">    Check.that(repeats, MTag.REPEATS).is(gte(), 0);</span>
-<span class="fc" id="L324">    Check.notNull(nestedTemplateNames, Tag.VARARGS);</span>
-<span class="fc bfc" id="L325" title="All 2 branches covered.">    if (nestedTemplateNames.length == 0) {</span>
-<span class="fc bfc" id="L326" title="All 2 branches covered.">      for (Template t : config.template().getNestedTemplates()) {</span>
-<span class="fc" id="L327">        Check.that(t).is(Template::isTextOnly,</span>
-<span class="fc" id="L328">            NOT_TEXT_ONLY.getExceptionSupplier(t.getName()));</span>
-<span class="pc bpc" id="L329" title="1 of 2 branches missed.">        if (!state.isProcessed(t)) {</span>
-<span class="fc" id="L330">          enable(repeats, t);</span>
+<span class="fc" id="L328">    Check.that(repeats, MTag.REPEATS).is(gte(), 0);</span>
+<span class="fc" id="L329">    Check.notNull(nestedTemplateNames, Tag.VARARGS);</span>
+<span class="fc bfc" id="L330" title="All 2 branches covered.">    if (nestedTemplateNames.length == 0) {</span>
+<span class="fc bfc" id="L331" title="All 2 branches covered.">      for (Template t : config.template().getNestedTemplates()) {</span>
+<span class="fc" id="L332">        Check.that(t).is(Template::isTextOnly,</span>
+<span class="fc" id="L333">            NOT_TEXT_ONLY.getExceptionSupplier(t.getName()));</span>
+<span class="pc bpc" id="L334" title="1 of 2 branches missed.">        if (!state.isProcessed(t)) {</span>
+<span class="fc" id="L335">          enable(repeats, t);</span>
         }
-<span class="fc" id="L332">      }</span>
+<span class="fc" id="L337">      }</span>
     } else {
-<span class="fc bfc" id="L334" title="All 2 branches covered.">      for (String name : nestedTemplateNames) {</span>
-<span class="fc" id="L335">        Template t = getNestedTemplate(name);</span>
-<span class="fc" id="L336">        Check.that(t).is(Template::isTextOnly,</span>
-<span class="fc" id="L337">            NOT_TEXT_ONLY.getExceptionSupplier(t.getName()));</span>
-<span class="fc" id="L338">        enable(repeats, t);</span>
+<span class="fc bfc" id="L339" title="All 2 branches covered.">      for (String name : nestedTemplateNames) {</span>
+<span class="fc" id="L340">        Template t = getNestedTemplate(name);</span>
+<span class="fc" id="L341">        Check.that(t).is(Template::isTextOnly,</span>
+<span class="fc" id="L342">            NOT_TEXT_ONLY.getExceptionSupplier(t.getName()));</span>
+<span class="fc" id="L343">        enable(repeats, t);</span>
       }
     }
-<span class="fc" id="L341">    return this;</span>
+<span class="fc" id="L346">    return this;</span>
   }
 
   private RenderSession enable(int repeats, Template nested) {
-<span class="fc" id="L345">    state.createChildSessions(nested, repeats);</span>
-<span class="fc" id="L346">    return this;</span>
+<span class="fc" id="L350">    state.createChildSessions(nested, repeats);</span>
+<span class="fc" id="L351">    return this;</span>
   }
 
   @Override
   public RenderSession enableRecursive(String... nestedTemplateNames) {
-<span class="fc" id="L351">    Check.notNull(nestedTemplateNames);</span>
-<span class="fc bfc" id="L352" title="All 2 branches covered.">    if (nestedTemplateNames.length == 0) {</span>
-<span class="fc bfc" id="L353" title="All 2 branches covered.">      for (Template t : config.template().getNestedTemplates()) {</span>
-<span class="pc bpc" id="L354" title="2 of 4 branches missed.">        if (!state.isDisabled(t) &amp;&amp; TemplateUtils.getVarsPerTemplate(t).isEmpty()) {</span>
-<span class="fc" id="L355">          enableRecursive(this, t);</span>
+<span class="fc" id="L356">    Check.notNull(nestedTemplateNames);</span>
+<span class="fc bfc" id="L357" title="All 2 branches covered.">    if (nestedTemplateNames.length == 0) {</span>
+<span class="fc bfc" id="L358" title="All 2 branches covered.">      for (Template t : config.template().getNestedTemplates()) {</span>
+<span class="pc bpc" id="L359" title="2 of 4 branches missed.">        if (!state.isDisabled(t) &amp;&amp; TemplateUtils.getVarsPerTemplate(t).isEmpty()) {</span>
+<span class="fc" id="L360">          enableRecursive(this, t);</span>
         }
-<span class="fc" id="L357">      }</span>
+<span class="fc" id="L362">      }</span>
     } else {
-<span class="fc" id="L359">      Set&lt;String&gt; names = Set.of(nestedTemplateNames);</span>
-<span class="fc bfc" id="L360" title="All 2 branches covered.">      for (Template t : config.template().getNestedTemplates()) {</span>
-<span class="fc" id="L361">        Check.that(TemplateUtils.getVarsPerTemplate(t)).is(empty(),</span>
-<span class="fc" id="L362">            NOT_TEXT_ONLY.getExceptionSupplier(t.getName()));</span>
-<span class="fc" id="L363">        enableRecursive(this, t, names);</span>
-<span class="fc" id="L364">      }</span>
+<span class="fc" id="L364">      Set&lt;String&gt; names = Set.of(nestedTemplateNames);</span>
+<span class="fc bfc" id="L365" title="All 2 branches covered.">      for (Template t : config.template().getNestedTemplates()) {</span>
+<span class="fc" id="L366">        Check.that(TemplateUtils.getVarsPerTemplate(t)).is(empty(),</span>
+<span class="fc" id="L367">            NOT_TEXT_ONLY.getExceptionSupplier(t.getName()));</span>
+<span class="fc" id="L368">        enableRecursive(this, t, names);</span>
+<span class="fc" id="L369">      }</span>
     }
-<span class="fc" id="L366">    return this;</span>
+<span class="fc" id="L371">    return this;</span>
   }
 
   private static void enableRecursive(SoloSession s0, Template t0) {
-<span class="fc" id="L370">    s0.enable(1, t0);</span>
-<span class="fc bfc" id="L371" title="All 2 branches covered.">    if (!t0.getNestedTemplates().isEmpty()) {</span>
-<span class="fc" id="L372">      SoloSession s = s0.state.getChildSessions(t0)[0];</span>
-<span class="fc" id="L373">      t0.getNestedTemplates().forEach(t -&gt; enableRecursive(s, t));</span>
+<span class="fc" id="L375">    s0.enable(1, t0);</span>
+<span class="fc bfc" id="L376" title="All 2 branches covered.">    if (!t0.getNestedTemplates().isEmpty()) {</span>
+<span class="fc" id="L377">      SoloSession s = s0.state.getChildSessions(t0)[0];</span>
+<span class="fc" id="L378">      t0.getNestedTemplates().forEach(t -&gt; enableRecursive(s, t));</span>
     }
-<span class="fc" id="L375">  }</span>
+<span class="fc" id="L380">  }</span>
 
   private static void enableRecursive(SoloSession s0,
       Template t0,
       Set&lt;String&gt; names) {
-<span class="fc bfc" id="L380" title="All 2 branches covered.">    if (names.contains(t0.getName())) {</span>
-<span class="fc" id="L381">      s0.enable(1, t0);</span>
-<span class="fc bfc" id="L382" title="All 2 branches covered.">      if (!t0.getNestedTemplates().isEmpty()) {</span>
-<span class="fc" id="L383">        SoloSession s = s0.state.getChildSessions(t0)[0];</span>
-<span class="fc" id="L384">        t0.getNestedTemplates().forEach(t -&gt; enableRecursive(s, t, names));</span>
+<span class="fc bfc" id="L385" title="All 2 branches covered.">    if (names.contains(t0.getName())) {</span>
+<span class="fc" id="L386">      s0.enable(1, t0);</span>
+<span class="fc bfc" id="L387" title="All 2 branches covered.">      if (!t0.getNestedTemplates().isEmpty()) {</span>
+<span class="fc" id="L388">        SoloSession s = s0.state.getChildSessions(t0)[0];</span>
+<span class="fc" id="L389">        t0.getNestedTemplates().forEach(t -&gt; enableRecursive(s, t, names));</span>
       }
     }
-<span class="fc" id="L387">  }</span>
+<span class="fc" id="L392">  }</span>
 
   @Override
   public RenderSession populate1(String nestedTemplateName, Object... values) {
-<span class="fc" id="L391">    Check.that(values, Tag.VARARGS).isNot(empty());</span>
-<span class="fc" id="L392">    return doPopulate1(nestedTemplateName, null, values);</span>
+<span class="fc" id="L396">    Check.that(values, Tag.VARARGS).isNot(empty());</span>
+<span class="fc" id="L397">    return doPopulate1(nestedTemplateName, null, values);</span>
   }
 
   @Override
   public RenderSession populate1(String nestedTemplateName,
       VarGroup varGroup, Object... values) {
-<span class="fc" id="L398">    Check.notNull(varGroup, VAR_GROUP);</span>
-<span class="fc" id="L399">    Check.that(values, Tag.VARARGS).isNot(empty());</span>
-<span class="fc" id="L400">    return doPopulate1(nestedTemplateName, varGroup, values);</span>
+<span class="fc" id="L403">    Check.notNull(varGroup, VAR_GROUP);</span>
+<span class="fc" id="L404">    Check.that(values, Tag.VARARGS).isNot(empty());</span>
+<span class="fc" id="L405">    return doPopulate1(nestedTemplateName, varGroup, values);</span>
   }
 
   private RenderSession doPopulate1(String tmpl, VarGroup group, Object[] values) {
-<span class="fc" id="L404">    Template t = getNestedTemplate(tmpl);</span>
-<span class="fc" id="L405">    Check.that(t.getVariables()).has(size(), eq(), 1,</span>
-<span class="fc" id="L406">        NOT_ONE_VAR_TEMPLATE.getExceptionSupplier(t.getName()));</span>
-<span class="fc" id="L407">    String var = t.getVariables().iterator().next();</span>
-<span class="fc" id="L408">    List&lt;?&gt; data = Arrays.stream(values).map(v -&gt; singletonMap(var, v)).toList();</span>
-<span class="fc" id="L409">    return doPopulate(t, data, group, EMPTY_STRING_ARRAY);</span>
+<span class="fc" id="L409">    Template t = getNestedTemplate(tmpl);</span>
+<span class="fc" id="L410">    Check.that(t.getVariables()).has(size(), eq(), 1,</span>
+<span class="fc" id="L411">        NOT_ONE_VAR_TEMPLATE.getExceptionSupplier(t.getName()));</span>
+<span class="fc" id="L412">    String var = t.getVariables().iterator().next();</span>
+<span class="fc" id="L413">    List&lt;?&gt; data = Arrays.stream(values).map(v -&gt; singletonMap(var, v)).toList();</span>
+<span class="fc" id="L414">    return doPopulate(t, data, group, EMPTY_STRING_ARRAY);</span>
   }
 
   @Override
   public RenderSession populate2(String nestedTemplateName, Object... values) {
-<span class="fc" id="L414">    Check.that(values, Tag.VARARGS).isNot(empty()).has(length(), even());</span>
-<span class="fc" id="L415">    return doPopulate2(nestedTemplateName, null, values);</span>
+<span class="fc" id="L419">    Check.that(values, Tag.VARARGS).isNot(empty()).has(length(), even());</span>
+<span class="fc" id="L420">    return doPopulate2(nestedTemplateName, null, values);</span>
   }
 
   @Override
   public RenderSession populate2(String nestedTemplateName,
       VarGroup varGroup, Object... values) {
-<span class="fc" id="L421">    Check.notNull(varGroup, VAR_GROUP);</span>
-<span class="fc" id="L422">    Check.that(values, Tag.VARARGS).isNot(empty()).has(length(), even());</span>
-<span class="fc" id="L423">    return doPopulate2(nestedTemplateName, varGroup, values);</span>
+<span class="fc" id="L426">    Check.notNull(varGroup, VAR_GROUP);</span>
+<span class="fc" id="L427">    Check.that(values, Tag.VARARGS).isNot(empty()).has(length(), even());</span>
+<span class="fc" id="L428">    return doPopulate2(nestedTemplateName, varGroup, values);</span>
   }
 
   private RenderSession doPopulate2(String nestedTemplateName,
       VarGroup varGroup,
       Object[] values) {
-<span class="fc" id="L429">    Template t = getNestedTemplate(nestedTemplateName);</span>
-<span class="fc" id="L430">    Check.that(t.getVariables()).has(size(), eq(), 2,</span>
-<span class="fc" id="L431">        NOT_TWO_VAR_TEMPLATE.getExceptionSupplier(t.getName()));</span>
-<span class="fc" id="L432">    String[] vars = t.getVariables().toArray(String[]::new);</span>
-<span class="fc" id="L433">    List&lt;Map&lt;String, Object&gt;&gt; data = new ArrayList&lt;&gt;(values.length / 2);</span>
-<span class="fc bfc" id="L434" title="All 2 branches covered.">    for (int i = 0; i &lt; values.length; i += 2) {</span>
-<span class="fc" id="L435">      data.add(Map.of(vars[0], values[i], vars[1], values[i + 1]));</span>
+<span class="fc" id="L434">    Template t = getNestedTemplate(nestedTemplateName);</span>
+<span class="fc" id="L435">    Check.that(t.getVariables()).has(size(), eq(), 2,</span>
+<span class="fc" id="L436">        NOT_TWO_VAR_TEMPLATE.getExceptionSupplier(t.getName()));</span>
+<span class="fc" id="L437">    String[] vars = t.getVariables().toArray(String[]::new);</span>
+<span class="fc" id="L438">    List&lt;Map&lt;String, Object&gt;&gt; data = new ArrayList&lt;&gt;(values.length / 2);</span>
+<span class="fc bfc" id="L439" title="All 2 branches covered.">    for (int i = 0; i &lt; values.length; i += 2) {</span>
+<span class="fc" id="L440">      data.add(Map.of(vars[0], values[i], vars[1], values[i + 1]));</span>
     }
-<span class="fc" id="L437">    return doPopulate(t, data, varGroup, EMPTY_STRING_ARRAY);</span>
+<span class="fc" id="L442">    return doPopulate(t, data, varGroup, EMPTY_STRING_ARRAY);</span>
   }
 
   @Override
   public List&lt;RenderSession&gt; getChildSessions(String tmpl) {
-<span class="fc" id="L442">    Template t = getNestedTemplate(tmpl);</span>
-<span class="fc" id="L443">    return Check.that(state.getChildSessions(t))</span>
-<span class="fc" id="L444">        .is(notNull(), TEMPLATE_NOT_INSTANTIATED.getExceptionSupplier(t.getName()))</span>
-<span class="fc" id="L445">        .ok(List::of);</span>
+<span class="fc" id="L447">    Template t = getNestedTemplate(tmpl);</span>
+<span class="fc" id="L448">    return Check.that(state.getChildSessions(t))</span>
+<span class="fc" id="L449">        .is(notNull(), TEMPLATE_NOT_INSTANTIATED.getExceptionSupplier(t.getName()))</span>
+<span class="fc" id="L450">        .ok(List::of);</span>
   }
 
   @Override
   public List&lt;String&gt; getUnsetVariables() {
-<span class="fc" id="L450">    return List.copyOf(state.todo);</span>
+<span class="fc" id="L455">    return List.copyOf(state.todo);</span>
   }
 
   @Override
   public List&lt;String&gt; getAllUnsetVariables() {
-<span class="fc" id="L455">    return state.getAllUnsetVariables(false);</span>
+<span class="fc" id="L460">    return state.getAllUnsetVariables(false);</span>
   }
 
   public List&lt;String&gt; getAllUnsetVariables(boolean relative) {
-<span class="nc" id="L459">    return state.getAllUnsetVariables(relative);</span>
+<span class="nc" id="L464">    return state.getAllUnsetVariables(relative);</span>
   }
 
   @Override
   public boolean allSet() {
-<span class="fc" id="L464">    return state.allSet();</span>
+<span class="fc" id="L469">    return state.allSet();</span>
   }
 
   public RenderSession unset(String... vars) {
-<span class="fc" id="L468">    Check.notNull(vars, Tag.VARARGS);</span>
-<span class="fc" id="L469">    Arrays.stream(vars).forEach(state::unset);</span>
-<span class="fc" id="L470">    return this;</span>
+<span class="fc" id="L473">    Check.notNull(vars, Tag.VARARGS);</span>
+<span class="fc" id="L474">    Arrays.stream(vars).forEach(state::unset);</span>
+<span class="fc" id="L475">    return this;</span>
   }
 
   public RenderSession clear(String... tmpls) {
-<span class="fc" id="L474">    Check.notNull(tmpls, Tag.VARARGS);</span>
-<span class="fc" id="L475">    Arrays.stream(tmpls).map(this::getNestedTemplate).forEach(state::clear);</span>
-<span class="fc" id="L476">    return this;</span>
+<span class="fc" id="L479">    Check.notNull(tmpls, Tag.VARARGS);</span>
+<span class="fc" id="L480">    Arrays.stream(tmpls).map(this::getNestedTemplate).forEach(state::clear);</span>
+<span class="fc" id="L481">    return this;</span>
   }
 
   @Override
   public void render(OutputStream out) {
-<span class="fc" id="L481">    Check.notNull(out).then(x -&gt; new Renderer(state).render(x));</span>
-<span class="fc" id="L482">  }</span>
-
-  @Override
-  public void render(StringBuilder sb) {
-<span class="fc" id="L486">    Check.notNull(sb).then(x -&gt; new Renderer(state).render(x));</span>
+<span class="fc" id="L486">    Check.notNull(out).then(x -&gt; new Renderer(state).render(x));</span>
 <span class="fc" id="L487">  }</span>
 
   @Override
+  public void render(StringBuilder sb) {
+<span class="fc" id="L491">    Check.notNull(sb).then(x -&gt; new Renderer(state).render(x));</span>
+<span class="fc" id="L492">  }</span>
+
+  @Override
   public String render() {
-<span class="fc" id="L491">    ByteArrayOutputStream out = new ByteArrayOutputStream(1024);</span>
-<span class="fc" id="L492">    new Renderer(state).render(out);</span>
-<span class="fc" id="L493">    return out.toString(UTF_8);</span>
+<span class="fc" id="L496">    ByteArrayOutputStream out = new ByteArrayOutputStream(1024);</span>
+<span class="fc" id="L497">    new Renderer(state).render(out);</span>
+<span class="fc" id="L498">    return out.toString(UTF_8);</span>
   }
 
   @Override
   public Template getTemplate() {
-<span class="nc" id="L498">    return config.template();</span>
+<span class="fc" id="L503">    return config.template();</span>
   }
 
   private Template getNestedTemplate(String name) {
-<span class="fc" id="L502">    Check.notNull(name, MTag.TEMPLATE_NAME);</span>
-<span class="fc" id="L503">    Template t = config.template();</span>
-<span class="fc" id="L504">    Check.that(name).is(elementOf(), t.getNestedTemplateNames(),</span>
-<span class="fc" id="L505">        NO_SUCH_TEMPLATE.getExceptionSupplier(getFQN(t, name)));</span>
-<span class="fc" id="L506">    return t.getNestedTemplate(name);</span>
+<span class="fc" id="L507">    Check.notNull(name, MTag.TEMPLATE_NAME);</span>
+<span class="fc" id="L508">    Template t = config.template();</span>
+<span class="fc" id="L509">    Check.that(name).is(elementOf(), t.getNestedTemplateNames(),</span>
+<span class="fc" id="L510">        NO_SUCH_TEMPLATE.getExceptionSupplier(getFQN(t, name)));</span>
+<span class="fc" id="L511">    return t.getNestedTemplate(name);</span>
   }
 
   private boolean dontProcess(Object data) {
-<span class="fc bfc" id="L510" title="All 4 branches covered.">    return data == UNDEFINED ||</span>
-<span class="pc bpc" id="L511" title="1 of 2 branches missed.">        (data == null &amp;&amp; config.accessors().nullEqualsUndefined());</span>
+<span class="fc bfc" id="L515" title="All 4 branches covered.">    return data == UNDEFINED ||</span>
+<span class="pc bpc" id="L516" title="1 of 2 branches missed.">        (data == null &amp;&amp; config.accessors().nullEqualsUndefined());</span>
   }
 
   private boolean mustProcess(Object data) {
-<span class="fc bfc" id="L515" title="All 4 branches covered.">    return data != UNDEFINED &amp;&amp;</span>
-<span class="fc bfc" id="L516" title="All 2 branches covered.">        (data != null || !config.accessors().nullEqualsUndefined());</span>
+<span class="fc bfc" id="L520" title="All 4 branches covered.">    return data != UNDEFINED &amp;&amp;</span>
+<span class="fc bfc" id="L521" title="All 2 branches covered.">        (data != null || !config.accessors().nullEqualsUndefined());</span>
   }
 
 }

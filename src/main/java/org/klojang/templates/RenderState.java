@@ -7,9 +7,8 @@ import org.klojang.util.collection.IntList;
 import java.util.*;
 
 import static java.util.stream.Collectors.toList;
-import static org.klojang.check.CommonChecks.notNull;
-import static org.klojang.templates.RenderErrorCode.NO_SUCH_VARIABLE;
-import static org.klojang.templates.RenderErrorCode.REPETITION_MISMATCH;
+import static org.klojang.check.CommonChecks.*;
+import static org.klojang.templates.RenderErrorCode.*;
 import static org.klojang.templates.TemplateUtils.getAllVariableFQNames;
 import static org.klojang.templates.TemplateUtils.getFQN;
 
@@ -181,6 +180,34 @@ final class RenderState {
     state.todo.addAll(state.config.template().getVariables());
     state.sessions.values().stream().flatMap(Arrays::stream).forEach(this::clear);
     state.sessions.clear();
+  }
+
+  boolean isSet(Path path) {
+    return isSet(this, path);
+  }
+
+  private static boolean isSet(RenderState state0, Path path) {
+    String name = path.segment(0);
+    if (path.size() == 1) {
+      if (state0.todo.contains(name)) {
+        return false;
+      }
+      Template tmpl = state0.config.template();
+      Check.that(name).is(keyIn(), tmpl.variables(),
+          NO_SUCH_VARIABLE.getExceptionSupplier(getFQN(tmpl, name)));
+      return true;
+    }
+    Template tmpl = state0.config.template();
+    Check.that(name).is(in(), tmpl.getNestedTemplateNames(),
+        NO_SUCH_TEMPLATE.getExceptionSupplier(getFQN(tmpl, name)));
+    Template nested = tmpl.getNestedTemplate(name);
+    SoloSession[] childSessions = state0.sessions.get(nested);
+    if (childSessions == null) {
+      return false;
+    } else if (childSessions.length == 0) {
+      return true;
+    }
+    return isSet(childSessions[0].state(), path.shift());
   }
 
 }

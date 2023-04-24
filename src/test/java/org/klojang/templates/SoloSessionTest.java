@@ -217,10 +217,10 @@ public class SoloSessionTest {
         """;
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
-    rs.setNested("companies.departments.employees.firstName",
+    rs.setPath("companies.departments.employees.firstName",
         i -> "John",
         VarGroup.TEXT, true);
-    rs.setNested("companies.departments.employees.lastName", i -> "Smith");
+    rs.setPath("companies.departments.employees.lastName", i -> "Smith");
     String out = rs.render();
     //System.out.println(out);
     String expected = """
@@ -257,7 +257,7 @@ public class SoloSessionTest {
         """;
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
-    rs.setNested("companies.departments.employees.firstName",
+    rs.setPath("companies.departments.employees.firstName",
         i -> "John",
         VarGroup.TEXT, false);
     String out = rs.render();
@@ -291,11 +291,11 @@ public class SoloSessionTest {
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
     rs.in("companies").in("departments").repeat("employees", 3);
-    rs.setNested("companies.departments.employees.firstName",
+    rs.setPath("companies.departments.employees.firstName",
         i -> "John" + i,
         VarGroup.TEXT,
         false);
-    rs.setNested("companies.departments.employees.lastName", i -> "Smith" + i);
+    rs.setPath("companies.departments.employees.lastName", i -> "Smith" + i);
     String out = rs.render();
     //System.out.println(out);
     String expected = """
@@ -331,19 +331,19 @@ public class SoloSessionTest {
         """;
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
-    rs.setNested("companies.departments.employees.roles.role",
+    rs.setPath("companies.departments.employees.roles.role",
         i -> "director");
     assertEquals("director", rs.render().strip());
-    rs.in("companies").setNested("departments.employees.roles.role",
+    rs.in("companies").setPath("departments.employees.roles.role",
         i -> "CIO");
     assertEquals("CIO", rs.render().strip());
-    rs.in("companies.departments").setNested("employees.roles.role",
+    rs.in("companies.departments").setPath("employees.roles.role",
         i -> "programmer");
     assertEquals("programmer", rs.render().strip());
-    rs.in("companies.departments.employees").setNested("roles.role",
+    rs.in("companies.departments.employees").setPath("roles.role",
         i -> "project manager");
     assertEquals("project manager", rs.render().strip());
-    rs.in("companies.departments.employees.roles").setNested("role",
+    rs.in("companies.departments.employees.roles").setPath("role",
         i -> "analyst");
     assertEquals("analyst", rs.render().strip());
   }
@@ -462,7 +462,7 @@ public class SoloSessionTest {
     rs.clear("foo");
     assertFalse(rs.allSet());
     rs.repeat("foo", 2);
-    rs.setNested("foo.bar", i -> "bar" + i);
+    rs.setPath("foo.bar", i -> "bar" + i);
     assertTrue(rs.allSet());
     rs.clear("foo");
     assertFalse(rs.allSet());
@@ -506,7 +506,14 @@ public class SoloSessionTest {
     RenderSession rs = tmpl.newRenderSession();
     assertEquals("companies.departments.employees.roles.role",
         rs.getAllUnsetVariables().get(0));
-    System.out.println(rs.in("companies").getAllUnsetVariables());
+    //System.out.println(rs.in("companies").getAllUnsetVariables());
+  }
+
+  @Test
+  public void getTemplate00() throws ParseException {
+    Template tmpl = Template.fromString("foo");
+    RenderSession rs = tmpl.newRenderSession();
+    assertSame(tmpl, rs.getTemplate());
   }
 
   private static String nospace(String s) {

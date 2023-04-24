@@ -63,7 +63,7 @@ public interface Accessor<T> {
    * }</pre></blockquote>
    * 
    * @see AccessorRegistry.Builder#nullEqualsUndefined(boolean)
-   * @see RenderSession#setNested(String, IntFunction) 
+   * @see RenderSession#setPath(String, IntFunction)
    */
   Object UNDEFINED = new Object();
 

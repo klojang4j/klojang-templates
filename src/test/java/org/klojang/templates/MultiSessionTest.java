@@ -98,7 +98,7 @@ public class MultiSessionTest {
         """;
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
-    rs.setNested("companies.departments.name", i -> "foo");
+    rs.setPath("companies.departments.name", i -> "foo");
     String out = rs.render();
     //System.out.println(out);
     assertEquals("foo", nospace(out));
@@ -113,7 +113,7 @@ public class MultiSessionTest {
         """;
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
-    rs.setNested("companies.departments.name", i -> "<", VarGroup.HTML, true);
+    rs.setPath("companies.departments.name", i -> "<", VarGroup.HTML, true);
     String out = rs.render();
     //System.out.println(out);
     assertEquals("&lt;", nospace(out));
@@ -129,7 +129,7 @@ public class MultiSessionTest {
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
     rs.repeat("companies", 3);
-    rs.setNested("companies.departments.name", i -> "foo");
+    rs.setPath("companies.departments.name", i -> "foo");
     String out = rs.render();
     //System.out.println("*" + out + "*");
     assertEquals("foofoofoo", nospace(out));
@@ -145,7 +145,7 @@ public class MultiSessionTest {
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
     rs.repeat("companies", 3);
-    rs.setNested("companies.departments.name", i -> "foo" + i + "|");
+    rs.setPath("companies.departments.name", i -> "foo" + i + "|");
     String out = rs.render();
     //System.out.println("*" + out + "*");
     assertEquals("foo0|foo0|foo0|", nospace(out));
@@ -161,10 +161,52 @@ public class MultiSessionTest {
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
     rs.in("companies").repeat("departments", 3);
-    rs.setNested("companies.departments.name", i -> "foo" + i + "|");
+    rs.setPath("companies.departments.name", i -> "foo" + i + "|");
     String out = rs.render();
     //System.out.println("*" + out + "*");
     assertEquals("foo0|foo1|foo2|", nospace(out));
+  }
+
+  @Test
+  public void setNested05() throws ParseException {
+    String src = """
+        ~%%begin:companies%
+            ~%name%
+        ~%%end:companies%
+        """;
+    Template tmpl = Template.fromString(src);
+    RenderSession rs = tmpl.newRenderSession();
+    rs.repeat("companies", 3).setPath("name", i -> "foo" + i);
+    String out = rs.render();
+    //System.out.println(out);
+    assertEquals("foo0foo1foo2", nospace(out));
+  }
+
+  @Test
+  public void setNested06() throws ParseException {
+    String src = """
+        ~%%begin:companies%
+            ~%name%
+        ~%%end:companies%
+        """;
+    Template tmpl = Template.fromString(src);
+    RenderSession rs = tmpl.newRenderSession();
+    rs.setPath("companies.name", i -> "foo", VarGroup.HTML, false);
+    String out = rs.render();
+    assertEquals("", nospace(out));
+  }
+
+  @Test
+  public void ifNotSet00() throws ParseException {
+    String src = """
+        ~%%begin:companies%
+            ~%name%
+        ~%%end:companies%
+        """;
+    Template tmpl = Template.fromString(src);
+    RenderSession rs = tmpl.newRenderSession();
+    rs.repeat("companies", 2);
+
   }
 
   @Test
@@ -837,7 +879,7 @@ public class MultiSessionTest {
     RenderSession rs = tmpl.newRenderSession();
     RenderSession rs2 = rs.repeat("companies", 2);
     RenderSession rs3 = rs2.repeat("departments", 3);
-    rs.setNested("companies.departments.name", i -> "D" + i);
+    rs.setPath("companies.departments.name", i -> "D" + i);
     assertTrue(rs.allSet());
     assertTrue(rs2.allSet());
     assertTrue(rs3.allSet());
@@ -845,6 +887,25 @@ public class MultiSessionTest {
     assertFalse(rs.allSet());
     assertFalse(rs2.allSet());
     assertFalse(rs3.allSet());
+  }
+
+  @Test
+  public void getTemplate00() throws ParseException {
+    String src = """
+        ~%%begin:companies%
+            ~%%begin:departments%
+                ~%%begin:employees%
+                    ~%%begin:roles%
+                        ~%role%
+                    ~%%end:roles%
+                ~%%end:employees%
+            ~%%end:departments%
+        ~%%end:companies%
+        """;
+    Template tmpl = Template.fromString(src);
+    assertEquals("employees", tmpl.newRenderSession()
+        .in("companies.departments.employees")
+        .getTemplate().getName());
   }
 
   private static String nospace(String s) {

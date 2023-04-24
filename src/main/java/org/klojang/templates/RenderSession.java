@@ -94,18 +94,18 @@ public sealed interface RenderSession permits SoloSession, MultiSession {
    * @param valueGenerator a function which is given the array index of the
    *     template instance for which to produce a value
    * @return this {@code RenderSession}
-   * @see #setNested(String, IntFunction, VarGroup, boolean)
+   * @see #setPath(String, IntFunction, VarGroup, boolean)
    * @see TemplateUtils#getFQN(Template, String)
    * @see org.klojang.path.Path
    */
-  RenderSession setNested(String path, IntFunction<Object> valueGenerator);
+  RenderSession setPath(String path, IntFunction<Object> valueGenerator);
 
   /**
    * <p>Sets the value of the specified variable. The variable may be (deeply)
-   * nested. For example
+   * nested. For example:
    *
    * <blockquote><pre>{@code
-   * setNested("companies.departments.employees.firstName", idx -> "John")
+   * setPath("companies.departments.employees.firstName", idx -> "John")
    * }</pre></blockquote>
    *
    * <p>sets the {@code ~%firstName%} variable within the {@code employees} template
@@ -123,8 +123,24 @@ public sealed interface RenderSession permits SoloSession, MultiSession {
    * itself cause the template to become visible.
    *
    * <p>If the variable is a top-level variable (the path consists of just one path
-   * segment), this method behaves just like {@link #set(String, Object, VarGroup)}
-   * &#8212; with 0 (zero) passed to the {@code IntFunction}.
+   * segment), this method behaves like {@link #set(String, Object, VarGroup)}.
+   * However, you might still be able to put the {@code IntFunction} to good use:
+   *
+   * <blockquote><pre>{@code
+   * String src = """
+   *    ~%%begin:departments%
+   *    <tr><td>Department number:</td><td>~%deptNo%</td></tr>
+   *    ~%%end:departments%
+   *    """;
+   * Template template = Template.fromString(src);
+   * RenderSession session = template.newRenderSession();
+   * session.repeat("departments", 3).setPath("deptNo", i -> 100 +i).render();
+   *
+   * // Output:
+   * // <tr><td>Department number:</td><td>100</td></tr>
+   * // <tr><td>Department number:</td><td>101</td></tr>
+   * // <tr><td>Department number:</td><td>102</td></tr>
+   * }</pre></blockquote>
    *
    * @param path a path to a potentially deeply-nested variable
    * @param valueGenerator a function which is given the array index of the
@@ -137,40 +153,43 @@ public sealed interface RenderSession permits SoloSession, MultiSession {
    * @see TemplateUtils#getFQN(Template, String)
    * @see org.klojang.path.Path
    */
-  RenderSession setNested(String path,
+  RenderSession setPath(String path,
       IntFunction<Object> valueGenerator,
       VarGroup varGroup,
       boolean force);
 
   /**
-   * Sets the specified variable to the value produced by the specified supplier
-   * <i>if</i> the variable has not already been set.
+   * Sets the specified variable to the value produced by the specified
+   * {@code IntFunction} <i>if</i> the variable has not already been set.
    *
-   * @param varName the name of the variable to set
+   * @param path a path to a potentially deeply-nested variable
    * @param valueGenerator the supplier of the value
    * @return this {@code RenderSession}
-   * @see #ifNotSet(String, Supplier, VarGroup)
+   * @see #ifNotSet(String, IntFunction, VarGroup)
    */
-  RenderSession ifNotSet(String varName, Supplier<Object> valueGenerator);
+  RenderSession ifNotSet(String path, IntFunction<Object> valueGenerator);
 
   /**
-   * Sets the specified variable to the value produced by the specified supplier
-   * <i>if</i> the variable has not already been set. This method is especially
-   * meant after a call to {@link #insert(Object, String...) insert()} or
-   * {@link #populate(String, Object, String...) populate()}, to set any variables
+   * Sets the specified variable to the value produced by the specified
+   * {@code IntFunction} <i>if</i> the variable has not already been set. The
+   * variable may be (deeply) nested and is therefore specified as a path (like
+   * {@code companies.departments.employees.firstName}). This method is especially
+   * meant to be called after a call to {@link #insert(Object, String...) insert()}
+   * or {@link #populate(String, Object, String...) populate()}, to set any variables
    * for which the source data object passed to these methods did not provide a
    * value.
    *
-   * @param varName the name of the variable to set
+   * @param path a path to a potentially deeply-nested variable
    * @param valueGenerator the supplier of the value
    * @param varGroup the variable group to assign the variable to if the variable
    *     has no group name prefix.
    * @return this {@code RenderSession}
+   * @see #getAllUnsetVariables(boolean) 
    * @see Accessor#UNDEFINED
    * @see AccessorRegistry.Builder#nullEqualsUndefined(boolean)
    */
-  RenderSession ifNotSet(String varName,
-      Supplier<Object> valueGenerator,
+  RenderSession ifNotSet(String path,
+      IntFunction<Object> valueGenerator,
       VarGroup varGroup);
 
   /**

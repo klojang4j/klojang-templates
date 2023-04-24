@@ -97,74 +97,79 @@ record SoloSession(SessionConfig config, RenderState state) implements
   }
 
   @Override
-  public RenderSession setNested(String path, IntFunction<Object> valueGenerator) {
+  public RenderSession setPath(String path, IntFunction<Object> valueGenerator) {
     Path p = Check.notNull(path, Tag.PATH).ok(Path::from);
     Check.notNull(valueGenerator, VALUE_GENERATOR);
-    if (p.size() == 1) {
-      setVar(p.segment(0), valueGenerator.apply(0), null);
-    } else {
-      setNested(this, p, valueGenerator, null, true);
-    }
+    setPath(this, p, valueGenerator, null, true);
     return this;
   }
 
   @Override
-  public RenderSession setNested(String path,
+  public RenderSession setPath(String path,
       IntFunction<Object> valueGenerator,
       VarGroup varGroup,
       boolean force) {
     Path p = Check.notNull(path, Tag.PATH).ok(Path::from);
     Check.notNull(valueGenerator, VALUE_GENERATOR);
     Check.notNull(varGroup, VAR_GROUP);
-    if (p.size() == 1) {
-      setVar(p.segment(0), valueGenerator.apply(0), null);
-    } else {
-      setNested(this, p, valueGenerator, varGroup, force);
-    }
+    setPath(this, p, valueGenerator, varGroup, force);
     return this;
   }
 
-  private static void setNested(
+  private static void setPath(
       SoloSession session,
       Path path,
       IntFunction<Object> valueGenerator,
       VarGroup varGroup,
       boolean force) {
-    Template t = session.getNestedTemplate(path.segment(0));
-    SoloSession[] children = session.state.getChildSessions(t);
-    if (children == null) {
-      if (!force) {
-        return;
-      }
-      children = session.state.createChildSessions(t, 1);
-    }
-    if (path.size() == 2) {
-      for (int i = 0; i < children.length; ++i) {
-        children[i].setVar(path.segment(1), valueGenerator.apply(i), varGroup);
-      }
+    if (path.size() == 1) {
+      session.setVar(path.segment(0), valueGenerator.apply(0), varGroup);
     } else {
-      for (SoloSession child : children) {
-        setNested(child, path.shift(), valueGenerator, varGroup, force);
+      Template t = session.getNestedTemplate(path.segment(0));
+      SoloSession[] children = session.state.getChildSessions(t);
+      if (children == null) {
+        if (!force) {
+          return;
+        }
+        children = session.state.createChildSessions(t, 1);
+      }
+      if (path.size() == 2) {
+        for (int i = 0; i < children.length; ++i) {
+          children[i].setVar(path.segment(1), valueGenerator.apply(i), varGroup);
+        }
+      } else {
+        for (SoloSession child : children) {
+          setPath(child, path.shift(), valueGenerator, varGroup, force);
+        }
       }
     }
   }
 
   @Override
-  public RenderSession ifNotSet(String varName, Supplier<Object> valueGenerator) {
-    if (state.todo.contains(varName)) {
-      setVar(varName, valueGenerator.get(), null);
-    }
-    return this;
+  public RenderSession ifNotSet(String path, IntFunction<Object> valueGenerator) {
+    Path p = Check.notNull(path, Tag.PATH).ok(Path::from);
+    Check.notNull(valueGenerator, VALUE_GENERATOR);
+    return ifNotSet(this, p, valueGenerator, null);
   }
 
   @Override
-  public RenderSession ifNotSet(String varName,
-      Supplier<Object> valueGenerator,
+  public RenderSession ifNotSet(String path,
+      IntFunction<Object> valueGenerator,
       VarGroup varGroup) {
-    if (state.todo.contains(varName)) {
-      setVar(varName, valueGenerator.get(), varGroup);
+    Path p = Check.notNull(path, Tag.PATH).ok(Path::from);
+    Check.notNull(valueGenerator, VALUE_GENERATOR);
+    Check.notNull(varGroup, VAR_GROUP);
+    return ifNotSet(this, p, valueGenerator, varGroup);
+  }
+
+  private static RenderSession ifNotSet(SoloSession session,
+      Path path,
+      IntFunction<Object> valueGenerator,
+      VarGroup varGroup) {
+    if (!session.state.isSet(path)) {
+      setPath(session, path, valueGenerator, varGroup, true);
     }
-    return this;
+    return session;
   }
 
   @Override

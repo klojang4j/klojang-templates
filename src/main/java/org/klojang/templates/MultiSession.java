@@ -47,20 +47,20 @@ record MultiSession(Template template, SoloSession[] sessions) implements
    * MultiSession.
    */
   @Override
-  public RenderSession setNested(String path, IntFunction<Object> val) {
+  public RenderSession setPath(String path, IntFunction<Object> val) {
     Path p = Check.notNull(path, Tag.PATH).ok(Path::from);
     if (p.size() == 1) {
       for (int i = 0; i < sessions.length; ++i) {
         sessions[i].set(path, val.apply(i));
       }
     } else { // do delegate to SoloSession
-      Arrays.stream(sessions).forEach(s -> s.setNested(path, val));
+      Arrays.stream(sessions).forEach(s -> s.setPath(path, val));
     }
     return this;
   }
 
   @Override
-  public RenderSession setNested(String path,
+  public RenderSession setPath(String path,
       IntFunction<Object> val,
       VarGroup group,
       boolean force) {
@@ -70,21 +70,39 @@ record MultiSession(Template template, SoloSession[] sessions) implements
         sessions[i].set(path, val.apply(i), group);
       }
     } else {
-      Arrays.stream(sessions).forEach(s -> s.setNested(path, val, group, force));
+      Arrays.stream(sessions).forEach(s -> s.setPath(path, val, group, force));
     }
     return this;
   }
 
   @Override
-  public RenderSession ifNotSet(String var, Supplier<Object> val) {
-    Arrays.stream(sessions).forEach(s -> s.ifNotSet(var, val));
+  public RenderSession ifNotSet(String path, IntFunction<Object> val) {
+    Path p = Check.notNull(path, Tag.PATH).ok(Path::from);
+    if (p.size() == 1) {
+      for (int i = 0; i < sessions.length; ++i) {
+        if (!sessions[i].state().isSet(p)) {
+          sessions[i].set(path, val.apply(i));
+        }
+      }
+    } else {
+      Arrays.stream(sessions).forEach(s -> s.ifNotSet(path, val));
+    }
     return this;
   }
 
   @Override
-  public RenderSession ifNotSet(String var, Supplier<Object> val,
+  public RenderSession ifNotSet(String path, IntFunction<Object> val,
       VarGroup group) {
-    Arrays.stream(sessions).forEach(s -> s.ifNotSet(var, val, group));
+    Path p = Check.notNull(path, Tag.PATH).ok(Path::from);
+    if (p.size() == 1) {
+      for (int i = 0; i < sessions.length; ++i) {
+        if (!sessions[i].state().isSet(p)) {
+          sessions[i].set(path, val.apply(i));
+        }
+      }
+    } else {
+      Arrays.stream(sessions).forEach(s -> s.ifNotSet(path, val, group));
+    }
     return this;
   }
 
