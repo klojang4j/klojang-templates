@@ -348,6 +348,7 @@ public class SoloSessionTest {
     assertEquals("analyst", rs.render().strip());
   }
 
+  @Test
   public void ifNotSet00() throws ParseException {
     String src = """
         ~%greeting%
@@ -382,7 +383,8 @@ public class SoloSessionTest {
     assertEquals("director", rs.render().strip());
     rs.unset("companies.departments.employees.roles.role");
     rs.ifNotSet("companies.departments.employees.roles.role",
-        i -> "programmer");
+        i -> "programmer",
+        VarGroup.HTML);
     assertEquals("programmer", rs.render().strip());
 
   }

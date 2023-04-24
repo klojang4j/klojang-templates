@@ -156,10 +156,10 @@ import static org.klojang.util.ObjectMethods.isEmpty;
   public RenderSession ifNotSet(String path,
       IntFunction&lt;Object&gt; valueGenerator,
       VarGroup varGroup) {
-<span class="nc" id="L159">    Path p = Check.notNull(path, Tag.PATH).ok(Path::from);</span>
-<span class="nc" id="L160">    Check.notNull(valueGenerator, VALUE_GENERATOR);</span>
-<span class="nc" id="L161">    Check.notNull(varGroup, VAR_GROUP);</span>
-<span class="nc" id="L162">    return ifNotSet(this, p, valueGenerator, varGroup);</span>
+<span class="fc" id="L159">    Path p = Check.notNull(path, Tag.PATH).ok(Path::from);</span>
+<span class="fc" id="L160">    Check.notNull(valueGenerator, VALUE_GENERATOR);</span>
+<span class="fc" id="L161">    Check.notNull(varGroup, VAR_GROUP);</span>
+<span class="fc" id="L162">    return ifNotSet(this, p, valueGenerator, varGroup);</span>
   }
 
   private static RenderSession ifNotSet(SoloSession session,
