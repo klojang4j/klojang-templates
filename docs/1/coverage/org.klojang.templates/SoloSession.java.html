@@ -448,7 +448,7 @@ import static org.klojang.util.ObjectMethods.isEmpty;
 
   @Override
   public List&lt;String&gt; getUnsetVariables() {
-<span class="fc" id="L451">    return List.copyOf(state.todo);</span>
+<span class="fc" id="L451">    return state.todo();</span>
   }
 
   @Override
@@ -465,9 +465,9 @@ import static org.klojang.util.ObjectMethods.isEmpty;
 <span class="fc" id="L465">    return state.allSet();</span>
   }
 
-  public RenderSession unset(String... vars) {
-<span class="fc" id="L469">    Check.notNull(vars, Tag.VARARGS);</span>
-<span class="fc" id="L470">    Arrays.stream(vars).map(Path::from).forEach(state::unset);</span>
+  public RenderSession unset(String... paths) {
+<span class="fc" id="L469">    Check.notNull(paths, Tag.VARARGS);</span>
+<span class="fc" id="L470">    Arrays.stream(paths).map(Path::from).forEach(state::unset);</span>
 <span class="fc" id="L471">    return this;</span>
   }
 

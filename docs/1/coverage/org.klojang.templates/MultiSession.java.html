@@ -217,8 +217,8 @@ import java.util.function.Supplier;
   }
 
   @Override
-  public RenderSession unset(String... variables) {
-<span class="fc" id="L221">    Arrays.stream(sessions).forEach(s -&gt; s.unset(variables));</span>
+  public RenderSession unset(String... paths) {
+<span class="fc" id="L221">    Arrays.stream(sessions).forEach(s -&gt; s.unset(paths));</span>
 <span class="fc" id="L222">    return this;</span>
   }
 

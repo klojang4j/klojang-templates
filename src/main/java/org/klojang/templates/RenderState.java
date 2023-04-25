@@ -16,23 +16,23 @@ final class RenderState {
 
   private static final SoloSession[] ZERO_SESSIONS = new SoloSession[0];
 
-  final SessionConfig config;
+  private final SessionConfig config;
 
   // variables that have not been set yet
-  final Set<String> todo;
+  private final Set<String> todo;
 
-  final Map<Template, SoloSession[]> sessions;
+  private final Map<Template, SoloSession[]> children;
 
   // variable occurrence values. A variable may occur multiple times
   // within the same template, and occurrences may end up having
   // different values due to being escaped differently. The keys in
   // the map are the indices of VarPart parts.
-  final Map<Integer, Object> varValues;
+  private final Map<Integer, Object> varValues;
 
   RenderState(SessionConfig config) {
     this.config = config;
     int sz = config.template().countNestedTemplates();
-    this.sessions = new IdentityHashMap<>(sz);
+    this.children = new IdentityHashMap<>(sz);
     sz = config.template().countVariableOccurrences();
     this.varValues = HashMap.newHashMap(sz);
     this.todo = new HashSet<>(config.template().getVariables());
@@ -52,12 +52,12 @@ final class RenderState {
         children[i] = config.newChildSession(t);
       }
     }
-    sessions.put(t, children);
+    this.children.put(t, children);
     return children;
   }
 
   SoloSession[] getOrCreateChildSessions(Template t, int repeats) {
-    SoloSession[] children = sessions.get(t);
+    SoloSession[] children = this.children.get(t);
     if (children == null) {
       if (repeats == 0) {
         children = ZERO_SESSIONS;
@@ -67,7 +67,7 @@ final class RenderState {
           children[i] = config.newChildSession(t);
         }
       }
-      sessions.put(t, children);
+      this.children.put(t, children);
     }
     if (repeats != children.length) {
       throw REPETITION_MISMATCH.getException(getFQN(t), children.length, repeats);
@@ -76,15 +76,15 @@ final class RenderState {
   }
 
   boolean isProcessed(Template template) {
-    return sessions.get(template) != null;
+    return children.get(template) != null;
   }
 
   boolean isDisabled(Template template) {
-    return isProcessed(template) && sessions.get(template).length == 0;
+    return isProcessed(template) && children.get(template).length == 0;
   }
 
   SoloSession[] getChildSessions(Template template) {
-    return sessions.get(template);
+    return children.get(template);
   }
 
   Object getVar(int partIndex) {
@@ -97,6 +97,10 @@ final class RenderState {
 
   void done(String var) {
     todo.remove(var);
+  }
+
+  List<String> todo() {
+    return List.copyOf(todo);
   }
 
   List<String> getAllUnsetVariables(boolean relative) {
@@ -115,8 +119,8 @@ final class RenderState {
     Template myTmpl = state.config.template();
     state.todo.stream().map(var -> getFQN(myTmpl, var)).forEach(vars::add);
     myTmpl.getNestedTemplates().forEach(t -> {
-      if (state.sessions.containsKey(t)) {
-        Arrays.stream(state.sessions.get(t))
+      if (state.children.containsKey(t)) {
+        Arrays.stream(state.children.get(t))
             .limit(1)
             .map(SoloSession::state)
             .forEach(s -> collectUnsetVariables(s, vars));
@@ -132,8 +136,8 @@ final class RenderState {
     Template myTmpl = state0.config.template();
     state0.todo.stream().map(path::append).forEach(vars::add);
     myTmpl.getNestedTemplates().forEach(t -> {
-      if (state0.sessions.containsKey(t)) {
-        Arrays.stream(state0.sessions.get(t))
+      if (state0.children.containsKey(t)) {
+        Arrays.stream(state0.children.get(t))
             .limit(1)
             .map(SoloSession::state)
             .forEach(s -> collectUnsetVariables(s, vars, path.append(t.getName())));
@@ -151,10 +155,10 @@ final class RenderState {
     if (state.todo.size() > 0) {
       return false;
     }
-    if (state.config.template().countNestedTemplates() > state.sessions.size()) {
+    if (state.config.template().countNestedTemplates() > state.children.size()) {
       return false;
     }
-    return state.sessions.values().stream()
+    return state.children.values().stream()
         .flatMap(Arrays::stream)
         .map(SoloSession::state)
         .allMatch(RenderState::ready);
@@ -177,7 +181,7 @@ final class RenderState {
       Check.that(name).is(in(), tmpl.getNestedTemplateNames(),
           NO_SUCH_TEMPLATE.getExceptionSupplier(getFQN(tmpl, name)));
       Template nested = tmpl.getNestedTemplate(name);
-      SoloSession[] childSessions = state.sessions.get(nested);
+      SoloSession[] childSessions = state.children.get(nested);
       if (childSessions != null) {
         Arrays.stream(childSessions).forEach(s -> unset(s.state(), path.shift()));
       }
@@ -185,18 +189,16 @@ final class RenderState {
   }
 
   void clear(Template tmpl) {
-    for (SoloSession session : sessions.get(tmpl)) {
-      clear(session);
-    }
-    sessions.remove(tmpl);
+    Arrays.stream(children.get(tmpl)).forEach(this::clear);
+    children.remove(tmpl);
   }
 
   private void clear(SoloSession session) {
     RenderState state = session.state();
     state.varValues.clear();
     state.todo.addAll(state.config.template().getVariables());
-    state.sessions.values().stream().flatMap(Arrays::stream).forEach(this::clear);
-    state.sessions.clear();
+    state.children.values().stream().flatMap(Arrays::stream).forEach(this::clear);
+    state.children.clear();
   }
 
   boolean isSet(Path path) {
@@ -218,7 +220,7 @@ final class RenderState {
     Check.that(name).is(in(), tmpl.getNestedTemplateNames(),
         NO_SUCH_TEMPLATE.getExceptionSupplier(getFQN(tmpl, name)));
     Template nested = tmpl.getNestedTemplate(name);
-    SoloSession[] childSessions = state.sessions.get(nested);
+    SoloSession[] childSessions = state.children.get(nested);
     if (childSessions == null) {
       return false;
     } else if (childSessions.length == 0) {

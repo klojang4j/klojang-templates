@@ -217,8 +217,8 @@ record MultiSession(Template template, SoloSession[] sessions) implements
   }
 
   @Override
-  public RenderSession unset(String... variables) {
-    Arrays.stream(sessions).forEach(s -> s.unset(variables));
+  public RenderSession unset(String... paths) {
+    Arrays.stream(sessions).forEach(s -> s.unset(paths));
     return this;
   }
 

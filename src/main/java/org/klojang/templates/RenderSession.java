@@ -605,12 +605,14 @@ public sealed interface RenderSession permits SoloSession, MultiSession {
    * Unsets the specified variables. You could also simply set their value to the
    * empty string and get the exact same result when rendering. However, this method
    * more thoroughly unregisters the variables, which will likely affect the outcome
-   * of, for example, {@link #allSet()}.
+   * of, for example, {@link #allSet()}. You can unset deeply nested variables by
+   * specifying a path string. For example:
+   * {@code unset(companies.departments.name)}.
    *
-   * @param variables the variables to unset
+   * @param paths the variables to unset
    * @return this {@code RenderSession}
    */
-  RenderSession unset(String... variables);
+  RenderSession unset(String... paths);
 
   /**
    * Depopulates and hides the specified nested templates. Note that you cannot clear

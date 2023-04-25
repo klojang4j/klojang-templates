@@ -448,7 +448,7 @@ record SoloSession(SessionConfig config, RenderState state) implements
 
   @Override
   public List<String> getUnsetVariables() {
-    return List.copyOf(state.todo);
+    return state.todo();
   }
 
   @Override
@@ -465,9 +465,9 @@ record SoloSession(SessionConfig config, RenderState state) implements
     return state.allSet();
   }
 
-  public RenderSession unset(String... vars) {
-    Check.notNull(vars, Tag.VARARGS);
-    Arrays.stream(vars).map(Path::from).forEach(state::unset);
+  public RenderSession unset(String... paths) {
+    Check.notNull(paths, Tag.VARARGS);
+    Arrays.stream(paths).map(Path::from).forEach(state::unset);
     return this;
   }
 
