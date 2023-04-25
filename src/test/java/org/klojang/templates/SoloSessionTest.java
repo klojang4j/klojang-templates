@@ -218,8 +218,8 @@ public class SoloSessionTest {
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
     rs.setPath("companies.departments.employees.firstName",
-        i -> "John",
-        VarGroup.TEXT, true);
+        VarGroup.TEXT, true, i -> "John"
+    );
     rs.setPath("companies.departments.employees.lastName", i -> "Smith");
     String out = rs.render();
     //System.out.println(out);
@@ -258,8 +258,8 @@ public class SoloSessionTest {
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
     rs.setPath("companies.departments.employees.firstName",
-        i -> "John",
-        VarGroup.TEXT, false);
+        VarGroup.TEXT, false, i -> "John"
+    );
     String out = rs.render();
     //System.out.println(out);
     String expected = """
@@ -292,9 +292,8 @@ public class SoloSessionTest {
     RenderSession rs = tmpl.newRenderSession();
     rs.in("companies").in("departments").repeat("employees", 3);
     rs.setPath("companies.departments.employees.firstName",
-        i -> "John" + i,
-        VarGroup.TEXT,
-        false);
+        VarGroup.TEXT, false, i -> "John" + i
+    );
     rs.setPath("companies.departments.employees.lastName", i -> "Smith" + i);
     String out = rs.render();
     //System.out.println(out);
@@ -365,12 +364,12 @@ public class SoloSessionTest {
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
 
-    rs.ifNotSet("greeting", i -> "Hello, World", VarGroup.TEXT);
+    rs.ifNotSet("greeting", VarGroup.TEXT, i -> "Hello, World");
     assertEquals("Hello, World", rs.render().strip());
-    rs.ifNotSet("greeting", i -> "Hello, Moon", VarGroup.TEXT);
+    rs.ifNotSet("greeting", VarGroup.TEXT, i -> "Hello, Moon");
     assertEquals("Hello, World", rs.render().strip());
     rs.unset("greeting");
-    rs.ifNotSet("greeting", i -> "Hello, Moon", VarGroup.TEXT);
+    rs.ifNotSet("greeting", VarGroup.TEXT, i -> "Hello, Moon");
     assertEquals("Hello, Moon", rs.render().strip());
 
     rs.unset("greeting");
@@ -383,8 +382,8 @@ public class SoloSessionTest {
     assertEquals("director", rs.render().strip());
     rs.unset("companies.departments.employees.roles.role");
     rs.ifNotSet("companies.departments.employees.roles.role",
-        i -> "programmer",
-        VarGroup.HTML);
+        VarGroup.HTML, i -> "programmer"
+    );
     assertEquals("programmer", rs.render().strip());
 
   }
@@ -407,7 +406,7 @@ public class SoloSessionTest {
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
     MutableInt mi = new MutableInt();
-    rs.setDelayed("name", () -> "> John" + mi.pp(), VarGroup.HTML);
+    rs.setDelayed("name", VarGroup.HTML, () -> "> John" + mi.pp());
     assertEquals("Hello &gt; John0", rs.render());
     assertEquals("Hello &gt; John1", rs.render());
     assertEquals("Hello &gt; John2", rs.render());

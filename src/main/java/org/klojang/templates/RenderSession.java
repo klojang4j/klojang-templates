@@ -44,13 +44,13 @@ public sealed interface RenderSession permits SoloSession, MultiSession {
    * will prevail.
    *
    * @param varName the name of the variable to set
-   * @param value the value
    * @param varGroup the variable group to assign the variable to if the variable
    *     has no group name prefix.
+   * @param value the value
    * @return this {@code RenderSession}
    * @see StringifierRegistry.Builder#forVarGroup(String, Stringifier)
    */
-  RenderSession set(String varName, Object value, VarGroup varGroup);
+  RenderSession set(String varName, VarGroup varGroup, Object value);
 
   /**
    * Sets the specified variable to the value produced by the specified
@@ -73,14 +73,13 @@ public sealed interface RenderSession permits SoloSession, MultiSession {
    * {@code RenderSession}.
    *
    * @param varName the name of the variable to set
-   * @param valueGenerator the supplier of the value
    * @param varGroup the variable group to assign the variable to if the variable
    *     has no group name prefix.
+   * @param valueGenerator the supplier of the value
    * @return this {@code RenderSession}
    */
   RenderSession setDelayed(String varName,
-      Supplier<Object> valueGenerator,
-      VarGroup varGroup);
+      VarGroup varGroup, Supplier<Object> valueGenerator);
 
   /**
    * Sets the value of the specified variable. The variable may be (deeply) nested
@@ -93,7 +92,7 @@ public sealed interface RenderSession permits SoloSession, MultiSession {
    * @param valueGenerator a function which is given the array index of the
    *     template instance for which to produce a value
    * @return this {@code RenderSession}
-   * @see #setPath(String, IntFunction, VarGroup, boolean)
+   * @see #setPath(String, VarGroup, boolean, IntFunction)
    */
   RenderSession setPath(String path, IntFunction<Object> valueGenerator);
 
@@ -120,7 +119,7 @@ public sealed interface RenderSession permits SoloSession, MultiSession {
    * itself cause the template to become visible.
    *
    * <p>If the variable is a top-level variable (the path consists of just one path
-   * segment), this method behaves like {@link #set(String, Object, VarGroup)}.
+   * segment), this method behaves like {@link #set(String, VarGroup, Object)}.
    * However, you might still be able to put the {@code IntFunction} to good use:
    *
    * <blockquote><pre>{@code
@@ -131,7 +130,7 @@ public sealed interface RenderSession permits SoloSession, MultiSession {
    *    """;
    * Template template = Template.fromString(src);
    * RenderSession session = template.newRenderSession();
-   * session.repeat("departments", 3).setPath("deptNo", i -> 100 +i).render();
+   * session.repeat("departments", 3).setPath("deptNo", i -> 100 + i).render();
    *
    * // Output:
    * // <tr><td>Department number:</td><td>100</td></tr>
@@ -140,20 +139,18 @@ public sealed interface RenderSession permits SoloSession, MultiSession {
    * }</pre></blockquote>
    *
    * @param path a path to a potentially deeply-nested variable
-   * @param valueGenerator a function which is given the array index of the
-   *     template instance for which to produce a value
    * @param varGroup the variable group to assign the variable to if the variable
    *     has no group name prefix.
    * @param force whether to set the variable even if the containing template had
    *     not been made visible yet via other means
+   * @param valueGenerator a function which is given the array index of the
+   *     template instance for which to produce a value
    * @return this {@code RenderSession}
    * @see TemplateUtils#getFQN(Template, String)
    * @see org.klojang.path.Path
    */
   RenderSession setPath(String path,
-      IntFunction<Object> valueGenerator,
-      VarGroup varGroup,
-      boolean force);
+      VarGroup varGroup, boolean force, IntFunction<Object> valueGenerator);
 
   /**
    * Sets the specified variable to the value produced by the specified
@@ -162,7 +159,7 @@ public sealed interface RenderSession permits SoloSession, MultiSession {
    * @param path a path to a potentially deeply-nested variable
    * @param valueGenerator the supplier of the value
    * @return this {@code RenderSession}
-   * @see #ifNotSet(String, IntFunction, VarGroup)
+   * @see #ifNotSet(String, VarGroup, IntFunction)
    */
   RenderSession ifNotSet(String path, IntFunction<Object> valueGenerator);
 
@@ -177,17 +174,16 @@ public sealed interface RenderSession permits SoloSession, MultiSession {
    * value.
    *
    * @param path a path to a potentially deeply-nested variable
-   * @param valueGenerator the supplier of the value
    * @param varGroup the variable group to assign the variable to if the variable
    *     has no group name prefix.
+   * @param valueGenerator the supplier of the value
    * @return this {@code RenderSession}
    * @see #getAllUnsetVariables(boolean)
    * @see Accessor#UNDEFINED
    * @see AccessorRegistry.Builder#nullEqualsUndefined(boolean)
    */
   RenderSession ifNotSet(String path,
-      IntFunction<Object> valueGenerator,
-      VarGroup varGroup);
+      VarGroup varGroup, IntFunction<Object> valueGenerator);
 
   /**
    * <p>Populates the template with values extracted from the specified object. For
@@ -196,19 +192,17 @@ public sealed interface RenderSession permits SoloSession, MultiSession {
    * {@code Person} object into the template with those same properties, their values
    * will be copied to the variables using the
    * {@linkplain AccessorRegistry accessors} with which the {@code RenderSession} was
-   * created (see
-   * {@link Template#newRenderSession(AccessorRegistry)
-   * Template.newRenderSession()}). If the template also contains a nested template
-   * named "address", and the {@code Person} class contains an {@code address}
-   * property referencing an {@code Address} object, then the values in the
-   * {@code Address} object will be used to populate the "address" template. If the
-   * {@code address} property were a {@code List} or array of {@code Address}
-   * objects, then the "address" template will be repeated for each element in the
-   * {@code List} or array. In short: if the object reflects the structure of the
-   * template, the template almost literally becomes a "mold" into which to "sink"
-   * the object. (On the other hand: the object is not <i>required</i> to exactly
-   * match the structure of the template. The accessors will grab from it what they
-   * can and leave the rest alone.)
+   * {@linkplain Template#newRenderSession(AccessorRegistry) created}. If the
+   * template likewise contains a nested template named "address", and the
+   * {@code Person} class contains an {@code address} property referencing an
+   * {@code Address} object, then the {@code Address} object will be used to populate
+   * the "address" template. If the {@code address} property were a {@code List} or
+   * array of {@code Address} objects, then the "address" template will be repeated
+   * for each element in the {@code List} or array. In short: if the object reflects
+   * the structure of the template, the template almost literally becomes a "mold"
+   * into which to "sink" the object. (On the other hand: the object is not
+   * <i>required</i> to exactly match the structure of the template. The accessors
+   * will grab from it what they can and leave the rest alone.)
    *
    * <p>Only template variables and nested templates whose name is in the provided
    * {@code names} array will be populated. The {@code names} array is allowed to be
@@ -320,11 +314,11 @@ public sealed interface RenderSession permits SoloSession, MultiSession {
    * subsequent call to {@link #enable(String...) enable()} and
    * {@link #enableRecursive(String...) enableRecursive()}.
    *
-   * <p>Contrary to most of the other methods, this method does not return
-   * <i>this</i> {@code RenderSession}. It is not part of the fluent interface.
-   * Instead, it returns a {@code RenderSession} for the nested template. This is a
-   * special implementation of {@code RenderSession} that works on all instances
-   * (repetitions) of the nested template. For example, if the nested template
+   * <p><b>Contrary to most of the other methods, this method does not return
+   * <i>this</i> {@code RenderSession}. It is not part of the fluent interface.</b>
+   * Instead, it returns a <i>new</i> {@code RenderSession} &#8212; a special
+   * implementation of {@code RenderSession} that works on <i>all</i> instances
+   * (repetitions) of the <i>nested</i> template. For example, if the nested template
    * contains a variable {@code foo} and you set its value to "bar", then "bar" will
    * appear in all instances of the template.
    *
@@ -342,10 +336,14 @@ public sealed interface RenderSession permits SoloSession, MultiSession {
    * """;
    * Template tmpl = Template.fromString(src);
    * RenderSession rs = tmpl.newRenderSession();
-   * rs.repeat("companies", 2).repeat("departments", 3).repeat("employees", 4);
+   * rs.repeat("companies", 2)
+   *    .repeat("departments", 3)
+   *    .repeat("employees", 4)
+   *    .set("firstName", "John");
    * assertEquals(2, rs.getChildSessions("companies").size());
    * assertEquals(6, rs.in("companies").getChildSessions("departments").size());
    * assertEquals(24, rs.in("companies").in("departments").getChildSessions("employees").size());
+   * // "John" will appear 24 times
    * }</pre></blockquote>
    *
    * @param nestedTemplateName the name of the nested template
@@ -615,7 +613,9 @@ public sealed interface RenderSession permits SoloSession, MultiSession {
   RenderSession unset(String... variables);
 
   /**
-   * Depopulates and hides the specified nested templates.
+   * Depopulates and hides the specified nested templates. Note that you cannot clear
+   * the entire session. If that is what you want, you should simply create a new one
+   * using {@link Template#newRenderSession()}.
    *
    * @param nestedTemplateNames the nested templates to depopulate
    * @return this {@code RenderSession}

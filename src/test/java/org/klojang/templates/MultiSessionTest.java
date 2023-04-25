@@ -51,8 +51,8 @@ public class MultiSessionTest {
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
     String out = rs.repeat("companies", 2)
-        .set("name", "Apple", VarGroup.JS)
-        .set("country", "USA", VarGroup.TEXT)
+        .set("name", VarGroup.JS, "Apple")
+        .set("country", VarGroup.TEXT, "USA")
         .render();
     String expected = """
             <p>Name: Apple</p>
@@ -84,7 +84,7 @@ public class MultiSessionTest {
     RenderSession rs = tmpl.newRenderSession();
     MutableInt mi = new MutableInt();
     String out = rs.repeat("companies", 2)
-        .setDelayed("name", () -> ">" + mi.pp(), VarGroup.HTML)
+        .setDelayed("name", VarGroup.HTML, () -> ">" + mi.pp())
         .render();
     // System.out.println(out);
     assertEquals("&gt;0&gt;1&gt;2&gt;3", out);
@@ -114,7 +114,7 @@ public class MultiSessionTest {
         """;
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
-    rs.setPath("companies.departments.name", i -> "<", VarGroup.HTML, true);
+    rs.setPath("companies.departments.name", VarGroup.HTML, true, i -> "<");
     String out = rs.render();
     //System.out.println(out);
     assertEquals("&lt;", nospace(out));
@@ -192,7 +192,7 @@ public class MultiSessionTest {
         """;
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
-    rs.setPath("companies.name", i -> "foo", VarGroup.HTML, false);
+    rs.setPath("companies.name", VarGroup.HTML, false, i -> "foo");
     String out = rs.render();
     assertEquals("", nospace(out));
   }
@@ -208,7 +208,7 @@ public class MultiSessionTest {
         """;
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
-    rs.in("companies").setPath("departments.name", i -> "foo", VarGroup.HTML, false);
+    rs.in("companies").setPath("departments.name", VarGroup.HTML, false, i -> "foo");
     String out = rs.render();
     assertEquals("", nospace(out));
   }
@@ -224,7 +224,7 @@ public class MultiSessionTest {
         """;
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
-    rs.in("companies").setPath("departments.name", i -> "foo", VarGroup.HTML, true);
+    rs.in("companies").setPath("departments.name", VarGroup.HTML, true, i -> "foo");
     String out = rs.render();
     assertEquals("foo", nospace(out));
   }
@@ -242,7 +242,7 @@ public class MultiSessionTest {
     RenderSession rs = tmpl.newRenderSession();
     rs.in("companies")
         .repeat("departments", 2)
-        .setPath("name", i -> "Foo", VarGroup.HTML, true);
+        .setPath("name", VarGroup.HTML, true, i -> "Foo");
     String out = rs.render();
     assertEquals("FooFoo", nospace(out));
   }
@@ -345,7 +345,7 @@ public class MultiSessionTest {
     assertEquals("Bar", nospace(rs.render()));
     rs.unset("global_var");
 
-    rs.repeat("companies", 2).ifNotSet("company_var", i -> "Foo", VarGroup.TEXT);
+    rs.repeat("companies", 2).ifNotSet("company_var", VarGroup.TEXT, i -> "Foo");
     assertEquals("FooFoo", nospace(rs.render()));
     rs.in("companies").ifNotSet("company_var", i -> "Bar");
     assertEquals("FooFoo", nospace(rs.render()));
@@ -366,7 +366,7 @@ public class MultiSessionTest {
 
     rs.in("companies.departments.employees").unset("employee_var");
     rs.in("companies.departments")
-        .ifNotSet("employees.roles.role", i -> "Boom", VarGroup.TEXT);
+        .ifNotSet("employees.roles.role", VarGroup.TEXT, i -> "Boom");
     assertEquals("BoomBoomBoom", nospace(rs.render()));
     rs.in("companies.departments.employees.roles").ifNotSet("role", i -> "Foo");
     assertEquals("BoomBoomBoom", nospace(rs.render()));

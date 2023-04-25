@@ -40,7 +40,7 @@ record SoloSession(SessionConfig config, RenderState state) implements
   }
 
   @Override
-  public RenderSession set(String varName, Object value, VarGroup varGroup) {
+  public RenderSession set(String varName, VarGroup varGroup, Object value) {
     Check.notNull(varName, VAR_NAME);
     Check.notNull(varGroup, VAR_GROUP);
     return setVar(varName, value, varGroup);
@@ -76,8 +76,7 @@ record SoloSession(SessionConfig config, RenderState state) implements
 
   @Override
   public RenderSession setDelayed(String varName,
-      Supplier<Object> valueGenerator,
-      VarGroup varGroup) {
+      VarGroup varGroup, Supplier<Object> valueGenerator) {
     Check.notNull(varName, VAR_NAME);
     Check.notNull(valueGenerator, VALUE_GENERATOR);
     Check.notNull(varGroup, VAR_GROUP);
@@ -106,9 +105,7 @@ record SoloSession(SessionConfig config, RenderState state) implements
 
   @Override
   public RenderSession setPath(String path,
-      IntFunction<Object> valueGenerator,
-      VarGroup varGroup,
-      boolean force) {
+      VarGroup varGroup, boolean force, IntFunction<Object> valueGenerator) {
     Path p = Check.notNull(path, Tag.PATH).ok(Path::from);
     Check.notNull(valueGenerator, VALUE_GENERATOR);
     Check.notNull(varGroup, VAR_GROUP);
@@ -154,8 +151,7 @@ record SoloSession(SessionConfig config, RenderState state) implements
 
   @Override
   public RenderSession ifNotSet(String path,
-      IntFunction<Object> valueGenerator,
-      VarGroup varGroup) {
+      VarGroup varGroup, IntFunction<Object> valueGenerator) {
     Path p = Check.notNull(path, Tag.PATH).ok(Path::from);
     Check.notNull(valueGenerator, VALUE_GENERATOR);
     Check.notNull(varGroup, VAR_GROUP);

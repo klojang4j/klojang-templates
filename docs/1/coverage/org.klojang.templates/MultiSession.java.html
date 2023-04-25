@@ -21,8 +21,8 @@ import java.util.function.Supplier;
   }
 
   @Override
-  public RenderSession set(String var, Object value, VarGroup group) {
-<span class="fc" id="L25">    Arrays.stream(sessions).forEach(s -&gt; s.set(var, value, group));</span>
+  public RenderSession set(String var, VarGroup group, Object value) {
+<span class="fc" id="L25">    Arrays.stream(sessions).forEach(s -&gt; s.set(var, group, value));</span>
 <span class="fc" id="L26">    return this;</span>
   }
 
@@ -34,10 +34,9 @@ import java.util.function.Supplier;
 
   @Override
   public RenderSession setDelayed(String var,
-      Supplier&lt;Object&gt; val,
-      VarGroup group) {
-<span class="fc" id="L39">    Arrays.stream(sessions).forEach(s -&gt; s.setDelayed(var, val, group));</span>
-<span class="fc" id="L40">    return this;</span>
+      VarGroup group, Supplier&lt;Object&gt; val) {
+<span class="fc" id="L38">    Arrays.stream(sessions).forEach(s -&gt; s.setDelayed(var, group, val));</span>
+<span class="fc" id="L39">    return this;</span>
   }
 
   /*
@@ -48,80 +47,77 @@ import java.util.function.Supplier;
    */
   @Override
   public RenderSession setPath(String path, IntFunction&lt;Object&gt; val) {
-<span class="fc" id="L51">    Path p = Check.notNull(path, Tag.PATH).ok(Path::from);</span>
-<span class="fc bfc" id="L52" title="All 2 branches covered.">    if (p.size() == 1) {</span>
-<span class="fc bfc" id="L53" title="All 2 branches covered.">      for (int i = 0; i &lt; sessions.length; ++i) {</span>
-<span class="fc" id="L54">        sessions[i].set(path, val.apply(i));</span>
+<span class="fc" id="L50">    Path p = Check.notNull(path, Tag.PATH).ok(Path::from);</span>
+<span class="fc bfc" id="L51" title="All 2 branches covered.">    if (p.size() == 1) {</span>
+<span class="fc bfc" id="L52" title="All 2 branches covered.">      for (int i = 0; i &lt; sessions.length; ++i) {</span>
+<span class="fc" id="L53">        sessions[i].set(path, val.apply(i));</span>
       }
     } else { // do delegate to SoloSession
-<span class="fc" id="L57">      Arrays.stream(sessions).forEach(s -&gt; s.setPath(path, val));</span>
+<span class="fc" id="L56">      Arrays.stream(sessions).forEach(s -&gt; s.setPath(path, val));</span>
     }
-<span class="fc" id="L59">    return this;</span>
+<span class="fc" id="L58">    return this;</span>
   }
 
   @Override
   public RenderSession setPath(String path,
-      IntFunction&lt;Object&gt; val,
-      VarGroup group,
-      boolean force) {
-<span class="fc" id="L67">    Path p = Check.notNull(path, Tag.PATH).ok(Path::from);</span>
-<span class="fc bfc" id="L68" title="All 2 branches covered.">    if (p.size() == 1) {</span>
-<span class="fc bfc" id="L69" title="All 2 branches covered.">      for (int i = 0; i &lt; sessions.length; ++i) {</span>
-<span class="fc" id="L70">        sessions[i].set(path, val.apply(i), group);</span>
+      VarGroup group, boolean force, IntFunction&lt;Object&gt; val) {
+<span class="fc" id="L64">    Path p = Check.notNull(path, Tag.PATH).ok(Path::from);</span>
+<span class="fc bfc" id="L65" title="All 2 branches covered.">    if (p.size() == 1) {</span>
+<span class="fc bfc" id="L66" title="All 2 branches covered.">      for (int i = 0; i &lt; sessions.length; ++i) {</span>
+<span class="fc" id="L67">        sessions[i].set(path, group, val.apply(i));</span>
       }
     } else {
-<span class="fc" id="L73">      Arrays.stream(sessions).forEach(s -&gt; s.setPath(path, val, group, force));</span>
+<span class="fc" id="L70">      Arrays.stream(sessions).forEach(s -&gt; s.setPath(path, group, force, val));</span>
     }
-<span class="fc" id="L75">    return this;</span>
+<span class="fc" id="L72">    return this;</span>
   }
 
   @Override
   public RenderSession ifNotSet(String path, IntFunction&lt;Object&gt; val) {
-<span class="fc" id="L80">    Path p = Check.notNull(path, Tag.PATH).ok(Path::from);</span>
-<span class="fc bfc" id="L81" title="All 2 branches covered.">    if (p.size() == 1) {</span>
-<span class="fc bfc" id="L82" title="All 2 branches covered.">      for (int i = 0; i &lt; sessions.length; ++i) {</span>
-<span class="fc bfc" id="L83" title="All 2 branches covered.">        if (!sessions[i].state().isSet(p)) {</span>
-<span class="fc" id="L84">          sessions[i].set(path, val.apply(i));</span>
+<span class="fc" id="L77">    Path p = Check.notNull(path, Tag.PATH).ok(Path::from);</span>
+<span class="fc bfc" id="L78" title="All 2 branches covered.">    if (p.size() == 1) {</span>
+<span class="fc bfc" id="L79" title="All 2 branches covered.">      for (int i = 0; i &lt; sessions.length; ++i) {</span>
+<span class="fc bfc" id="L80" title="All 2 branches covered.">        if (!sessions[i].state().isSet(p)) {</span>
+<span class="fc" id="L81">          sessions[i].set(path, val.apply(i));</span>
         }
       }
     } else {
-<span class="fc" id="L88">      Arrays.stream(sessions).forEach(s -&gt; s.ifNotSet(path, val));</span>
+<span class="fc" id="L85">      Arrays.stream(sessions).forEach(s -&gt; s.ifNotSet(path, val));</span>
     }
-<span class="fc" id="L90">    return this;</span>
+<span class="fc" id="L87">    return this;</span>
   }
 
   @Override
-  public RenderSession ifNotSet(String path, IntFunction&lt;Object&gt; val,
-      VarGroup group) {
-<span class="fc" id="L96">    Path p = Check.notNull(path, Tag.PATH).ok(Path::from);</span>
-<span class="fc bfc" id="L97" title="All 2 branches covered.">    if (p.size() == 1) {</span>
-<span class="fc bfc" id="L98" title="All 2 branches covered.">      for (int i = 0; i &lt; sessions.length; ++i) {</span>
-<span class="pc bpc" id="L99" title="1 of 2 branches missed.">        if (!sessions[i].state().isSet(p)) {</span>
-<span class="fc" id="L100">          sessions[i].set(path, val.apply(i));</span>
+  public RenderSession ifNotSet(String path, VarGroup group, IntFunction&lt;Object&gt; val) {
+<span class="fc" id="L92">    Path p = Check.notNull(path, Tag.PATH).ok(Path::from);</span>
+<span class="fc bfc" id="L93" title="All 2 branches covered.">    if (p.size() == 1) {</span>
+<span class="fc bfc" id="L94" title="All 2 branches covered.">      for (int i = 0; i &lt; sessions.length; ++i) {</span>
+<span class="pc bpc" id="L95" title="1 of 2 branches missed.">        if (!sessions[i].state().isSet(p)) {</span>
+<span class="fc" id="L96">          sessions[i].set(path, val.apply(i));</span>
         }
       }
     } else {
-<span class="fc" id="L104">      Arrays.stream(sessions).forEach(s -&gt; s.ifNotSet(path, val, group));</span>
+<span class="fc" id="L100">      Arrays.stream(sessions).forEach(s -&gt; s.ifNotSet(path, group, val));</span>
     }
-<span class="fc" id="L106">    return this;</span>
+<span class="fc" id="L102">    return this;</span>
   }
 
   @Override
   public RenderSession insert(Object data, String... names) {
-<span class="fc" id="L111">    Arrays.stream(sessions).forEach(s -&gt; s.insert(data, names));</span>
-<span class="fc" id="L112">    return this;</span>
+<span class="fc" id="L107">    Arrays.stream(sessions).forEach(s -&gt; s.insert(data, names));</span>
+<span class="fc" id="L108">    return this;</span>
   }
 
   @Override
   public RenderSession insert(Object data, VarGroup group, String... names) {
-<span class="fc" id="L117">    Arrays.stream(sessions).forEach(s -&gt; s.insert(data, group, names));</span>
-<span class="fc" id="L118">    return this;</span>
+<span class="fc" id="L113">    Arrays.stream(sessions).forEach(s -&gt; s.insert(data, group, names));</span>
+<span class="fc" id="L114">    return this;</span>
   }
 
   @Override
   public RenderSession populate(String tmplName, Object data, String... names) {
-<span class="fc" id="L123">    Arrays.stream(sessions).forEach(s -&gt; s.populate(tmplName, data, names));</span>
-<span class="fc" id="L124">    return this;</span>
+<span class="fc" id="L119">    Arrays.stream(sessions).forEach(s -&gt; s.populate(tmplName, data, names));</span>
+<span class="fc" id="L120">    return this;</span>
   }
 
   @Override
@@ -129,136 +125,136 @@ import java.util.function.Supplier;
       Object data,
       VarGroup group,
       String... names) {
-<span class="fc" id="L132">    Arrays.stream(sessions).forEach(s -&gt; s.populate(tmplName, data, group, names));</span>
-<span class="fc" id="L133">    return this;</span>
+<span class="fc" id="L128">    Arrays.stream(sessions).forEach(s -&gt; s.populate(tmplName, data, group, names));</span>
+<span class="fc" id="L129">    return this;</span>
   }
 
   @Override
   public RenderSession repeat(String tmplName, int times) {
-<span class="fc" id="L138">    Template nested = template.getNestedTemplate(tmplName);</span>
-<span class="fc" id="L139">    ArrayList&lt;SoloSession&gt; list = new ArrayList&lt;&gt;();</span>
-<span class="fc bfc" id="L140" title="All 2 branches covered.">    for (RenderSession rs : sessions) {</span>
-<span class="fc" id="L141">      RenderSession ms = rs.repeat(tmplName, times);</span>
-<span class="fc" id="L142">      SoloSession[] ss = ((MultiSession) ms).sessions;</span>
-<span class="fc" id="L143">      list.addAll(Arrays.asList(ss));</span>
+<span class="fc" id="L134">    Template nested = template.getNestedTemplate(tmplName);</span>
+<span class="fc" id="L135">    ArrayList&lt;SoloSession&gt; list = new ArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L136" title="All 2 branches covered.">    for (RenderSession rs : sessions) {</span>
+<span class="fc" id="L137">      RenderSession ms = rs.repeat(tmplName, times);</span>
+<span class="fc" id="L138">      SoloSession[] ss = ((MultiSession) ms).sessions;</span>
+<span class="fc" id="L139">      list.addAll(Arrays.asList(ss));</span>
     }
-<span class="fc" id="L145">    return new MultiSession(nested, list.toArray(SoloSession[]::new));</span>
+<span class="fc" id="L141">    return new MultiSession(nested, list.toArray(SoloSession[]::new));</span>
   }
 
   @Override
   public RenderSession in(String tmplName) {
-<span class="fc" id="L150">    Template nested = template.getNestedTemplate(tmplName);</span>
-<span class="fc" id="L151">    ArrayList&lt;SoloSession&gt; list = new ArrayList&lt;&gt;();</span>
-<span class="fc bfc" id="L152" title="All 2 branches covered.">    for (RenderSession rs : sessions) {</span>
-<span class="fc" id="L153">      SoloSession[] ss = ((MultiSession) rs.in(tmplName)).sessions;</span>
-<span class="fc" id="L154">      list.addAll(Arrays.asList(ss));</span>
+<span class="fc" id="L146">    Template nested = template.getNestedTemplate(tmplName);</span>
+<span class="fc" id="L147">    ArrayList&lt;SoloSession&gt; list = new ArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L148" title="All 2 branches covered.">    for (RenderSession rs : sessions) {</span>
+<span class="fc" id="L149">      SoloSession[] ss = ((MultiSession) rs.in(tmplName)).sessions;</span>
+<span class="fc" id="L150">      list.addAll(Arrays.asList(ss));</span>
     }
-<span class="fc" id="L156">    return new MultiSession(nested, list.toArray(SoloSession[]::new));</span>
+<span class="fc" id="L152">    return new MultiSession(nested, list.toArray(SoloSession[]::new));</span>
   }
 
   @Override
   public RenderSession enable(String... tmplNames) {
-<span class="fc" id="L161">    Arrays.stream(sessions).forEach(s -&gt; s.enable(tmplNames));</span>
-<span class="fc" id="L162">    return this;</span>
+<span class="fc" id="L157">    Arrays.stream(sessions).forEach(s -&gt; s.enable(tmplNames));</span>
+<span class="fc" id="L158">    return this;</span>
   }
 
   @Override
   public RenderSession enable(int repeats, String... tmplNames) {
-<span class="fc" id="L167">    Arrays.stream(sessions).forEach(s -&gt; s.enable(repeats, tmplNames));</span>
-<span class="fc" id="L168">    return this;</span>
+<span class="fc" id="L163">    Arrays.stream(sessions).forEach(s -&gt; s.enable(repeats, tmplNames));</span>
+<span class="fc" id="L164">    return this;</span>
   }
 
   @Override
   public RenderSession enableRecursive(String... tmplNames) {
-<span class="fc" id="L173">    Arrays.stream(sessions).forEach(s -&gt; s.enableRecursive(tmplNames));</span>
-<span class="fc" id="L174">    return this;</span>
+<span class="fc" id="L169">    Arrays.stream(sessions).forEach(s -&gt; s.enableRecursive(tmplNames));</span>
+<span class="fc" id="L170">    return this;</span>
   }
 
   @Override
   public RenderSession populate1(String tmplName, Object... values) {
-<span class="fc" id="L179">    Arrays.stream(sessions).forEach(s -&gt; s.populate1(tmplName, values));</span>
-<span class="fc" id="L180">    return this;</span>
+<span class="fc" id="L175">    Arrays.stream(sessions).forEach(s -&gt; s.populate1(tmplName, values));</span>
+<span class="fc" id="L176">    return this;</span>
   }
 
   @Override
   public RenderSession populate1(String tmplName, VarGroup group, Object... values) {
-<span class="fc" id="L185">    Arrays.stream(sessions).forEach(</span>
-<span class="fc" id="L186">        s -&gt; s.populate1(tmplName, group, values));</span>
-<span class="fc" id="L187">    return this;</span>
+<span class="fc" id="L181">    Arrays.stream(sessions).forEach(</span>
+<span class="fc" id="L182">        s -&gt; s.populate1(tmplName, group, values));</span>
+<span class="fc" id="L183">    return this;</span>
   }
 
   @Override
   public RenderSession populate2(String tmplName, Object... values) {
-<span class="fc" id="L192">    Arrays.stream(sessions).forEach(s -&gt; s.populate2(tmplName, values));</span>
-<span class="fc" id="L193">    return this;</span>
+<span class="fc" id="L188">    Arrays.stream(sessions).forEach(s -&gt; s.populate2(tmplName, values));</span>
+<span class="fc" id="L189">    return this;</span>
   }
 
   @Override
   public RenderSession populate2(String tmplName, VarGroup group, Object... values) {
-<span class="fc" id="L198">    Arrays.stream(sessions).forEach(s -&gt; s.populate2(tmplName, group, values));</span>
-<span class="fc" id="L199">    return this;</span>
+<span class="fc" id="L194">    Arrays.stream(sessions).forEach(s -&gt; s.populate2(tmplName, group, values));</span>
+<span class="fc" id="L195">    return this;</span>
   }
 
   @Override
   public List&lt;String&gt; getUnsetVariables() {
-<span class="fc bfc" id="L204" title="All 2 branches covered.">    return sessions.length == 0 ? List.of() : sessions[0].getUnsetVariables();</span>
+<span class="fc bfc" id="L200" title="All 2 branches covered.">    return sessions.length == 0 ? List.of() : sessions[0].getUnsetVariables();</span>
   }
 
   @Override
   public List&lt;String&gt; getAllUnsetVariables() {
-<span class="fc bfc" id="L209" title="All 2 branches covered.">    return sessions.length == 0 ? List.of() : sessions[0].getAllUnsetVariables();</span>
+<span class="fc bfc" id="L205" title="All 2 branches covered.">    return sessions.length == 0 ? List.of() : sessions[0].getAllUnsetVariables();</span>
   }
 
   public List&lt;String&gt; getAllUnsetVariables(boolean relative) {
-<span class="fc bfc" id="L213" title="All 2 branches covered.">    return sessions.length == 0</span>
-<span class="fc" id="L214">        ? List.of()</span>
-<span class="fc" id="L215">        : sessions[0].getAllUnsetVariables(relative);</span>
+<span class="fc bfc" id="L209" title="All 2 branches covered.">    return sessions.length == 0</span>
+<span class="fc" id="L210">        ? List.of()</span>
+<span class="fc" id="L211">        : sessions[0].getAllUnsetVariables(relative);</span>
   }
 
   @Override
   public boolean allSet() {
-<span class="fc" id="L220">    return Arrays.stream(sessions).allMatch(RenderSession::allSet);</span>
+<span class="fc" id="L216">    return Arrays.stream(sessions).allMatch(RenderSession::allSet);</span>
   }
 
   @Override
   public RenderSession unset(String... variables) {
-<span class="fc" id="L225">    Arrays.stream(sessions).forEach(s -&gt; s.unset(variables));</span>
-<span class="fc" id="L226">    return this;</span>
+<span class="fc" id="L221">    Arrays.stream(sessions).forEach(s -&gt; s.unset(variables));</span>
+<span class="fc" id="L222">    return this;</span>
   }
 
   @Override
   public RenderSession clear(String... tmplNames) {
-<span class="fc" id="L231">    Arrays.stream(sessions).forEach(s -&gt; s.clear(tmplNames));</span>
-<span class="fc" id="L232">    return this;</span>
+<span class="fc" id="L227">    Arrays.stream(sessions).forEach(s -&gt; s.clear(tmplNames));</span>
+<span class="fc" id="L228">    return this;</span>
   }
 
   @Override
   public List&lt;RenderSession&gt; getChildSessions(String tmplName) {
-<span class="fc" id="L237">    ArrayList&lt;RenderSession&gt; flat = new ArrayList&lt;&gt;();</span>
-<span class="fc" id="L238">    Arrays.stream(sessions).forEach(s -&gt; flat.addAll(s.getChildSessions(tmplName)));</span>
-<span class="fc" id="L239">    return flat;</span>
+<span class="fc" id="L233">    ArrayList&lt;RenderSession&gt; flat = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L234">    Arrays.stream(sessions).forEach(s -&gt; flat.addAll(s.getChildSessions(tmplName)));</span>
+<span class="fc" id="L235">    return flat;</span>
   }
 
   @Override
   public void render(OutputStream out) {
-<span class="nc" id="L244">    Arrays.stream(sessions).forEach(s -&gt; s.render(out));</span>
-<span class="nc" id="L245">  }</span>
+<span class="nc" id="L240">    Arrays.stream(sessions).forEach(s -&gt; s.render(out));</span>
+<span class="nc" id="L241">  }</span>
 
   @Override
   public void render(StringBuilder sb) {
-<span class="nc" id="L249">    Arrays.stream(sessions).forEach(s -&gt; s.render(sb));</span>
-<span class="nc" id="L250">  }</span>
+<span class="nc" id="L245">    Arrays.stream(sessions).forEach(s -&gt; s.render(sb));</span>
+<span class="nc" id="L246">  }</span>
 
   @Override
   public String render() {
-<span class="fc" id="L254">    StringBuilder sb = new StringBuilder(255);</span>
-<span class="fc" id="L255">    Arrays.stream(sessions).forEach(s -&gt; s.render(sb));</span>
-<span class="fc" id="L256">    return sb.toString();</span>
+<span class="fc" id="L250">    StringBuilder sb = new StringBuilder(255);</span>
+<span class="fc" id="L251">    Arrays.stream(sessions).forEach(s -&gt; s.render(sb));</span>
+<span class="fc" id="L252">    return sb.toString();</span>
   }
 
   @Override
   public Template getTemplate() {
-<span class="fc" id="L261">    return template;</span>
+<span class="fc" id="L257">    return template;</span>
   }
 
 }

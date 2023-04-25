@@ -21,8 +21,8 @@ record MultiSession(Template template, SoloSession[] sessions) implements
   }
 
   @Override
-  public RenderSession set(String var, Object value, VarGroup group) {
-    Arrays.stream(sessions).forEach(s -> s.set(var, value, group));
+  public RenderSession set(String var, VarGroup group, Object value) {
+    Arrays.stream(sessions).forEach(s -> s.set(var, group, value));
     return this;
   }
 
@@ -34,9 +34,8 @@ record MultiSession(Template template, SoloSession[] sessions) implements
 
   @Override
   public RenderSession setDelayed(String var,
-      Supplier<Object> val,
-      VarGroup group) {
-    Arrays.stream(sessions).forEach(s -> s.setDelayed(var, val, group));
+      VarGroup group, Supplier<Object> val) {
+    Arrays.stream(sessions).forEach(s -> s.setDelayed(var, group, val));
     return this;
   }
 
@@ -61,16 +60,14 @@ record MultiSession(Template template, SoloSession[] sessions) implements
 
   @Override
   public RenderSession setPath(String path,
-      IntFunction<Object> val,
-      VarGroup group,
-      boolean force) {
+      VarGroup group, boolean force, IntFunction<Object> val) {
     Path p = Check.notNull(path, Tag.PATH).ok(Path::from);
     if (p.size() == 1) {
       for (int i = 0; i < sessions.length; ++i) {
-        sessions[i].set(path, val.apply(i), group);
+        sessions[i].set(path, group, val.apply(i));
       }
     } else {
-      Arrays.stream(sessions).forEach(s -> s.setPath(path, val, group, force));
+      Arrays.stream(sessions).forEach(s -> s.setPath(path, group, force, val));
     }
     return this;
   }
@@ -91,8 +88,7 @@ record MultiSession(Template template, SoloSession[] sessions) implements
   }
 
   @Override
-  public RenderSession ifNotSet(String path, IntFunction<Object> val,
-      VarGroup group) {
+  public RenderSession ifNotSet(String path, VarGroup group, IntFunction<Object> val) {
     Path p = Check.notNull(path, Tag.PATH).ok(Path::from);
     if (p.size() == 1) {
       for (int i = 0; i < sessions.length; ++i) {
@@ -101,7 +97,7 @@ record MultiSession(Template template, SoloSession[] sessions) implements
         }
       }
     } else {
-      Arrays.stream(sessions).forEach(s -> s.ifNotSet(path, val, group));
+      Arrays.stream(sessions).forEach(s -> s.ifNotSet(path, group, val));
     }
     return this;
   }
