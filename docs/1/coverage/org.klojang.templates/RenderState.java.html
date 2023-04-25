@@ -156,81 +156,79 @@ final class RenderState {
 <span class="fc" id="L156">          SoloSession[] children = state.children.get(t);</span>
 <span class="fc bfc" id="L157" title="All 2 branches covered.">          if (children == null) {</span>
 <span class="fc" id="L158">            return false;</span>
-<span class="pc bpc" id="L159" title="1 of 2 branches missed.">          } else if (children.length &gt; 0) {</span>
-<span class="fc bfc" id="L160" title="All 2 branches covered.">            if (!ready(children[0].state())) {</span>
-<span class="fc" id="L161">              return false;</span>
-            }
+<span class="pc bpc" id="L159" title="1 of 4 branches missed.">          } else if (children.length &gt; 0 &amp;&amp; !ready(children[0].state())) {</span>
+<span class="fc" id="L160">            return false;</span>
           }
         }
-<span class="fc" id="L165">      }</span>
-<span class="fc" id="L166">      return true;</span>
+<span class="fc" id="L163">      }</span>
+<span class="fc" id="L164">      return true;</span>
     }
-<span class="fc" id="L168">    return false;</span>
+<span class="fc" id="L166">    return false;</span>
   }
 
   void unset(Path path) {
-<span class="fc" id="L172">    unset(this, path);</span>
-<span class="fc" id="L173">  }</span>
+<span class="fc" id="L170">    unset(this, path);</span>
+<span class="fc" id="L171">  }</span>
 
   private static void unset(RenderState state, Path path) {
-<span class="fc" id="L176">    String name = path.segment(0);</span>
-<span class="fc bfc" id="L177" title="All 2 branches covered.">    if (path.size() == 1) {</span>
-<span class="fc" id="L178">      IntList occurrences = state.config.template().variables().get(name);</span>
-<span class="fc" id="L179">      Check.that(occurrences).is(notNull(),</span>
-<span class="fc" id="L180">          NO_SUCH_VARIABLE.getExceptionSupplier(name));</span>
-<span class="fc" id="L181">      state.todo.add(name);</span>
-<span class="fc" id="L182">      occurrences.stream().forEach(state.varValues.keySet()::remove);</span>
-<span class="fc" id="L183">    } else {</span>
-<span class="fc" id="L184">      Template tmpl = state.config.template();</span>
-<span class="fc" id="L185">      Check.that(name).is(in(), tmpl.getNestedTemplateNames(),</span>
-<span class="fc" id="L186">          NO_SUCH_TEMPLATE.getExceptionSupplier(getFQN(tmpl, name)));</span>
-<span class="fc" id="L187">      Template nested = tmpl.getNestedTemplate(name);</span>
-<span class="fc" id="L188">      SoloSession[] childSessions = state.children.get(nested);</span>
-<span class="pc bpc" id="L189" title="1 of 2 branches missed.">      if (childSessions != null) {</span>
-<span class="fc" id="L190">        Arrays.stream(childSessions).forEach(s -&gt; unset(s.state(), path.shift()));</span>
+<span class="fc" id="L174">    String name = path.segment(0);</span>
+<span class="fc bfc" id="L175" title="All 2 branches covered.">    if (path.size() == 1) {</span>
+<span class="fc" id="L176">      IntList occurrences = state.config.template().variables().get(name);</span>
+<span class="fc" id="L177">      Check.that(occurrences).is(notNull(),</span>
+<span class="fc" id="L178">          NO_SUCH_VARIABLE.getExceptionSupplier(name));</span>
+<span class="fc" id="L179">      state.todo.add(name);</span>
+<span class="fc" id="L180">      occurrences.stream().forEach(state.varValues.keySet()::remove);</span>
+<span class="fc" id="L181">    } else {</span>
+<span class="fc" id="L182">      Template tmpl = state.config.template();</span>
+<span class="fc" id="L183">      Check.that(name).is(in(), tmpl.getNestedTemplateNames(),</span>
+<span class="fc" id="L184">          NO_SUCH_TEMPLATE.getExceptionSupplier(getFQN(tmpl, name)));</span>
+<span class="fc" id="L185">      Template nested = tmpl.getNestedTemplate(name);</span>
+<span class="fc" id="L186">      SoloSession[] childSessions = state.children.get(nested);</span>
+<span class="pc bpc" id="L187" title="1 of 2 branches missed.">      if (childSessions != null) {</span>
+<span class="fc" id="L188">        Arrays.stream(childSessions).forEach(s -&gt; unset(s.state(), path.shift()));</span>
       }
     }
-<span class="fc" id="L193">  }</span>
+<span class="fc" id="L191">  }</span>
 
   void clear(Template tmpl) {
-<span class="fc" id="L196">    Arrays.stream(children.get(tmpl)).forEach(this::clear);</span>
-<span class="fc" id="L197">    children.remove(tmpl);</span>
-<span class="fc" id="L198">  }</span>
+<span class="fc" id="L194">    Arrays.stream(children.get(tmpl)).forEach(this::clear);</span>
+<span class="fc" id="L195">    children.remove(tmpl);</span>
+<span class="fc" id="L196">  }</span>
 
   private void clear(SoloSession session) {
-<span class="fc" id="L201">    RenderState state = session.state();</span>
-<span class="fc" id="L202">    state.varValues.clear();</span>
-<span class="fc" id="L203">    state.todo.addAll(state.config.template().getVariables());</span>
-<span class="fc" id="L204">    state.children.values().stream().flatMap(Arrays::stream).forEach(this::clear);</span>
-<span class="fc" id="L205">    state.children.clear();</span>
-<span class="fc" id="L206">  }</span>
+<span class="fc" id="L199">    RenderState state = session.state();</span>
+<span class="fc" id="L200">    state.varValues.clear();</span>
+<span class="fc" id="L201">    state.todo.addAll(state.config.template().getVariables());</span>
+<span class="fc" id="L202">    state.children.values().stream().flatMap(Arrays::stream).forEach(this::clear);</span>
+<span class="fc" id="L203">    state.children.clear();</span>
+<span class="fc" id="L204">  }</span>
 
   boolean isSet(Path path) {
-<span class="fc" id="L209">    return isSet(this, path);</span>
+<span class="fc" id="L207">    return isSet(this, path);</span>
   }
 
   private static boolean isSet(RenderState state, Path path) {
-<span class="fc" id="L213">    String name = path.segment(0);</span>
-<span class="fc bfc" id="L214" title="All 2 branches covered.">    if (path.size() == 1) {</span>
-<span class="fc bfc" id="L215" title="All 2 branches covered.">      if (state.todo.contains(name)) {</span>
-<span class="fc" id="L216">        return false;</span>
+<span class="fc" id="L211">    String name = path.segment(0);</span>
+<span class="fc bfc" id="L212" title="All 2 branches covered.">    if (path.size() == 1) {</span>
+<span class="fc bfc" id="L213" title="All 2 branches covered.">      if (state.todo.contains(name)) {</span>
+<span class="fc" id="L214">        return false;</span>
       }
-<span class="fc" id="L218">      Template tmpl = state.config.template();</span>
-<span class="fc" id="L219">      Check.that(name).is(keyIn(), tmpl.variables(),</span>
-<span class="fc" id="L220">          NO_SUCH_VARIABLE.getExceptionSupplier(getFQN(tmpl, name)));</span>
-<span class="fc" id="L221">      return true;</span>
+<span class="fc" id="L216">      Template tmpl = state.config.template();</span>
+<span class="fc" id="L217">      Check.that(name).is(keyIn(), tmpl.variables(),</span>
+<span class="fc" id="L218">          NO_SUCH_VARIABLE.getExceptionSupplier(getFQN(tmpl, name)));</span>
+<span class="fc" id="L219">      return true;</span>
     }
-<span class="fc" id="L223">    Template tmpl = state.config.template();</span>
-<span class="fc" id="L224">    Check.that(name).is(in(), tmpl.getNestedTemplateNames(),</span>
-<span class="fc" id="L225">        NO_SUCH_TEMPLATE.getExceptionSupplier(getFQN(tmpl, name)));</span>
-<span class="fc" id="L226">    Template nested = tmpl.getNestedTemplate(name);</span>
-<span class="fc" id="L227">    SoloSession[] childSessions = state.children.get(nested);</span>
-<span class="fc bfc" id="L228" title="All 2 branches covered.">    if (childSessions == null) {</span>
-<span class="fc" id="L229">      return false;</span>
-<span class="pc bpc" id="L230" title="1 of 2 branches missed.">    } else if (childSessions.length == 0) {</span>
-<span class="nc" id="L231">      return true;</span>
+<span class="fc" id="L221">    Template tmpl = state.config.template();</span>
+<span class="fc" id="L222">    Check.that(name).is(in(), tmpl.getNestedTemplateNames(),</span>
+<span class="fc" id="L223">        NO_SUCH_TEMPLATE.getExceptionSupplier(getFQN(tmpl, name)));</span>
+<span class="fc" id="L224">    Template nested = tmpl.getNestedTemplate(name);</span>
+<span class="fc" id="L225">    SoloSession[] childSessions = state.children.get(nested);</span>
+<span class="fc bfc" id="L226" title="All 2 branches covered.">    if (childSessions == null) {</span>
+<span class="fc" id="L227">      return false;</span>
+<span class="pc bpc" id="L228" title="1 of 2 branches missed.">    } else if (childSessions.length == 0) {</span>
+<span class="nc" id="L229">      return true;</span>
     }
-<span class="fc" id="L233">    return isSet(childSessions[0].state(), path.shift());</span>
+<span class="fc" id="L231">    return isSet(childSessions[0].state(), path.shift());</span>
   }
 
 }

@@ -156,10 +156,8 @@ final class RenderState {
           SoloSession[] children = state.children.get(t);
           if (children == null) {
             return false;
-          } else if (children.length > 0) {
-            if (!ready(children[0].state())) {
-              return false;
-            }
+          } else if (children.length > 0 && !ready(children[0].state())) {
+            return false;
           }
         }
       }

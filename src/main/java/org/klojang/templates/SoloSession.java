@@ -21,6 +21,7 @@ import static org.klojang.check.CommonProperties.size;
 import static org.klojang.templates.Accessor.UNDEFINED;
 import static org.klojang.templates.RenderErrorCode.*;
 import static org.klojang.templates.TemplateUtils.getFQN;
+import static org.klojang.templates.TemplateUtils.getVarsPerTemplate;
 import static org.klojang.templates.x.MTag.*;
 import static org.klojang.util.ArrayMethods.EMPTY_STRING_ARRAY;
 import static org.klojang.util.CollectionMethods.listify;
@@ -349,17 +350,17 @@ record SoloSession(SessionConfig config, RenderState state) implements
 
   @Override
   public RenderSession enableRecursive(String... nestedTemplateNames) {
-    Check.notNull(nestedTemplateNames);
+    Check.that(nestedTemplateNames, Tag.VARARGS).is(deepNotNull());
     if (nestedTemplateNames.length == 0) {
       for (Template t : config.template().getNestedTemplates()) {
-        if (!state.isDisabled(t) && TemplateUtils.getVarsPerTemplate(t).isEmpty()) {
+        if (!state.isDisabled(t) && getVarsPerTemplate(t).isEmpty()) {
           enableRecursive(this, t);
         }
       }
     } else {
       Set<String> names = Set.of(nestedTemplateNames);
       for (Template t : config.template().getNestedTemplates()) {
-        Check.that(TemplateUtils.getVarsPerTemplate(t)).is(empty(),
+        Check.that(getVarsPerTemplate(t)).is(empty(),
             NOT_TEXT_ONLY.getExceptionSupplier(t.getName()));
         enableRecursive(this, t, names);
       }
