@@ -261,6 +261,45 @@ public class TemplateTest {
     assertFalse(tmpl5.equals(tmpl6));
   }
 
+  @Test
+  public void hassVariables00() throws ParseException {
+    String src = """
+        ~%foo%
+        ~%%begin:companies%
+            COMPANY
+            ~%%begin:departments%
+                DEPARTMENT
+                ~%%begin:employees%
+                    EMPLOYEE
+                ~%%end:employees%
+            ~%%end:departments%
+            ~%%begin:activities%
+                ~%activity%
+                ~%%begin:locations%
+                    AMSTERDAM
+                ~%%end:locations%
+            ~%%end:activities%
+        ~%%end:companies%
+        """;
+    Template tmpl = Template.fromString(src);
+    assertTrue(tmpl.hasVariables());
+    assertTrue(tmpl.getNestedTemplate("companies").hasVariables());
+    assertFalse(tmpl.getNestedTemplate("companies")
+        .getNestedTemplate("departments")
+        .hasVariables());
+    assertFalse(tmpl.getNestedTemplate("companies")
+        .getNestedTemplate("departments")
+        .getNestedTemplate("employees")
+        .hasVariables());
+    assertTrue(tmpl.getNestedTemplate("companies")
+        .getNestedTemplate("activities")
+        .hasVariables());
+    assertFalse(tmpl.getNestedTemplate("companies")
+        .getNestedTemplate("activities")
+        .getNestedTemplate("locations")
+        .hasVariables());
+  }
+
   private static String nospace(String s) {
     return s.replaceAll("\\s+", "");
   }

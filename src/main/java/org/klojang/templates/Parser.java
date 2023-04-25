@@ -158,6 +158,8 @@ final class Parser {
           .getExceptionSupplier(src, offset + m.start(3), name));
       if (VarGroup.DEF.getName().equals(prefix) && placeholder == null) {
         throw NO_PLACEHOLDER_DEFINED.getException(src, offset + m.start(3), name);
+      } else if ("begin".equals(prefix) || "end".equals(prefix)) {
+        throw ILLEGAL_VAR_PREFIX.getException(src, offset + m.start(2), prefix);
       }
       parts.add(new VariablePart(offset + m.start(), prefix, name, placeholder));
       end = m.end();

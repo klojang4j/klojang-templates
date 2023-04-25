@@ -550,6 +550,26 @@ public class SoloSessionTest {
   }
 
   @Test
+  public void allSet00() throws ParseException {
+    String src = """
+        FOO
+        ~%%begin:companies%
+            COMPANY
+            ~%%begin:departments%
+                DEPARTMENT
+                ~%%begin:employees%
+                    EMPLOYEE
+                ~%%end:employees%
+            ~%%end:departments%
+        ~%%end:companies%
+        """;
+    Template tmpl = Template.fromString(src);
+    RenderSession rs = tmpl.newRenderSession();
+    assertTrue(rs.allSet());
+    assertTrue(rs.enableRecursive("companies").allSet());
+  }
+
+  @Test
   public void getTemplate00() throws ParseException {
     Template tmpl = Template.fromString("foo");
     RenderSession rs = tmpl.newRenderSession();

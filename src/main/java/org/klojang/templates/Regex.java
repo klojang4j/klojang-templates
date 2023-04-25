@@ -21,7 +21,8 @@ public final class Regex {
    * groups can be specified inline (within the template) using this syntax:
    * {@code ~%vargroup:varname%}. For example: {@code ~%html:firstName%}. Variable
    * group names must start with a letter and be followed by zero or more letters,
-   * digits, underscores or hyphens.
+   * digits, underscores or hyphens. "begin" and "end" are illegal names for variable
+   * groups.
    */
   public static final String REGEX_VAR_GROUP = "([a-zA-Z][a-zA-Z0-9_\\-]*)";
 

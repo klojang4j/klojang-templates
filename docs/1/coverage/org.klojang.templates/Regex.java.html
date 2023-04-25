@@ -21,7 +21,8 @@ public final class Regex {
    * groups can be specified inline (within the template) using this syntax:
    * {@code ~%vargroup:varname%}. For example: {@code ~%html:firstName%}. Variable
    * group names must start with a letter and be followed by zero or more letters,
-   * digits, underscores or hyphens.
+   * digits, underscores or hyphens. &quot;begin&quot; and &quot;end&quot; are illegal names for variable
+   * groups.
    */
   public static final String REGEX_VAR_GROUP = &quot;([a-zA-Z][a-zA-Z0-9_\\-]*)&quot;;
 
@@ -223,34 +224,34 @@ public final class Regex {
    * placeholders may appear inside a nested template.
    */
   public static final String REGEX_PLACEHOLDER = &quot;&lt;!--%--&gt;(.*?)&lt;!--%--&gt;&quot;;
-<span class="fc" id="L226">  static final Pattern VARIABLE = compile(REGEX_VARIABLE);</span>
-<span class="fc" id="L227">  static final Pattern CMT_VARIABLE = compile(REGEX_CMT_VARIABLE);</span>
-<span class="fc" id="L228">  static final Pattern INLINE_TEMPLATE_BEGIN = compile(REGEX_INLINE_TEMPLATE_BEGIN);</span>
-<span class="fc" id="L229">  static final Pattern INLINE_TEMPLATE_END = compile(REGEX_INLINE_TEMPLATE_END);</span>
-<span class="fc" id="L230">  static final Pattern INCLUDED_TEMPLATE = compile(REGEX_INCLUDED_TEMPLATE);</span>
-<span class="fc" id="L231">  static final Pattern CMT_INCLUDED_TEMPLATE = compile(REGEX_CMT_INCLUDED_TEMPLATE);</span>
+<span class="fc" id="L227">  static final Pattern VARIABLE = compile(REGEX_VARIABLE);</span>
+<span class="fc" id="L228">  static final Pattern CMT_VARIABLE = compile(REGEX_CMT_VARIABLE);</span>
+<span class="fc" id="L229">  static final Pattern INLINE_TEMPLATE_BEGIN = compile(REGEX_INLINE_TEMPLATE_BEGIN);</span>
+<span class="fc" id="L230">  static final Pattern INLINE_TEMPLATE_END = compile(REGEX_INLINE_TEMPLATE_END);</span>
+<span class="fc" id="L231">  static final Pattern INCLUDED_TEMPLATE = compile(REGEX_INCLUDED_TEMPLATE);</span>
+<span class="fc" id="L232">  static final Pattern CMT_INCLUDED_TEMPLATE = compile(REGEX_CMT_INCLUDED_TEMPLATE);</span>
   // Only used for syntax error reporting
-<span class="fc" id="L233">  static final Pattern DITCH_TAG = compile(REGEX_DITCH_TAG, MULTILINE);</span>
-<span class="fc" id="L234">  static final Pattern DITCH_BLOCK = compile(REGEX_DITCH_BLOCK, MULTILINE);</span>
-<span class="fc" id="L235">  static final Pattern PLACEHOLDER = compile(REGEX_PLACEHOLDER, MULTILINE);</span>
+<span class="fc" id="L234">  static final Pattern DITCH_TAG = compile(REGEX_DITCH_TAG, MULTILINE);</span>
+<span class="fc" id="L235">  static final Pattern DITCH_BLOCK = compile(REGEX_DITCH_BLOCK, MULTILINE);</span>
+<span class="fc" id="L236">  static final Pattern PLACEHOLDER = compile(REGEX_PLACEHOLDER, MULTILINE);</span>
   static final String PLACEHOLDER_START_END = &quot;&lt;!--%--&gt;&quot;;
 
   /**
    * Prints the regular expressions.
    */
   public static void printAll() {
-<span class="fc" id="L242">    System.out.println(&quot;VARIABLE ................: &quot; + VARIABLE);</span>
-<span class="fc" id="L243">    System.out.println(&quot;CMT_VARIABLE ............: &quot; + CMT_VARIABLE);</span>
-<span class="fc" id="L244">    System.out.println(&quot;INLINE_TEMPLATE_BEGIN ...: &quot; + INLINE_TEMPLATE_BEGIN);</span>
-<span class="fc" id="L245">    System.out.println(&quot;INLINE_TEMPLATE_END .....: &quot; + INLINE_TEMPLATE_END);</span>
-<span class="fc" id="L246">    System.out.println(&quot;INCLUDED_TEMPLATE .......: &quot; + INCLUDED_TEMPLATE);</span>
-<span class="fc" id="L247">    System.out.println(&quot;CMT_INCLUDED_TEMPLATE ...: &quot; + CMT_INCLUDED_TEMPLATE);</span>
-<span class="fc" id="L248">    System.out.println(&quot;DITCH_BLOCK .............: &quot; + DITCH_BLOCK);</span>
-<span class="fc" id="L249">    System.out.println(&quot;PLACEHOLDER .............: &quot; + PLACEHOLDER);</span>
-<span class="fc" id="L250">  }</span>
+<span class="fc" id="L243">    System.out.println(&quot;VARIABLE ................: &quot; + VARIABLE);</span>
+<span class="fc" id="L244">    System.out.println(&quot;CMT_VARIABLE ............: &quot; + CMT_VARIABLE);</span>
+<span class="fc" id="L245">    System.out.println(&quot;INLINE_TEMPLATE_BEGIN ...: &quot; + INLINE_TEMPLATE_BEGIN);</span>
+<span class="fc" id="L246">    System.out.println(&quot;INLINE_TEMPLATE_END .....: &quot; + INLINE_TEMPLATE_END);</span>
+<span class="fc" id="L247">    System.out.println(&quot;INCLUDED_TEMPLATE .......: &quot; + INCLUDED_TEMPLATE);</span>
+<span class="fc" id="L248">    System.out.println(&quot;CMT_INCLUDED_TEMPLATE ...: &quot; + CMT_INCLUDED_TEMPLATE);</span>
+<span class="fc" id="L249">    System.out.println(&quot;DITCH_BLOCK .............: &quot; + DITCH_BLOCK);</span>
+<span class="fc" id="L250">    System.out.println(&quot;PLACEHOLDER .............: &quot; + PLACEHOLDER);</span>
+<span class="fc" id="L251">  }</span>
 
-<span class="nc" id="L252">  private Regex() {</span>
-<span class="nc" id="L253">    throw new UnsupportedOperationException();</span>
+<span class="nc" id="L253">  private Regex() {</span>
+<span class="nc" id="L254">    throw new UnsupportedOperationException();</span>
   }
 
 }

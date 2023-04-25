@@ -373,6 +373,26 @@ public final class Template {
   }
 
   /**
+   * Returns {@code true} if there is at least one variable in this {@code Template},
+   * or any {@code Template descending} from it. Contrast this with
+   * {@link #hasVariable(String)}, which only checks for variables <i>directly</i>
+   * contained in this {@code Template}.
+   *
+   * @return {@code true} if there are no variables in this {@code Template}, or any
+   *     {@code Template descending} from it
+   */
+  public boolean hasVariables() {
+    return hasVariables(this);
+  }
+
+  private boolean hasVariables(Template t) {
+    if (t.varIndices.size() == 0) {
+      return t.getNestedTemplates().stream().anyMatch(this::hasVariables);
+    }
+    return true;
+  }
+
+  /**
    * Returns a {@code RenderSession} that can be used to populate and render this
    * {@code Template}. The {@code RenderSession} uses the
    * {@link AccessorRegistry#STANDARD_ACCESSORS predefined accessors} to extract

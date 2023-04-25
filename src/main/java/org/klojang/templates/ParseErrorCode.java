@@ -26,6 +26,13 @@ public enum ParseErrorCode {
   ILLEGAL_TMPL_NAME("Illegal name for template: \"%s\""),
 
   /**
+   * The template contained a variable with an illegal group name prefix (most likely
+   * "begin" or "end").
+   */
+  ILLEGAL_VAR_PREFIX(
+      "Illegal variable prefix: \"%s\" (forgot the 2nd percentage character?)"),
+
+  /**
    * The template contained a variable with the same name as a nested template.
    */
   VAR_NAME_WITH_TMPL_NAME("Variable cannot have same name as template: \"%s\""),
@@ -52,7 +59,8 @@ public enum ParseErrorCode {
    * The character sequence {@code ~%%begin:} was found, but no terminating
    * percentage-sign ({@code %}) followed.
    */
-  BEGIN_TAG_NOT_TERMINATED("Template begin tag (~%%%%begin:) not terminated by \"%%\""),
+  BEGIN_TAG_NOT_TERMINATED(
+      "Template begin tag (~%%%%begin:) not terminated by \"%%\""),
 
   /**
    * The character sequence {@code ~%%end:} was found, but no terminating

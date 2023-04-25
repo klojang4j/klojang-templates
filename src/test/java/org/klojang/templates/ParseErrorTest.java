@@ -2,9 +2,6 @@ package org.klojang.templates;
 
 import org.junit.jupiter.api.Test;
 
-import java.io.IOException;
-import java.io.InputStream;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.klojang.templates.ParseErrorCode.*;
@@ -20,7 +17,7 @@ public class ParseErrorTest {
         """;
     try {
       Template.fromString(src);
-     } catch (ParseException e) {
+    } catch (ParseException e) {
       assertEquals(NO_PLACEHOLDER_DEFINED, e.getErrorCode());
       return;
     }
@@ -58,6 +55,22 @@ public class ParseErrorTest {
       Template.fromString(src);
     } catch (ParseException e) {
       assertEquals(INVALID_INCLUDE_PATH, e.getErrorCode());
+      return;
+    }
+    fail();
+  }
+
+  @Test
+  public void twoPercentages00() {
+    String src = """
+        ~%begin:foo%
+          bar
+        ~%end:foo%
+        """;
+    try {
+      Template.fromString(src);
+    } catch (ParseException e) {
+      assertEquals(ILLEGAL_VAR_PREFIX, e.getErrorCode());
       return;
     }
     fail();

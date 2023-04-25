@@ -152,13 +152,13 @@ final class RenderState {
   private static boolean ready(RenderState state) {
     if (state.todo.isEmpty()) {
       for (Template t : state.config.template().getNestedTemplates()) {
-        if (!t.isTextOnly()) {
-          SoloSession[] children = state.children.get(t);
-          if (children == null) {
-            return false;
-          } else if (children.length > 0 && !ready(children[0].state())) {
+        SoloSession[] children = state.children.get(t);
+        if (children == null) {
+          if (t.hasVariables()) {
             return false;
           }
+        } else if (children.length > 0 && !ready(children[0].state())) {
+          return false;
         }
       }
       return true;
