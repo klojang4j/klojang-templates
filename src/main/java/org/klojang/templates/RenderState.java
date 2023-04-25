@@ -9,7 +9,6 @@ import java.util.*;
 import static java.util.stream.Collectors.toList;
 import static org.klojang.check.CommonChecks.*;
 import static org.klojang.templates.RenderErrorCode.*;
-import static org.klojang.templates.TemplateUtils.getAllVariableFQNames;
 import static org.klojang.templates.TemplateUtils.getFQN;
 
 final class RenderState {
@@ -114,35 +113,34 @@ final class RenderState {
     return vars;
   }
 
+  // collects absolute paths
   private static void collectUnsetVariables(RenderState state,
       ArrayList<String> vars) {
     Template myTmpl = state.config.template();
     state.todo.stream().map(var -> getFQN(myTmpl, var)).forEach(vars::add);
     myTmpl.getNestedTemplates().forEach(t -> {
-      if (state.children.containsKey(t)) {
-        Arrays.stream(state.children.get(t))
-            .limit(1)
-            .map(SoloSession::state)
-            .forEach(s -> collectUnsetVariables(s, vars));
-      } else {
-        vars.addAll(getAllVariableFQNames(t));
+      SoloSession[] myChildren = state.children.get(t);
+      if (myChildren == null) {
+        TemplateUtils.collectFQNs(t, vars);
+      } else if (myChildren.length > 0) {
+        collectUnsetVariables(myChildren[0].state(), vars);
       }
     });
   }
 
-  private static void collectUnsetVariables(RenderState state0,
+  // collects relative paths
+  private static void collectUnsetVariables(RenderState state,
       ArrayList<Path> vars,
       Path path) {
-    Template myTmpl = state0.config.template();
-    state0.todo.stream().map(path::append).forEach(vars::add);
+    state.todo.stream().map(path::append).forEach(vars::add);
+    Template myTmpl = state.config.template();
     myTmpl.getNestedTemplates().forEach(t -> {
-      if (state0.children.containsKey(t)) {
-        Arrays.stream(state0.children.get(t))
-            .limit(1)
-            .map(SoloSession::state)
-            .forEach(s -> collectUnsetVariables(s, vars, path.append(t.getName())));
-      } else {
-        TemplateUtils.collectFQNs(t, vars, path.append(t.getName()));
+      Path next = path.append(t.getName());
+      SoloSession[] myChildren = state.children.get(t);
+      if (myChildren == null) {
+        TemplateUtils.collectFQNs(t, vars, next);
+      } else if (myChildren.length > 0) {
+        collectUnsetVariables(myChildren[0].state(), vars, next);
       }
     });
   }

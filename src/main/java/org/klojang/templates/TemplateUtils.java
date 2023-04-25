@@ -10,8 +10,6 @@ import org.klojang.util.Tuple2;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 import static java.util.Arrays.copyOfRange;
 import static java.util.stream.Collectors.toList;
@@ -233,7 +231,7 @@ public final class TemplateUtils {
     return fqns;
   }
 
-  private static void collectFQNs(Template t0, ArrayList<String> vars) {
+  static void collectFQNs(Template t0, ArrayList<String> vars) {
     t0.getVariables().stream().map(s -> getFQN(t0, s)).forEach(vars::add);
     t0.getNestedTemplates().forEach(t -> collectFQNs(t, vars));
   }
