@@ -119,11 +119,11 @@ final class RenderState {
     Template myTmpl = state.config.template();
     state.todo.stream().map(var -> getFQN(myTmpl, var)).forEach(vars::add);
     myTmpl.getNestedTemplates().forEach(t -> {
-      SoloSession[] myChildren = state.children.get(t);
-      if (myChildren == null) {
+      SoloSession[] children = state.children.get(t);
+      if (children == null) {
         TemplateUtils.collectFQNs(t, vars);
-      } else if (myChildren.length > 0) {
-        collectUnsetVariables(myChildren[0].state(), vars);
+      } else if (children.length > 0) {
+        collectUnsetVariables(children[0].state(), vars);
       }
     });
   }
@@ -136,11 +136,11 @@ final class RenderState {
     Template myTmpl = state.config.template();
     myTmpl.getNestedTemplates().forEach(t -> {
       Path next = path.append(t.getName());
-      SoloSession[] myChildren = state.children.get(t);
-      if (myChildren == null) {
+      SoloSession[] children = state.children.get(t);
+      if (children == null) {
         TemplateUtils.collectFQNs(t, vars, next);
-      } else if (myChildren.length > 0) {
-        collectUnsetVariables(myChildren[0].state(), vars, next);
+      } else if (children.length > 0) {
+        collectUnsetVariables(children[0].state(), vars, next);
       }
     });
   }
@@ -150,16 +150,22 @@ final class RenderState {
   }
 
   private static boolean ready(RenderState state) {
-    if (state.todo.size() > 0) {
-      return false;
+    if (state.todo.isEmpty()) {
+      for (Template t : state.config.template().getNestedTemplates()) {
+        if (!t.isTextOnly()) {
+          SoloSession[] children = state.children.get(t);
+          if (children == null) {
+            return false;
+          } else if (children.length > 0) {
+            if (!ready(children[0].state())) {
+              return false;
+            }
+          }
+        }
+      }
+      return true;
     }
-    if (state.config.template().countNestedTemplates() > state.children.size()) {
-      return false;
-    }
-    return state.children.values().stream()
-        .flatMap(Arrays::stream)
-        .map(SoloSession::state)
-        .allMatch(RenderState::ready);
+    return false;
   }
 
   void unset(Path path) {
@@ -173,7 +179,7 @@ final class RenderState {
       Check.that(occurrences).is(notNull(),
           NO_SUCH_VARIABLE.getExceptionSupplier(name));
       state.todo.add(name);
-      occurrences.toGenericList().forEach(state.varValues.keySet()::remove);
+      occurrences.stream().forEach(state.varValues.keySet()::remove);
     } else {
       Template tmpl = state.config.template();
       Check.that(name).is(in(), tmpl.getNestedTemplateNames(),
