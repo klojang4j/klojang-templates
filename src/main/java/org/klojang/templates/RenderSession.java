@@ -87,16 +87,13 @@ public sealed interface RenderSession permits SoloSession, MultiSession {
    * and is specified using its
    * {@linkplain TemplateUtils#getFQN(Template, String) fully-qualified  name}. If
    * the variable is a top-level variable (the path consists of just one path
-   * segment), this method behaves just like {@link #set(String, Object)} &#8212;
-   * with 0 (zero) passed to the {@code IntFunction}.
+   * segment), this method behaves just like {@link #set(String, Object)}.
    *
    * @param path a path to a potentially deeply-nested variable
    * @param valueGenerator a function which is given the array index of the
    *     template instance for which to produce a value
    * @return this {@code RenderSession}
    * @see #setPath(String, IntFunction, VarGroup, boolean)
-   * @see TemplateUtils#getFQN(Template, String)
-   * @see org.klojang.path.Path
    */
   RenderSession setPath(String path, IntFunction<Object> valueGenerator);
 
@@ -184,7 +181,7 @@ public sealed interface RenderSession permits SoloSession, MultiSession {
    * @param varGroup the variable group to assign the variable to if the variable
    *     has no group name prefix.
    * @return this {@code RenderSession}
-   * @see #getAllUnsetVariables(boolean) 
+   * @see #getAllUnsetVariables(boolean)
    * @see Accessor#UNDEFINED
    * @see AccessorRegistry.Builder#nullEqualsUndefined(boolean)
    */
