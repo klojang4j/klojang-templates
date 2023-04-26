@@ -203,10 +203,8 @@ public final class Template {
   /**
    * Returns the root template of this (nested) {@code Template}. If this
    * {@code Template} <i>is</i> the root template, then this method returns
-   * {@code this}. If it is a nested or descendant template, it works its way up
-   * until it hits the root template. Only (and all) templates that were created
-   * using one {@code fromXXX()} methods a root templates. They are sometimes also
-   * referred to as <i>the main template</i>.
+   * {@code this}. Only (and all) templates that were created using one of the
+   * {@code fromXXX()} methods are root templates.
    *
    * @return the root template of this {@code Template}
    */
