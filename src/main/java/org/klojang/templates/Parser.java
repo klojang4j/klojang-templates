@@ -7,12 +7,11 @@ import org.slf4j.LoggerFactory;
 
 import java.util.*;
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import static org.klojang.check.CommonChecks.*;
 import static org.klojang.templates.InlineTemplateParser.CommentType;
 import static org.klojang.templates.ParseErrorCode.*;
-import static org.klojang.templates.ParseUtils.*;
+import static org.klojang.templates.ParseUtils.deleteEmptyLastLine;
 import static org.klojang.templates.Regex.*;
 import static org.klojang.templates.Template.ROOT_TEMPLATE_NAME;
 
@@ -45,18 +44,17 @@ final class Parser {
     logParsing(name, location);
     // Accumulates template names for duplicate checks:
     Set<String> names = new HashSet<>();
-    InlineTemplateParser itp = new InlineTemplateParser(src, location);
     List<Part> parts = purgeDitchBlocks();
-    parts = parse(parts, names, (x, y) -> itp.parse(x, y, CommentType.TAGS));
-    parts = parse(parts, names, (x, y) -> itp.parse(x, y, CommentType.BLOCK));
-    parts = parse(parts, names, (x, y) -> itp.parse(x, y, CommentType.NONE));
-    parts = parse(parts, names,
-        (x, y) -> parseIncludedTemplates(x, y, CMT_INCLUDED_TEMPLATE));
-    parts = parse(parts, names,
-        (x, y) -> parseIncludedTemplates(x, y, INCLUDED_TEMPLATE));
-    VarParser vp = new VarParser(src);
-    parts = parse(parts, names, (x, y) -> vp.parse(x, y, CMT_VARIABLE));
-    parts = parse(parts, names, (x, y) -> vp.parse(x, y, VARIABLE));
+    InlineTemplateParser pp1 = new InlineTemplateParser(src, location);
+    parts = parse(parts, names, (x, y) -> pp1.parse(x, y, CommentType.TAGS));
+    parts = parse(parts, names, (x, y) -> pp1.parse(x, y, CommentType.BLOCK));
+    parts = parse(parts, names, (x, y) -> pp1.parse(x, y, CommentType.NONE));
+    IncludedTemplateParser pp2 = new IncludedTemplateParser(src, location);
+    parts = parse(parts, names, (x, y) -> pp2.parse(x, y, CMT_INCLUDED_TEMPLATE));
+    parts = parse(parts, names, (x, y) -> pp2.parse(x, y, INCLUDED_TEMPLATE));
+    VarParser pp3 = new VarParser(src);
+    parts = parse(parts, names, (x, y) -> pp3.parse(x, y, CMT_VARIABLE));
+    parts = parse(parts, names, (x, y) -> pp3.parse(x, y, VARIABLE));
     parts = collectTextParts(parts);
     parts = deleteEmptyLastLine(parts);
     return parts;
@@ -97,47 +95,6 @@ final class Parser {
     return out;
   }
 
-  private List<Part> parseIncludedTemplates(UnparsedPart unparsed,
-      Set<String> names,
-      Pattern variant)
-      throws ParseException {
-    Matcher m = getMatcher(variant, unparsed);
-    if (!m.find()) {
-      return Collections.singletonList(unparsed);
-    }
-    List<Part> parts = new ArrayList<>();
-    int offset = unparsed.start(), end = 0;
-    do {
-      if (m.start() > end) {
-        parts.add(todo(unparsed, end, m.start()));
-      }
-      String name = m.group(2);
-      String path = m.group(3);
-      if (name == null) {
-        name = IncludedTemplatePart.basename(path);
-      }
-      Check.that(name).isNot(equalTo(), ROOT_TEMPLATE_NAME,
-          ILLEGAL_TMPL_NAME.getExceptionSupplier(src, offset + m.start(1), name));
-      Check.that(name).isNot(in(), names,
-          DUPLICATE_TMPL_NAME.getExceptionSupplier(src, offset + m.start(1), name));
-      TemplateLocation loc = new TemplateLocation(path, location.resolver());
-      if (!loc.isValid()) {
-        throw INVALID_INCLUDE_PATH.getException(src, offset + m.start(3), path);
-      }
-      names.add(name);
-      Template nested = TemplateCache.INSTANCE.get(loc, name);
-      if (!nested.getName().equals(name)) {
-        nested = new Template(nested, name);
-      }
-      parts.add(new IncludedTemplatePart(offset + m.start(), nested));
-      end = m.end();
-    } while (m.find());
-    if (end < unparsed.text().length()) {
-      parts.add(todo(unparsed, end, unparsed.text().length()));
-    }
-    return parts;
-  }
-
   /*
    * Text parts are all unparsed parts that remain after everything else has been
    * parsed out
@@ -166,23 +123,25 @@ final class Parser {
   private void checkGarbage(UnparsedPart unparsed) throws ParseException {
     String str = unparsed.text();
     int off = unparsed.start();
-    Matcher m = INLINE_TEMPLATE_END.matcher(str);
-    if (m.find()) {
-      throw DANGLING_END_TAG.getException(src, off + m.start(), m.group(2));
+    Matcher matcher = INLINE_TEMPLATE_END.matcher(str);
+    if (matcher.find()) {
+      throw DANGLING_END_TAG
+          .getException(src, off + matcher.start(), matcher.group(2));
     }
-    m = DITCH_TAG.matcher(str);
-    if (m.find()) {
-      throw DITCH_BLOCK_NOT_CLOSED.getException(src, off + m.start());
+    matcher = DITCH_TAG.matcher(str);
+    if (matcher.find()) {
+      throw DITCH_BLOCK_NOT_CLOSED
+          .getException(src, off + matcher.start());
     }
     int idx = str.indexOf("~%%begin:");
-    Check.that(idx).is(eq(), -1,
-        BEGIN_TAG_NOT_TERMINATED.getExceptionSupplier(src, off + idx));
+    Check.that(idx).is(eq(), -1, BEGIN_TAG_NOT_TERMINATED
+        .getExceptionSupplier(src, off + idx));
     idx = str.indexOf("~%%end:");
-    Check.that(idx).is(eq(), -1,
-        END_TAG_NOT_TERMINATED.getExceptionSupplier(src, off + idx));
+    Check.that(idx).is(eq(), -1, END_TAG_NOT_TERMINATED
+        .getExceptionSupplier(src, off + idx));
     idx = str.indexOf("~%%include:");
-    Check.that(idx).is(eq(), -1,
-        INCLUDE_TAG_NOT_TERMINATED.getExceptionSupplier(src, off + idx));
+    Check.that(idx).is(eq(), -1, INCLUDE_TAG_NOT_TERMINATED
+        .getExceptionSupplier(src, off + idx));
   }
 
   static void logParsing(String name, TemplateLocation location) {
