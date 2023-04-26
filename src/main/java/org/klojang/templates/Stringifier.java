@@ -1,16 +1,16 @@
 package org.klojang.templates;
 
-import org.klojang.util.StringMethods;
+import static org.klojang.util.StringMethods.EMPTY_STRING;
 
 /**
  * A stringifier is responsible for stringifying the values that are inserted into a
  * template. There is no limitation on the types of values that can be inserted into
- * a template, but they must ultimately be interwoven as strings with the boilerplate
- * text of the template. By default, all values except {@code null} are stringified
- * by calling {@code toString()} on them &#8212; {@code null} is stringified to an
- * empty string. However, this can be customized in multiple ways using a
- * {@link StringifierRegistry}. Note that escaping (e.g. HTML) and formatting (e.g.
- * dates) are also considered to be forms of stringification.
+ * a template, but they must ultimately be interwoven with the boilerplate text of
+ * the template, which requires them to become strings. By default, all values except
+ * {@code null} are stringified by calling {@code toString()} on them; {@code null}
+ * is stringified to an empty string. However, this can be customized in multiple
+ * ways using a {@link StringifierRegistry}. Note that escaping (e.g. HTML) and
+ * formatting (e.g. dates) are also considered to be forms of stringification.
  *
  * @author Ayco Holleman
  * @see StringifierRegistry
@@ -28,7 +28,7 @@ public interface Stringifier {
    *
    * @see StringifierRegistry.Builder
    */
-  Stringifier DEFAULT = x -> x == null ? StringMethods.EMPTY_STRING : x.toString();
+  Stringifier DEFAULT = x -> x == null ? EMPTY_STRING : x.toString();
 
   /**
    * Stringifies the specified value. Stringifier implementations <i>must</i> be able
