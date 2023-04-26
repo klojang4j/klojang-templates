@@ -3,12 +3,14 @@
 import org.klojang.util.StringMethods;
 
 /**
- * A stringifier is responsible for stringifying the values coming back from
- * the data access layer. Since these can, in principle, have any type, the
- * {@link RenderSession} needs to know how to stringify them, so they can be embedded
- * in the template. This can be configured using a {@link StringifierRegistry}.
- * Note that escaping (e.g. HTML) and formatting (e.g. dates) are also considered to
- * be forms of stringification.
+ * A stringifier is responsible for stringifying the values that are inserted into a
+ * template. There is no limitation on the types of values that can be inserted into
+ * a template, but they must ultimately be interwoven as strings with the boilerplate
+ * text of the template. By default, all values except {@code null} are stringified
+ * by calling {@code toString()} on them &amp;#8212; {@code null} is stringified to an
+ * empty string. However, this can be customized in multiple ways using a
+ * {@link StringifierRegistry}. Note that escaping (e.g. HTML) and formatting (e.g.
+ * dates) are also considered to be forms of stringification.
  *
  * @author Ayco Holleman
  * @see StringifierRegistry
@@ -26,7 +28,7 @@ public interface Stringifier {
    *
    * @see StringifierRegistry.Builder
    */
-<span class="fc bfc" id="L29" title="All 2 branches covered.">  Stringifier DEFAULT = x -&gt; x == null ? StringMethods.EMPTY_STRING : x.toString();</span>
+<span class="fc bfc" id="L31" title="All 2 branches covered.">  Stringifier DEFAULT = x -&gt; x == null ? StringMethods.EMPTY_STRING : x.toString();</span>
 
   /**
    * Stringifies the specified value. Stringifier implementations &lt;i&gt;must&lt;/i&gt; be able
