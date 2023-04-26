@@ -201,8 +201,6 @@ public final class Regex {
       + REGEX_INCLUDED_TEMPLATE
       + &quot; ?--&gt;&quot;;
 
-  // Used only for syntax error detection:
-  static final String REGEX_DITCH_TAG = &quot;&lt;!--%%--&gt;&quot;;
 
   /**
    * Regular expression for ditch blocks. A ditch block is a pair of
@@ -214,6 +212,11 @@ public final class Regex {
    */
   public static final String REGEX_DITCH_BLOCK = &quot;&lt;!--%%--&gt;(.*?)&lt;!--%%--&gt;&quot;;
 
+  // Used only for syntax error detection:
+  static final String DITCH_BLOCK_TOKEN = &quot;&lt;!--%%--&gt;&quot;;
+  static final String PLACEHOLDER_TOKEN = &quot;&lt;!--%--&gt;&quot;;
+
+
   /**
    * Regular expression for placeholders. A placeholder is a pair of {@code &lt;!--%--&gt;}
    * tags and any text between them. When a template is rendered by &lt;i&gt;Klojang
@@ -224,17 +227,14 @@ public final class Regex {
    * placeholders may appear inside a nested template.
    */
   public static final String REGEX_PLACEHOLDER = &quot;&lt;!--%--&gt;(.*?)&lt;!--%--&gt;&quot;;
-<span class="fc" id="L227">  static final Pattern VARIABLE = compile(REGEX_VARIABLE);</span>
-<span class="fc" id="L228">  static final Pattern CMT_VARIABLE = compile(REGEX_CMT_VARIABLE);</span>
-<span class="fc" id="L229">  static final Pattern INLINE_TEMPLATE_BEGIN = compile(REGEX_INLINE_TEMPLATE_BEGIN);</span>
-<span class="fc" id="L230">  static final Pattern INLINE_TEMPLATE_END = compile(REGEX_INLINE_TEMPLATE_END);</span>
-<span class="fc" id="L231">  static final Pattern INCLUDED_TEMPLATE = compile(REGEX_INCLUDED_TEMPLATE);</span>
-<span class="fc" id="L232">  static final Pattern CMT_INCLUDED_TEMPLATE = compile(REGEX_CMT_INCLUDED_TEMPLATE);</span>
-  // Only used for syntax error reporting
-<span class="fc" id="L234">  static final Pattern DITCH_TAG = compile(REGEX_DITCH_TAG, MULTILINE);</span>
-<span class="fc" id="L235">  static final Pattern DITCH_BLOCK = compile(REGEX_DITCH_BLOCK, MULTILINE);</span>
-<span class="fc" id="L236">  static final Pattern PLACEHOLDER = compile(REGEX_PLACEHOLDER, MULTILINE);</span>
-  static final String PLACEHOLDER_START_END = &quot;&lt;!--%--&gt;&quot;;
+<span class="fc" id="L230">  static final Pattern VARIABLE = compile(REGEX_VARIABLE);</span>
+<span class="fc" id="L231">  static final Pattern CMT_VARIABLE = compile(REGEX_CMT_VARIABLE);</span>
+<span class="fc" id="L232">  static final Pattern INLINE_TEMPLATE_BEGIN = compile(REGEX_INLINE_TEMPLATE_BEGIN);</span>
+<span class="fc" id="L233">  static final Pattern INLINE_TEMPLATE_END = compile(REGEX_INLINE_TEMPLATE_END);</span>
+<span class="fc" id="L234">  static final Pattern INCLUDED_TEMPLATE = compile(REGEX_INCLUDED_TEMPLATE);</span>
+<span class="fc" id="L235">  static final Pattern CMT_INCLUDED_TEMPLATE = compile(REGEX_CMT_INCLUDED_TEMPLATE);</span>
+<span class="fc" id="L236">  static final Pattern DITCH_BLOCK = compile(REGEX_DITCH_BLOCK, MULTILINE);</span>
+<span class="fc" id="L237">  static final Pattern PLACEHOLDER = compile(REGEX_PLACEHOLDER, MULTILINE);</span>
 
   /**
    * Prints the regular expressions.

@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory;
 import java.util.*;
 import java.util.regex.Matcher;
 
-import static org.klojang.check.CommonChecks.*;
+import static org.klojang.check.CommonChecks.eq;
 import static org.klojang.templates.InlineTemplateParser.CommentType;
 import static org.klojang.templates.ParseErrorCode.*;
 import static org.klojang.templates.ParseUtils.deleteEmptyLastLine;
@@ -107,54 +107,51 @@ final class Parser {
 <span class="fc bfc" id="L107" title="All 2 branches covered.">        if (!text.isEmpty()) {</span>
 <span class="fc" id="L108">          checkGarbage(unparsed);</span>
 <span class="fc" id="L109">          String purified = PLACEHOLDER.matcher(text).replaceAll(&quot;&quot;);</span>
-<span class="fc bfc" id="L110" title="All 2 branches covered.">          if (purified.contains(PLACEHOLDER_START_END)) {</span>
-<span class="fc" id="L111">            int idx = p.start() + text.indexOf(PLACEHOLDER_START_END);</span>
-<span class="fc" id="L112">            throw PLACEHOLDER_NOT_CLOSED.getException(src, idx);</span>
-          }
-<span class="fc" id="L114">          out.add(new TextPart(purified, p.start()));</span>
+<span class="fc" id="L110">          int idx = text.indexOf(PLACEHOLDER_TOKEN);</span>
+<span class="fc" id="L111">          Check.that(idx).is(eq(), -1, PLACEHOLDER_NOT_CLOSED</span>
+<span class="fc" id="L112">              .getExceptionSupplier(src, p.start() + idx));</span>
+<span class="fc" id="L113">          out.add(new TextPart(purified, p.start()));</span>
         }
-<span class="fc" id="L116">      } else {</span>
-<span class="fc" id="L117">        out.add(p);</span>
+<span class="fc" id="L115">      } else {</span>
+<span class="fc" id="L116">        out.add(p);</span>
       }
-<span class="fc" id="L119">    }</span>
-<span class="fc" id="L120">    return out;</span>
+<span class="fc" id="L118">    }</span>
+<span class="fc" id="L119">    return out;</span>
   }
 
   private void checkGarbage(UnparsedPart unparsed) throws ParseException {
-<span class="fc" id="L124">    String str = unparsed.text();</span>
-<span class="fc" id="L125">    int off = unparsed.start();</span>
-<span class="fc" id="L126">    Matcher matcher = INLINE_TEMPLATE_END.matcher(str);</span>
-<span class="fc bfc" id="L127" title="All 2 branches covered.">    if (matcher.find()) {</span>
-<span class="fc" id="L128">      throw DANGLING_END_TAG</span>
-<span class="fc" id="L129">          .getException(src, off + matcher.start(), matcher.group(2));</span>
+<span class="fc" id="L123">    String str = unparsed.text();</span>
+<span class="fc" id="L124">    int off = unparsed.start();</span>
+<span class="fc" id="L125">    Matcher matcher = INLINE_TEMPLATE_END.matcher(str);</span>
+<span class="fc bfc" id="L126" title="All 2 branches covered.">    if (matcher.find()) {</span>
+<span class="fc" id="L127">      throw DANGLING_END_TAG</span>
+<span class="fc" id="L128">          .getException(src, off + matcher.start(), matcher.group(2));</span>
     }
-<span class="fc" id="L131">    matcher = DITCH_TAG.matcher(str);</span>
-<span class="fc bfc" id="L132" title="All 2 branches covered.">    if (matcher.find()) {</span>
-<span class="fc" id="L133">      throw DITCH_BLOCK_NOT_CLOSED</span>
-<span class="fc" id="L134">          .getException(src, off + matcher.start());</span>
-    }
-<span class="fc" id="L136">    int idx = str.indexOf(&quot;~%%begin:&quot;);</span>
-<span class="fc" id="L137">    Check.that(idx).is(eq(), -1, BEGIN_TAG_NOT_TERMINATED</span>
+<span class="fc" id="L130">    int idx = str.indexOf(&quot;~%%begin:&quot;);</span>
+<span class="fc" id="L131">    Check.that(idx).is(eq(), -1, BEGIN_TAG_NOT_TERMINATED</span>
+<span class="fc" id="L132">        .getExceptionSupplier(src, off + idx));</span>
+<span class="fc" id="L133">    idx = str.indexOf(&quot;~%%end:&quot;);</span>
+<span class="fc" id="L134">    Check.that(idx).is(eq(), -1, END_TAG_NOT_TERMINATED</span>
+<span class="fc" id="L135">        .getExceptionSupplier(src, off + idx));</span>
+<span class="fc" id="L136">    idx = str.indexOf(&quot;~%%include:&quot;);</span>
+<span class="fc" id="L137">    Check.that(idx).is(eq(), -1, INCLUDE_TAG_NOT_TERMINATED</span>
 <span class="fc" id="L138">        .getExceptionSupplier(src, off + idx));</span>
-<span class="fc" id="L139">    idx = str.indexOf(&quot;~%%end:&quot;);</span>
-<span class="fc" id="L140">    Check.that(idx).is(eq(), -1, END_TAG_NOT_TERMINATED</span>
+<span class="fc" id="L139">    idx = str.indexOf(DITCH_BLOCK_TOKEN);</span>
+<span class="fc" id="L140">    Check.that(idx).is(eq(), -1, DITCH_BLOCK_NOT_CLOSED</span>
 <span class="fc" id="L141">        .getExceptionSupplier(src, off + idx));</span>
-<span class="fc" id="L142">    idx = str.indexOf(&quot;~%%include:&quot;);</span>
-<span class="fc" id="L143">    Check.that(idx).is(eq(), -1, INCLUDE_TAG_NOT_TERMINATED</span>
-<span class="fc" id="L144">        .getExceptionSupplier(src, off + idx));</span>
-<span class="fc" id="L145">  }</span>
+<span class="fc" id="L142">  }</span>
 
   static void logParsing(String name, TemplateLocation location) {
-<span class="pc bpc" id="L148" title="1 of 2 branches missed.">    if (LOG.isTraceEnabled()) {</span>
-<span class="nc bnc" id="L149" title="All 2 branches missed.">      if (name.equals(ROOT_TEMPLATE_NAME)) {</span>
-<span class="nc" id="L150">        LOG.trace(&quot;Parsing root template&quot;);</span>
-<span class="nc bnc" id="L151" title="All 2 branches missed.">      } else if (location.isString()) {</span>
-<span class="nc" id="L152">        LOG.trace(&quot;Parsing inline template \&quot;{}\&quot;&quot;, name);</span>
+<span class="pc bpc" id="L145" title="1 of 2 branches missed.">    if (LOG.isTraceEnabled()) {</span>
+<span class="nc bnc" id="L146" title="All 2 branches missed.">      if (name.equals(ROOT_TEMPLATE_NAME)) {</span>
+<span class="nc" id="L147">        LOG.trace(&quot;Parsing root template&quot;);</span>
+<span class="nc bnc" id="L148" title="All 2 branches missed.">      } else if (location.isString()) {</span>
+<span class="nc" id="L149">        LOG.trace(&quot;Parsing inline template \&quot;{}\&quot;&quot;, name);</span>
       } else {
-<span class="nc" id="L154">        LOG.trace(&quot;Parsing included template \&quot;{}\&quot;&quot;, name);</span>
+<span class="nc" id="L151">        LOG.trace(&quot;Parsing included template \&quot;{}\&quot;&quot;, name);</span>
       }
     }
-<span class="fc" id="L157">  }</span>
+<span class="fc" id="L154">  }</span>
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

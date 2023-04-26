@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory;
 import java.util.*;
 import java.util.regex.Matcher;
 
-import static org.klojang.check.CommonChecks.*;
+import static org.klojang.check.CommonChecks.eq;
 import static org.klojang.templates.InlineTemplateParser.CommentType;
 import static org.klojang.templates.ParseErrorCode.*;
 import static org.klojang.templates.ParseUtils.deleteEmptyLastLine;
@@ -107,10 +107,9 @@ final class Parser {
         if (!text.isEmpty()) {
           checkGarbage(unparsed);
           String purified = PLACEHOLDER.matcher(text).replaceAll("");
-          if (purified.contains(PLACEHOLDER_START_END)) {
-            int idx = p.start() + text.indexOf(PLACEHOLDER_START_END);
-            throw PLACEHOLDER_NOT_CLOSED.getException(src, idx);
-          }
+          int idx = text.indexOf(PLACEHOLDER_TOKEN);
+          Check.that(idx).is(eq(), -1, PLACEHOLDER_NOT_CLOSED
+              .getExceptionSupplier(src, p.start() + idx));
           out.add(new TextPart(purified, p.start()));
         }
       } else {
@@ -128,11 +127,6 @@ final class Parser {
       throw DANGLING_END_TAG
           .getException(src, off + matcher.start(), matcher.group(2));
     }
-    matcher = DITCH_TAG.matcher(str);
-    if (matcher.find()) {
-      throw DITCH_BLOCK_NOT_CLOSED
-          .getException(src, off + matcher.start());
-    }
     int idx = str.indexOf("~%%begin:");
     Check.that(idx).is(eq(), -1, BEGIN_TAG_NOT_TERMINATED
         .getExceptionSupplier(src, off + idx));
@@ -141,6 +135,9 @@ final class Parser {
         .getExceptionSupplier(src, off + idx));
     idx = str.indexOf("~%%include:");
     Check.that(idx).is(eq(), -1, INCLUDE_TAG_NOT_TERMINATED
+        .getExceptionSupplier(src, off + idx));
+    idx = str.indexOf(DITCH_BLOCK_TOKEN);
+    Check.that(idx).is(eq(), -1, DITCH_BLOCK_NOT_CLOSED
         .getExceptionSupplier(src, off + idx));
   }
 

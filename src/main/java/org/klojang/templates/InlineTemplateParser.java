@@ -69,10 +69,7 @@ final class InlineTemplateParser {
         parts.add(todo(unparsed, end, m.start()));
       }
       String name = m.group(1);
-      Check.that(name).isNot(equalTo(), ROOT_TEMPLATE_NAME,
-          ILLEGAL_TMPL_NAME.getExceptionSupplier(src, offset + m.start(1), name));
-      Check.that(name).isNot(in(), names,
-          DUPLICATE_TMPL_NAME.getExceptionSupplier(src, offset + m.start(1), name));
+      validate(name, names, m, offset);
       names.add(name);
       EndTag endTag = getEndTag(type, unparsed, name, m.end(), 0);
       String mySrc = unparsed.text().substring(m.end(), endTag.start());
@@ -98,7 +95,7 @@ final class InlineTemplateParser {
 
   }
 
-  private EndTag getEndTag(CommentType type,
+   private EndTag getEndTag(CommentType type,
       UnparsedPart unparsed,
       String tmplName,
       int offset,
@@ -121,6 +118,18 @@ final class InlineTemplateParser {
       return getEndTag(type, unparsed, tmplName, mEnd.end(), --level);
     }
     return getEndTag(type, unparsed, tmplName, mStart.end(), ++level);
+  }
+
+  private void validate(String name, Set<String> names, Matcher matcher, int offset)
+      throws ParseException {
+    Check.that(name).isNot(equalTo(), ROOT_TEMPLATE_NAME,
+        ILLEGAL_TMPL_NAME.getExceptionSupplier(src,
+            offset + matcher.start(1),
+            name));
+    Check.that(name).isNot(in(), names,
+        DUPLICATE_TMPL_NAME.getExceptionSupplier(src,
+            offset + matcher.start(1),
+            name));
   }
 
 }

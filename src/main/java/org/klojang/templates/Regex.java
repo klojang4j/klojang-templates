@@ -201,8 +201,6 @@ public final class Regex {
       + REGEX_INCLUDED_TEMPLATE
       + " ?-->";
 
-  // Used only for syntax error detection:
-  static final String REGEX_DITCH_TAG = "<!--%%-->";
 
   /**
    * Regular expression for ditch blocks. A ditch block is a pair of
@@ -213,6 +211,11 @@ public final class Regex {
    * by <i>Klojang Templates</i>, including nested templates.
    */
   public static final String REGEX_DITCH_BLOCK = "<!--%%-->(.*?)<!--%%-->";
+
+  // Used only for syntax error detection:
+  static final String DITCH_BLOCK_TOKEN = "<!--%%-->";
+  static final String PLACEHOLDER_TOKEN = "<!--%-->";
+
 
   /**
    * Regular expression for placeholders. A placeholder is a pair of {@code <!--%-->}
@@ -230,11 +233,8 @@ public final class Regex {
   static final Pattern INLINE_TEMPLATE_END = compile(REGEX_INLINE_TEMPLATE_END);
   static final Pattern INCLUDED_TEMPLATE = compile(REGEX_INCLUDED_TEMPLATE);
   static final Pattern CMT_INCLUDED_TEMPLATE = compile(REGEX_CMT_INCLUDED_TEMPLATE);
-  // Only used for syntax error reporting
-  static final Pattern DITCH_TAG = compile(REGEX_DITCH_TAG, MULTILINE);
   static final Pattern DITCH_BLOCK = compile(REGEX_DITCH_BLOCK, MULTILINE);
   static final Pattern PLACEHOLDER = compile(REGEX_PLACEHOLDER, MULTILINE);
-  static final String PLACEHOLDER_START_END = "<!--%-->";
 
   /**
    * Prints the regular expressions.

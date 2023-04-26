@@ -42,7 +42,7 @@ final class VarParser {
 <span class="fc" id="L42">      String prefix = m.group(2);</span>
 <span class="fc" id="L43">      String name = m.group(3);</span>
 <span class="fc bfc" id="L44" title="All 2 branches covered.">      String placeholder = variant == CMT_VARIABLE ? m.group(8) : null;</span>
-<span class="fc" id="L45">      checkVar(prefix, name, placeholder, names, m, offset);</span>
+<span class="fc" id="L45">      validate(prefix, name, placeholder, names, m, offset);</span>
 <span class="fc" id="L46">      parts.add(new VariablePart(offset + m.start(), prefix, name, placeholder));</span>
 <span class="fc" id="L47">      end = m.end();</span>
 <span class="fc bfc" id="L48" title="All 2 branches covered.">    } while (m.find());</span>
@@ -52,7 +52,7 @@ final class VarParser {
 <span class="fc" id="L52">    return parts;</span>
   }
 
-  private void checkVar(String prefix,
+  private void validate(String prefix,
       String name,
       String placeholder,
       Set&lt;String&gt; names,
