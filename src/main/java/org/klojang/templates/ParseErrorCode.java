@@ -35,7 +35,7 @@ public enum ParseErrorCode {
   /**
    * The template contained a variable with the same name as a nested template.
    */
-  VAR_NAME_WITH_TMPL_NAME("Variable cannot have same name as template: \"%s\""),
+  VAR_WITH_TMPL_NAME("Variable cannot have same name as template: \"%s\""),
 
   /**
    * A template variable had the predefined {@link VarGroup#DEF def:} prefix, but no

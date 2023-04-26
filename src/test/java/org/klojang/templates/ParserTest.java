@@ -442,7 +442,7 @@ public class ParserTest {
     try {
       Template.fromString(src);
     } catch (ParseException e) {
-      assertEquals(ParseErrorCode.VAR_NAME_WITH_TMPL_NAME, e.getErrorCode());
+      assertEquals(ParseErrorCode.VAR_WITH_TMPL_NAME, e.getErrorCode());
     }
   }
 
@@ -459,7 +459,7 @@ public class ParserTest {
     try {
       Template.fromString(src);
     } catch (ParseException e) {
-      assertEquals(ParseErrorCode.VAR_NAME_WITH_TMPL_NAME, e.getErrorCode());
+      assertEquals(ParseErrorCode.VAR_WITH_TMPL_NAME, e.getErrorCode());
     }
   }
 

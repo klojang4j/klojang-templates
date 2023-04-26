@@ -262,7 +262,7 @@ public class TemplateTest {
   }
 
   @Test
-  public void hassVariables00() throws ParseException {
+  public void hasVariables00() throws ParseException {
     String src = """
         ~%foo%
         ~%%begin:companies%
@@ -298,6 +298,33 @@ public class TemplateTest {
         .getNestedTemplate("activities")
         .getNestedTemplate("locations")
         .hasVariables());
+  }
+
+  @Test
+  public void getRootTemplate02() throws ParseException {
+    String src = """
+        ~%foo%
+        ~%%begin:companies%
+            ~%%begin:departments%
+                ~%%begin:employees%
+                 ~%%end:employees%
+            ~%%end:departments%
+            ~%%begin:activities%
+                 ~%%begin:locations%
+                 ~%%end:locations%
+            ~%%end:activities%
+        ~%%end:companies%
+        """;
+    Template tmpl = Template.fromString(src);
+    assertSame(tmpl, tmpl.getRootTemplate());
+    assertSame(tmpl, tmpl.getNestedTemplate("companies").getRootTemplate());
+    assertSame(tmpl, tmpl.getNestedTemplate("companies")
+        .getNestedTemplate("activities")
+        .getRootTemplate());
+    assertSame(tmpl, tmpl.getNestedTemplate("companies")
+        .getNestedTemplate("activities")
+        .getNestedTemplate("locations")
+        .getRootTemplate());
   }
 
   private static String nospace(String s) {

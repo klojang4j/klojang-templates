@@ -54,8 +54,9 @@ final class Parser {
         (x, y) -> parseIncludedTemplates(x, y, CMT_INCLUDED_TEMPLATE));
     parts = parse(parts, names,
         (x, y) -> parseIncludedTemplates(x, y, INCLUDED_TEMPLATE));
-    parts = parse(parts, names, (x, y) -> parseVars(x, y, CMT_VARIABLE));
-    parts = parse(parts, names, (x, y) -> parseVars(x, y, VARIABLE));
+    VarParser vp = new VarParser(src);
+    parts = parse(parts, names, (x, y) -> vp.parse(x, y, CMT_VARIABLE));
+    parts = parse(parts, names, (x, y) -> vp.parse(x, y, VARIABLE));
     parts = collectTextParts(parts);
     parts = deleteEmptyLastLine(parts);
     return parts;
@@ -129,39 +130,6 @@ final class Parser {
         nested = new Template(nested, name);
       }
       parts.add(new IncludedTemplatePart(offset + m.start(), nested));
-      end = m.end();
-    } while (m.find());
-    if (end < unparsed.text().length()) {
-      parts.add(todo(unparsed, end, unparsed.text().length()));
-    }
-    return parts;
-  }
-
-  private List<Part> parseVars(UnparsedPart unparsed,
-      Set<String> names,
-      Pattern variant)
-      throws ParseException {
-    Matcher m = getMatcher(variant, unparsed);
-    if (!m.find()) {
-      return Collections.singletonList(unparsed);
-    }
-    List<Part> parts = new ArrayList<>();
-    int offset = unparsed.start(), end = 0;
-    do {
-      if (m.start() > end) {
-        parts.add(todo(unparsed, end, m.start()));
-      }
-      String prefix = m.group(2);
-      String name = m.group(3);
-      String placeholder = variant == CMT_VARIABLE ? m.group(8) : null;
-      Check.that(name).isNot(in(), names, VAR_NAME_WITH_TMPL_NAME
-          .getExceptionSupplier(src, offset + m.start(3), name));
-      if (VarGroup.DEF.getName().equals(prefix) && placeholder == null) {
-        throw NO_PLACEHOLDER_DEFINED.getException(src, offset + m.start(3), name);
-      } else if ("begin".equals(prefix) || "end".equals(prefix)) {
-        throw ILLEGAL_VAR_PREFIX.getException(src, offset + m.start(2), prefix);
-      }
-      parts.add(new VariablePart(offset + m.start(), prefix, name, placeholder));
       end = m.end();
     } while (m.find());
     if (end < unparsed.text().length()) {
