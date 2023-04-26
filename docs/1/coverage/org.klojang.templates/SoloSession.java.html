@@ -21,7 +21,7 @@ import static org.klojang.check.CommonProperties.size;
 import static org.klojang.templates.Accessor.UNDEFINED;
 import static org.klojang.templates.RenderErrorCode.*;
 import static org.klojang.templates.TemplateUtils.getFQN;
-import static org.klojang.templates.TemplateUtils.getVarsPerTemplate;
+import static org.klojang.templates.TemplateUtils.getAllVariables;
 import static org.klojang.templates.x.MTag.*;
 import static org.klojang.util.ArrayMethods.EMPTY_STRING_ARRAY;
 import static org.klojang.util.CollectionMethods.listify;
@@ -353,14 +353,14 @@ import static org.klojang.util.ObjectMethods.isEmpty;
 <span class="fc" id="L353">    Check.that(nestedTemplateNames, Tag.VARARGS).is(deepNotNull());</span>
 <span class="fc bfc" id="L354" title="All 2 branches covered.">    if (nestedTemplateNames.length == 0) {</span>
 <span class="fc bfc" id="L355" title="All 2 branches covered.">      for (Template t : config.template().getNestedTemplates()) {</span>
-<span class="pc bpc" id="L356" title="2 of 4 branches missed.">        if (!state.isDisabled(t) &amp;&amp; getVarsPerTemplate(t).isEmpty()) {</span>
+<span class="pc bpc" id="L356" title="2 of 4 branches missed.">        if (!state.isDisabled(t) &amp;&amp; getAllVariables(t).isEmpty()) {</span>
 <span class="fc" id="L357">          enableRecursive(this, t);</span>
         }
 <span class="fc" id="L359">      }</span>
     } else {
 <span class="fc" id="L361">      Set&lt;String&gt; names = Set.of(nestedTemplateNames);</span>
 <span class="fc bfc" id="L362" title="All 2 branches covered.">      for (Template t : config.template().getNestedTemplates()) {</span>
-<span class="fc" id="L363">        Check.that(getVarsPerTemplate(t)).is(empty(),</span>
+<span class="fc" id="L363">        Check.that(getAllVariables(t)).is(empty(),</span>
 <span class="fc" id="L364">            NOT_TEXT_ONLY.getExceptionSupplier(t.getName()));</span>
 <span class="fc" id="L365">        enableRecursive(this, t, names);</span>
 <span class="fc" id="L366">      }</span>

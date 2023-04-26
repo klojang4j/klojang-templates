@@ -201,17 +201,17 @@ public final class TemplateUtils {
    * @return all variable names in this {@code Template} and the templates nested
    *     inside it
    */
-  public static List&lt;Tuple2&lt;Template, String&gt;&gt; getVarsPerTemplate(Template template) {
+  public static List&lt;Tuple2&lt;Template, String&gt;&gt; getAllVariables(Template template) {
 <span class="fc" id="L205">    Check.notNull(template, MTag.TEMPLATE);</span>
 <span class="fc" id="L206">    ArrayList&lt;Tuple2&lt;Template, String&gt;&gt; tuples = new ArrayList&lt;&gt;();</span>
-<span class="fc" id="L207">    collectVarsPerTemplate(template, tuples);</span>
+<span class="fc" id="L207">    collectVars(template, tuples);</span>
 <span class="fc" id="L208">    return tuples;</span>
   }
 
-  private static void collectVarsPerTemplate(Template t0,
+  private static void collectVars(Template t0,
       ArrayList&lt;Tuple2&lt;Template, String&gt;&gt; tuples) {
 <span class="fc" id="L213">    t0.getVariables().stream().map(s -&gt; Tuple2.of(t0, s)).forEach(tuples::add);</span>
-<span class="fc" id="L214">    t0.getNestedTemplates().forEach(t -&gt; collectVarsPerTemplate(t, tuples));</span>
+<span class="fc" id="L214">    t0.getNestedTemplates().forEach(t -&gt; collectVars(t, tuples));</span>
 <span class="fc" id="L215">  }</span>
 
   /**

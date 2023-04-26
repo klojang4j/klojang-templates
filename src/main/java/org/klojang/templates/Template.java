@@ -201,10 +201,12 @@ public final class Template {
   }
 
   /**
-   * Returns the root template of this (nested) {@code Template}. That is, the
-   * {@code Template} that was explicitly created by a call to one of the
-   * {@code fromXXX()} methods of this class. If this {@code Template} <i>is</i> the
-   * root template, then this method returns {@code this}.
+   * Returns the root template of this (nested) {@code Template}. If this
+   * {@code Template} <i>is</i> the root template, then this method returns
+   * {@code this}. If it is a nested or descendant template, it works its way up
+   * until it hits the root template. Only (and all) templates that were created
+   * using one {@code fromXXX()} methods a root templates. They are sometimes also
+   * referred to as <i>the main template</i>.
    *
    * @return the root template of this {@code Template}
    */
@@ -242,6 +244,8 @@ public final class Template {
    * inside nested templates are ignored. The returned {@code Set} is unmodifiable.
    *
    * @return the names of all variables in this {@code Template}
+   * @see TemplateUtils#getAllVariables(Template)
+   * @see TemplateUtils#getAllVariableFQNames(Template)
    */
   public Set<String> getVariables() {
     return varIndices.keySet();

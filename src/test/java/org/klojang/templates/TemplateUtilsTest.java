@@ -93,7 +93,7 @@ public class TemplateUtilsTest {
   @Test
   public void getVarsPerTemplate00() throws ParseException {
     Template root = Template.fromString(src);
-    List<Tuple2<Template, String>> vars = TemplateUtils.getVarsPerTemplate(root);
+    List<Tuple2<Template, String>> vars = TemplateUtils.getAllVariables(root);
     List<String> names = CollectionMethods.freeze(vars,
         t -> t.first().getName() + ":" + t.second());
     assertEquals(
