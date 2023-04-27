@@ -350,8 +350,15 @@ public final class Template {
    */
   public Template getNestedTemplate(String name) {
     Check.notNull(name).is(keyIn(), tmplIndices, ERR_NO_SUCH_TEMPLATE);
-    int partIndex = tmplIndices.get(name);
-    return ((NestedTemplatePart) parts.get(partIndex)).getTemplate();
+    return nested(name);
+  }
+
+  Template nested(String name) {
+    Integer partIndex = tmplIndices.get(name);
+    if (partIndex != null) {
+      return ((NestedTemplatePart) parts.get(partIndex)).getTemplate();
+    }
+    return null;
   }
 
   /**

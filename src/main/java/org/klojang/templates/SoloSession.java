@@ -20,8 +20,9 @@ import static org.klojang.check.CommonProperties.length;
 import static org.klojang.check.CommonProperties.size;
 import static org.klojang.templates.Accessor.UNDEFINED;
 import static org.klojang.templates.RenderErrorCode.*;
-import static org.klojang.templates.TemplateUtils.getFQN;
+import static org.klojang.templates.RenderUtil.stringify;
 import static org.klojang.templates.TemplateUtils.getAllVariables;
+import static org.klojang.templates.TemplateUtils.getFQN;
 import static org.klojang.templates.x.MTag.*;
 import static org.klojang.util.ArrayMethods.EMPTY_STRING_ARRAY;
 import static org.klojang.util.CollectionMethods.listify;
@@ -37,34 +38,34 @@ record SoloSession(SessionConfig config, RenderState state) implements
   @Override
   public RenderSession set(String varName, Object value) {
     Check.notNull(varName, VAR_NAME);
-    return setVar(varName, value, null);
+    return setVar(varName, null, value);
   }
 
   @Override
   public RenderSession set(String varName, VarGroup varGroup, Object value) {
     Check.notNull(varName, VAR_NAME);
     Check.notNull(varGroup, VAR_GROUP);
-    return setVar(varName, value, varGroup);
+    return setVar(varName, varGroup, value);
   }
 
-  private RenderSession setVar(String varName, Object value, VarGroup varGroup) {
+  RenderSession setVar(String var, VarGroup group, Object value) {
     if (mustProcess(value)) {
       Template t = config.template();
-      Check.that(varName).is(keyIn(), t.variables(),
-          NO_SUCH_VARIABLE.getExceptionSupplier(getFQN(t, varName)));
-      IntList indices = t.variables().get(varName);
-      indices.forEachThrowing(i -> setVar(i, value, varGroup));
-      state.done(varName);
+      Check.that(var).is(keyIn(), t.variables(),
+          NO_SUCH_VARIABLE.getExceptionSupplier(getFQN(t, var)));
+      IntList indices = t.variables().get(var);
+      indices.forEachThrowing(i -> setVar(i, group, value));
+      state.done(var);
     }
     return this;
   }
 
-  private void setVar(int partIndex, Object value, VarGroup varGroup) {
+  private void setVar(int partIndex, VarGroup varGroup, Object value) {
     VariablePart part = (VariablePart) config.template().parts().get(partIndex);
     VarGroup group = part.getVarGroup().orElse(varGroup);
     StringifierRegistry reg = config.stringifiers();
     Stringifier stringifier = reg.getStringifier(part, group, value);
-    String strval = RenderUtil.stringify(value, stringifier, part, varGroup);
+    String strval = stringify(value, stringifier, part, varGroup);
     state.setVar(partIndex, strval);
   }
 
@@ -100,7 +101,7 @@ record SoloSession(SessionConfig config, RenderState state) implements
   public RenderSession setPath(String path, IntFunction<Object> valueGenerator) {
     Path p = Check.notNull(path, Tag.PATH).ok(Path::from);
     Check.notNull(valueGenerator, VALUE_GENERATOR);
-    setPath(this, p, valueGenerator, null, true);
+    RenderUtil.setPath(this, p, null, true, valueGenerator);
     return this;
   }
 
@@ -110,37 +111,8 @@ record SoloSession(SessionConfig config, RenderState state) implements
     Path p = Check.notNull(path, Tag.PATH).ok(Path::from);
     Check.notNull(valueGenerator, VALUE_GENERATOR);
     Check.notNull(varGroup, VAR_GROUP);
-    setPath(this, p, valueGenerator, varGroup, force);
+    RenderUtil.setPath(this, p, varGroup, force, valueGenerator);
     return this;
-  }
-
-  private static void setPath(
-      SoloSession session,
-      Path path,
-      IntFunction<Object> valueGenerator,
-      VarGroup varGroup,
-      boolean force) {
-    if (path.size() == 1) {
-      session.setVar(path.segment(0), valueGenerator.apply(0), varGroup);
-    } else {
-      Template t = session.getNestedTemplate(path.segment(0));
-      SoloSession[] children = session.state.getChildSessions(t);
-      if (children == null) {
-        if (!force) {
-          return;
-        }
-        children = session.state.createChildSessions(t, 1);
-      }
-      if (path.size() == 2) {
-        for (int i = 0; i < children.length; ++i) {
-          children[i].setVar(path.segment(1), valueGenerator.apply(i), varGroup);
-        }
-      } else {
-        for (SoloSession child : children) {
-          setPath(child, path.shift(), valueGenerator, varGroup, force);
-        }
-      }
-    }
   }
 
   @Override
@@ -164,7 +136,7 @@ record SoloSession(SessionConfig config, RenderState state) implements
       IntFunction<Object> valueGenerator,
       VarGroup varGroup) {
     if (!session.state.isSet(path)) {
-      setPath(session, path, valueGenerator, varGroup, true);
+      RenderUtil.setPath(session, path, varGroup, true, valueGenerator);
     }
     return session;
   }
@@ -221,7 +193,7 @@ record SoloSession(SessionConfig config, RenderState state) implements
         String fqn = getFQN(config.template(), varName);
         throw ACCESS_EXCEPTION.getException(fqn, e);
       }
-      setVar(varName, value, defGroup);
+      setVar(varName, defGroup, value);
     }
   }
 
@@ -354,7 +326,7 @@ record SoloSession(SessionConfig config, RenderState state) implements
     if (nestedTemplateNames.length == 0) {
       for (Template t : config.template().getNestedTemplates()) {
         if (!state.isDisabled(t) && getAllVariables(t).isEmpty()) {
-          enableRecursive(this, t);
+          RenderUtil.enableRecursive(this, t);
         }
       }
     } else {
@@ -362,30 +334,10 @@ record SoloSession(SessionConfig config, RenderState state) implements
       for (Template t : config.template().getNestedTemplates()) {
         Check.that(getAllVariables(t)).is(empty(),
             NOT_TEXT_ONLY.getExceptionSupplier(t.getName()));
-        enableRecursive(this, t, names);
+        RenderUtil.enableRecursive(this, t, names);
       }
     }
     return this;
-  }
-
-  private static void enableRecursive(SoloSession s0, Template t0) {
-    s0.enable(1, t0);
-    if (!t0.getNestedTemplates().isEmpty()) {
-      SoloSession s = s0.state.getChildSessions(t0)[0];
-      t0.getNestedTemplates().forEach(t -> enableRecursive(s, t));
-    }
-  }
-
-  private static void enableRecursive(SoloSession s0,
-      Template t0,
-      Set<String> names) {
-    if (names.contains(t0.getName())) {
-      s0.enable(1, t0);
-      if (!t0.getNestedTemplates().isEmpty()) {
-        SoloSession s = s0.state.getChildSessions(t0)[0];
-        t0.getNestedTemplates().forEach(t -> enableRecursive(s, t, names));
-      }
-    }
   }
 
   @Override
@@ -500,12 +452,12 @@ record SoloSession(SessionConfig config, RenderState state) implements
     return config.template();
   }
 
-  private Template getNestedTemplate(String name) {
+  Template getNestedTemplate(String name) {
     Check.notNull(name, MTag.TEMPLATE_NAME);
-    Template t = config.template();
-    Check.that(name).is(elementOf(), t.getNestedTemplateNames(),
-        NO_SUCH_TEMPLATE.getExceptionSupplier(getFQN(t, name)));
-    return t.getNestedTemplate(name);
+    Template t = config.template().nested(name);
+    Check.that(t).is(notNull(), NO_SUCH_TEMPLATE
+        .getExceptionSupplier(getFQN(config.template(), name)));
+    return t;
   }
 
   private boolean dontProcess(Object data) {
