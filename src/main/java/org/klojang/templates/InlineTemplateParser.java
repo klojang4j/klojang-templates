@@ -76,7 +76,7 @@ final class InlineTemplateParser {
       // inline template again contain included templates
       TemplateLocation myLoc = new TemplateLocation(loc.resolver());
       if (endTag.isOnSeparateLine(unparsed)) {
-        mySrc = ParseUtils.deleteEmptyLastLine(mySrc);
+        mySrc = ParseUtils.trim(mySrc);
       }
       Parser parser = new Parser(myLoc, name, mySrc);
       parts.add(new InlineTemplatePart(offset + m.start(),

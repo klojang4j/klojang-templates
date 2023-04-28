@@ -40,34 +40,15 @@ final class ParseUtils {
     return new UnparsedPart(s, p.start() + from);
   }
 
-  /*
-   * Remove the first line of an inline template if it was the containing
-   * ~%%begin:foo%, followed by a newline character (which would belong to the inline
-   * template).
-   */
-  static String deleteEmptyLastLine(String txt) {
-    String s = StringMethods.rtrim(txt, " \t");
-    if (s.endsWith("\r\n")) {
-      return s.substring(0, s.length() - 2);
-    } else if (s.endsWith("\n")) {
-      return s.substring(0, s.length() - 1);
-    }
-    return s;
-  }
-
-  /*
-   * Remove the last line from text parts if, in the original template source, it was
-   * a line containing a nested template tag (and nothing else but whitespace).
-   */
-  static List<Part> deleteEmptyLastLine(List<Part> parts) {
+  static List<Part> trimBoilerplate(List<Part> parts) {
     List<Part> out = new ArrayList<>(parts.size());
     for (int i = 0; i < parts.size(); ++i) {
       Part part = parts.get(i);
-      if (part instanceof TextPart tp) {
-        if (i < parts.size() - 1 && mustTrim(parts.get(i + 1))) {
-          String trimmed = deleteEmptyLastLine(tp.getText());
-          if (!trimmed.isEmpty()) {
-            out.add(new TextPart(trimmed, part.start()));
+      if (part instanceof TextPart textPart) {
+        if (i < parts.size() - 1) {
+          String text = getBoilerplate(textPart, parts.get(i + 1));
+          if (!text.isEmpty()) {
+            out.add(new TextPart(text, part.start()));
           }
         } else {
           out.add(part);
@@ -79,9 +60,28 @@ final class ParseUtils {
     return out;
   }
 
-  private static boolean mustTrim(Part part) {
-    return (part instanceof InlineTemplatePart x && x.isStartTagOnSeparateLine())
-        || (part instanceof IncludedTemplatePart y && y.isTagOnSeparateLine());
+  private static String getBoilerplate(TextPart textPart, Part nextPart) {
+    String text;
+    if (nextPart instanceof InlineTemplatePart x
+        && x.isStartTagOnSeparateLine()) {
+      text = trim(textPart.getText());
+    } else if (nextPart instanceof IncludedTemplatePart x
+        && x.isTagOnSeparateLine()) {
+      text = StringMethods.rtrim(textPart.getText(), " \t");
+    } else {
+      text = textPart.getText();
+    }
+    return text;
+  }
+
+  static String trim(String txt) {
+    String s = StringMethods.rtrim(txt, " \t");
+    if (s.endsWith("\r\n")) {
+      return s.substring(0, s.length() - 2);
+    } else if (s.endsWith("\n") || s.endsWith("\r")) {
+      return s.substring(0, s.length() - 1);
+    }
+    return s;
   }
 
 }

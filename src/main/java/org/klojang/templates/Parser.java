@@ -1,17 +1,13 @@
 package org.klojang.templates;
 
-import org.klojang.check.Check;
-import org.klojang.check.fallible.FallibleBiFunction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
 import java.util.regex.Matcher;
 
-import static org.klojang.check.CommonChecks.eq;
 import static org.klojang.templates.InlineTemplateParser.CommentType;
-import static org.klojang.templates.ParseErrorCode.*;
-import static org.klojang.templates.ParseUtils.deleteEmptyLastLine;
+import static org.klojang.templates.ParseUtils.trimBoilerplate;
 import static org.klojang.templates.Regex.*;
 import static org.klojang.templates.Template.ROOT_TEMPLATE_NAME;
 
@@ -19,8 +15,11 @@ final class Parser {
 
   private static final Logger LOG = LoggerFactory.getLogger(Parser.class);
 
-  private interface PartialParser extends
-      FallibleBiFunction<UnparsedPart, Set<String>, List<Part>, ParseException> {}
+  private interface PartialParser {
+
+    List<Part> parse(UnparsedPart unparsed, Set<String> names) throws ParseException;
+
+  }
 
   private final String name; // template name
   private final TemplateLocation location;
@@ -41,7 +40,7 @@ final class Parser {
   }
 
   List<Part> getParts() throws ParseException {
-    logParsing(name, location);
+    log(name, location);
     // Accumulates template names for duplicate checks:
     Set<String> names = new HashSet<>();
     List<Part> parts = purgeDitchBlocks();
@@ -55,8 +54,9 @@ final class Parser {
     VarParser p3 = new VarParser(src);
     parts = parse(parts, names, (x, y) -> p3.parse(x, y, CMT_VARIABLE));
     parts = parse(parts, names, (x, y) -> p3.parse(x, y, VARIABLE));
-    parts = collectTextParts(parts);
-    parts = deleteEmptyLastLine(parts);
+    BoilerplateCollector bc = new BoilerplateCollector(src);
+    parts = bc.collectBoilerplate(parts);
+    parts = trimBoilerplate(parts);
     return parts;
   }
 
@@ -87,7 +87,7 @@ final class Parser {
     List<Part> out = new ArrayList<>(in.size() + 10);
     for (Part p : in) {
       if (p instanceof UnparsedPart unparsed) {
-        out.addAll(parser.apply(unparsed, names));
+        out.addAll(parser.parse(unparsed, names));
       } else {
         out.add(p);
       }
@@ -95,53 +95,7 @@ final class Parser {
     return out;
   }
 
-  /*
-   * Text parts are all unparsed parts that remain after everything else has been
-   * parsed out
-   */
-  private List<Part> collectTextParts(List<Part> in) throws ParseException {
-    List<Part> out = new ArrayList<>(in.size());
-    for (Part p : in) {
-      if (p instanceof UnparsedPart unparsed) {
-        String text = unparsed.text();
-        if (!text.isEmpty()) {
-          checkGarbage(unparsed);
-          String purified = PLACEHOLDER.matcher(text).replaceAll("");
-          int idx = text.indexOf(PLACEHOLDER_TOKEN);
-          Check.that(idx).is(eq(), -1, PLACEHOLDER_NOT_CLOSED
-              .getExceptionSupplier(src, p.start() + idx));
-          out.add(new TextPart(purified, p.start()));
-        }
-      } else {
-        out.add(p);
-      }
-    }
-    return out;
-  }
-
-  private void checkGarbage(UnparsedPart unparsed) throws ParseException {
-    String str = unparsed.text();
-    int off = unparsed.start();
-    Matcher matcher = INLINE_TEMPLATE_END.matcher(str);
-    if (matcher.find()) {
-      throw DANGLING_END_TAG
-          .getException(src, off + matcher.start(), matcher.group(2));
-    }
-    int idx = str.indexOf("~%%begin:");
-    Check.that(idx).is(eq(), -1, BEGIN_TAG_NOT_TERMINATED
-        .getExceptionSupplier(src, off + idx));
-    idx = str.indexOf("~%%end:");
-    Check.that(idx).is(eq(), -1, END_TAG_NOT_TERMINATED
-        .getExceptionSupplier(src, off + idx));
-    idx = str.indexOf("~%%include:");
-    Check.that(idx).is(eq(), -1, INCLUDE_TAG_NOT_TERMINATED
-        .getExceptionSupplier(src, off + idx));
-    idx = str.indexOf(DITCH_BLOCK_TOKEN);
-    Check.that(idx).is(eq(), -1, DITCH_BLOCK_NOT_CLOSED
-        .getExceptionSupplier(src, off + idx));
-  }
-
-  static void logParsing(String name, TemplateLocation location) {
+  private static void log(String name, TemplateLocation location) {
     if (LOG.isTraceEnabled()) {
       if (name.equals(ROOT_TEMPLATE_NAME)) {
         LOG.trace("Parsing root template");
