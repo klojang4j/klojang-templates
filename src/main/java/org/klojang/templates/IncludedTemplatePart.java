@@ -14,8 +14,11 @@ final class IncludedTemplatePart extends NestedTemplatePart {
     return substringBefore(substrAfter(path, "/", -1), ".", -1);
   }
 
-  IncludedTemplatePart(int start, Template template) {
+  private final boolean tagOnSeparateLine;
+
+  IncludedTemplatePart(int start, Template template, boolean tagOnSeparateLine) {
     super(start, template);
+    this.tagOnSeparateLine = tagOnSeparateLine;
   }
 
   @Override
@@ -26,6 +29,10 @@ final class IncludedTemplatePart extends NestedTemplatePart {
       sb.append(template.getName()).append(':');
     }
     return sb.append(template.path().get()).append("%%").toString();
+  }
+
+  boolean isTagOnSeparateLine() {
+    return tagOnSeparateLine;
   }
 
 }

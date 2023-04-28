@@ -40,36 +40,32 @@ final class ParseUtils {
     return new UnparsedPart(s, p.start() + from);
   }
 
-  /**
+  /*
    * Remove the first line of an inline template if it was the containing
    * ~%%begin:foo%, followed by a newline character (which would belong to the inline
    * template).
    */
-  static String deleteEmptyFirstLine(String txt) {
+  static String deleteEmptyLastLine(String txt) {
     String s = StringMethods.rtrim(txt, " \t");
     if (s.endsWith("\r\n")) {
       return s.substring(0, s.length() - 2);
-    } else if (s.endsWith("\n") || s.endsWith("\r")) {
+    } else if (s.endsWith("\n")) {
       return s.substring(0, s.length() - 1);
     }
     return s;
   }
 
-  /**
+  /*
    * Remove the last line from text parts if, in the original template source, it was
-   * a line containing the begin tag of an inline template (and nothing else but
-   * whitespace).
+   * a line containing a nested template tag (and nothing else but whitespace).
    */
   static List<Part> deleteEmptyLastLine(List<Part> parts) {
     List<Part> out = new ArrayList<>(parts.size());
     for (int i = 0; i < parts.size(); ++i) {
       Part part = parts.get(i);
       if (part instanceof TextPart tp) {
-        if (i < parts.size() - 1
-            && parts.get(i + 1) instanceof InlineTemplatePart itp
-            && itp.isStartTagOnSeparateLine()
-        ) {
-          String trimmed = deleteEmptyFirstLine(tp.getText());
+        if (i < parts.size() - 1 && mustTrim(parts.get(i + 1))) {
+          String trimmed = deleteEmptyLastLine(tp.getText());
           if (!trimmed.isEmpty()) {
             out.add(new TextPart(trimmed, part.start()));
           }
@@ -81,6 +77,11 @@ final class ParseUtils {
       }
     }
     return out;
+  }
+
+  private static boolean mustTrim(Part part) {
+    return (part instanceof InlineTemplatePart x && x.isStartTagOnSeparateLine())
+        || (part instanceof IncludedTemplatePart y && y.isTagOnSeparateLine());
   }
 
 }

@@ -46,8 +46,6 @@ final class InlineTemplateParser {
 
   }
 
-  private record EndTag(int start, int end) {}
-
   private final String src;
   private final TemplateLocation loc;
 
@@ -74,13 +72,11 @@ final class InlineTemplateParser {
       EndTag endTag = getEndTag(type, unparsed, name, m.end(), 0);
       String mySrc = unparsed.text().substring(m.end(), endTag.start());
       // No path is associated with an inline template, but it inherits the
-      // PathResolver of the template in which it is nested, in case the inline
-      // template again contains included templates.
+      // PathResolver of the template in which it is nested, since the
+      // inline template again contain included templates
       TemplateLocation myLoc = new TemplateLocation(loc.resolver());
-      // If ~%%end:foo% is all by itself on a separate line, except possibly
-      // surrounded by whitespace, then that whole line will be removed.
-      if (onSeparateLine(unparsed.text(), endTag.start(), endTag.end())) {
-        mySrc = deleteEmptyFirstLine(mySrc);
+      if (endTag.isOnSeparateLine(unparsed)) {
+        mySrc = ParseUtils.deleteEmptyLastLine(mySrc);
       }
       Parser parser = new Parser(myLoc, name, mySrc);
       parts.add(new InlineTemplatePart(offset + m.start(),
@@ -95,7 +91,7 @@ final class InlineTemplateParser {
 
   }
 
-   private EndTag getEndTag(CommentType type,
+  private EndTag getEndTag(CommentType type,
       UnparsedPart unparsed,
       String tmplName,
       int offset,

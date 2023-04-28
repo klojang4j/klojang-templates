@@ -11,8 +11,7 @@ import java.util.regex.Pattern;
 
 import static org.klojang.check.CommonChecks.*;
 import static org.klojang.templates.ParseErrorCode.*;
-import static org.klojang.templates.ParseUtils.getMatcher;
-import static org.klojang.templates.ParseUtils.todo;
+import static org.klojang.templates.ParseUtils.*;
 import static org.klojang.templates.Template.ROOT_TEMPLATE_NAME;
 
 final class IncludedTemplateParser {
@@ -51,7 +50,9 @@ final class IncludedTemplateParser {
       if (!nested.getName().equals(name)) {
         nested = new Template(nested, name);
       }
-      parts.add(new IncludedTemplatePart(offset + m.start(), nested));
+      parts.add(new IncludedTemplatePart(offset + m.start(),
+          nested,
+          onSeparateLine(unparsed.text(), m.start(), m.end())));
       end = m.end();
     } while (m.find());
     if (end < unparsed.text().length()) {

@@ -30,6 +30,19 @@ final class RenderUtil {
     return s;
   }
 
+
+  static RenderSession ifNotSet(SoloSession session,
+      Path path,
+      IntFunction<Object> valueGenerator,
+      VarGroup varGroup) {
+    if (!session.state().isSet(path)) {
+      setPath(session, path, varGroup, true, valueGenerator);
+    }
+    return session;
+  }
+
+
+
   static void setPath(SoloSession session,
       Path path,
       VarGroup group,
@@ -75,5 +88,4 @@ final class RenderUtil {
       }
     }
   }
-
 }

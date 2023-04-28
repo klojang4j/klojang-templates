@@ -45,16 +45,16 @@ final class Parser {
     // Accumulates template names for duplicate checks:
     Set<String> names = new HashSet<>();
     List<Part> parts = purgeDitchBlocks();
-    InlineTemplateParser pp1 = new InlineTemplateParser(src, location);
-    parts = parse(parts, names, (x, y) -> pp1.parse(x, y, CommentType.TAGS));
-    parts = parse(parts, names, (x, y) -> pp1.parse(x, y, CommentType.BLOCK));
-    parts = parse(parts, names, (x, y) -> pp1.parse(x, y, CommentType.NONE));
-    IncludedTemplateParser pp2 = new IncludedTemplateParser(src, location);
-    parts = parse(parts, names, (x, y) -> pp2.parse(x, y, CMT_INCLUDED_TEMPLATE));
-    parts = parse(parts, names, (x, y) -> pp2.parse(x, y, INCLUDED_TEMPLATE));
-    VarParser pp3 = new VarParser(src);
-    parts = parse(parts, names, (x, y) -> pp3.parse(x, y, CMT_VARIABLE));
-    parts = parse(parts, names, (x, y) -> pp3.parse(x, y, VARIABLE));
+    InlineTemplateParser p1 = new InlineTemplateParser(src, location);
+    parts = parse(parts, names, (x, y) -> p1.parse(x, y, CommentType.TAGS));
+    parts = parse(parts, names, (x, y) -> p1.parse(x, y, CommentType.BLOCK));
+    parts = parse(parts, names, (x, y) -> p1.parse(x, y, CommentType.NONE));
+    IncludedTemplateParser p2 = new IncludedTemplateParser(src, location);
+    parts = parse(parts, names, (x, y) -> p2.parse(x, y, CMT_INCLUDED_TEMPLATE));
+    parts = parse(parts, names, (x, y) -> p2.parse(x, y, INCLUDED_TEMPLATE));
+    VarParser p3 = new VarParser(src);
+    parts = parse(parts, names, (x, y) -> p3.parse(x, y, CMT_VARIABLE));
+    parts = parse(parts, names, (x, y) -> p3.parse(x, y, VARIABLE));
     parts = collectTextParts(parts);
     parts = deleteEmptyLastLine(parts);
     return parts;

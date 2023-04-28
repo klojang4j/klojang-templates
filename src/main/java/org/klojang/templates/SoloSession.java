@@ -89,8 +89,8 @@ record SoloSession(SessionConfig config, RenderState state) implements
       Supplier<Object> func,
       VarGroup group) {
     Template t = config.template();
-    Check.that(var).is(keyIn(), t.variables(),
-        NO_SUCH_VARIABLE.getExceptionSupplier(getFQN(t, var)));
+    Check.that(var).is(keyIn(), t.variables(), NO_SUCH_VARIABLE
+        .getExceptionSupplier(getFQN(t, var)));
     IntList indices = t.variables().get(var);
     indices.forEachThrowing(i -> state.setVar(i, new Lazy(func, group)));
     state.done(var);
@@ -119,7 +119,7 @@ record SoloSession(SessionConfig config, RenderState state) implements
   public RenderSession ifNotSet(String path, IntFunction<Object> valueGenerator) {
     Path p = Check.notNull(path, Tag.PATH).ok(Path::from);
     Check.notNull(valueGenerator, VALUE_GENERATOR);
-    return ifNotSet(this, p, valueGenerator, null);
+    return RenderUtil.ifNotSet(this, p, valueGenerator, null);
   }
 
   @Override
@@ -128,17 +128,7 @@ record SoloSession(SessionConfig config, RenderState state) implements
     Path p = Check.notNull(path, Tag.PATH).ok(Path::from);
     Check.notNull(valueGenerator, VALUE_GENERATOR);
     Check.notNull(varGroup, VAR_GROUP);
-    return ifNotSet(this, p, valueGenerator, varGroup);
-  }
-
-  private static RenderSession ifNotSet(SoloSession session,
-      Path path,
-      IntFunction<Object> valueGenerator,
-      VarGroup varGroup) {
-    if (!session.state.isSet(path)) {
-      RenderUtil.setPath(session, path, varGroup, true, valueGenerator);
-    }
-    return session;
+    return RenderUtil.ifNotSet(this, p, valueGenerator, varGroup);
   }
 
   @Override
@@ -409,6 +399,7 @@ record SoloSession(SessionConfig config, RenderState state) implements
     return state.getAllUnsetVariables(false);
   }
 
+  @Override
   public List<String> getAllUnsetVariables(boolean relative) {
     return state.getAllUnsetVariables(relative);
   }
@@ -418,12 +409,14 @@ record SoloSession(SessionConfig config, RenderState state) implements
     return state.allSet();
   }
 
+  @Override
   public RenderSession unset(String... paths) {
     Check.notNull(paths, Tag.VARARGS);
     Arrays.stream(paths).map(Path::from).forEach(state::unset);
     return this;
   }
 
+  @Override
   public RenderSession clear(String... tmpls) {
     Check.notNull(tmpls, Tag.VARARGS);
     Arrays.stream(tmpls).map(this::getNestedTemplate).forEach(state::clear);
