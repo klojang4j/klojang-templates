@@ -263,6 +263,24 @@ also use the following syntax:
 ~%%include:employees:/views/employees-2023-01-01.txt%%
 ```
 
+### Indentation and Newline Suppression
+
+Ordinarily, when rendering a template, its structure is left completely intact. For
+inline templates the begin tag is removed and the text following it brought that much
+closer to the text preceding it, as though the begin tag took up no space. The same
+applies to the end tag of an inline template. For included templates the entire tag
+(`~%%include:foo.html%%`) is replaced with the contents of the included file.
+
+However, if the begin or end tag of an inline template is all by itself on a 
+separate line, as in the example above, that _entire_ line will be removed from 
+the output. If an included template tag is all by itself on a separate line, the 
+line is preserved, but any indentation or trailing whitespace is removed.
+
+It may sound abstract, but it allows you to write elegant, natural-feeling 
+templates that still render as intended. The consequences and usefulness of this 
+behaviour are illustrated in 
+[Newline Suppression in Practice](#newline-suppression-in-practice)
+
 ## Using Nested Templates
 
 The ability to nest templates in other templates almost literally turns a Klojang
@@ -325,15 +343,11 @@ Nested templates enable you to create tables and other repetitive structures.
 <body>
 <table>
     <thead>
-    <tr>
-        <th>First name</th><th>Last name</th><th>Birth date</th>
-    </tr>
+        <tr><th>First name</th><th>Last name</th><th>Birth date</th></tr>
     </thead>
     <tbody>
     ~%%begin:employees%
-    <tr>
-        <td>~%firstName%</td><td>~%lastName%</td><td>~%birthDate%</td>
-    </tr>
+        <tr><td>~%firstName%</td><td>~%lastName%</td><td>~%birthDate%</td></tr>
     ~%%end:employees%
     </tbody>
 </table>
@@ -365,13 +379,10 @@ If the second argument to `RenderSession.populate()` is an array or collection, 
 nested template automatically turns into a _repeating template_, repeating itself for
 each element in the array or collection.
 
-#### Newline Suppression
+### Newline Suppression in Practice
 
-As an aside: when rendering a template, its structure is left completely intact.
-Variables are replaced by their values and nested templates are replaced by their
-contents. There is one exception: if the begin tag or end tag of an inline template
-is on a separate line, that entire line will be removed from the output. Thus, the
-above template would render somewhat like this:
+Now we can see the usefulness of newline suppression. The template above would render
+somewhat like this:
 
 ```html
 <html>
@@ -383,20 +394,19 @@ above template would render somewhat like this:
     </tr>
     </thead>
     <tbody>
-    <tr>
-        <td>John</td><td>Smith</td><td>1980-06-13</td>
-    </tr>
-    <tr>
-        <td>Mary</td><td>Bear</td><td>1977-11-10</td>
-    </tr>
-    <tr>
-        <td>Tracey</td><td>Peterson</td><td>2001-04-03</td>
-    </tr>
+        <tr><td>John</td><td>Smith</td><td>1980-06-13</td></tr>
+        <tr><td>Mary</td><td>Bear</td><td>1977-11-10</td></tr>
+        <tr><td>Tracey</td><td>Peterson</td><td>2001-04-03</td></tr>
     </tbody>
 </table>
 </body>
 </html>
 ```
+
+If this fails to make you spill your coffee, notice that there are **two**
+newline characters inside the employees template (one after
+"~%%begin:employees%" and one after "&lt;/tr&gt;"), which would ordinarily have been
+meticulously preserved.
 
 ### Complex Information
 

@@ -46,7 +46,7 @@
  * </p>
  * <p>
  * <b>Nested Templates</b><br/>
- * In <i>Klojang Templates</i> you can embed templates in other templates.
+ * In <i>Klojang Templates</i> templates can be nested inside other templates.
  * Syntactically, this happens either either via <i><b>inline templates</b></i> or
  * via <i><b>included templates</b></i>.
  * </p>
