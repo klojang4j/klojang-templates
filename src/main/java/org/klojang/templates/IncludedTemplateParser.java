@@ -50,9 +50,10 @@ final class IncludedTemplateParser {
       if (!nested.getName().equals(name)) {
         nested = new Template(nested, name);
       }
-      parts.add(new IncludedTemplatePart(offset + m.start(),
+      Part part = new IncludedTemplatePart(offset + m.start(),
           nested,
-          onSeparateLine(unparsed.text(), m.start(), m.end())));
+          onSeparateLine(unparsed.text(), m.start(), m.end()));
+      parts.add(part);
       end = m.end();
     } while (m.find());
     if (end < unparsed.text().length()) {

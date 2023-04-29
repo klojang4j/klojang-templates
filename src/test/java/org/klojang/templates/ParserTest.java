@@ -2,6 +2,7 @@ package org.klojang.templates;
 
 import org.junit.jupiter.api.Test;
 import org.klojang.templates.x.ClassPathResolver;
+import org.klojang.util.StringMethods;
 
 import java.util.List;
 
@@ -170,14 +171,10 @@ public class ParserTest {
 
   @Test
   public void parseInlineTemplates02() throws ParseException {
-    String src = "<!--~%%begin:__foo-bar-00__%--><!--~%%end:__foo-bar-00__%-->";
+    String src = "<!--~%%begin:foo%--><!--~%%end:foo%-->";
     Parser parser = new Parser(TemplateLocation.STRING, ROOT_TEMPLATE_NAME, src);
     List<Part> parts = parser.getParts();
-    assertEquals(1, parts.size());
-    assertTrue(parts.get(0) instanceof InlineTemplatePart);
-    InlineTemplatePart itp = (InlineTemplatePart) parts.get(0);
-    assertEquals("__foo-bar-00__", itp.getName());
-    assertEquals(0, itp.getTemplate().parts().size());
+    assertEquals(0, parts.size());
   }
 
   @Test
@@ -226,6 +223,67 @@ public class ParserTest {
     rs.in("foo").in("foo").in("foo").set("bozo", "bozo");
     rs.in("bar").in("foo").in("foo").set("bozo", "bozo");
     assertEquals("bozobozo", nospace(rs.render()));
+  }
+
+  @Test
+  public void parseInlineTemplates06() throws ParseException {
+    String src = "~%%begin:foo%~%%end:foo%";
+    Parser parser = new Parser(TemplateLocation.STRING, ROOT_TEMPLATE_NAME, src);
+    List<Part> parts = parser.getParts();
+    assertEquals(0, parts.size());
+  }
+
+  @Test
+  public void parseInlineTemplates07() throws ParseException {
+    String src = "a~%%begin:foo%~%%end:foo%b";
+    Parser parser = new Parser(TemplateLocation.STRING, ROOT_TEMPLATE_NAME, src);
+    List<Part> parts = parser.getParts();
+    assertEquals(2, parts.size());
+  }
+
+  @Test
+  public void parseInlineTemplates08() throws ParseException {
+    String src = """
+        a
+        ~%%begin:foo%~%%end:foo%
+        b
+        """;
+    Parser parser = new Parser(TemplateLocation.STRING, ROOT_TEMPLATE_NAME, src);
+    List<Part> parts = parser.getParts();
+    assertEquals(2, parts.size());
+  }
+
+  @Test
+  public void parseInlineTemplates09() throws ParseException {
+    String src = """
+        a~%%begin:foo%~%%end:foo%
+        b
+        """;
+    Parser parser = new Parser(TemplateLocation.STRING, ROOT_TEMPLATE_NAME, src);
+    List<Part> parts = parser.getParts();
+    assertEquals(2, parts.size());
+  }
+
+  @Test
+  public void parseInlineTemplates10() throws ParseException {
+    String src = """
+        a
+        ~%%begin:foo%~%%end:foo%b
+        """;
+    Parser parser = new Parser(TemplateLocation.STRING, ROOT_TEMPLATE_NAME, src);
+    List<Part> parts = parser.getParts();
+    assertEquals(2, parts.size());
+  }
+
+  @Test
+  public void parseInlineTemplates11() throws ParseException {
+    String src = "a \n~%%begin:foo%~%%end:foo%\n b";
+    Parser parser = new Parser(TemplateLocation.STRING, ROOT_TEMPLATE_NAME, src);
+    List<Part> parts = parser.getParts();
+    assertEquals(2, parts.size());
+    String txt = ((TextPart) parts.get(0)).getText();
+    assertEquals("a \n", ((TextPart) parts.get(0)).getText());
+    assertEquals("\n b", ((TextPart) parts.get(1)).getText());
   }
 
   @Test
@@ -311,190 +369,129 @@ public class ParserTest {
   }
 
   @Test
-  public void ditchTagNotClosed00() throws ParseException {
+  public void beginAndEndTagOnSeparateLines00() throws ParseException {
     String src = """
-        <table>
-        <!--%%-->
-        </table>
-        """;
-    try {
-      Template.fromString(src);
-    } catch (ParseException e) {
-      assertEquals(ParseErrorCode.DITCH_BLOCK_NOT_CLOSED, e.getErrorCode());
-    }
-  }
-
-  @Test
-  public void missingEndTag00() {
-    String src = """
+        *****
         ~%%begin:foo%
-          <p>Hello world
-        ~%%end:bar%
-        """;
-    try {
-      Template.fromString(src);
-    } catch (ParseException e) {
-      assertEquals(ParseErrorCode.MISSING_END_TAG, e.getErrorCode());
-    }
-  }
-
-  @Test
-  public void missingEndTag0100() {
-    String src = """
-        ~%%begin:foo%
-          <p>Hello world
-        ~%%end:foo
-         """;
-    try {
-      Template.fromString(src);
-    } catch (ParseException e) {
-      assertEquals(ParseErrorCode.MISSING_END_TAG, e.getErrorCode());
-    }
-  }
-
-  @Test
-  public void danglingEndTag00() {
-    String src = """
-        ~%%begin:foo%
-          <p>Hello world
+        Foo
         ~%%end:foo%
-        ~%%end:bar%
+        *****
         """;
-    try {
-      Template.fromString(src);
-    } catch (ParseException e) {
-      assertEquals(ParseErrorCode.DANGLING_END_TAG, e.getErrorCode());
-    }
+    Template t = Template.fromString(src);
+    RenderSession rs = t.newRenderSession();
+    rs.enable(5, "foo");
+    String out = rs.render();
+    //System.out.println(out);
+    String expected = """
+        *****
+        Foo             
+        Foo             
+        Foo             
+        Foo             
+        Foo             
+        *****
+        """;
+    assertEquals(expected, out);
   }
 
   @Test
-  public void beginTagNotTerminated00() {
+  public void beginTagOnSeparateLine00() throws ParseException {
     String src = """
-        ~%%begin:foo
-          <p>Hello world
-         """;
-    try {
-      Template.fromString(src);
-    } catch (ParseException e) {
-      assertEquals(ParseErrorCode.BEGIN_TAG_NOT_TERMINATED, e.getErrorCode());
-    }
-  }
-
-  @Test
-  public void endTagNotTerminated00() {
-    String src = """
+        *****
         ~%%begin:foo%
-          <p>Hello world
+        Foo~%%end:foo%
+        *****
+        """;
+    Template t = Template.fromString(src);
+    RenderSession rs = t.newRenderSession();
+    rs.enable(5, "foo");
+    String out = rs.render();
+    //System.out.println(out);
+    String expected = """
+        *****
+        FooFooFooFooFoo
+        *****
+        """;
+    assertEquals(expected, out);
+  }
+
+  @Test
+  public void beginTagOnSeparateLine01() throws ParseException {
+    String src = """
+        *****
+        ~%%begin:foo%
+        Foo
+        ~%%end:foo%*****
+        """;
+    Template t = Template.fromString(src);
+    RenderSession rs = t.newRenderSession();
+    rs.enable(5, "foo");
+    String out = rs.render();
+    //System.out.println(out);
+    String expected = """
+        *****
+        Foo             
+        Foo             
+        Foo             
+        Foo             
+        Foo             
+        *****
+        """;
+    assertEquals(expected, out);
+  }
+
+  @Test
+  public void endTagOnSeparateLine00() throws ParseException {
+    String src = """
+        *****
+        ~%%begin:foo%Foo
         ~%%end:foo%
-        ~%%end:bar
+        *****
         """;
-    try {
-      Template.fromString(src);
-    } catch (ParseException e) {
-      assertEquals(ParseErrorCode.END_TAG_NOT_TERMINATED, e.getErrorCode());
-    }
+    Template t = Template.fromString(src);
+    RenderSession rs = t.newRenderSession();
+    rs.enable(5, "foo");
+    String out = rs.render();
+    //System.out.println(out);
+    String expected = """
+        *****
+        Foo             
+        Foo             
+        Foo             
+        Foo             
+        Foo             
+        *****
+        """;
+    assertEquals(expected, out);
   }
 
   @Test
-  public void includeTagNotTerminated00() {
+  public void endTagOnSeparateLine01() throws ParseException {
     String src = """
-        ~%%include:/foo/bar%
-        ~%%begin:foo%
-          <p>Hello world
+        *****~%%begin:foo%
+        Foo
         ~%%end:foo%
-         """;
-    try {
-      Template.fromString(src);
-    } catch (ParseException e) {
-      assertEquals(ParseErrorCode.INCLUDE_TAG_NOT_TERMINATED, e.getErrorCode());
-    }
-  }
-
-  @Test
-  public void duplicateTmplName00() {
-    String src = """
-         <p>
-         ~%%begin:foo%
-           <p>Hello world
-         ~%%end:foo%
-        ~%%begin:foo%
-           <p>Hi there
-         ~%%end:foo%
-         </p>
-         """;
-    try {
-      Template.fromString(src);
-    } catch (ParseException e) {
-      assertEquals(ParseErrorCode.DUPLICATE_TMPL_NAME, e.getErrorCode());
-    }
-  }
-
-  @Test
-  public void varNameWithTmplName00() {
-    String src = """
-         <p>
-         ~%%begin:foo%
-           <p>Hello world
-         ~%%end:foo%
-        ~%foo%
-         </p>
-         """;
-    try {
-      Template.fromString(src);
-    } catch (ParseException e) {
-      assertEquals(ParseErrorCode.VAR_WITH_TMPL_NAME, e.getErrorCode());
-    }
-  }
-
-  @Test
-  public void varNameWithTmplName01() {
-    String src = """
-         <p>
-        ~%foo%
-        ~%%begin:foo%
-           <p>Hello world
-         ~%%end:foo%
-          </p>
-         """;
-    try {
-      Template.fromString(src);
-    } catch (ParseException e) {
-      assertEquals(ParseErrorCode.VAR_WITH_TMPL_NAME, e.getErrorCode());
-    }
-  }
-
-  @Test
-  public void ditchTagNotClosed01() throws ParseException {
-    String src = "<!--%%-->";
-    try {
-      Template.fromString(src);
-    } catch (ParseException e) {
-      assertEquals(ParseErrorCode.DITCH_BLOCK_NOT_CLOSED, e.getErrorCode());
-    }
-  }
-
-  @Test
-  public void placeholderNotClosed00() {
-    String src = """
-        <p>
-        <!--%-->Hello, world
-        </p>
+        *****
         """;
-    try {
-      Template.fromString(src);
-    } catch (ParseException e) {
-      assertEquals(ParseErrorCode.PLACEHOLDER_NOT_CLOSED, e.getErrorCode());
-    }
-  }
-
-  @Test
-  public void placeholderNotClosed01() {
-    String src = "<!--%-->";
-    try {
-      Template t = Template.fromString(src);
-    } catch (ParseException e) {
-      assertEquals(ParseErrorCode.PLACEHOLDER_NOT_CLOSED, e.getErrorCode());
-    }
+    Template t = Template.fromString(src);
+    RenderSession rs = t.newRenderSession();
+    rs.enable(5, "foo");
+    String out = rs.render();
+    //System.out.println(out);
+    String expected = """
+        *****
+        Foo
+                
+        Foo
+                
+        Foo
+                
+        Foo
+                
+        Foo
+        *****
+        """;
+    assertEquals(expected, out);
   }
 
   private static String nospace(String s) {

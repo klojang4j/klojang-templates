@@ -46,6 +46,8 @@ final class InlineTemplateParser {
 
   }
 
+  private record EndTag(int start, int end) {}
+
   private final String src;
   private final TemplateLocation loc;
 
@@ -70,18 +72,15 @@ final class InlineTemplateParser {
       validate(name, names, m, offset);
       names.add(name);
       EndTag endTag = getEndTag(type, unparsed, name, m.end(), 0);
-      String mySrc = unparsed.text().substring(m.end(), endTag.start());
-      // No path is associated with an inline template, but it inherits the
-      // PathResolver of the template in which it is nested, since the
-      // inline template again contain included templates
-      TemplateLocation myLoc = new TemplateLocation(loc.resolver());
-      if (endTag.isOnSeparateLine(unparsed)) {
-        mySrc = ParseUtils.trim(mySrc);
+      if (m.end() != endTag.start()) {
+        String mySrc = unparsed.text().substring(m.end(), endTag.start());
+        TemplateLocation myLoc = new TemplateLocation(loc.resolver());
+        Parser parser = new Parser(myLoc, name, mySrc);
+        parts.add(new InlineTemplatePart(offset + m.start(),
+            parser.parse(),
+            onSeparateLine(unparsed.text(), m.start(), m.end()),
+            onSeparateLine(unparsed.text(), endTag.start(), endTag.end())));
       }
-      Parser parser = new Parser(myLoc, name, mySrc);
-      parts.add(new InlineTemplatePart(offset + m.start(),
-          parser.parse(),
-          onSeparateLine(unparsed.text(), m.start(), m.end())));
       end = endTag.end();
     } while (m.find(end));
     if (end < unparsed.text().length()) {

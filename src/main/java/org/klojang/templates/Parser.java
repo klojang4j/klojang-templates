@@ -56,7 +56,7 @@ final class Parser {
     parts = parse(parts, names, (x, y) -> p3.parse(x, y, VARIABLE));
     BoilerplateCollector bc = new BoilerplateCollector(src);
     parts = bc.collectBoilerplate(parts);
-    parts = trimBoilerplate(parts);
+    trimBoilerplate(parts);
     return parts;
   }
 

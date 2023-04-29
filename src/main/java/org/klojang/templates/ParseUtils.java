@@ -2,7 +2,6 @@ package org.klojang.templates;
 
 import org.klojang.util.StringMethods;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -40,48 +39,56 @@ final class ParseUtils {
     return new UnparsedPart(s, p.start() + from);
   }
 
-  static List<Part> trimBoilerplate(List<Part> parts) {
-    List<Part> out = new ArrayList<>(parts.size());
+  static void trimBoilerplate(List<Part> parts) {
     for (int i = 0; i < parts.size(); ++i) {
       Part part = parts.get(i);
-      if (part instanceof TextPart textPart) {
-        if (i < parts.size() - 1) {
-          String text = getBoilerplate(textPart, parts.get(i + 1));
-          if (!text.isEmpty()) {
-            out.add(new TextPart(text, part.start()));
+      if (part instanceof InlineTemplatePart itp) {
+        List<Part> childParts = itp.getTemplate().parts();
+        if (itp.isStartTagOnSeparateLine()) {
+          TextPart tp = (TextPart) childParts.get(0);
+          tp.setText(removeWhitespaceAfterTag(tp.getText(), false));
+          if (i > 0) {
+            tp = (TextPart) parts.get(i - 1);
+            tp.setText(removeWhitespaceBeforeTag(tp.getText()));
           }
-        } else {
-          out.add(part);
         }
-      } else {
-        out.add(part);
+        if (itp.isEndTagOnSeparateLine()) {
+          TextPart tp = (TextPart) childParts.get(childParts.size() - 1);
+          tp.setText(removeWhitespaceBeforeTag(tp.getText()));
+          if (i < parts.size() - 1) {
+            tp = (TextPart) parts.get(i + 1);
+            tp.setText(removeWhitespaceAfterTag(tp.getText(), false));
+          }
+        }
+      } else if (part instanceof IncludedTemplatePart itp) {
+        if (itp.isTagOnSeparateLine()) {
+          if (i > 0) {
+            TextPart tp = (TextPart) parts.get(i - 1);
+            tp.setText(removeWhitespaceBeforeTag(tp.getText()));
+          }
+          if (i < parts.size() - 1) {
+            TextPart tp = (TextPart) parts.get(i + 1);
+            tp.setText(removeWhitespaceAfterTag(tp.getText(), true));
+          }
+        }
       }
     }
-    return out;
   }
 
-  private static String getBoilerplate(TextPart textPart, Part nextPart) {
-    String text;
-    if (nextPart instanceof InlineTemplatePart x
-        && x.isStartTagOnSeparateLine()) {
-      text = trim(textPart.getText());
-    } else if (nextPart instanceof IncludedTemplatePart x
-        && x.isTagOnSeparateLine()) {
-      text = StringMethods.rtrim(textPart.getText(), " \t");
-    } else {
-      text = textPart.getText();
-    }
-    return text;
-  }
-
-  static String trim(String txt) {
-    String s = StringMethods.rtrim(txt, " \t");
-    if (s.endsWith("\r\n")) {
-      return s.substring(0, s.length() - 2);
-    } else if (s.endsWith("\n") || s.endsWith("\r")) {
-      return s.substring(0, s.length() - 1);
+  private static String removeWhitespaceAfterTag(String txt, boolean keepLine) {
+    String s = StringMethods.ltrim(txt, " \t");
+    if (!keepLine) {
+      if (s.startsWith("\r\n")) {
+        return s.substring(2);
+      } else if (s.startsWith("\n") || s.startsWith("\r")) {
+        return s.substring(1);
+      }
     }
     return s;
+  }
+
+  private static String removeWhitespaceBeforeTag(String txt) {
+    return StringMethods.rtrim(txt, " \t");
   }
 
 }
