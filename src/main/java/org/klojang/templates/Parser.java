@@ -7,6 +7,7 @@ import java.util.*;
 import java.util.regex.Matcher;
 
 import static org.klojang.templates.InlineTemplateParser.CommentType;
+import static org.klojang.templates.ParseUtils.removeEmptyParts;
 import static org.klojang.templates.ParseUtils.trimBoilerplate;
 import static org.klojang.templates.Regex.*;
 import static org.klojang.templates.Template.ROOT_TEMPLATE_NAME;
@@ -57,6 +58,7 @@ final class Parser {
     BoilerplateCollector bc = new BoilerplateCollector(src);
     parts = bc.collectBoilerplate(parts);
     trimBoilerplate(parts);
+    parts = removeEmptyParts(parts);
     return parts;
   }
 
