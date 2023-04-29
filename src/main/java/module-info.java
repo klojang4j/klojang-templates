@@ -94,8 +94,13 @@
  * tokens and the text are removed when the template is rendered. However, since
  * {@code <!--%-->} is a self-closed HTML comment, the placeholder text between a
  * pair of these tokens will be visible when viewing the raw template in a browser. A
- * nested template may contain placeholders, but you cannot place a pair of
- * {@code <!--%-->} tokens around a nested template.
+ * nested template may contain placeholders, but it is not allowed to place a pair of
+ * {@code <!--%-->} tokens around a nested template &#8212; it will result in a
+ * {@link org.klojang.templates.ParseException}. Placeholders are meant to be used in
+ * a development process aimed at keeping the raw, unprocessed well-formed, valid and
+ * intelligible. They allow you to provide placeholder values for template variables.
+ * However, they can also be used to specify a <i>default</i> value for a template
+ * variable. See {@link org.klojang.templates.VarGroup#DEF VarGroup.DEF}.
  * <p>
  * <b>Ditch Blocks</b><br/>
  * A ditch block is a block of text inside a pair of {@code <!--%%-->} tokens. The

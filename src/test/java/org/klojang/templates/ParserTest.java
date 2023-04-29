@@ -529,11 +529,11 @@ public class ParserTest {
     //System.out.println(out);
     String expected = """
         *****
-        Foo
-        Foo
-        Foo
-        Foo
-        Foo
+            Foo
+            Foo
+            Foo
+            Foo
+            Foo
         
         *****
         """;
@@ -567,11 +567,11 @@ public class ParserTest {
     String out = rs.render();
     //System.out.println(out);
     String expected = """
-        *****Foo
-        Foo
-        Foo
-        Foo
-        Foo        
+        *****    Foo
+            Foo
+            Foo
+            Foo
+            Foo        
         *****
         """;
     assertEquals(expected, out);
