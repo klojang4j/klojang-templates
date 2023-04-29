@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.klojang.templates.x.ClassPathResolver;
 import org.klojang.util.StringMethods;
 
+import java.io.ByteArrayInputStream;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -493,6 +494,90 @@ public class ParserTest {
         """;
     assertEquals(expected, out);
   }
+
+  @Test
+  public void includeTagOnSeparateLine00() throws ParseException {
+    String src = """
+        *****
+        ~%%include:foo:Foo.html%%
+        *****
+        """;
+    Template t = Template.fromString(getClass(), src);
+    RenderSession rs = t.newRenderSession();
+    rs.enable(5, "foo");
+    String out = rs.render();
+    //System.out.println(out);
+    String expected = """
+        *****
+        FooFooFooFooFoo            
+        *****
+        """;
+    assertEquals(expected, out);
+  }
+
+  @Test
+  public void includeTagOnSeparateLine01() throws ParseException {
+    String src = """
+        *****
+        ~%%include:foo:FooWithNewline.html%%
+        *****
+        """;
+    Template t = Template.fromString(getClass(), src);
+    RenderSession rs = t.newRenderSession();
+    rs.enable(5, "foo");
+    String out = rs.render();
+    //System.out.println(out);
+    String expected = """
+        *****
+        Foo
+        Foo
+        Foo
+        Foo
+        Foo
+        
+        *****
+        """;
+    assertEquals(expected, out);
+  }
+
+  @Test
+  public void includeTagNotOnSeparateLine00() throws ParseException {
+    String src = """
+        *****~%%include:foo:Foo.html%%*****
+        """;
+    Template t = Template.fromString(getClass(), src);
+    RenderSession rs = t.newRenderSession();
+    rs.enable(5, "foo");
+    String out = rs.render();
+    //System.out.println(out);
+    String expected = """
+        *****FooFooFooFooFoo*****
+        """;
+    assertEquals(expected, out);
+  }
+
+  @Test
+  public void includeTagNotOnSeparateLine01() throws ParseException {
+    String src = """
+        *****~%%include:foo:FooWithNewline.html%%*****
+        """;
+    Template t = Template.fromString(getClass(), src);
+    RenderSession rs = t.newRenderSession();
+    rs.enable(5, "foo");
+    String out = rs.render();
+    //System.out.println(out);
+    String expected = """
+        *****Foo
+        Foo
+        Foo
+        Foo
+        Foo        
+        *****
+        """;
+    assertEquals(expected, out);
+  }
+
+
 
   private static String nospace(String s) {
     return s.replaceAll("\\s+", "");

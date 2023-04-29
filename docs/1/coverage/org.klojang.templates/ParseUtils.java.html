@@ -62,7 +62,7 @@ import java.util.regex.Pattern;
           }
         }
 <span class="fc bfc" id="L64" title="All 2 branches covered.">      } else if (part instanceof IncludedTemplatePart itp) {</span>
-<span class="pc bpc" id="L65" title="1 of 2 branches missed.">        if (itp.isTagOnSeparateLine()) {</span>
+<span class="fc bfc" id="L65" title="All 2 branches covered.">        if (itp.isTagOnSeparateLine()) {</span>
 <span class="pc bpc" id="L66" title="2 of 4 branches missed.">          if (i &gt; 0 &amp;&amp; parts.get(i - 1) instanceof TextPart tp) {</span>
 <span class="fc" id="L67">            tp.setText(removeWhitespaceBeforeTag(tp.getText()));</span>
           }
@@ -78,7 +78,7 @@ import java.util.regex.Pattern;
 <span class="fc" id="L78">    List&lt;Part&gt; out = new ArrayList&lt;&gt;(parts.size());</span>
 <span class="fc bfc" id="L79" title="All 2 branches covered.">    for (Part p : parts) {</span>
 <span class="fc bfc" id="L80" title="All 2 branches covered.">      if (p instanceof NestedTemplatePart ntp) {</span>
-<span class="pc bpc" id="L81" title="1 of 2 branches missed.">        if (((NestedTemplatePart) p).getTemplate().parts().isEmpty()) {</span>
+<span class="pc bpc" id="L81" title="1 of 2 branches missed.">        if (ntp.getTemplate().parts().isEmpty()) {</span>
 <span class="nc" id="L82">          continue;</span>
         }
 <span class="fc bfc" id="L84" title="All 2 branches covered.">      } else if (p instanceof TextPart tp) {</span>

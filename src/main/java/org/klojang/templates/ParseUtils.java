@@ -78,7 +78,7 @@ final class ParseUtils {
     List<Part> out = new ArrayList<>(parts.size());
     for (Part p : parts) {
       if (p instanceof NestedTemplatePart ntp) {
-        if (((NestedTemplatePart) p).getTemplate().parts().isEmpty()) {
+        if (ntp.getTemplate().parts().isEmpty()) {
           continue;
         }
       } else if (p instanceof TextPart tp) {
