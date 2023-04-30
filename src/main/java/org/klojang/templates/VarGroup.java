@@ -15,10 +15,14 @@ import static org.klojang.templates.x.Messages.ERR_NO_SUCH_VARGROUP;
  * as a prefix. For example: {@code ~%html:firstName%} or {@code ~%js:firstName%} or
  * {@code ~%myDateFormat:birthDate%}. The first two examples specify the predefined
  * {@link #HTML} and {@link #JS} variable groups, which provide HTML-escaping and
- * ECMASScript-escaping, respectively. The third example is a custom group that you
- * can define using the {@link StringifierRegistry} class. Variable groups can also
- * be assigned in a more <i>ad hoc</i> manner using the API. Many methods of the
- * {@link RenderSession} class take a {@code VarGroup} argument.
+ * ECMASScript-escaping, respectively. The predefined variable groups mostly rely on
+ * <a
+ * href="https://commons.apache.org/proper/commons-text/apidocs/org/apache/commons/text/StringEscapeUtils.html">apache.commons.text</a>
+ * to do the actual escaping. The third example is a custom group that you can define
+ * using the {@link StringifierRegistry} class. Variable groups can also be assigned
+ * in a more
+ * <i>ad hoc</i> manner using the API. Many methods of the {@link RenderSession}
+ * class take a {@code VarGroup} argument.
  *
  * <p>Note that variable groups are assigned at the
  * {@linkplain VariableOccurrence variable occurrence} level. For example, a template

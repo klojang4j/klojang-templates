@@ -26,13 +26,10 @@ Klojang templates arguably are even simpler than Mustache templates. There are j
 five syntactical constructs. Three if you discount for the fact that two of them are
 comments-like constructs. Two if you consider that, of those three, two are
 functionally equivalent. However, _Klojang Templates_ is unashamedly Java-only. The
-template syntax is carefully tuned to give the API maximum leverage over it. In
+template syntax is carefully calibrated to give the API maximum leverage over it. In
 particular, _Klojang Templates_ allows you to [nest templates](#nested-templates)
-inside other templates. This can make the API can be very efficient and concise when
-it comes to populating the templates.
-
-In short, we hope (and think) that you'll find _Klojang Templates_ a worthwhile 
-addition to the Java templating landscape.
+inside other templates. This makes the API very efficient and concise when it comes
+to populating the templates.
 
 ## Other Documentation
 
@@ -53,14 +50,14 @@ To get started with _Klojang Templates_, add the following dependency to you pro
 <dependency>
     <groupId>org.klojang</groupId>
     <artifactId>klojang-templates</artifactId>
-    <version>1.0.1</version>
+    <version>1.0.2</version>
 </dependency>
 ```
 
 **Gradle**:
 
 ```
-implementation group: 'org.klojang', name: 'klojang-templates', version: '1.0.1'
+implementation group: 'org.klojang', name: 'klojang-templates', version: '1.0.2'
 ```
 
 _Klojang Templates_ is agnostic about the web or application framework you use. It
