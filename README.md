@@ -96,8 +96,9 @@ public class HelloWorld {
 
 ## Escaping
 
-_Klojang Templates_ is not tied to any particular output format. However, it does
-provide some extra help in case you are writing HTML templates.
+_Klojang Templates_ is not tied to any particular output format. There is no reason
+why you couldn't use _Klojang Templates_ to write SQL or JSON templates, for example
+However, it does provide some extra help in case you are writing HTML templates.
 
 ```html
 <!-- hello.html -->
@@ -266,20 +267,21 @@ Ordinarily, when rendering a template, its structure is left completely intact. 
 inline templates the begin tag is removed and the text following it brought that much
 closer to the text preceding it, as though the begin tag had not been there. The same
 applies to the end tag of an inline template. For included templates the entire tag
-(`~%%include:foo.html%%`) is replaced with the contents of the included file.
+(e.g. `~%%include:foo.html%%`) is replaced with the contents of the included file.
 
 However, if the begin or end tag of an inline template is all by itself on a 
 separate line, as in the example above, that _entire_ line will be removed from 
 the output. If an included template tag is all by itself on a separate line, the 
 line is preserved, but any whitespace surrounding the tag is removed.
 
-It may sound arcane, but it allows you to write elegant templates that render as
-intended. The consequences and usefulness of this behaviour are illustrated in
+It may sound arcane, but it allows you to write elegant templates with indentation
+that stays in place upon rendering. The consequences and usefulness of this behaviour
+are illustrated in
 [Newline Suppression in Practice](#newline-suppression-in-practice)
 
 ## Using Nested Templates
 
-The ability to nest templates in other templates almost literally turns a Klojang
+The ability to nest templates inside other templates almost literally turns a Klojang
 template into a mold into which you can sink objects with the same shape. If the
 structure of the template reflects the structure of the model object, you can fill up
 the entire template with a single call. The following code snippets illustrate this.
@@ -402,7 +404,7 @@ somewhat like this:
 If this fails to make you spill your coffee, notice that there are **two**
 newline characters inside the employees template (one after
 "~%%begin:employees%" and one after "&lt;/tr&gt;"), which would ordinarily have been
-meticulously preserved.
+faithfully reproduced.
 
 ### Complex Information
 
