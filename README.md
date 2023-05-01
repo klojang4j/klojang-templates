@@ -373,7 +373,9 @@ public class EmployeeResource {
 }
 ```
 
-If the second argument to `RenderSession.populate()` is an array or collection, the
+If the second argument to 
+[RenderSession.populate()](https://klojang4j.github.io/klojang-templates/1/api/org.klojang.templates/org/klojang/templates/RenderSession.html#populate(java.lang.String,java.lang.Object,java.lang.String...)) 
+is an array or collection, the
 nested template automatically turns into a _repeating template_, repeating itself for
 each element in the array or collection.
 
@@ -439,7 +441,7 @@ record Employee(String firstName, String lastName, LocalDate birthDate) {}
 ```
 
 Then, when inserting a list of Company instances into the template, the employees
-template would repeat within the departments template. which would repeat within the
+template would repeat within the departments template, which would repeat within the
 companies template, which would repeat within the company-overview template. All this
 would happen with a single call to
 [RenderSession.populate()](https://klojang4j.github.io/klojang-templates/1/api/org.klojang.templates/org/klojang/templates/RenderSession.html#populate(java.lang.String,java.lang.Object,java.lang.String...)),
@@ -454,7 +456,8 @@ the Employee class, but visually it actually _flattens_ the relationship between
 ### Conditional Rendering
 
 Conditional rendering &#8212; that is, rendering a block of text within a template
-only if a certain condition is met, is also done by means of nested templates.
+only if a certain condition is met &#8212; is also done by means of nested 
+templates.
 
 The first thing to note here is that, by default, neither template variables nor
 nested templates are rendered in the first place. If you don't set a variable to a

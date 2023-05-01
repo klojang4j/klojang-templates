@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ParseErrorCode.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Klojang Templates</a> &gt; <a href="index.source.html" class="el_package">org.klojang.templates</a> &gt; <span class="el_source">ParseErrorCode.java</span></div><h1>ParseErrorCode.java</h1><pre class="source lang-java linenums">package org.klojang.templates;
+
+import org.klojang.util.StringMethods;
+
+import java.util.function.Supplier;
+
+import static org.klojang.util.ArrayMethods.prefix;
+
+/**
+ * Symbolic constants for syntax errors and other types of errors in a Klojang
+ * template.
+ *
+ * @author Ayco Holleman
+ * @see ParseException#getErrorCode()
+ */
+<span class="fc" id="L16">public enum ParseErrorCode {</span>
+
+  /**
+   * The template contained two or more nested templates with the same name.
+   */
+<span class="fc" id="L21">  DUPLICATE_TMPL_NAME(&quot;Duplicate template name \&quot;%s\&quot;&quot;),</span>
+
+  /**
+   * The template contained a nested template with an illegal name.
+   */
+<span class="fc" id="L26">  ILLEGAL_TMPL_NAME(&quot;Illegal name for template: \&quot;%s\&quot;&quot;),</span>
+
+  /**
+   * The template contained a variable with an illegal group name prefix (most likely
+   * &quot;begin&quot; or &quot;end&quot;).
+   */
+<span class="fc" id="L32">  ILLEGAL_VAR_PREFIX(</span>
+      &quot;Illegal variable prefix: \&quot;%s\&quot; (forgot the 2nd percentage character?)&quot;),
+
+  /**
+   * The template contained a variable with the same name as a nested template.
+   */
+<span class="fc" id="L38">  VAR_WITH_TMPL_NAME(&quot;Variable cannot have same name as template: \&quot;%s\&quot;&quot;),</span>
+
+  /**
+   * A template variable had the predefined {@link VarGroup#DEF def:} prefix, but no
+   * placeholder value was specified in the template. If you want to use the
+   * {@code def:} prefix, you must also provide a placeholder value. For example:
+   * {@code ~%def:firstName%John&lt;!--%--&gt;}.
+   */
+<span class="fc" id="L46">  NO_PLACEHOLDER_DEFINED(</span>
+      &quot;Prefix \&quot;def:\&quot; for variable %s not allowed without also specifying placeholder value&quot;),
+
+  /**
+   * The path specified in an included template (e&amp;#46;g&amp;#46;
+   * {@code ~%%include:/path/to/foo.html%%}) could not be resolved to a readable
+   * resource.
+   *
+   * @see org.klojang.templates.PathResolver#isValidPath(String)
+   */
+<span class="fc" id="L56">  INVALID_INCLUDE_PATH(&quot;Invalid include path: %s&quot;),</span>
+
+  /**
+   * The character sequence {@code ~%%begin:} was found, but no terminating
+   * percentage-sign ({@code %}) followed.
+   */
+<span class="fc" id="L62">  BEGIN_TAG_NOT_TERMINATED(</span>
+      &quot;Template begin tag (~%%%%begin:) not terminated by \&quot;%%\&quot;&quot;),
+
+  /**
+   * The character sequence {@code ~%%end:} was found, but no terminating
+   * percentage-sign ({@code %}) followed.
+   */
+<span class="fc" id="L69">  END_TAG_NOT_TERMINATED(&quot;Template end tag (~%%%%end:) not terminated by \&quot;%%\&quot;&quot;),</span>
+
+  /**
+   * The character sequence {@code ~%%include:} was found, but no terminating
+   * {@code %%} followed.
+   */
+<span class="fc" id="L75">  INCLUDE_TAG_NOT_TERMINATED(</span>
+      &quot;Template include tag(~%%%%include:) not terminated by \&quot;%%%%\&quot;&quot;),
+
+  /**
+   * An inline template did not close properly. For example ~%%begin:foo% was found,
+   * but ~%%end:foo% was not.
+   */
+<span class="fc" id="L82">  MISSING_END_TAG(&quot;Missing end tag for inline template \&quot;%s\&quot;&quot;),</span>
+
+  /**
+   * A dangling end-of-template was found. For example ~%%end:foo% was found, but not
+   * preceded by ~%%begin:foo%.
+   */
+<span class="fc" id="L88">  DANGLING_END_TAG(&quot;Dangling end tag with template name \&quot;%s\&quot;&quot;),</span>
+
+  /**
+   * A ditch block was not closed. (There was an uneven number of {@code &lt;!--%%--&gt;}
+   * tokens.)
+   */
+<span class="fc" id="L94">  DITCH_BLOCK_NOT_CLOSED(&quot;Ditch block not closed&quot;),</span>
+
+  /**
+   * A placeholder block was not closed. (There was an uneven number of
+   * {@code &lt;!--%--&gt;} tokens.)
+   */
+<span class="fc" id="L100">  PLACEHOLDER_NOT_CLOSED(&quot;Placeholder not closed&quot;);</span>
+
+  private static final String ERR_BASE = &quot;Error at line %d, column %d. &quot;;
+
+  private final String format;
+
+<span class="fc" id="L106">  ParseErrorCode(String format) {</span>
+<span class="fc" id="L107">    this.format = format;</span>
+<span class="fc" id="L108">  }</span>
+
+  // No line and column number included in exception message
+  ParseException getTracelessException(Object... msgArgs) {
+<span class="nc" id="L112">    return new ParseException(this, String.format(format, msgArgs));</span>
+  }
+
+  ParseException getException(String src, int pos, Object... args) {
+<span class="fc" id="L116">    return new ParseException(this, createMessage(src, pos, args));</span>
+  }
+
+  Supplier&lt;ParseException&gt; getExceptionSupplier(String src,
+      int pos,
+      Object... msgArgs) {
+<span class="fc" id="L122">    return () -&gt; getException(src, pos, msgArgs);</span>
+  }
+
+  private String createMessage(String src, int pos, Object... args) {
+<span class="fc" id="L126">    int[] x = StringMethods.getLineAndColumn(src, pos);</span>
+<span class="fc" id="L127">    return String.format(ERR_BASE + format, prefix(args, x[0] + 1, x[1] + 1));</span>
+  }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
