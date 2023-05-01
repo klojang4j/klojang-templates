@@ -264,19 +264,20 @@ also use the following syntax:
 ### Indentation and Newline Suppression
 
 Ordinarily, when rendering a template, its structure is left completely intact. For
-inline templates the begin tag is removed and the text following it brought that much
-closer to the text preceding it, as though the begin tag had not been there. The same
-applies to the end tag of an inline template. For included templates the entire tag
-(e.g. `~%%include:foo.html%%`) is replaced with the contents of the included file.
+inline templates the begin tag (e.g. `~%%begin:foo%`) is removed and the text
+following it is brought that much closer to the text preceding it, as though the
+begin tag had not been there. The same applies to the end tag of an inline template.
+For included templates the entire tag (e.g. `~%%include:foo.html%%`) is replaced 
+with the contents of the included file.
 
 However, if the begin or end tag of an inline template is all by itself on a separate
 line, as in the example above, then that _entire_ line will be removed from the
 output. If an included template tag is all by itself on a separate line, the line is
 preserved, but any whitespace on it (because the tag was indented) is removed.
 
-It may sound arcane, but it allows you to write elegant templates with indentation
-that stays in place upon rendering. The consequences and usefulness of this behaviour
-are illustrated in
+It may sound arcane, but it actually allows you to write elegant templates with
+indentation that stays in place upon rendering. The consequences and usefulness of
+this behaviour are illustrated in
 [Newline Suppression in Practice](#newline-suppression-in-practice)
 
 ## Using Nested Templates
