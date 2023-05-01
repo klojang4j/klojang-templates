@@ -98,7 +98,7 @@ public sealed interface RenderSession permits SoloSession, MultiSession {
 
   /**
    * <p>Sets the value of the specified variable. The variable may be (deeply)
-   * nested. For example:
+   * nested. For example,
    *
    * <blockquote><pre>{@code
    * setPath("companies.departments.employees.firstName", idx -> "John")
@@ -109,11 +109,11 @@ public sealed interface RenderSession permits SoloSession, MultiSession {
    * within the template managed by this {@code RenderSession} to "John".
    *
    * <p>Because the {@code employees} template may be repeating, the value for each
-   * instance is set via an {@link IntFunction}. The function is given the array
-   * index of the instance and must produce a value for that particular instance. If
-   * {@code force} equals {@code false}, then the variable will only be set if the
-   * template containing it had already been made visible via other means, e.g. via
-   * {@link #repeat(String, int) repeat()} or
+   * instance of the template is set via an {@link IntFunction}. The function is
+   * given the array index of the instance and must produce a value for that
+   * particular instance. If {@code force} equals {@code false}, then the variable
+   * will only be set if the template containing it had already been made visible via
+   * other means, e.g. via {@link #repeat(String, int) repeat()} or
    * {@link #populate(String, Object, String...) populate()}. If {@code force} equals
    * {@code true}, the variable will always be set and {@code setNested()} will
    * itself cause the template to become visible.
@@ -193,14 +193,14 @@ public sealed interface RenderSession permits SoloSession, MultiSession {
    * will be copied to the variables using the
    * {@linkplain AccessorRegistry accessors} with which the {@code RenderSession} was
    * {@linkplain Template#newRenderSession(AccessorRegistry) created}. If the
-   * template likewise contains a nested template named "address", and the
-   * {@code Person} class contains an {@code address} property referencing an
-   * {@code Address} object, then the {@code Address} object will be used to populate
-   * the "address" template. If the {@code address} property were a {@code List} or
-   * array of {@code Address} objects, then the "address" template will be repeated
-   * for each element in the {@code List} or array. In short: if the object reflects
-   * the structure of the template, the template almost literally becomes a "mold"
-   * into which to "sink" the object. (On the other hand: the object is not
+   * template also contains a nested template named "address", and the {@code Person}
+   * class contains an {@code address} property referencing an {@code Address}
+   * object, then the {@code Address} object will be used to populate the "address"
+   * template. If the {@code address} property were a {@code List} or array of
+   * {@code Address} objects, then the "address" template will be repeated for each
+   * element in the {@code List} or array. In short: if the object reflects the
+   * structure of the template, the template almost literally becomes a "mold" into
+   * which to "sink" the object. (On the other hand: the object is not
    * <i>required</i> to exactly match the structure of the template. The accessors
    * will grab from it what they can and leave the rest alone.)
    *
@@ -239,7 +239,7 @@ public sealed interface RenderSession permits SoloSession, MultiSession {
   RenderSession insert(Object data, VarGroup varGroup, String... names);
 
   /**
-   * Populates a template nested inside the template being rendered by this
+   * Populates a template nested inside the template managed by this
    * {@code RenderSession}. The template is populated with values retrieved from the
    * specified source data. Only variables and doubly-nested templates whose names
    * are present in the {@code names} argument will be populated. No escaping will be
@@ -255,7 +255,7 @@ public sealed interface RenderSession permits SoloSession, MultiSession {
   RenderSession populate(String nestedTemplateName, Object data, String... names);
 
   /**
-   * Populates a template nested inside the template being rendered by this
+   * Populates a template nested inside the template being managed by this
    * {@code RenderSession}. The template is populated with values retrieved from the
    * specified source data. Only variables and (doubly) nested templates whose names
    * are present in the {@code names} argument will be populated. Values will be
@@ -265,8 +265,8 @@ public sealed interface RenderSession permits SoloSession, MultiSession {
    * <h4>Repeating Templates</h4>
    *
    * <p>If the specified object is an array or a {@code Collection}, the template
-   * will be repeated for each object in the array or {@code Collection}. This can be
-   * used, for example, to generate an HTML table from a nested template that
+   * will be repeated for each element in the array or {@code Collection}. This can
+   * be used, for example, to generate an HTML table from a nested template that
    * contains just a single row.
    *
    * <h4>Conditional Rendering</h4>
@@ -490,7 +490,7 @@ public sealed interface RenderSession permits SoloSession, MultiSession {
    * variables. The provided varargs array must contain an even number of elements,
    * alternating between a value for the first template variable and a value for the
    * second one. The template is going to be repeated for each <i>pair</i> of
-   * values.
+   * values in the varargs array.
    *
    * @param nestedTemplateName the name of the nested template.
    * @param values an array of values, alternating between a value for the first
@@ -504,7 +504,7 @@ public sealed interface RenderSession permits SoloSession, MultiSession {
    * variables. The provided varargs array must contain an even number of elements,
    * alternating between a value for the first template variable and a value for the
    * second one. The template is going to be repeated for each <i>pair</i> of
-   * values.
+   * values in the varargs array.
    *
    * @param nestedTemplateName the name of the nested template
    * @param varGroup the variable group to assign the variables to if they have

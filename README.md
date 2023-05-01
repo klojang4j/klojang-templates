@@ -25,9 +25,9 @@ in their raw state. (See
 Klojang templates arguably are even simpler than Mustache templates. There are just
 five syntactical constructs. Three if you discount for the fact that two of them are
 comments-like constructs. Two if you consider that, of those three, two are
-functionally equivalent. However, _Klojang Templates_ is unashamedly Java-only. The
-template syntax is carefully calibrated to give the API maximum leverage over it. In
-particular, _Klojang Templates_ allows you to [nest templates](#nested-templates)
+functionally equivalent. However, _Klojang Templates_ is unashamedly Java-only and
+the template syntax is carefully calibrated to give the API maximum leverage over it.
+In particular, _Klojang Templates_ allows you to [nest templates](#nested-templates)
 inside other templates. This makes the API very efficient and concise when it comes
 to populating the templates.
 
@@ -97,7 +97,7 @@ public class HelloWorld {
 ## Escaping
 
 _Klojang Templates_ is not tied to any particular output format. There is no reason
-why you couldn't use _Klojang Templates_ to write SQL or JSON templates, for example
+why you couldn't use _Klojang Templates_ to write SQL or JSON templates for example.
 However, it does provide some extra help in case you are writing HTML templates.
 
 ```html
@@ -269,10 +269,10 @@ closer to the text preceding it, as though the begin tag had not been there. The
 applies to the end tag of an inline template. For included templates the entire tag
 (e.g. `~%%include:foo.html%%`) is replaced with the contents of the included file.
 
-However, if the begin or end tag of an inline template is all by itself on a 
-separate line, as in the example above, that _entire_ line will be removed from 
-the output. If an included template tag is all by itself on a separate line, the 
-line is preserved, but any whitespace surrounding the tag is removed.
+However, if the begin or end tag of an inline template is all by itself on a separate
+line, as in the example above, then that _entire_ line will be removed from the
+output. If an included template tag is all by itself on a separate line, the line is
+preserved, but any whitespace on it (because the tag was indented) is removed.
 
 It may sound arcane, but it allows you to write elegant templates with indentation
 that stays in place upon rendering. The consequences and usefulness of this behaviour
@@ -381,8 +381,8 @@ each element in the array or collection.
 
 ### Newline Suppression in Practice
 
-Now we can see the usefulness of newline suppression. The template above would render
-somewhat like this:
+Tables especially benefit from newline suppression as described above. The template 
+above would render somewhat like this:
 
 ```html
 <html>
@@ -405,8 +405,17 @@ somewhat like this:
 
 If this fails to make you spill your coffee, notice that there are **two**
 newline characters inside the employees template (one after
-"~%%begin:employees%" and one after "&lt;/tr&gt;"), which would ordinarily have been
-faithfully reproduced.
+"~%%begin:employees%" and one after "&lt;/tr&gt;"). Yet when rendered, the table rows
+stay tightly packed together. You could achieve the same by writing:
+
+```html
+<tbody>
+~%%begin:employees%    <tr><td>~%firstName%</td><td>~%lastName%</td><td>~%birthDate%</td></tr>
+~%%end:employees%
+</tbody>
+```
+
+But, well ...
 
 ### Complex Information
 
@@ -463,8 +472,8 @@ The first thing to note here is that, by default, neither template variables nor
 nested templates are rendered in the first place. If you don't set a variable to a
 value, it will simply disappear from the template. If you don't populate a nested
 template, the entire block of text it encloses will disappear from the template.
-Thus, if you don't want something to be rendered, just
-"don't mention its name" in the `RenderSession`.
+Thus, if you don't want something to be rendered, just "don't mention its name"
+in the `RenderSession`.
 
 However, you can make it more explicit that you don't want a block of text to be
 rendered. If you populate a nested template with an empty array or collection, the
@@ -591,8 +600,8 @@ The first thing to keep in mind is that template variables can be placed in HTML
 comments without this making a difference in how the template is rendered.
 `<!-- ~%foo% -->` is rendered just like `~%foo%`. _Klojang Templates_ will replace
 the _entire_ character sequence with whatever value `foo` was set to. The space
-character on either side of `~%foo%` is optional. You may also write `<!--~%foo%-->`,
-but multiple space characters, or other characters, are not allowed.
+character on either side of `~%foo%` is optional. You may also write `<!--~%foo%-->`.
+Multiple spaces, or other characters, however, are not allowed.
 
 So your first attempt at turning the design into a dynamically populated page might
 look like this:
@@ -645,7 +654,8 @@ any text inside it.
 If you remove all HTML comments from the above HTML snippet, you are back to the
 original design.
 
-If the placeholder fits on a single line, this can be contracted to:
+If the variable and placeholder together fit on a single line, this can be contracted
+to:
 
 ```html
 <td><!-- ~%firstName% -->John<!--%--></td>
@@ -655,11 +665,11 @@ If the placeholder fits on a single line, this can be contracted to:
 ### Populating the Table
 
 Now we want to introduce a nested template so we can make the table row repeat for
-each element of the `List<Employee>` we received from the data access layer.
+each element of the `List<Employee>` we receive from the data access layer.
 
 As with template variables, you can place the begin and end tag of an inline template
 in HTML comments. _Klojang Templates_ treats `<!-- ~%%begin:foo% -->`
-just like it treats `~%%begin:foo%`
+just like it treats `~%%begin:foo%`.
 
 ```html
 <!DOCTYPE html>
@@ -691,7 +701,7 @@ dynamic.
 
 ### Ditch Blocks
 
-It may have occurred to you that this won't work for included templates:
+It may have occurred to you that this will not work for included templates:
 
 ```html
 

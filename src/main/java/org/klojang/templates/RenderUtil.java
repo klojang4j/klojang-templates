@@ -30,7 +30,6 @@ final class RenderUtil {
     return s;
   }
 
-
   static RenderSession ifNotSet(SoloSession session,
       Path path,
       IntFunction<Object> valueGenerator,
@@ -40,8 +39,6 @@ final class RenderUtil {
     }
     return session;
   }
-
-
 
   static void setPath(SoloSession session,
       Path path,
@@ -88,4 +85,5 @@ final class RenderUtil {
       }
     }
   }
+
 }
