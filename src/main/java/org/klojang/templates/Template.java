@@ -220,7 +220,7 @@ public final class Template {
   }
 
   /**
-   * Returns an {@code Optional} containing the path to the source code of this
+   * <p>Returns an {@code Optional} containing the path to the source code of this
    * template, or an empty {@code Optional} if the template was
    * {@linkplain #fromString(String) created from a string}. In other words, for
    * {@code included} templates this method (by definition) returns a non-empty
@@ -472,7 +472,8 @@ public final class Template {
    * are equals if they were created from the same {@linkplain #path() path} and
    * {@link PathResolver}. {@code Template} instances that were created
    * {@linkplain #fromString(String) from a string} are never equal to any other
-   * {@code Template} instance (except themselves).
+   * {@code Template} instance, even if the other instance was created from exactly
+   * the same {@code String}.
    *
    * @param obj the object to compare this template with
    * @return whether this template is equal to the specified object

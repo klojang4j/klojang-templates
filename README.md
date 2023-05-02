@@ -25,11 +25,11 @@ in their raw state. (See
 Klojang templates arguably are even simpler than Mustache templates. There are just
 five syntactical constructs. Three if you discount for the fact that two of them are
 comments-like constructs. Two if you consider that, of those three, two are
-functionally equivalent. However, _Klojang Templates_ is unashamedly Java-only and
-the template syntax is carefully calibrated to give the API maximum leverage over it.
-In particular, _Klojang Templates_ allows you to [nest templates](#nested-templates)
-inside other templates. This makes the API very efficient and concise when it comes
-to populating the templates.
+functionally equivalent. However, _Klojang Templates_ is unashamedly Java-only.
+The finer details of the syntax are carefully calibrated to give the Java API maximum
+leverage. In particular, _Klojang Templates_ allows you to
+[nest templates](#nested-templates) inside other templates. This makes the API very
+efficient and concise when it comes to populating the templates.
 
 ## Other Documentation
 
