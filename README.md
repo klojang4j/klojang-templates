@@ -63,7 +63,7 @@ implementation group: 'org.klojang', name: 'klojang-templates', version: '1.0.2'
 _Klojang Templates_ is agnostic about the web or application framework you use. It
 does not hook into any of them in any deep way. You can use _Klojang Templates_
 with any of the Jakarta/JAX-RS based frameworks, but equally well with non-Servlet
-based frameworks like [Micronaut](https://micronaut.io/).
+based frameworks like [Micronaut](https://micronaut.io/). 
 
 ## Hello, World
 
@@ -273,7 +273,7 @@ with the contents of the included file.
 However, if the begin or end tag of an inline template is all by itself on a separate
 line, as in the example above, then that _entire_ line will be removed from the
 output. If an included template tag is all by itself on a separate line, the line is
-preserved, but any whitespace on it (because the tag was indented) is removed.
+preserved, but any whitespace on it is removed.
 
 It may sound arcane, but it actually allows you to write elegant templates with
 indentation that stays in place upon rendering. The consequences and usefulness of
@@ -299,11 +299,14 @@ _The View:_
 <!-- label.html -->
 <html>
 <body>
-<p>~%firstName% ~%lastName%</p>
-~%%begin:address%
-<p>~%line1%</p>
-<p>~%city%, ~%state%, ~%zipCode%</p>
-~%%end:address%
+
+    <p>~%firstName% ~%lastName%</p>
+    
+    ~%%begin:address%
+    <p>~%line1%</p>
+    <p>~%city%, ~%state%, ~%zipCode%</p>
+    ~%%end:address%
+
 </body>
 </html>
 ```
