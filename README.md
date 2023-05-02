@@ -275,7 +275,7 @@ line, as in the example above, then that _entire_ line will be removed from the
 output. If an included template tag is all by itself on a separate line, the line is
 preserved, but any whitespace on it is removed.
 
-It may sound arcane, but it actually allows you to write elegant templates with
+It may sound contrived, but it actually allows you to write elegant templates with
 indentation that stays in place upon rendering. The consequences and usefulness of
 this behaviour are illustrated in
 [Newline Suppression in Practice](#newline-suppression-in-practice)

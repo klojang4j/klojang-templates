@@ -220,7 +220,7 @@ public final class Template {
   }
 
   /**
-   * Returns an {@code Optional} containing the path to the source code of this
+   * &lt;p&gt;Returns an {@code Optional} containing the path to the source code of this
    * template, or an empty {@code Optional} if the template was
    * {@linkplain #fromString(String) created from a string}. In other words, for
    * {@code included} templates this method (by definition) returns a non-empty
@@ -472,19 +472,20 @@ public final class Template {
    * are equals if they were created from the same {@linkplain #path() path} and
    * {@link PathResolver}. {@code Template} instances that were created
    * {@linkplain #fromString(String) from a string} are never equal to any other
-   * {@code Template} instance (except themselves).
+   * {@code Template} instance, even if the other instance was created from exactly
+   * the same {@code String}.
    *
    * @param obj the object to compare this template with
    * @return whether this template is equal to the specified object
    */
   @Override
   public boolean equals(Object obj) {
-<span class="fc bfc" id="L482" title="All 2 branches covered.">    if (this == obj) {</span>
-<span class="fc" id="L483">      return true;</span>
+<span class="fc bfc" id="L483" title="All 2 branches covered.">    if (this == obj) {</span>
+<span class="fc" id="L484">      return true;</span>
     }
-<span class="fc bfc" id="L485" title="All 4 branches covered.">    return !location.isString()</span>
-<span class="fc" id="L486">        &amp;&amp; obj instanceof Template other</span>
-<span class="pc bpc" id="L487" title="1 of 2 branches missed.">        &amp;&amp; location.equals(other.location);</span>
+<span class="fc bfc" id="L486" title="All 4 branches covered.">    return !location.isString()</span>
+<span class="fc" id="L487">        &amp;&amp; obj instanceof Template other</span>
+<span class="pc bpc" id="L488" title="1 of 2 branches missed.">        &amp;&amp; location.equals(other.location);</span>
   }
 
   /**
@@ -494,7 +495,7 @@ public final class Template {
    */
   @Override
   public int hashCode() {
-<span class="fc" id="L497">    return location.hashCode();</span>
+<span class="fc" id="L498">    return location.hashCode();</span>
   }
 
   /**
@@ -505,7 +506,7 @@ public final class Template {
    */
   @Override
   public String toString() {
-<span class="fc" id="L508">    return implode(parts, &quot;&quot;);</span>
+<span class="fc" id="L509">    return implode(parts, &quot;&quot;);</span>
   }
 
   /* +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
@@ -513,53 +514,53 @@ public final class Template {
   /* +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
 
   List&lt;Part&gt; parts() {
-<span class="fc" id="L516">    return parts;</span>
+<span class="fc" id="L517">    return parts;</span>
   }
 
   /*
    * Maps variable names to the indices of the parts that contain them
    */
   Map&lt;String, IntList&gt; variables() {
-<span class="fc" id="L523">    return varIndices;</span>
+<span class="fc" id="L524">    return varIndices;</span>
   }
 
   private static Map&lt;String, IntList&gt; getVarIndices(List&lt;Part&gt; parts) {
-<span class="fc" id="L527">    Map&lt;String, IntList&gt; indices = new LinkedHashMap&lt;&gt;();</span>
-<span class="fc bfc" id="L528" title="All 2 branches covered.">    for (int i = 0; i &lt; parts.size(); ++i) {</span>
-<span class="fc bfc" id="L529" title="All 2 branches covered.">      if (parts.get(i) instanceof VariablePart vp) {</span>
-<span class="fc" id="L530">        indices.computeIfAbsent(vp.getName(), k -&gt; new IntArrayList()).add(i);</span>
+<span class="fc" id="L528">    Map&lt;String, IntList&gt; indices = new LinkedHashMap&lt;&gt;();</span>
+<span class="fc bfc" id="L529" title="All 2 branches covered.">    for (int i = 0; i &lt; parts.size(); ++i) {</span>
+<span class="fc bfc" id="L530" title="All 2 branches covered.">      if (parts.get(i) instanceof VariablePart vp) {</span>
+<span class="fc" id="L531">        indices.computeIfAbsent(vp.getName(), k -&gt; new IntArrayList()).add(i);</span>
       }
     }
-<span class="fc" id="L533">    indices.entrySet().forEach(e -&gt; e.setValue(IntList.copyOf(e.getValue())));</span>
-<span class="fc" id="L534">    return Collections.unmodifiableMap(indices);</span>
+<span class="fc" id="L534">    indices.entrySet().forEach(e -&gt; e.setValue(IntList.copyOf(e.getValue())));</span>
+<span class="fc" id="L535">    return Collections.unmodifiableMap(indices);</span>
   }
 
   private static Map&lt;String, Integer&gt; getTmplIndices(List&lt;Part&gt; parts) {
-<span class="fc" id="L538">    Map&lt;String, Integer&gt; indices = new LinkedHashMap&lt;&gt;();</span>
-<span class="fc bfc" id="L539" title="All 2 branches covered.">    for (int i = 0; i &lt; parts.size(); ++i) {</span>
-<span class="fc bfc" id="L540" title="All 2 branches covered.">      if (parts.get(i) instanceof NestedTemplatePart ntp) {</span>
-<span class="fc" id="L541">        indices.put(ntp.getName(), i);</span>
+<span class="fc" id="L539">    Map&lt;String, Integer&gt; indices = new LinkedHashMap&lt;&gt;();</span>
+<span class="fc bfc" id="L540" title="All 2 branches covered.">    for (int i = 0; i &lt; parts.size(); ++i) {</span>
+<span class="fc bfc" id="L541" title="All 2 branches covered.">      if (parts.get(i) instanceof NestedTemplatePart ntp) {</span>
+<span class="fc" id="L542">        indices.put(ntp.getName(), i);</span>
       }
     }
-<span class="fc" id="L544">    return Collections.unmodifiableMap(indices);</span>
+<span class="fc" id="L545">    return Collections.unmodifiableMap(indices);</span>
   }
 
   private static List&lt;String&gt; getNames(List&lt;Part&gt; parts) {
-<span class="fc" id="L548">    return parts.stream()</span>
-<span class="fc" id="L549">        .filter(NamedPart.class::isInstance)</span>
-<span class="fc" id="L550">        .map(NamedPart.class::cast)</span>
-<span class="fc" id="L551">        .map(NamedPart::getName)</span>
-<span class="fc" id="L552">        .collect(toUnmodifiableList());</span>
+<span class="fc" id="L549">    return parts.stream()</span>
+<span class="fc" id="L550">        .filter(NamedPart.class::isInstance)</span>
+<span class="fc" id="L551">        .map(NamedPart.class::cast)</span>
+<span class="fc" id="L552">        .map(NamedPart::getName)</span>
+<span class="fc" id="L553">        .collect(toUnmodifiableList());</span>
   }
 
   private static IntList getTextIndices(List&lt;Part&gt; parts) {
-<span class="fc" id="L556">    IntArrayList indices = new IntArrayList();</span>
-<span class="fc bfc" id="L557" title="All 2 branches covered.">    for (int i = 0; i &lt; parts.size(); ++i) {</span>
-<span class="fc bfc" id="L558" title="All 2 branches covered.">      if (parts.get(i).getClass() == TextPart.class) {</span>
-<span class="fc" id="L559">        indices.add(i);</span>
+<span class="fc" id="L557">    IntArrayList indices = new IntArrayList();</span>
+<span class="fc bfc" id="L558" title="All 2 branches covered.">    for (int i = 0; i &lt; parts.size(); ++i) {</span>
+<span class="fc bfc" id="L559" title="All 2 branches covered.">      if (parts.get(i).getClass() == TextPart.class) {</span>
+<span class="fc" id="L560">        indices.add(i);</span>
       }
     }
-<span class="fc" id="L562">    return IntList.copyOf(indices);</span>
+<span class="fc" id="L563">    return IntList.copyOf(indices);</span>
   }
 
 }

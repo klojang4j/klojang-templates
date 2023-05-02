@@ -20,9 +20,9 @@ final class Renderer {
   }
 
   void render(OutputStream out) {
-    Appendable x = out instanceof Appendable a ? a : new PrintStream(out);
+    Appendable appendable = out instanceof Appendable a ? a : new PrintStream(out);
     try {
-      render(state, x);
+      render(state, appendable);
     } catch (IOException e) {
       throw new RenderException(UNEXPECTED_ERROR, e.toString());
     }

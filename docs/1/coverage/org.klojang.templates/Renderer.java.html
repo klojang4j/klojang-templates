@@ -20,9 +20,9 @@ final class Renderer {
 <span class="fc" id="L20">  }</span>
 
   void render(OutputStream out) {
-<span class="pc bpc" id="L23" title="1 of 2 branches missed.">    Appendable x = out instanceof Appendable a ? a : new PrintStream(out);</span>
+<span class="pc bpc" id="L23" title="1 of 2 branches missed.">    Appendable appendable = out instanceof Appendable a ? a : new PrintStream(out);</span>
     try {
-<span class="fc" id="L25">      render(state, x);</span>
+<span class="fc" id="L25">      render(state, appendable);</span>
 <span class="nc" id="L26">    } catch (IOException e) {</span>
 <span class="nc" id="L27">      throw new RenderException(UNEXPECTED_ERROR, e.toString());</span>
 <span class="fc" id="L28">    }</span>
