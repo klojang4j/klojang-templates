@@ -385,8 +385,9 @@ each element in the array or collection.
 
 ### Newline Suppression in Practice
 
-Tables especially benefit from newline suppression as described above. The template 
-above would render somewhat like this:
+Tables especially benefit from
+[newline suppression](#indentation-and-newline-suppression) as described above. The
+template above would render somewhat like this:
 
 ```html
 <html>
@@ -523,9 +524,7 @@ public class Setup {
 
   private static final StringifierRegistry stringifiers = configureStringifiers();
 
-  public static StringifierRegistry getStringifiers() {
-    return stringifiers;
-  }
+  public static StringifierRegistry getStringifiers() { return stringifiers; }
 
   private static StringifierRegistry configureStringifiers() {
     return StringifierRegistry.configure()
@@ -534,9 +533,8 @@ public class Setup {
   }
 
   private static Stringifier getDateStringifier() {
-    return obj -> obj == null
-        ? "&nbsp;"
-        : DateTimeFormatter.ofPattern("yyyy年mm月dd日").format((LocalDate) obj);
+    DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy年mm月dd日");
+    return obj -> obj == null ? "&nbsp;" : dtf.format((LocalDate) obj);
   }
 
 }
