@@ -79,19 +79,20 @@ public final class VarGroup {
   /**
    * A predefined variable group corresponding to the {@code param:} prefix. To be
    * used for template variables placed inside a URL as the value of a query
-   * parameter, like http://example.com/?id=~%param:id%. It could also be used in the
-   * more unlikely case that the variable functions as the <i>name</i> of the query
-   * parameter, because names and values are escaped identically in a URL. Note that
-   * it does not matter whether the URL as a whole is the value of a JavaScript
-   * variable or the contents of an HTML tag. Further escaping using either
-   * JavaScript-escaping rules or HTML-escaping rules would not change the value.
+   * parameter, like {@code http://example.com/?id=~%param:id%}. It could also be
+   * used in the more unlikely case that the variable functions as the <i>name</i> of
+   * the query parameter, because names and values are escaped identically in a URL.
+   * Note that it does not matter whether the URL as a whole is the value of a
+   * JavaScript variable or the contents of an HTML tag. Further escaping using
+   * either JavaScript-escaping rules or HTML-escaping rules would not change the
+   * value.
    */
   public static final VarGroup PARAM = withName("param");
 
   /**
    * A predefined variable group corresponding to the {@code path:} prefix. To be
    * used for template variables placed inside a URL as a path segment. For example:
-   * http://example.com/~%path:city%/~%path:restaurant%.
+   * <code>http://example.com/~%path:city%/~%path:restaurant%</code>.
    */
   public static final VarGroup PATH = withName("path");
 

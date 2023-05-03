@@ -355,7 +355,7 @@ public final class StringifierRegistry {
 
   /**
    * Applies Javascript escaping. This is one of the standard stringifiers. It is the
-   * stringifier used by the {@link VarGroup#HTML HTML} variable group.
+   * stringifier used by the {@link VarGroup#JS JS} variable group.
    */
 <span class="fc" id="L360">  public static final Stringifier ESCAPE_JS = StandardStringifiers.ESCAPE_JS;</span>
 
@@ -363,14 +363,14 @@ public final class StringifierRegistry {
    * To be used for escaping HTML attributes. Same as {@link #ESCAPE_HTML} except
    * that single quotes and double quotes are also escaped. This is one of the
    * standard stringifiers. It is the stringifier used by the
-   * {@link VarGroup#HTML HTML} variable group.
+   * {@link VarGroup#ATTR ATTR} variable group.
    */
 <span class="fc" id="L368">  public static final Stringifier ESCAPE_ATTR = StandardStringifiers.ESCAPE_ATTR;</span>
 
   /**
    * To be used for escaping HTML attributes containing Javascript, like
    * {@code onclick}. This is one of the standard stringifiers. It is the stringifier
-   * used by the {@link VarGroup#JS JS} variable group.
+   * used by the {@link VarGroup#JS_ATTR JS_ATTR} variable group.
    */
 <span class="fc" id="L375">  public static final Stringifier ESCAPE_JS_ATTR = StandardStringifiers.ESCAPE_JS_ATTR;</span>
 

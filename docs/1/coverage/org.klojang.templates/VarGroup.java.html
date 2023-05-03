@@ -79,21 +79,22 @@ public final class VarGroup {
   /**
    * A predefined variable group corresponding to the {@code param:} prefix. To be
    * used for template variables placed inside a URL as the value of a query
-   * parameter, like http://example.com/?id=~%param:id%. It could also be used in the
-   * more unlikely case that the variable functions as the &lt;i&gt;name&lt;/i&gt; of the query
-   * parameter, because names and values are escaped identically in a URL. Note that
-   * it does not matter whether the URL as a whole is the value of a JavaScript
-   * variable or the contents of an HTML tag. Further escaping using either
-   * JavaScript-escaping rules or HTML-escaping rules would not change the value.
+   * parameter, like {@code http://example.com/?id=~%param:id%}. It could also be
+   * used in the more unlikely case that the variable functions as the &lt;i&gt;name&lt;/i&gt; of
+   * the query parameter, because names and values are escaped identically in a URL.
+   * Note that it does not matter whether the URL as a whole is the value of a
+   * JavaScript variable or the contents of an HTML tag. Further escaping using
+   * either JavaScript-escaping rules or HTML-escaping rules would not change the
+   * value.
    */
-<span class="fc" id="L89">  public static final VarGroup PARAM = withName(&quot;param&quot;);</span>
+<span class="fc" id="L90">  public static final VarGroup PARAM = withName(&quot;param&quot;);</span>
 
   /**
    * A predefined variable group corresponding to the {@code path:} prefix. To be
    * used for template variables placed inside a URL as a path segment. For example:
-   * http://example.com/~%path:city%/~%path:restaurant%.
+   * &lt;code&gt;http://example.com/~%path:city%/~%path:restaurant%&lt;/code&gt;.
    */
-<span class="fc" id="L96">  public static final VarGroup PATH = withName(&quot;path&quot;);</span>
+<span class="fc" id="L97">  public static final VarGroup PATH = withName(&quot;path&quot;);</span>
 
   /**
    * &lt;p&gt;A predefined variable group corresponding to the {@code def:} prefix. This
@@ -108,7 +109,7 @@ public final class VarGroup {
    * &lt;p&gt;See {@link Regex#REGEX_CMT_VARIABLE} for an explanation of the syntax and
    * purpose of placeholder values.
    */
-<span class="fc" id="L111">  public static final VarGroup DEF = withName(&quot;def&quot;);</span>
+<span class="fc" id="L112">  public static final VarGroup DEF = withName(&quot;def&quot;);</span>
 
   /**
    * Returns the {@code VarGroup} with the specified name (which is also the prefix
@@ -119,19 +120,19 @@ public final class VarGroup {
    * @return the {@code VarGroup} instance corresponding to the specified name
    */
   public static VarGroup forName(String name) {
-<span class="fc" id="L122">    VarGroup vg = Check.notNull(name).ok(VAR_GROUPS::get);</span>
-<span class="fc" id="L123">    return Check.that(vg).is(notNull(), ERR_NO_SUCH_VARGROUP, name).ok();</span>
+<span class="fc" id="L123">    VarGroup vg = Check.notNull(name).ok(VAR_GROUPS::get);</span>
+<span class="fc" id="L124">    return Check.that(vg).is(notNull(), ERR_NO_SUCH_VARGROUP, name).ok();</span>
   }
 
   static VarGroup withName(String name) {
-<span class="fc" id="L127">    return VAR_GROUPS.computeIfAbsent(name, VarGroup::new);</span>
+<span class="fc" id="L128">    return VAR_GROUPS.computeIfAbsent(name, VarGroup::new);</span>
   }
 
   private final String name;
 
-<span class="fc" id="L132">  private VarGroup(String name) {</span>
-<span class="fc" id="L133">    this.name = name;</span>
-<span class="fc" id="L134">  }</span>
+<span class="fc" id="L133">  private VarGroup(String name) {</span>
+<span class="fc" id="L134">    this.name = name;</span>
+<span class="fc" id="L135">  }</span>
 
   /**
    * Returns the name of this {@code VarGroup}, which is also the prefix to be used
@@ -140,7 +141,7 @@ public final class VarGroup {
    * @return the name of this {@code VarGroup}
    */
   public String getName() {
-<span class="fc" id="L143">    return name;</span>
+<span class="fc" id="L144">    return name;</span>
   }
 
   /**
@@ -151,7 +152,7 @@ public final class VarGroup {
    */
   @Override
   public String toString() {
-<span class="fc" id="L154">    return name;</span>
+<span class="fc" id="L155">    return name;</span>
   }
 
 }
