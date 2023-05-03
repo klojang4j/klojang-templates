@@ -34,7 +34,7 @@ final class TemplateCache {
       cache = new HashMap<>(32);
       entries = null;
     } else {
-      cache = new HashMap<>((int) (maxSize / .75) + 1);
+      cache = HashMap.newHashMap(maxSize);
       entries = new WiredList<>();
     }
   }
@@ -81,13 +81,9 @@ final class TemplateCache {
 
   private static void logCacheSearch(TemplateLocation location, String name) {
     if (LOG.isTraceEnabled()) {
-      if (name == ROOT_TEMPLATE_NAME) {
-        LOG.trace("Searching cache for template {}@{})", name, location.path());
-      } else {
-        LOG.trace("Searching cache for included template {}@{}",
-            name,
-            location.path());
-      }
+      String included = name == ROOT_TEMPLATE_NAME ? "" : "included ";
+      String fmt = "Searching cache for {}} template {} at {}";
+      LOG.trace(fmt, included, name, location);
     }
   }
 

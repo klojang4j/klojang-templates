@@ -43,7 +43,7 @@ final class PartsPrinter {
       if (p instanceof VariablePart) {
         printCell(out, t.getName(), w0);
         printCell(out, "VARIABLE", w1);
-        String name = ((VariablePart) p).getName();
+        String name = ((VariablePart) p).name();
         printCell(out, name, w2);
         out.println(p.toString());
         printDivider(out);
@@ -103,7 +103,7 @@ final class PartsPrinter {
     int i = HDR_PART_NAME.length();
     for (Part p : t.parts()) {
       if (p instanceof VariablePart vp) {
-        i = Math.max(i, vp.getName().length());
+        i = Math.max(i, vp.name().length());
       } else if (p instanceof NestedTemplatePart ntp) {
         i = Math.max(i, getMaxVarName(ntp.getTemplate()));
       }

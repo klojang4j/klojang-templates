@@ -43,7 +43,7 @@ final class PartsPrinter {
 <span class="fc bfc" id="L43" title="All 2 branches covered.">      if (p instanceof VariablePart) {</span>
 <span class="fc" id="L44">        printCell(out, t.getName(), w0);</span>
 <span class="fc" id="L45">        printCell(out, &quot;VARIABLE&quot;, w1);</span>
-<span class="fc" id="L46">        String name = ((VariablePart) p).getName();</span>
+<span class="fc" id="L46">        String name = ((VariablePart) p).name();</span>
 <span class="fc" id="L47">        printCell(out, name, w2);</span>
 <span class="fc" id="L48">        out.println(p.toString());</span>
 <span class="fc" id="L49">        printDivider(out);</span>
@@ -103,7 +103,7 @@ final class PartsPrinter {
 <span class="fc" id="L103">    int i = HDR_PART_NAME.length();</span>
 <span class="fc bfc" id="L104" title="All 2 branches covered.">    for (Part p : t.parts()) {</span>
 <span class="fc bfc" id="L105" title="All 2 branches covered.">      if (p instanceof VariablePart vp) {</span>
-<span class="fc" id="L106">        i = Math.max(i, vp.getName().length());</span>
+<span class="fc" id="L106">        i = Math.max(i, vp.name().length());</span>
 <span class="fc bfc" id="L107" title="All 2 branches covered.">      } else if (p instanceof NestedTemplatePart ntp) {</span>
 <span class="fc" id="L108">        i = Math.max(i, getMaxVarName(ntp.getTemplate()));</span>
       }

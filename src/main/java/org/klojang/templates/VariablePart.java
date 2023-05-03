@@ -25,16 +25,16 @@ final class VariablePart extends AbstractPart implements NamedPart {
     this.placeholder = placeholder;
   }
 
-  Optional<VarGroup> getVarGroup() {
+  Optional<VarGroup> varGroup() {
     return Optional.ofNullable(group);
   }
 
   @Override
-  public String getName() {
+  public String name() {
     return name;
   }
 
-  String getPlaceholder() {
+  String placeholder() {
     return placeholder;
   }
 

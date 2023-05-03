@@ -34,7 +34,7 @@ import static org.klojang.templates.x.Messages.ERR_NO_SUCH_VARGROUP;
  *
  * @author Ayco Holleman
  */
-public class VarGroup {
+public final class VarGroup {
 
   private static final HashMap<String, VarGroup> VAR_GROUPS = new HashMap<>();
 

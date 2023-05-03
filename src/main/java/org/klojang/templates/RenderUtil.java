@@ -14,18 +14,18 @@ final class RenderUtil {
       Stringifier stringifier,
       VariablePart part,
       VarGroup adhoc) {
-    VarGroup vg = part.getVarGroup().orElse(adhoc);
-    if (value == null && vg == VarGroup.DEF && part.getPlaceholder() != null) {
-      return part.getPlaceholder();
+    VarGroup group = part.varGroup().orElse(adhoc);
+    if (value == null && group == VarGroup.DEF && part.placeholder() != null) {
+      return part.placeholder();
     }
     String s;
     try {
       s = stringifier.stringify(value);
     } catch (NullPointerException e) {
-      throw STRINGIFIER_NOT_NULL_RESISTENT.getException(part.getName(), vg);
+      throw STRINGIFIER_NOT_NULL_RESISTENT.getException(part.name(), group);
     }
     if (s == null) {
-      throw STRINGIFIER_RETURNED_NULL.getException(part.getName(), vg);
+      throw STRINGIFIER_RETURNED_NULL.getException(part.name(), group);
     }
     return s;
   }

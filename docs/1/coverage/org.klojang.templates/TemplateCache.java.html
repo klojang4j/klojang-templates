@@ -34,7 +34,7 @@ final class TemplateCache {
 <span class="fc" id="L34">      cache = new HashMap&lt;&gt;(32);</span>
 <span class="fc" id="L35">      entries = null;</span>
     } else {
-<span class="nc" id="L37">      cache = new HashMap&lt;&gt;((int) (maxSize / .75) + 1);</span>
+<span class="nc" id="L37">      cache = HashMap.newHashMap(maxSize);</span>
 <span class="nc" id="L38">      entries = new WiredList&lt;&gt;();</span>
     }
 <span class="fc" id="L40">  }</span>
@@ -81,15 +81,11 @@ final class TemplateCache {
 
   private static void logCacheSearch(TemplateLocation location, String name) {
 <span class="pc bpc" id="L83" title="1 of 2 branches missed.">    if (LOG.isTraceEnabled()) {</span>
-<span class="nc bnc" id="L84" title="All 2 branches missed.">      if (name == ROOT_TEMPLATE_NAME) {</span>
-<span class="nc" id="L85">        LOG.trace(&quot;Searching cache for template {}@{})&quot;, name, location.path());</span>
-      } else {
-<span class="nc" id="L87">        LOG.trace(&quot;Searching cache for included template {}@{}&quot;,</span>
-            name,
-<span class="nc" id="L89">            location.path());</span>
-      }
+<span class="nc bnc" id="L84" title="All 2 branches missed.">      String included = name == ROOT_TEMPLATE_NAME ? &quot;&quot; : &quot;included &quot;;</span>
+<span class="nc" id="L85">      String fmt = &quot;Searching cache for {}} template {} at {}&quot;;</span>
+<span class="nc" id="L86">      LOG.trace(fmt, included, name, location);</span>
     }
-<span class="fc" id="L92">  }</span>
+<span class="fc" id="L88">  }</span>
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

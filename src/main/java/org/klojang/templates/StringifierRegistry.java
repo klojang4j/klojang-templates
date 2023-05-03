@@ -257,7 +257,7 @@ public final class StringifierRegistry {
     }
 
     /**
-     * Assigns the specified stringifier to all variables with the specified name(s).
+     * Assigns the specified stringifier to all variables with the specified name.
      * This works across all templates within the application, so be careful when
      * registering a stringifier this way. You may specify a wildcard '*' character
      * at the beginning or end of the variable name. For example to assign a number
@@ -430,8 +430,8 @@ public final class StringifierRegistry {
   Stringifier getStringifier(VariablePart part, VarGroup varGroup, Object value)
       throws RenderException {
     Stringifier sf;
-    if (part.getVarGroup().isPresent()) {
-      VarGroup vg = part.getVarGroup().get();
+    if (part.varGroup().isPresent()) {
+      VarGroup vg = part.varGroup().get();
       if (null != (sf = stringifiers.get(new StringifierId(vg)))) {
         return sf;
       }
@@ -445,7 +445,7 @@ public final class StringifierRegistry {
       }
     }
     Template tmpl = part.getParentTemplate();
-    String var = part.getName();
+    String var = part.name();
     if (null != (sf = stringifiers.get(new StringifierId(tmpl, var)))) {
       return sf;
     }

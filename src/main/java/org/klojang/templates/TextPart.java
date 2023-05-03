@@ -9,7 +9,7 @@ final class TextPart extends AbstractPart {
     this.text = text;
   }
 
-  String getText() {
+  String text() {
     return text;
   }
 

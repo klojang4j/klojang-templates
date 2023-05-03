@@ -25,16 +25,16 @@ final class VariablePart extends AbstractPart implements NamedPart {
 <span class="fc" id="L25">    this.placeholder = placeholder;</span>
 <span class="fc" id="L26">  }</span>
 
-  Optional&lt;VarGroup&gt; getVarGroup() {
+  Optional&lt;VarGroup&gt; varGroup() {
 <span class="fc" id="L29">    return Optional.ofNullable(group);</span>
   }
 
   @Override
-  public String getName() {
+  public String name() {
 <span class="fc" id="L34">    return name;</span>
   }
 
-  String getPlaceholder() {
+  String placeholder() {
 <span class="fc" id="L38">    return placeholder;</span>
   }
 

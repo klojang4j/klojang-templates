@@ -50,7 +50,7 @@ final class Renderer {
 <span class="fc bfc" id="L50" title="All 2 branches covered.">    for (int i = 0; i &lt; parts.size(); ++i) {</span>
 <span class="fc" id="L51">      Part part = parts.get(i);</span>
 <span class="fc bfc" id="L52" title="All 2 branches covered.">      if (part instanceof TextPart tp) {</span>
-<span class="fc" id="L53">        out.append(tp.getText());</span>
+<span class="fc" id="L53">        out.append(tp.text());</span>
 <span class="fc bfc" id="L54" title="All 2 branches covered.">      } else if (part instanceof VariablePart vp) {</span>
 <span class="fc bfc" id="L55" title="All 2 branches covered.">        if (state0.getVar(i) != null) {</span>
 <span class="fc" id="L56">          Object val = state0.getVar(i);</span>
@@ -76,7 +76,7 @@ final class Renderer {
         // Then the RenderSession[] array will contain only null values
         // and we just want to know its length to determine the number
         // of repetitions
-<span class="fc" id="L79">        String text = ((TextPart) t.parts().get(0)).getText();</span>
+<span class="fc" id="L79">        String text = ((TextPart) t.parts().get(0)).text();</span>
 <span class="fc bfc" id="L80" title="All 2 branches covered.">        for (int i = 0; i &lt; sessions.length; ++i) {</span>
 <span class="fc" id="L81">          out.append(text);</span>
         }

@@ -14,18 +14,18 @@ import static org.klojang.templates.RenderErrorCode.STRINGIFIER_RETURNED_NULL;
       Stringifier stringifier,
       VariablePart part,
       VarGroup adhoc) {
-<span class="fc" id="L17">    VarGroup vg = part.getVarGroup().orElse(adhoc);</span>
-<span class="pc bpc" id="L18" title="1 of 6 branches missed.">    if (value == null &amp;&amp; vg == VarGroup.DEF &amp;&amp; part.getPlaceholder() != null) {</span>
-<span class="fc" id="L19">      return part.getPlaceholder();</span>
+<span class="fc" id="L17">    VarGroup group = part.varGroup().orElse(adhoc);</span>
+<span class="pc bpc" id="L18" title="1 of 6 branches missed.">    if (value == null &amp;&amp; group == VarGroup.DEF &amp;&amp; part.placeholder() != null) {</span>
+<span class="fc" id="L19">      return part.placeholder();</span>
     }
     String s;
     try {
 <span class="fc" id="L23">      s = stringifier.stringify(value);</span>
 <span class="fc" id="L24">    } catch (NullPointerException e) {</span>
-<span class="fc" id="L25">      throw STRINGIFIER_NOT_NULL_RESISTENT.getException(part.getName(), vg);</span>
+<span class="fc" id="L25">      throw STRINGIFIER_NOT_NULL_RESISTENT.getException(part.name(), group);</span>
 <span class="fc" id="L26">    }</span>
 <span class="fc bfc" id="L27" title="All 2 branches covered.">    if (s == null) {</span>
-<span class="fc" id="L28">      throw STRINGIFIER_RETURNED_NULL.getException(part.getName(), vg);</span>
+<span class="fc" id="L28">      throw STRINGIFIER_RETURNED_NULL.getException(part.name(), group);</span>
     }
 <span class="fc" id="L30">    return s;</span>
   }

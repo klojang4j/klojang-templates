@@ -62,7 +62,7 @@ record SoloSession(SessionConfig config, RenderState state) implements
 
   private void setVar(int partIndex, VarGroup varGroup, Object value) {
     VariablePart part = (VariablePart) config.template().parts().get(partIndex);
-    VarGroup group = part.getVarGroup().orElse(varGroup);
+    VarGroup group = part.varGroup().orElse(varGroup);
     StringifierRegistry reg = config.stringifiers();
     Stringifier stringifier = reg.getStringifier(part, group, value);
     String strval = stringify(value, stringifier, part, varGroup);

@@ -528,7 +528,7 @@ public final class Template {
     Map<String, IntList> indices = new LinkedHashMap<>();
     for (int i = 0; i < parts.size(); ++i) {
       if (parts.get(i) instanceof VariablePart vp) {
-        indices.computeIfAbsent(vp.getName(), k -> new IntArrayList()).add(i);
+        indices.computeIfAbsent(vp.name(), k -> new IntArrayList()).add(i);
       }
     }
     indices.entrySet().forEach(e -> e.setValue(IntList.copyOf(e.getValue())));
@@ -539,7 +539,7 @@ public final class Template {
     Map<String, Integer> indices = new LinkedHashMap<>();
     for (int i = 0; i < parts.size(); ++i) {
       if (parts.get(i) instanceof NestedTemplatePart ntp) {
-        indices.put(ntp.getName(), i);
+        indices.put(ntp.name(), i);
       }
     }
     return Collections.unmodifiableMap(indices);
@@ -549,7 +549,7 @@ public final class Template {
     return parts.stream()
         .filter(NamedPart.class::isInstance)
         .map(NamedPart.class::cast)
-        .map(NamedPart::getName)
+        .map(NamedPart::name)
         .collect(toUnmodifiableList());
   }
 

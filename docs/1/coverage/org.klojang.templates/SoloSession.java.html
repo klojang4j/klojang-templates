@@ -62,7 +62,7 @@ import static org.klojang.util.ObjectMethods.isEmpty;
 
   private void setVar(int partIndex, VarGroup varGroup, Object value) {
 <span class="fc" id="L64">    VariablePart part = (VariablePart) config.template().parts().get(partIndex);</span>
-<span class="fc" id="L65">    VarGroup group = part.getVarGroup().orElse(varGroup);</span>
+<span class="fc" id="L65">    VarGroup group = part.varGroup().orElse(varGroup);</span>
 <span class="fc" id="L66">    StringifierRegistry reg = config.stringifiers();</span>
 <span class="fc" id="L67">    Stringifier stringifier = reg.getStringifier(part, group, value);</span>
 <span class="fc" id="L68">    String strval = stringify(value, stringifier, part, varGroup);</span>

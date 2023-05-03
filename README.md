@@ -556,6 +556,26 @@ public class EmployeeResource {
 }
 ```
 
+## Template Caching
+
+[Template](https://klojang4j.github.io/klojang-templates/1/api/org.klojang.templates/org/klojang/templates/Template)
+instances created from a
+[file system resource](https://klojang4j.github.io/klojang-templates/1/api/org.klojang.templates/org/klojang/templates/Template.html#fromFile(java.lang.String))
+or from a 
+[classpath resource](https://klojang4j.github.io/klojang-templates/1/api/org.klojang.templates/org/klojang/templates/Template.html#fromResource(java.lang.Class,java.lang.String))
+are by default always cached. Thus, the cost of parsing the template is paid just
+once. Included templates are cached separately from the templates in which they are
+included, so the next time you include them, either in the same template or in
+another template, you do so essentially for free.
+
+### Disabling Template Caching
+
+During development you might want to disable caching so you can modify the template
+and immediately verify the result when you hit the Refresh button in your browser.
+This can be achieved by adding `-Dorg.klojang.templates.cacheSize=0` to the java
+command line. Alternatively, you could set an environment variable named
+KJT_CACHE_SIZE to 0 (zero).
+
 ## Conclusion
 
 That's it, really. The next paragraph will only be of interest to you if your goal is

@@ -16,7 +16,7 @@ final class PathAccessor implements Accessor<Object> {
   }
 
   @Override
-  public Object access(Object data, String name) throws RenderException {
+  public Object access(Object data, String name) {
     String path = nm == null ? name : nm.map(name);
     PathWalker pw = new PathWalker(asList(Path.from(path)), false);
     try {

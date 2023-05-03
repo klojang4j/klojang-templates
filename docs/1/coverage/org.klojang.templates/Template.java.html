@@ -528,7 +528,7 @@ public final class Template {
 <span class="fc" id="L528">    Map&lt;String, IntList&gt; indices = new LinkedHashMap&lt;&gt;();</span>
 <span class="fc bfc" id="L529" title="All 2 branches covered.">    for (int i = 0; i &lt; parts.size(); ++i) {</span>
 <span class="fc bfc" id="L530" title="All 2 branches covered.">      if (parts.get(i) instanceof VariablePart vp) {</span>
-<span class="fc" id="L531">        indices.computeIfAbsent(vp.getName(), k -&gt; new IntArrayList()).add(i);</span>
+<span class="fc" id="L531">        indices.computeIfAbsent(vp.name(), k -&gt; new IntArrayList()).add(i);</span>
       }
     }
 <span class="fc" id="L534">    indices.entrySet().forEach(e -&gt; e.setValue(IntList.copyOf(e.getValue())));</span>
@@ -539,7 +539,7 @@ public final class Template {
 <span class="fc" id="L539">    Map&lt;String, Integer&gt; indices = new LinkedHashMap&lt;&gt;();</span>
 <span class="fc bfc" id="L540" title="All 2 branches covered.">    for (int i = 0; i &lt; parts.size(); ++i) {</span>
 <span class="fc bfc" id="L541" title="All 2 branches covered.">      if (parts.get(i) instanceof NestedTemplatePart ntp) {</span>
-<span class="fc" id="L542">        indices.put(ntp.getName(), i);</span>
+<span class="fc" id="L542">        indices.put(ntp.name(), i);</span>
       }
     }
 <span class="fc" id="L545">    return Collections.unmodifiableMap(indices);</span>
@@ -549,7 +549,7 @@ public final class Template {
 <span class="fc" id="L549">    return parts.stream()</span>
 <span class="fc" id="L550">        .filter(NamedPart.class::isInstance)</span>
 <span class="fc" id="L551">        .map(NamedPart.class::cast)</span>
-<span class="fc" id="L552">        .map(NamedPart::getName)</span>
+<span class="fc" id="L552">        .map(NamedPart::name)</span>
 <span class="fc" id="L553">        .collect(toUnmodifiableList());</span>
   }
 

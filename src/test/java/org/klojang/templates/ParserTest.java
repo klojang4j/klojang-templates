@@ -2,9 +2,7 @@ package org.klojang.templates;
 
 import org.junit.jupiter.api.Test;
 import org.klojang.templates.x.ClassPathResolver;
-import org.klojang.util.StringMethods;
 
-import java.io.ByteArrayInputStream;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -20,13 +18,13 @@ public class ParserTest {
     List<Part> parts = parser.getParts();
     assertEquals(3, parts.size());
     assertTrue(parts.get(0) instanceof TextPart);
-    assertEquals("<tr><td>", ((TextPart) parts.get(0)).getText());
+    assertEquals("<tr><td>", ((TextPart) parts.get(0)).text());
     assertTrue(parts.get(1) instanceof VariablePart);
     VariablePart vp = (VariablePart) parts.get(1);
-    assertTrue(vp.getVarGroup().isEmpty());
-    assertEquals("foo", vp.getName());
+    assertTrue(vp.varGroup().isEmpty());
+    assertEquals("foo", vp.name());
     assertTrue(parts.get(2) instanceof TextPart);
-    assertEquals("</td></tr>", ((TextPart) parts.get(2)).getText());
+    assertEquals("</td></tr>", ((TextPart) parts.get(2)).text());
   }
 
   @Test
@@ -36,13 +34,13 @@ public class ParserTest {
     List<Part> parts = parser.getParts();
     assertEquals(3, parts.size());
     assertTrue(parts.get(0) instanceof TextPart);
-    assertEquals("<tr><td>", ((TextPart) parts.get(0)).getText());
+    assertEquals("<tr><td>", ((TextPart) parts.get(0)).text());
     assertTrue(parts.get(1) instanceof VariablePart);
     VariablePart vp = (VariablePart) parts.get(1);
-    assertTrue(vp.getVarGroup().isEmpty());
-    assertEquals("foo", vp.getName());
+    assertTrue(vp.varGroup().isEmpty());
+    assertEquals("foo", vp.name());
     assertTrue(parts.get(2) instanceof TextPart);
-    assertEquals("</td></tr>", ((TextPart) parts.get(2)).getText());
+    assertEquals("</td></tr>", ((TextPart) parts.get(2)).text());
   }
 
   @Test
@@ -58,20 +56,20 @@ public class ParserTest {
     List<Part> parts = parser.getParts();
     assertEquals(5, parts.size());
     assertTrue(parts.get(0) instanceof TextPart);
-    assertEquals("<tr>\n  <td>", ((TextPart) parts.get(0)).getText());
+    assertEquals("<tr>\n  <td>", ((TextPart) parts.get(0)).text());
     assertTrue(parts.get(1) instanceof VariablePart);
     VariablePart vp = (VariablePart) parts.get(1);
-    assertEquals(VarGroup.HTML, vp.getVarGroup().get());
-    assertEquals("foo", vp.getName());
+    assertEquals(VarGroup.HTML, vp.varGroup().get());
+    assertEquals("foo", vp.name());
     assertTrue(parts.get(2) instanceof TextPart);
     assertEquals("</td>\n  <!-- some comment -->\n  <td>",
-        ((TextPart) parts.get(2)).getText());
+        ((TextPart) parts.get(2)).text());
     assertTrue(parts.get(3) instanceof VariablePart);
     vp = (VariablePart) parts.get(3);
-    assertEquals(VarGroup.TEXT, vp.getVarGroup().get());
-    assertEquals("bar", vp.getName());
+    assertEquals(VarGroup.TEXT, vp.varGroup().get());
+    assertEquals("bar", vp.name());
     assertTrue(parts.get(4) instanceof TextPart);
-    assertEquals("</td>\n</tr>\n", ((TextPart) parts.get(4)).getText());
+    assertEquals("</td>\n</tr>\n", ((TextPart) parts.get(4)).text());
   }
 
   @Test
@@ -82,8 +80,8 @@ public class ParserTest {
     assertEquals(1, parts.size());
     assertTrue(parts.get(0) instanceof VariablePart);
     VariablePart vp = (VariablePart) parts.get(0);
-    assertEquals("foo-bar2", vp.getVarGroup().get().getName());
-    assertEquals("departments.0.employees.0.name", vp.getName());
+    assertEquals("foo-bar2", vp.varGroup().get().getName());
+    assertEquals("departments.0.employees.0.name", vp.name());
   }
 
   @Test
@@ -186,7 +184,7 @@ public class ParserTest {
     assertEquals(1, parts.size());
     assertTrue(parts.get(0) instanceof InlineTemplatePart);
     InlineTemplatePart itp = (InlineTemplatePart) parts.get(0);
-    assertEquals("21", itp.getName());
+    assertEquals("21", itp.name());
     assertEquals(1, itp.getTemplate().parts().size());
     assertTrue(itp.getTemplate().parts().get(0) instanceof TextPart);
     assertEquals(" FOO ", itp.getTemplate().parts().get(0).toString());
@@ -282,9 +280,9 @@ public class ParserTest {
     Parser parser = new Parser(TemplateLocation.STRING, ROOT_TEMPLATE_NAME, src);
     List<Part> parts = parser.getParts();
     assertEquals(2, parts.size());
-    String txt = ((TextPart) parts.get(0)).getText();
-    assertEquals("a \n", ((TextPart) parts.get(0)).getText());
-    assertEquals("\n b", ((TextPart) parts.get(1)).getText());
+    String txt = ((TextPart) parts.get(0)).text();
+    assertEquals("a \n", ((TextPart) parts.get(0)).text());
+    assertEquals("\n b", ((TextPart) parts.get(1)).text());
   }
 
   @Test
@@ -314,14 +312,14 @@ public class ParserTest {
     List<Part> parts = parser.getParts();
     assertTrue(parts.get(1) instanceof NestedTemplatePart);
     NestedTemplatePart tp = (NestedTemplatePart) parts.get(1);
-    assertEquals("jsVars", tp.getName());
+    assertEquals("jsVars", tp.name());
     Template t = tp.getTemplate();
     assertEquals(2, t.getNames().size());
     assertTrue(t.getNames().contains("selectedName"));
     assertTrue(t.getNames().contains("selectedAge"));
     assertTrue(parts.get(3) instanceof NestedTemplatePart);
     tp = (NestedTemplatePart) parts.get(3);
-    assertEquals("tableRow", tp.getName());
+    assertEquals("tableRow", tp.name());
     t = tp.getTemplate();
     assertEquals(2, t.getNames().size());
     assertTrue(t.getNames().contains("name"));
@@ -355,14 +353,14 @@ public class ParserTest {
     List<Part> parts = parser.getParts();
     assertTrue(parts.get(1) instanceof NestedTemplatePart);
     NestedTemplatePart tp = (NestedTemplatePart) parts.get(1);
-    assertEquals("jsVars", tp.getName());
+    assertEquals("jsVars", tp.name());
     Template t = tp.getTemplate();
     assertEquals(2, t.getNames().size());
     assertTrue(t.getNames().contains("selectedName"));
     assertTrue(t.getNames().contains("selectedAge"));
     assertTrue(parts.get(3) instanceof NestedTemplatePart);
     tp = (NestedTemplatePart) parts.get(3);
-    assertEquals("tableRow", tp.getName());
+    assertEquals("tableRow", tp.name());
     t = tp.getTemplate();
     assertEquals(2, t.getNames().size());
     assertTrue(t.getNames().contains("name"));

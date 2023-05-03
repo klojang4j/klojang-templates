@@ -2,7 +2,7 @@ package org.klojang.templates;
 
 import java.util.Objects;
 
-class StringifierId {
+final class StringifierId {
 
   private final VarGroup varGroup;
   private final Template template;

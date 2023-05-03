@@ -9,12 +9,8 @@ import java.util.regex.Pattern;
 
 final class ParseUtils {
 
-  /*
-   * Determines whether the text between from and to finds itself on an otherwise
-   * empty line. This is used to ascertain this for ~%%begin:foo% and ~%%end:foo%. If
-   * the begin or end tag of an inline template finds itself on an otherwise empty
-   * line, then that entire line is removed from the template when it is rendered.
-   */
+  // Determines whether the text between from and to finds itself on an otherwise
+  // empty line.
   static boolean onSeparateLine(String src, int from, int to) {
     char c;
     for (int i = from - 1; i >= 0 && (c = src.charAt(i)) != '\n' && c != '\r'; --i) {
@@ -44,32 +40,9 @@ final class ParseUtils {
     for (int i = 0; i < parts.size(); ++i) {
       Part part = parts.get(i);
       if (part instanceof InlineTemplatePart itp) {
-        List<Part> childParts = itp.getTemplate().parts();
-        if (itp.isStartTagOnSeparateLine()) {
-          if (childParts.get(0) instanceof TextPart tp) {
-            tp.setText(removeWhitespaceAfterTag(tp.getText(), false));
-          }
-          if (i > 0 && parts.get(i - 1) instanceof TextPart tp) {
-            tp.setText(removeWhitespaceBeforeTag(tp.getText()));
-          }
-        }
-        if (itp.isEndTagOnSeparateLine()) {
-          if (childParts.get(childParts.size() - 1) instanceof TextPart tp) {
-            tp.setText(removeWhitespaceBeforeTag(tp.getText()));
-          }
-          if (i < parts.size() - 1 && parts.get(i + 1) instanceof TextPart tp) {
-            tp.setText(removeWhitespaceAfterTag(tp.getText(), false));
-          }
-        }
+        checkInlineTemplate(parts, i, itp);
       } else if (part instanceof IncludedTemplatePart itp) {
-        if (itp.isTagOnSeparateLine()) {
-          if (i > 0 && parts.get(i - 1) instanceof TextPart tp) {
-            tp.setText(removeWhitespaceBeforeTag(tp.getText()));
-          }
-          if (i < parts.size() - 1 && parts.get(i + 1) instanceof TextPart tp) {
-            tp.setText(removeWhitespaceAfterTag(tp.getText(), true));
-          }
-        }
+        checkIncludedTemplate(parts, i, itp);
       }
     }
   }
@@ -82,13 +55,48 @@ final class ParseUtils {
           continue;
         }
       } else if (p instanceof TextPart tp) {
-        if (tp.getText().isEmpty()) {
+        if (tp.text().isEmpty()) {
           continue;
         }
       }
       out.add(p);
     }
     return out;
+  }
+
+  private static void checkInlineTemplate(List<Part> parts,
+      int idx,
+      InlineTemplatePart itp) {
+    List<Part> childParts = itp.getTemplate().parts();
+    if (itp.isStartTagOnSeparateLine()) {
+      if (childParts.get(0) instanceof TextPart tp) {
+        tp.setText(removeWhitespaceAfterTag(tp.text(), false));
+      }
+      if (idx > 0 && parts.get(idx - 1) instanceof TextPart tp) {
+        tp.setText(removeWhitespaceBeforeTag(tp.text()));
+      }
+    }
+    if (itp.isEndTagOnSeparateLine()) {
+      if (childParts.get(childParts.size() - 1) instanceof TextPart tp) {
+        tp.setText(removeWhitespaceBeforeTag(tp.text()));
+      }
+      if (idx < parts.size() - 1 && parts.get(idx + 1) instanceof TextPart tp) {
+        tp.setText(removeWhitespaceAfterTag(tp.text(), false));
+      }
+    }
+  }
+
+  private static void checkIncludedTemplate(List<Part> parts,
+      int idx,
+      IncludedTemplatePart itp) {
+    if (itp.isTagOnSeparateLine()) {
+      if (idx > 0 && parts.get(idx - 1) instanceof TextPart tp) {
+        tp.setText(removeWhitespaceBeforeTag(tp.text()));
+      }
+      if (idx < parts.size() - 1 && parts.get(idx + 1) instanceof TextPart tp) {
+        tp.setText(removeWhitespaceAfterTag(tp.text(), true));
+      }
+    }
   }
 
   private static String removeWhitespaceAfterTag(String txt, boolean keepLine) {
