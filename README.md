@@ -568,12 +568,12 @@ once. Included templates are cached separately from the templates in which they 
 included, so the next time you include them, either in the same template or in
 another template, you do so essentially for free.
 
-### Disabling Template Caching
+#### Disabling Template Caching
 
 During development you might want to disable caching so you can modify the template
 and immediately verify the result when you hit the Refresh button in your browser.
-This can be achieved by adding `-Dorg.klojang.templates.cacheSize=0` to the java
-command line. Alternatively, you could set an environment variable named
+This can be done by adding `-Dorg.klojang.templates.cacheSize=0` to the java
+command line. Alternatively, you can set an environment variable named
 KJT_CACHE_SIZE to 0 (zero).
 
 ## Conclusion
