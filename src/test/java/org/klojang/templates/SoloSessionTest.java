@@ -3,6 +3,7 @@ package org.klojang.templates;
 import org.junit.jupiter.api.Test;
 import org.klojang.util.MutableInt;
 
+import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -174,6 +175,41 @@ public class SoloSessionTest {
         <p>MacDonald\\&#39;s</p>
         """;
     assertEquals(nospace(expected), nospace(out));
+  }
+
+  public record Address(String line1, String city, String zip) {}
+  public record Employee(String firstName, String lastName, Address address) {}
+  public record Department(String name, List<Employee> employees) {}
+  public record Company(String name, double profits, List<Department> departments) {}
+
+  // From the documentation - only print to std out to make sure it works
+  @Test
+  public void populate00() throws ParseException {
+    Address addr = new Address("Main st 7", "New York", "NY12345");
+    Employee emp = new Employee("John", "Smith", addr);
+    Department dept = new Department("ICT", List.of(emp, emp, emp, emp));
+    Company comp = new Company("Shell", 1_200_000_000, List.of(dept, dept, dept));
+
+    String src = """
+        ~%%begin:companies%
+            Name ......: ~%name%
+            Profits....: ~%profits%
+            ~%%begin:departments%
+                Name ......: ~%name%
+                ~%%begin:employees%
+                    ~%firstName% ~%lastName%
+                    ~%%begin:address%
+                    ~%line1%, ~%city%, ~%zip%
+                    ~%%end:address%
+                ~%%end:employees%
+            ~%%end:departments%
+        ~%%end:companies%
+        """;
+
+    Template tmpl = Template.fromString(src);
+    RenderSession rs = tmpl.newRenderSession();
+    rs.populate("companies", List.of(comp, comp));
+    System.out.println(rs.render());
   }
 
   @Test

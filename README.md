@@ -580,10 +580,12 @@ KJT_CACHE_SIZE to 0 (zero).
 
 That's it, really. The next paragraph will only be of interest to you if your goal is
 to write templates that are well-formed, valid and pleasing to the eye even in their
-raw, unprocessed state. The
+raw, unprocessed state.
+
+The
 [RenderSession](https://klojang4j.github.io/klojang-templates/1/api/org.klojang.templates/org/klojang/templates/RenderSession.html)
 class contains quite a few more methods that help you populate a Klojang template,
-and we haven't yet covered every single way you can finetune the behaviour of
+and we have not covered every single way in which you can finetune the behaviour of
 _Klojang Templates_, but this is all covered in great detail in 
 the [javadocs](https://klojang4j.github.io/klojang-templates/1/api).
 

@@ -34,9 +34,14 @@ import static org.klojang.templates.x.MTag.TEMPLATE;
  *
  * <p>Note that the internally defined {@code Accessor} mentioned above does not use
  * reflection to read bean properties, but it <i>does</i> use reflection to figure
- * out what those properties are in the first place. Thus, if you use
- * <i>Klojang Templates</i> from within a Java 9+ module, you must open up the module
- * for reflection. Alternatively, you could write your own {@code Accessor}:
+ * out what those properties are in the first place. Thus, if the JavaBeans are
+ * inside a Java 9+ module, you must {@code open} the module to <i>Klojang
+ * Templates</i>. Irrespective of whether the JavaBeans are inside a Java 9+
+ * module, <b>both the bean class and the bean properties must have the
+ * {@code public} access modifier</b>. <i>Klojang Templates</i> will not attempt to
+ * change the accessibility of the bean class and the bean properties.
+ *
+ * <p>Alternatively, you could write your own {@code Accessor}:
  *
  * <blockquote><pre>{@code
  * Accessor<Person> personAccessor =
