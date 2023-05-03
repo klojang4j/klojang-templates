@@ -92,7 +92,7 @@ public final class VarGroup {
   /**
    * A predefined variable group corresponding to the {@code path:} prefix. To be
    * used for template variables placed inside a URL as a path segment. For example:
-   * <code>http://example.com/~%path:city%/~%path:restaurant%</code>.
+   * {@code http://example.com/~%path:city%/~%path:restaurant%}.
    */
   public static final VarGroup PATH = withName("path");
 
