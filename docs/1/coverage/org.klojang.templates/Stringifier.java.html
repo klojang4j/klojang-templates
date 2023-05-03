@@ -21,14 +21,11 @@ public interface Stringifier {
 
   /**
    * A stringifier that stringifies {@code null} to an empty string and any other
-   * value by calling {@code toString()} on it. This is the default stringifier for
-   * values coming back from the data access layer, unless you
-   * {@linkplain StringifierRegistry.Builder#setDefaultStringifier(Stringifier)
-   * specify an alternative default stringifier}.
+   * value by calling {@code toString()} on it.
    *
    * @see StringifierRegistry.Builder
    */
-<span class="fc bfc" id="L31" title="All 2 branches covered.">  Stringifier DEFAULT = x -&gt; x == null ? EMPTY_STRING : x.toString();</span>
+<span class="fc bfc" id="L28" title="All 2 branches covered.">  Stringifier DEFAULT = x -&gt; x == null ? EMPTY_STRING : x.toString();</span>
 
   /**
    * Stringifies the specified value. Stringifier implementations &lt;i&gt;must&lt;/i&gt; be able

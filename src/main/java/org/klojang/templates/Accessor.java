@@ -4,11 +4,11 @@ import java.util.function.IntFunction;
 
 /**
  * Accessors are used to extract values from objects. The {@link RenderSession} uses
- * them to extract values from the objects passed to its
+ * them to extract values from the objects passed to
  * {@link RenderSession#insert(Object, String...) insert()} and
- * {@link RenderSession#populate(String, Object, String...) populate()} methods.
- * Object access is name-based and requires a mapping between template variables and
- * bean properties or map keys. By default, <i>Klojang Templates</i> assumes an as-is
+ * {@link RenderSession#populate(String, Object, String...) populate()}. Object
+ * access is name-based and requires a mapping between template variables and bean
+ * properties or map keys. By default, <i>Klojang Templates</i> assumes an as-is
  * mapping between the two, but you can use {@linkplain NameMapper name mappers} for
  * more sophisticated mappings.
  *
@@ -37,11 +37,11 @@ public interface Accessor<T> {
    * empty string. If, on the other hand, the {@code RenderSession} receives
    * {@code UNDEFINED} as the value for a template variable, it will just skip
    * setting that variable. By itself this will make no difference when the template
-   * is rendered. An unset variable will also result in replacing the variable with
-   * nothing (i.e. an empty string). However, it <i>does</i> make a difference if you
-   * want to set all unset variables to some (default) value after you have populated
-   * your template with model objects, hash maps, and/or anything else for which you
-   * have defined an accessor:
+   * is rendered. An unset variable will result in replacing the variable with
+   * nothing &#8212; i.e. an empty string. However, it <i>does</i> make a difference
+   * if you want to set all unset variables to some default value after you have
+   * populated your template with model objects, hash maps, and/or anything else for
+   * which you have defined an accessor:
    * </p>
    * <blockquote><pre>{@code
    * CompanyDao dao = new CompanyDao();
@@ -61,7 +61,7 @@ public interface Accessor<T> {
    * Template template = Template.fromResource(getClass(), "/views/companies.html");
    * RenderSession session = template.newRenderSession(accessors);
    * }</pre></blockquote>
-   * 
+   *
    * @see AccessorRegistry.Builder#nullEqualsUndefined(boolean)
    * @see RenderSession#setPath(String, IntFunction)
    */

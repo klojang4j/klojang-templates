@@ -75,8 +75,8 @@ public final class StringifierRegistry {
    * predefined {@link VarGroup variable groups}. Variables not within these groups
    * are stringified using the {@linkplain Stringifier#DEFAULT default stringifier}.
    * This is the {@code StringifierRegistry} a {@link RenderSession} will use if you
-   * called {@link Template#newRenderSession() Template.newRenderSession} without the
-   * {@code StringifierRegistry} argument.
+   * called {@link Template#newRenderSession() Template.newRenderSession()} without
+   * the {@code StringifierRegistry} argument.
    */
 <span class="fc" id="L81">  public static final StringifierRegistry STANDARD_STRINGIFIERS = configure().freeze();</span>
 
@@ -348,40 +348,46 @@ public final class StringifierRegistry {
   /* +++++++++++++++++++++[ END BUILDER CLASS ]++++++++++++++++++ */
 
   /**
-   * Applies HTML escaping. This is one of the standard stringifiers.
+   * Applies HTML escaping. This is one of the standard stringifiers. It is the
+   * stringifier used by the {@link VarGroup#HTML HTML} variable group.
    */
-<span class="fc" id="L353">  public static final Stringifier ESCAPE_HTML = StandardStringifiers.ESCAPE_HTML;</span>
+<span class="fc" id="L354">  public static final Stringifier ESCAPE_HTML = StandardStringifiers.ESCAPE_HTML;</span>
 
   /**
-   * Applies Javascript escaping. This is one of the standard stringifiers.
+   * Applies Javascript escaping. This is one of the standard stringifiers. It is the
+   * stringifier used by the {@link VarGroup#HTML HTML} variable group.
    */
-<span class="fc" id="L358">  public static final Stringifier ESCAPE_JS = StandardStringifiers.ESCAPE_JS;</span>
+<span class="fc" id="L360">  public static final Stringifier ESCAPE_JS = StandardStringifiers.ESCAPE_JS;</span>
 
   /**
    * To be used for escaping HTML attributes. Same as {@link #ESCAPE_HTML} except
    * that single quotes and double quotes are also escaped. This is one of the
-   * standard stringifiers.
+   * standard stringifiers. It is the stringifier used by the
+   * {@link VarGroup#HTML HTML} variable group.
    */
-<span class="fc" id="L365">  public static final Stringifier ESCAPE_ATTR = StandardStringifiers.ESCAPE_ATTR;</span>
+<span class="fc" id="L368">  public static final Stringifier ESCAPE_ATTR = StandardStringifiers.ESCAPE_ATTR;</span>
 
   /**
    * To be used for escaping HTML attributes containing Javascript, like
-   * {@code onclick}. This is one of the standard stringifiers.
+   * {@code onclick}. This is one of the standard stringifiers. It is the stringifier
+   * used by the {@link VarGroup#JS JS} variable group.
    */
-<span class="fc" id="L371">  public static final Stringifier ESCAPE_JS_ATTR = StandardStringifiers.ESCAPE_JS_ATTR;</span>
+<span class="fc" id="L375">  public static final Stringifier ESCAPE_JS_ATTR = StandardStringifiers.ESCAPE_JS_ATTR;</span>
 
   /**
    * To be used for escaping URL query parameter. Both parameter names and parameter
    * values can be escaped using this stringifier since they are escaped identically.
-   * This is one of the standard stringifiers.
+   * This is one of the standard stringifiers. It is the stringifier used by the
+   * {@link VarGroup#PARAM PARAM} variable group.
    */
-<span class="fc" id="L378">  public static final Stringifier ESCAPE_QUERY_PARAM = StandardStringifiers.ESCAPE_QUERY_PARAM;</span>
+<span class="fc" id="L383">  public static final Stringifier ESCAPE_QUERY_PARAM = StandardStringifiers.ESCAPE_QUERY_PARAM;</span>
 
   /**
    * To be used for escaping URL path segments. This is one of the standard
-   * stringifiers.
+   * stringifiers. It is the stringifier used by the {@link VarGroup#PATH PATH}
+   * variable group.
    */
-<span class="fc" id="L384">  public static final Stringifier ESCAPE_PATH = StandardStringifiers.ESCAPE_PATH;</span>
+<span class="fc" id="L390">  public static final Stringifier ESCAPE_PATH = StandardStringifiers.ESCAPE_PATH;</span>
 
   /**
    * Returns a {@code Builder} instance that lets you configure a
@@ -393,7 +399,7 @@ public final class StringifierRegistry {
    *     {@code StringifierRegistry}
    */
   public static Builder configure() {
-<span class="fc" id="L396">    return new Builder(true);</span>
+<span class="fc" id="L402">    return new Builder(true);</span>
   }
 
   /**
@@ -406,7 +412,7 @@ public final class StringifierRegistry {
    *     {@code StringifierRegistry}
    */
   public static Builder cleanSlate() {
-<span class="fc" id="L409">    return new Builder(false);</span>
+<span class="fc" id="L415">    return new Builder(false);</span>
   }
 
   private final Map&lt;StringifierId, Stringifier&gt; stringifiers;
@@ -419,61 +425,61 @@ public final class StringifierRegistry {
       Map&lt;Class&lt;?&gt;, Stringifier&gt; typeStringifiers,
       Map&lt;Tuple2&lt;Template, String&gt;, Class&lt;?&gt;&gt; typeLookup,
       List&lt;Tuple2&lt;String, Stringifier&gt;&gt; partials,
-<span class="fc" id="L422">      Stringifier defStringifier) {</span>
-<span class="fc" id="L423">    this.stringifiers = Map.copyOf(stringifiers);</span>
-<span class="fc" id="L424">    this.typeStringifiers = TypeMap.fixedTypeMap(typeStringifiers);</span>
-<span class="fc" id="L425">    this.partialNames = List.copyOf(partials);</span>
-<span class="fc" id="L426">    this.typeLookup = Map.copyOf(typeLookup);</span>
-<span class="fc" id="L427">    this.defStringifier = defStringifier;</span>
-<span class="fc" id="L428">  }</span>
+<span class="fc" id="L428">      Stringifier defStringifier) {</span>
+<span class="fc" id="L429">    this.stringifiers = Map.copyOf(stringifiers);</span>
+<span class="fc" id="L430">    this.typeStringifiers = TypeMap.fixedTypeMap(typeStringifiers);</span>
+<span class="fc" id="L431">    this.partialNames = List.copyOf(partials);</span>
+<span class="fc" id="L432">    this.typeLookup = Map.copyOf(typeLookup);</span>
+<span class="fc" id="L433">    this.defStringifier = defStringifier;</span>
+<span class="fc" id="L434">  }</span>
 
   Stringifier getStringifier(VariablePart part, VarGroup varGroup, Object value)
       throws RenderException {
     Stringifier sf;
-<span class="fc bfc" id="L433" title="All 2 branches covered.">    if (part.varGroup().isPresent()) {</span>
-<span class="fc" id="L434">      VarGroup vg = part.varGroup().get();</span>
-<span class="fc bfc" id="L435" title="All 2 branches covered.">      if (null != (sf = stringifiers.get(new StringifierId(vg)))) {</span>
-<span class="fc" id="L436">        return sf;</span>
+<span class="fc bfc" id="L439" title="All 2 branches covered.">    if (part.varGroup().isPresent()) {</span>
+<span class="fc" id="L440">      VarGroup vg = part.varGroup().get();</span>
+<span class="fc bfc" id="L441" title="All 2 branches covered.">      if (null != (sf = stringifiers.get(new StringifierId(vg)))) {</span>
+<span class="fc" id="L442">        return sf;</span>
       }
       // else the inline group name prefix was not associated with
       // a stringifier, which is pointless but allowed (in the future
       // we might want to use variable groups for other purposes).
     }
-<span class="fc bfc" id="L442" title="All 2 branches covered.">    if (varGroup != null) {</span>
-<span class="fc bfc" id="L443" title="All 2 branches covered.">      if (null != (sf = stringifiers.get(new StringifierId(varGroup)))) {</span>
-<span class="fc" id="L444">        return sf;</span>
+<span class="fc bfc" id="L448" title="All 2 branches covered.">    if (varGroup != null) {</span>
+<span class="fc bfc" id="L449" title="All 2 branches covered.">      if (null != (sf = stringifiers.get(new StringifierId(varGroup)))) {</span>
+<span class="fc" id="L450">        return sf;</span>
       }
     }
-<span class="fc" id="L447">    Template tmpl = part.getParentTemplate();</span>
-<span class="fc" id="L448">    String var = part.name();</span>
-<span class="fc bfc" id="L449" title="All 2 branches covered.">    if (null != (sf = stringifiers.get(new StringifierId(tmpl, var)))) {</span>
-<span class="fc" id="L450">      return sf;</span>
+<span class="fc" id="L453">    Template tmpl = part.getParentTemplate();</span>
+<span class="fc" id="L454">    String var = part.name();</span>
+<span class="fc bfc" id="L455" title="All 2 branches covered.">    if (null != (sf = stringifiers.get(new StringifierId(tmpl, var)))) {</span>
+<span class="fc" id="L456">      return sf;</span>
     }
-<span class="fc bfc" id="L452" title="All 2 branches covered.">    if (null != (sf = stringifiers.get(new StringifierId(null, var)))) {</span>
-<span class="fc" id="L453">      return sf;</span>
+<span class="fc bfc" id="L458" title="All 2 branches covered.">    if (null != (sf = stringifiers.get(new StringifierId(null, var)))) {</span>
+<span class="fc" id="L459">      return sf;</span>
     }
-<span class="fc bfc" id="L455" title="All 2 branches covered.">    for (Tuple2&lt;String, Stringifier&gt; partial : partialNames) {</span>
-<span class="fc" id="L456">      String name = partial.first();</span>
-<span class="fc bfc" id="L457" title="All 2 branches covered.">      if (name.startsWith(&quot;*&quot;)) {</span>
-<span class="pc bpc" id="L458" title="1 of 4 branches missed.">        if (name.endsWith(&quot;*&quot;) &amp;&amp; var.contains(trim(name, &quot;*&quot;))) {</span>
-<span class="fc" id="L459">          return partial.second();</span>
-<span class="pc bpc" id="L460" title="1 of 2 branches missed.">        } else if (var.endsWith(ltrim(name, &quot;*&quot;))) {</span>
-<span class="nc" id="L461">          return partial.second();</span>
+<span class="fc bfc" id="L461" title="All 2 branches covered.">    for (Tuple2&lt;String, Stringifier&gt; partial : partialNames) {</span>
+<span class="fc" id="L462">      String name = partial.first();</span>
+<span class="fc bfc" id="L463" title="All 2 branches covered.">      if (name.startsWith(&quot;*&quot;)) {</span>
+<span class="pc bpc" id="L464" title="1 of 4 branches missed.">        if (name.endsWith(&quot;*&quot;) &amp;&amp; var.contains(trim(name, &quot;*&quot;))) {</span>
+<span class="fc" id="L465">          return partial.second();</span>
+<span class="pc bpc" id="L466" title="1 of 2 branches missed.">        } else if (var.endsWith(ltrim(name, &quot;*&quot;))) {</span>
+<span class="nc" id="L467">          return partial.second();</span>
         }
-<span class="fc bfc" id="L463" title="All 2 branches covered.">      } else if (var.startsWith(rtrim(name, &quot;*&quot;))) {</span>
-<span class="fc" id="L464">        return partial.second();</span>
+<span class="fc bfc" id="L469" title="All 2 branches covered.">      } else if (var.startsWith(rtrim(name, &quot;*&quot;))) {</span>
+<span class="fc" id="L470">        return partial.second();</span>
       }
-<span class="fc" id="L466">    }</span>
-<span class="fc" id="L467">    Class&lt;?&gt; type = typeLookup.get(Tuple2.of(tmpl, var));</span>
-<span class="fc bfc" id="L468" title="All 4 branches covered.">    if (type == null &amp;&amp; value != null) {</span>
-<span class="fc" id="L469">      type = value.getClass();</span>
+<span class="fc" id="L472">    }</span>
+<span class="fc" id="L473">    Class&lt;?&gt; type = typeLookup.get(Tuple2.of(tmpl, var));</span>
+<span class="fc bfc" id="L474" title="All 4 branches covered.">    if (type == null &amp;&amp; value != null) {</span>
+<span class="fc" id="L475">      type = value.getClass();</span>
     }
-<span class="fc bfc" id="L471" title="All 2 branches covered.">    if (type != null) {</span>
-<span class="fc bfc" id="L472" title="All 2 branches covered.">      if (null != (sf = typeStringifiers.get(type))) {</span>
-<span class="fc" id="L473">        return sf;</span>
+<span class="fc bfc" id="L477" title="All 2 branches covered.">    if (type != null) {</span>
+<span class="fc bfc" id="L478" title="All 2 branches covered.">      if (null != (sf = typeStringifiers.get(type))) {</span>
+<span class="fc" id="L479">        return sf;</span>
       }
     }
-<span class="fc" id="L476">    return defStringifier;</span>
+<span class="fc" id="L482">    return defStringifier;</span>
   }
 
 }

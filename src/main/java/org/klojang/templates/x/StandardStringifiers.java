@@ -16,7 +16,7 @@ import static org.apache.commons.text.StringEscapeUtils.escapeEcmaScript;
 import static org.klojang.templates.VarGroup.*;
 import static org.klojang.util.StringMethods.EMPTY_STRING;
 
-public class StandardStringifiers {
+public final class StandardStringifiers {
 
   // Copied from StringEscapeUtils and added the 4th LookupTranslator
   private static final CharSequenceTranslator HTML_ATTR_TRANSLATOR =

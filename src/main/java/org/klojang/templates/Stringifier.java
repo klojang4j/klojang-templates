@@ -21,10 +21,7 @@ public interface Stringifier {
 
   /**
    * A stringifier that stringifies {@code null} to an empty string and any other
-   * value by calling {@code toString()} on it. This is the default stringifier for
-   * values coming back from the data access layer, unless you
-   * {@linkplain StringifierRegistry.Builder#setDefaultStringifier(Stringifier)
-   * specify an alternative default stringifier}.
+   * value by calling {@code toString()} on it.
    *
    * @see StringifierRegistry.Builder
    */

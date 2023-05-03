@@ -39,7 +39,7 @@ import static org.klojang.templates.x.MTag.TEMPLATE;
  * Templates</i>. Irrespective of whether the JavaBeans are inside a Java 9+
  * module, <b>both the bean class and the bean properties must have the
  * {@code public} access modifier</b>. <i>Klojang Templates</i> will not attempt to
- * change the accessibility of the bean class and the bean properties.
+ * change the accessibility of the bean class or the bean properties.
  *
  * <p>Alternatively, you could write your own {@code Accessor}:
  *

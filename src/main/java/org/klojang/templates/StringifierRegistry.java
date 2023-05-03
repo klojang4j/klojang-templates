@@ -75,8 +75,8 @@ public final class StringifierRegistry {
    * predefined {@link VarGroup variable groups}. Variables not within these groups
    * are stringified using the {@linkplain Stringifier#DEFAULT default stringifier}.
    * This is the {@code StringifierRegistry} a {@link RenderSession} will use if you
-   * called {@link Template#newRenderSession() Template.newRenderSession} without the
-   * {@code StringifierRegistry} argument.
+   * called {@link Template#newRenderSession() Template.newRenderSession()} without
+   * the {@code StringifierRegistry} argument.
    */
   public static final StringifierRegistry STANDARD_STRINGIFIERS = configure().freeze();
 
@@ -348,38 +348,44 @@ public final class StringifierRegistry {
   /* +++++++++++++++++++++[ END BUILDER CLASS ]++++++++++++++++++ */
 
   /**
-   * Applies HTML escaping. This is one of the standard stringifiers.
+   * Applies HTML escaping. This is one of the standard stringifiers. It is the
+   * stringifier used by the {@link VarGroup#HTML HTML} variable group.
    */
   public static final Stringifier ESCAPE_HTML = StandardStringifiers.ESCAPE_HTML;
 
   /**
-   * Applies Javascript escaping. This is one of the standard stringifiers.
+   * Applies Javascript escaping. This is one of the standard stringifiers. It is the
+   * stringifier used by the {@link VarGroup#HTML HTML} variable group.
    */
   public static final Stringifier ESCAPE_JS = StandardStringifiers.ESCAPE_JS;
 
   /**
    * To be used for escaping HTML attributes. Same as {@link #ESCAPE_HTML} except
    * that single quotes and double quotes are also escaped. This is one of the
-   * standard stringifiers.
+   * standard stringifiers. It is the stringifier used by the
+   * {@link VarGroup#HTML HTML} variable group.
    */
   public static final Stringifier ESCAPE_ATTR = StandardStringifiers.ESCAPE_ATTR;
 
   /**
    * To be used for escaping HTML attributes containing Javascript, like
-   * {@code onclick}. This is one of the standard stringifiers.
+   * {@code onclick}. This is one of the standard stringifiers. It is the stringifier
+   * used by the {@link VarGroup#JS JS} variable group.
    */
   public static final Stringifier ESCAPE_JS_ATTR = StandardStringifiers.ESCAPE_JS_ATTR;
 
   /**
    * To be used for escaping URL query parameter. Both parameter names and parameter
    * values can be escaped using this stringifier since they are escaped identically.
-   * This is one of the standard stringifiers.
+   * This is one of the standard stringifiers. It is the stringifier used by the
+   * {@link VarGroup#PARAM PARAM} variable group.
    */
   public static final Stringifier ESCAPE_QUERY_PARAM = StandardStringifiers.ESCAPE_QUERY_PARAM;
 
   /**
    * To be used for escaping URL path segments. This is one of the standard
-   * stringifiers.
+   * stringifiers. It is the stringifier used by the {@link VarGroup#PATH PATH}
+   * variable group.
    */
   public static final Stringifier ESCAPE_PATH = StandardStringifiers.ESCAPE_PATH;
 
