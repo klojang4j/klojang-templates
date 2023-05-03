@@ -40,7 +40,7 @@ record MultiSession(Template template, SoloSession[] sessions) implements
   }
 
   /*
-   * setNested() is about the only method where we don't immediately delegate to
+   * setPath() is about the only method where we don't immediately delegate to
    * SoloSession. We use the happy fact that we have an IntFunction to (potentially)
    * set different values for different instances of the template managed by THIS
    * MultiSession.

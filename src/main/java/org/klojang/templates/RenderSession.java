@@ -115,7 +115,7 @@ public sealed interface RenderSession permits SoloSession, MultiSession {
    * will only be set if the template containing it had already been made visible via
    * other means, e.g. via {@link #repeat(String, int) repeat()} or
    * {@link #populate(String, Object, String...) populate()}. If {@code force} equals
-   * {@code true}, the variable will always be set and {@code setNested()} will
+   * {@code true}, the variable will always be set and {@code setPath()} will
    * itself cause the template to become visible.
    *
    * <p>If the variable is a top-level variable (the path consists of just one path

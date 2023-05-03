@@ -48,7 +48,7 @@ public interface Accessor&lt;T&gt; {
    * Template template = Template.fromResource(getClass(), &quot;/views/companies.html&quot;);
    * RenderSession session = template.newRenderSession();
    * session.populate(&quot;companies&quot;, dao.list());
-   * session.getAllUnsetVariables().forEach(var -&gt; session.setNested(var, i -&gt; &quot;(unknown)&quot;);
+   * session.getAllUnsetVariables().forEach(var -&gt; session.setPath(var, i -&gt; &quot;(unknown)&quot;);
    * }&lt;/pre&gt;&lt;/blockquote&gt;
    * &lt;p&gt;
    * You can make the {@code RenderSession} treat {@code null} just like
