@@ -65,6 +65,9 @@ does not hook into any of them in any deep way. You can use _Klojang Templates_
 with any of the Jakarta/JAX-RS based frameworks, but equally well with non-Servlet
 based frameworks like [Micronaut](https://micronaut.io/). 
 
+_Klojang Templates_ uses [SLF4J](https://www.slf4j.org/) to log statements about 
+the template parsing and rendering process.
+
 ## Hello, World
 
 ```html

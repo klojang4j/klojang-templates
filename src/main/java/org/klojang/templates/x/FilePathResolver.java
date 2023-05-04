@@ -21,10 +21,7 @@ public final class FilePathResolver implements PathResolver {
 
   @Override
   public boolean equals(Object obj) {
-    if (this == obj || obj instanceof FilePathResolver) {
-      return true;
-    }
-    return false;
+    return (this == obj || obj instanceof FilePathResolver);
   }
 
 }

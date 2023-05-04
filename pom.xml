@@ -94,6 +94,7 @@
         <commons-text.version>1.10.0</commons-text.version>
         <apache-httpclient.version>4.5.14</apache-httpclient.version>
         <slf4j.version>2.0.7</slf4j.version>
+        <logback.version>1.4.7</logback.version>
         <junit.version>5.9.3</junit.version>
         <h2.version>2.1.214</h2.version>
 
@@ -155,10 +156,10 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>com.h2database</groupId>
-            <artifactId>h2</artifactId>
-            <version>${h2.version}</version>
-            <scope>test</scope>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>${logback.version}</version>
+            <!-- scope>test</scope -->
         </dependency>
     </dependencies>
 
