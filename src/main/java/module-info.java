@@ -117,7 +117,7 @@
  * </p>
  * <p>
  * Variables, inline templates and included templates can all be placed in HTML
- * comments with out this making a difference in how the template is rendered. For
+ * comments without this making a difference in how the template is rendered. For
  * example <code>&lt;!--&nbsp;~%city%&nbsp;--&gt;</code> renders just like
  * {@code ~%city%}. If {@code city} is set to "Paris", then the entire string
  * "&lt;!--&nbsp;~%city%&nbsp;--&gt;" is replaced with "Paris" when the template is

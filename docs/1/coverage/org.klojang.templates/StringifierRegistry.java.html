@@ -140,35 +140,36 @@ public final class StringifierRegistry {
      * &lt;p&gt;To assign the stringifier to &lt;i&gt;all&lt;/i&gt; variables in the specified
      * template (non-recursively), specify an empty string array.
      *
-     * @param template the template containing the variables
+     * @param template    the template containing the variables
      * @param stringifier the stringifier
-     * @param varNames any array of fully-qualified variable names
+     * @param varNames    any array of fully-qualified variable names
      * @return this {@code Builder}
      * @see TemplateUtils#getFQN(Template, String)
      * @see TemplateUtils#getContainingTemplate(Template, String)
      */
-    public Builder register(Template template, Stringifier stringifier,
+    public Builder register(
+        Template template, Stringifier stringifier,
         String... varNames) {
-<span class="fc" id="L152">      Check.notNull(stringifier, STRINGIFIER);</span>
-<span class="fc" id="L153">      Check.notNull(template, TEMPLATE);</span>
-<span class="fc" id="L154">      Check.notNull(varNames, VARARGS);</span>
-<span class="fc bfc" id="L155" title="All 2 branches covered.">      boolean all = varNames.length == 0;</span>
-<span class="fc bfc" id="L156" title="All 2 branches covered.">      if (all) {</span>
-<span class="fc bfc" id="L157" title="All 2 branches covered.">        for (String name : template.getVariables()) {</span>
-<span class="fc" id="L158">          Check.that(new StringifierId(template, name))</span>
-<span class="fc" id="L159">              .isNot(keyIn(), stringifiers, ERR_VAR_ASSIGNED, name)</span>
-<span class="fc" id="L160">              .then(id -&gt; stringifiers.put(id, stringifier));</span>
-<span class="fc" id="L161">        }</span>
+<span class="fc" id="L153">      Check.notNull(stringifier, STRINGIFIER);</span>
+<span class="fc" id="L154">      Check.notNull(template, TEMPLATE);</span>
+<span class="fc" id="L155">      Check.notNull(varNames, VARARGS);</span>
+<span class="fc bfc" id="L156" title="All 2 branches covered.">      boolean all = varNames.length == 0;</span>
+<span class="fc bfc" id="L157" title="All 2 branches covered.">      if (all) {</span>
+<span class="fc bfc" id="L158" title="All 2 branches covered.">        for (String name : template.getVariables()) {</span>
+<span class="fc" id="L159">          Check.that(new StringifierId(template, name))</span>
+<span class="fc" id="L160">              .isNot(keyIn(), stringifiers, ERR_VAR_ASSIGNED, name)</span>
+<span class="fc" id="L161">              .then(id -&gt; stringifiers.put(id, stringifier));</span>
+<span class="fc" id="L162">        }</span>
       } else {
-<span class="fc bfc" id="L163" title="All 2 branches covered.">        for (String name : varNames) {</span>
-<span class="fc" id="L164">          Template tmpl = TemplateUtils.getContainingTemplate(template, name);</span>
-<span class="fc" id="L165">          Check.that(name).is(in(), tmpl.getVariables(), ERR_NO_SUCH_VARIABLE);</span>
-<span class="fc" id="L166">          Check.that(new StringifierId(template, name))</span>
-<span class="fc" id="L167">              .isNot(keyIn(), stringifiers, ERR_VAR_ASSIGNED, name)</span>
-<span class="fc" id="L168">              .then(id -&gt; stringifiers.put(id, stringifier));</span>
+<span class="fc bfc" id="L164" title="All 2 branches covered.">        for (String name : varNames) {</span>
+<span class="fc" id="L165">          Template tmpl = TemplateUtils.getContainingTemplate(template, name);</span>
+<span class="fc" id="L166">          Check.that(name).is(in(), tmpl.getVariables(), ERR_NO_SUCH_VARIABLE);</span>
+<span class="fc" id="L167">          Check.that(new StringifierId(template, name))</span>
+<span class="fc" id="L168">              .isNot(keyIn(), stringifiers, ERR_VAR_ASSIGNED, name)</span>
+<span class="fc" id="L169">              .then(id -&gt; stringifiers.put(id, stringifier));</span>
         }
       }
-<span class="fc" id="L171">      return this;</span>
+<span class="fc" id="L172">      return this;</span>
     }
 
     /**
@@ -198,41 +199,42 @@ public final class StringifierRegistry {
      * &lt;p&gt;To assign the stringifier to &lt;i&gt;all&lt;/i&gt; variables in the nested template,
      * specify an empty string array.
      *
-     * @param root the root template
+     * @param root               the root template
      * @param nestedTemplateName the name of a template descending from the root
-     *     template, or {@code null} if you want to target the variables in the root
-     *     template itself
-     * @param stringifier the stringifier
-     * @param varNames the names of the variables to which to assign the
-     *     stringifier, or an empty string array if you want to assign the
-     *     stringifier to all variables within the target template
+     *                           template, or {@code null} if you want to target the variables in the root
+     *                           template itself
+     * @param stringifier        the stringifier
+     * @param varNames           the names of the variables to which to assign the
+     *                           stringifier, or an empty string array if you want to assign the
+     *                           stringifier to all variables within the target template
      * @return this {@code Builder}
      * @see TemplateUtils#getNestedTemplate(Template, String)
      */
-    public Builder forTemplate(Template root,
+    public Builder forTemplate(
+        Template root,
         String nestedTemplateName,
         Stringifier stringifier,
         String... varNames) {
-<span class="fc" id="L216">      Check.notNull(root, TEMPLATE);</span>
-<span class="fc" id="L217">      Check.notNull(stringifier, STRINGIFIER);</span>
-<span class="fc" id="L218">      Check.that(varNames, VARARGS).is(deepNotNull());</span>
-<span class="fc" id="L219">      Template tmpl = getNestedTemplate(root, nestedTemplateName);</span>
-<span class="fc bfc" id="L220" title="All 2 branches covered.">      boolean all = varNames.length == 0;</span>
-<span class="fc bfc" id="L221" title="All 2 branches covered.">      if (all) {</span>
-<span class="fc bfc" id="L222" title="All 2 branches covered.">        for (String name : tmpl.getVariables()) {</span>
-<span class="fc" id="L223">          Check.that(new StringifierId(tmpl, name))</span>
-<span class="fc" id="L224">              .isNot(keyIn(), stringifiers, ERR_VAR_ASSIGNED, name)</span>
-<span class="fc" id="L225">              .then(id -&gt; stringifiers.put(id, stringifier));</span>
-<span class="fc" id="L226">        }</span>
+<span class="fc" id="L218">      Check.notNull(root, TEMPLATE);</span>
+<span class="fc" id="L219">      Check.notNull(stringifier, STRINGIFIER);</span>
+<span class="fc" id="L220">      Check.that(varNames, VARARGS).is(deepNotNull());</span>
+<span class="fc" id="L221">      Template tmpl = getNestedTemplate(root, nestedTemplateName);</span>
+<span class="fc bfc" id="L222" title="All 2 branches covered.">      boolean all = varNames.length == 0;</span>
+<span class="fc bfc" id="L223" title="All 2 branches covered.">      if (all) {</span>
+<span class="fc bfc" id="L224" title="All 2 branches covered.">        for (String name : tmpl.getVariables()) {</span>
+<span class="fc" id="L225">          Check.that(new StringifierId(tmpl, name))</span>
+<span class="fc" id="L226">              .isNot(keyIn(), stringifiers, ERR_VAR_ASSIGNED, name)</span>
+<span class="fc" id="L227">              .then(id -&gt; stringifiers.put(id, stringifier));</span>
+<span class="fc" id="L228">        }</span>
       } else {
-<span class="fc bfc" id="L228" title="All 2 branches covered.">        for (String name : varNames) {</span>
-<span class="fc" id="L229">          Check.that(name).is(in(), root.getVariables(), ERR_NO_SUCH_VARIABLE);</span>
-<span class="fc" id="L230">          Check.that(new StringifierId(tmpl, name))</span>
-<span class="fc" id="L231">              .isNot(keyIn(), stringifiers, ERR_VAR_ASSIGNED)</span>
-<span class="fc" id="L232">              .then(id -&gt; stringifiers.put(id, stringifier));</span>
+<span class="fc bfc" id="L230" title="All 2 branches covered.">        for (String name : varNames) {</span>
+<span class="fc" id="L231">          Check.that(name).is(in(), root.getVariables(), ERR_NO_SUCH_VARIABLE);</span>
+<span class="fc" id="L232">          Check.that(new StringifierId(tmpl, name))</span>
+<span class="fc" id="L233">              .isNot(keyIn(), stringifiers, ERR_VAR_ASSIGNED)</span>
+<span class="fc" id="L234">              .then(id -&gt; stringifiers.put(id, stringifier));</span>
         }
       }
-<span class="fc" id="L235">      return this;</span>
+<span class="fc" id="L237">      return this;</span>
     }
 
     /**
@@ -241,19 +243,19 @@ public final class StringifierRegistry {
      * same variable within the same template can be assigned to different variable
      * groups (for example: {@code ~%html:fullName%} and {@code ~%js:fullName%}).
      *
-     * @param groupName the name of the variable group to which to assign the
-     *     stringifier
+     * @param groupName   the name of the variable group to which to assign the
+     *                    stringifier
      * @param stringifier the stringifier
      * @return this {@code Builder}
      */
     public Builder forVarGroup(String groupName, Stringifier stringifier) {
-<span class="fc" id="L250">      Check.notNull(groupName, &quot;group name&quot;);</span>
-<span class="fc" id="L251">      Check.notNull(stringifier, STRINGIFIER);</span>
-<span class="fc" id="L252">      VarGroup varGroup = VarGroup.withName(groupName);</span>
-<span class="fc" id="L253">      Check.that(new StringifierId(varGroup))</span>
-<span class="fc" id="L254">          .isNot(keyIn(), stringifiers, ERR_GROUP_ASSIGNED)</span>
-<span class="fc" id="L255">          .then(id -&gt; stringifiers.put(id, stringifier));</span>
-<span class="fc" id="L256">      return this;</span>
+<span class="fc" id="L252">      Check.notNull(groupName, &quot;group name&quot;);</span>
+<span class="fc" id="L253">      Check.notNull(stringifier, STRINGIFIER);</span>
+<span class="fc" id="L254">      VarGroup varGroup = VarGroup.withName(groupName);</span>
+<span class="fc" id="L255">      Check.that(new StringifierId(varGroup))</span>
+<span class="fc" id="L256">          .isNot(keyIn(), stringifiers, ERR_GROUP_ASSIGNED)</span>
+<span class="fc" id="L257">          .then(id -&gt; stringifiers.put(id, stringifier));</span>
+<span class="fc" id="L258">      return this;</span>
     }
 
     /**
@@ -264,21 +266,21 @@ public final class StringifierRegistry {
      * formatter to all variables whose name ends with &quot;Price&quot;, specify
      * {@code *Price} as the variable name.
      *
-     * @param name the variable name to associate the stringifier with.
+     * @param name        the variable name to associate the stringifier with.
      * @param stringifier the stringifier
      * @return this {@code Builder}
      */
     public Builder forName(String name, Stringifier stringifier) {
-<span class="fc" id="L272">      Check.notNull(stringifier, STRINGIFIER);</span>
-<span class="fc" id="L273">      Check.that(name, NAME).isNot(empty()).isNot(EQ(), &quot;*&quot;);</span>
-<span class="fc bfc" id="L274" title="All 4 branches covered.">      if (name.startsWith(&quot;*&quot;) || name.endsWith(&quot;*&quot;)) {</span>
-<span class="fc" id="L275">        partialNames.add(Tuple2.of(name, stringifier));</span>
+<span class="fc" id="L274">      Check.notNull(stringifier, STRINGIFIER);</span>
+<span class="fc" id="L275">      Check.that(name, NAME).isNot(empty()).isNot(EQ(), &quot;*&quot;);</span>
+<span class="fc bfc" id="L276" title="All 4 branches covered.">      if (name.startsWith(&quot;*&quot;) || name.endsWith(&quot;*&quot;)) {</span>
+<span class="fc" id="L277">        partialNames.add(Tuple2.of(name, stringifier));</span>
       } else {
-<span class="fc" id="L277">        Check.that(new StringifierId(name))</span>
-<span class="fc" id="L278">            .isNot(keyIn(), stringifiers, ERR_VAR_ASSIGNED)</span>
-<span class="fc" id="L279">            .then(x -&gt; stringifiers.put(x, stringifier));</span>
+<span class="fc" id="L279">        Check.that(new StringifierId(name))</span>
+<span class="fc" id="L280">            .isNot(keyIn(), stringifiers, ERR_VAR_ASSIGNED)</span>
+<span class="fc" id="L281">            .then(x -&gt; stringifiers.put(x, stringifier));</span>
       }
-<span class="fc" id="L281">      return this;</span>
+<span class="fc" id="L283">      return this;</span>
     }
 
     /**
@@ -290,16 +292,16 @@ public final class StringifierRegistry {
      * This saves you from having to specify a stringifier for each and every
      * subclass of {@code Number} if they can all be stringified in the same way.
      *
-     * @param type the type to associate the stringifier with.
+     * @param type        the type to associate the stringifier with.
      * @param stringifier the stringifier
      * @return this {@code Builder}
      */
     public Builder forType(Class&lt;?&gt; type, Stringifier stringifier) {
-<span class="fc" id="L298">      Check.notNull(stringifier, STRINGIFIER);</span>
-<span class="fc" id="L299">      Check.notNull(type, TYPE)</span>
-<span class="fc" id="L300">          .isNot(keyIn(), typeStringifiers, ERR_TYPE_ASSIGNED)</span>
-<span class="fc" id="L301">          .then(x -&gt; typeStringifiers.put(x, stringifier));</span>
-<span class="fc" id="L302">      return this;</span>
+<span class="fc" id="L300">      Check.notNull(stringifier, STRINGIFIER);</span>
+<span class="fc" id="L301">      Check.notNull(type, TYPE)</span>
+<span class="fc" id="L302">          .isNot(keyIn(), typeStringifiers, ERR_TYPE_ASSIGNED)</span>
+<span class="fc" id="L303">          .then(x -&gt; typeStringifiers.put(x, stringifier));</span>
+<span class="fc" id="L304">      return this;</span>
     }
 
     /**
@@ -309,25 +311,25 @@ public final class StringifierRegistry {
      * available to determine the variable's type). The variable names are taken to
      * be fully-qualified names, relative to the specified template.
      *
-     * @param type the data type to set for the specified variables
+     * @param type     the data type to set for the specified variables
      * @param template the template containing the variables
      * @param varNames the fully-qualified names of the variables
      * @return this {@code Builder}
      */
     public Builder setType(Class&lt;?&gt; type, Template template, String... varNames) {
-<span class="fc" id="L318">      Check.notNull(type, TYPE);</span>
-<span class="fc" id="L319">      Check.notNull(template, TEMPLATE);</span>
-<span class="fc" id="L320">      Check.that(varNames, VARARGS).is(deepNotNull());</span>
-<span class="fc bfc" id="L321" title="All 2 branches covered.">      for (String var : varNames) {</span>
-<span class="fc" id="L322">        Template tmpl = TemplateUtils.getContainingTemplate(template, var);</span>
+<span class="fc" id="L320">      Check.notNull(type, TYPE);</span>
+<span class="fc" id="L321">      Check.notNull(template, TEMPLATE);</span>
+<span class="fc" id="L322">      Check.that(varNames, VARARGS).is(deepNotNull());</span>
+<span class="fc bfc" id="L323" title="All 2 branches covered.">      for (String var : varNames) {</span>
+<span class="fc" id="L324">        Template tmpl = TemplateUtils.getContainingTemplate(template, var);</span>
         // Make sure var is a variable name, not a nested template name
-<span class="fc" id="L324">        Check.that(var).is(in(), tmpl.getVariables());</span>
-<span class="fc" id="L325">        Tuple2&lt;Template, String&gt; tuple = Tuple2.of(tmpl, var);</span>
-<span class="fc" id="L326">        Check.that(tuple)</span>
-<span class="fc" id="L327">            .isNot(keyIn(), typeLookup, ERR_TYPE_SET)</span>
-<span class="fc" id="L328">            .then(t -&gt; typeLookup.put(t, type));</span>
+<span class="fc" id="L326">        Check.that(var).is(in(), tmpl.getVariables());</span>
+<span class="fc" id="L327">        Tuple2&lt;Template, String&gt; tuple = Tuple2.of(tmpl, var);</span>
+<span class="fc" id="L328">        Check.that(tuple)</span>
+<span class="fc" id="L329">            .isNot(keyIn(), typeLookup, ERR_TYPE_SET)</span>
+<span class="fc" id="L330">            .then(t -&gt; typeLookup.put(t, type));</span>
       }
-<span class="fc" id="L330">      return this;</span>
+<span class="fc" id="L332">      return this;</span>
     }
 
     /**
@@ -336,7 +338,8 @@ public final class StringifierRegistry {
      * @return A new, immutable {@code StringifierRegistry} instance
      */
     public StringifierRegistry freeze() {
-<span class="fc" id="L339">      return new StringifierRegistry(stringifiers,</span>
+<span class="fc" id="L341">      return new StringifierRegistry(</span>
+          stringifiers,
           typeStringifiers,
           typeLookup,
           partialNames,
@@ -351,13 +354,13 @@ public final class StringifierRegistry {
    * Applies HTML escaping. This is one of the standard stringifiers. It is the
    * stringifier used by the {@link VarGroup#HTML HTML} variable group.
    */
-<span class="fc" id="L354">  public static final Stringifier ESCAPE_HTML = StandardStringifiers.ESCAPE_HTML;</span>
+<span class="fc" id="L357">  public static final Stringifier ESCAPE_HTML = StandardStringifiers.ESCAPE_HTML;</span>
 
   /**
    * Applies Javascript escaping. This is one of the standard stringifiers. It is the
    * stringifier used by the {@link VarGroup#JS JS} variable group.
    */
-<span class="fc" id="L360">  public static final Stringifier ESCAPE_JS = StandardStringifiers.ESCAPE_JS;</span>
+<span class="fc" id="L363">  public static final Stringifier ESCAPE_JS = StandardStringifiers.ESCAPE_JS;</span>
 
   /**
    * To be used for escaping HTML attributes. Same as {@link #ESCAPE_HTML} except
@@ -365,14 +368,14 @@ public final class StringifierRegistry {
    * standard stringifiers. It is the stringifier used by the
    * {@link VarGroup#ATTR ATTR} variable group.
    */
-<span class="fc" id="L368">  public static final Stringifier ESCAPE_ATTR = StandardStringifiers.ESCAPE_ATTR;</span>
+<span class="fc" id="L371">  public static final Stringifier ESCAPE_ATTR = StandardStringifiers.ESCAPE_ATTR;</span>
 
   /**
    * To be used for escaping HTML attributes containing Javascript, like
    * {@code onclick}. This is one of the standard stringifiers. It is the stringifier
    * used by the {@link VarGroup#JS_ATTR JS_ATTR} variable group.
    */
-<span class="fc" id="L375">  public static final Stringifier ESCAPE_JS_ATTR = StandardStringifiers.ESCAPE_JS_ATTR;</span>
+<span class="fc" id="L378">  public static final Stringifier ESCAPE_JS_ATTR = StandardStringifiers.ESCAPE_JS_ATTR;</span>
 
   /**
    * To be used for escaping URL query parameter. Both parameter names and parameter
@@ -380,14 +383,14 @@ public final class StringifierRegistry {
    * This is one of the standard stringifiers. It is the stringifier used by the
    * {@link VarGroup#PARAM PARAM} variable group.
    */
-<span class="fc" id="L383">  public static final Stringifier ESCAPE_QUERY_PARAM = StandardStringifiers.ESCAPE_QUERY_PARAM;</span>
+<span class="fc" id="L386">  public static final Stringifier ESCAPE_QUERY_PARAM = StandardStringifiers.ESCAPE_QUERY_PARAM;</span>
 
   /**
    * To be used for escaping URL path segments. This is one of the standard
    * stringifiers. It is the stringifier used by the {@link VarGroup#PATH PATH}
    * variable group.
    */
-<span class="fc" id="L390">  public static final Stringifier ESCAPE_PATH = StandardStringifiers.ESCAPE_PATH;</span>
+<span class="fc" id="L393">  public static final Stringifier ESCAPE_PATH = StandardStringifiers.ESCAPE_PATH;</span>
 
   /**
    * Returns a {@code Builder} instance that lets you configure a
@@ -396,10 +399,10 @@ public final class StringifierRegistry {
    * stringifiers for the standard {@linkplain VarGroup variable groups}.
    *
    * @return A {@code Builder} instance that lets you configure a
-   *     {@code StringifierRegistry}
+   * {@code StringifierRegistry}
    */
   public static Builder configure() {
-<span class="fc" id="L402">    return new Builder(true);</span>
+<span class="fc" id="L405">    return new Builder(true);</span>
   }
 
   /**
@@ -409,10 +412,10 @@ public final class StringifierRegistry {
    * non-HTML templates.
    *
    * @return A {@code Builder} instance that lets you configure a
-   *     {@code StringifierRegistry}
+   * {@code StringifierRegistry}
    */
   public static Builder cleanSlate() {
-<span class="fc" id="L415">    return new Builder(false);</span>
+<span class="fc" id="L418">    return new Builder(false);</span>
   }
 
   private final Map&lt;StringifierId, Stringifier&gt; stringifiers;
@@ -421,65 +424,66 @@ public final class StringifierRegistry {
   private final List&lt;Tuple2&lt;String, Stringifier&gt;&gt; partialNames;
   private final Stringifier defStringifier;
 
-  private StringifierRegistry(Map&lt;StringifierId, Stringifier&gt; stringifiers,
+  private StringifierRegistry(
+      Map&lt;StringifierId, Stringifier&gt; stringifiers,
       Map&lt;Class&lt;?&gt;, Stringifier&gt; typeStringifiers,
       Map&lt;Tuple2&lt;Template, String&gt;, Class&lt;?&gt;&gt; typeLookup,
       List&lt;Tuple2&lt;String, Stringifier&gt;&gt; partials,
-<span class="fc" id="L428">      Stringifier defStringifier) {</span>
-<span class="fc" id="L429">    this.stringifiers = Map.copyOf(stringifiers);</span>
-<span class="fc" id="L430">    this.typeStringifiers = TypeMap.fixedTypeMap(typeStringifiers);</span>
-<span class="fc" id="L431">    this.partialNames = List.copyOf(partials);</span>
-<span class="fc" id="L432">    this.typeLookup = Map.copyOf(typeLookup);</span>
-<span class="fc" id="L433">    this.defStringifier = defStringifier;</span>
-<span class="fc" id="L434">  }</span>
+<span class="fc" id="L432">      Stringifier defStringifier) {</span>
+<span class="fc" id="L433">    this.stringifiers = Map.copyOf(stringifiers);</span>
+<span class="fc" id="L434">    this.typeStringifiers = TypeMap.fixedTypeMap(typeStringifiers);</span>
+<span class="fc" id="L435">    this.partialNames = List.copyOf(partials);</span>
+<span class="fc" id="L436">    this.typeLookup = Map.copyOf(typeLookup);</span>
+<span class="fc" id="L437">    this.defStringifier = defStringifier;</span>
+<span class="fc" id="L438">  }</span>
 
   Stringifier getStringifier(VariablePart part, VarGroup varGroup, Object value)
       throws RenderException {
     Stringifier sf;
-<span class="fc bfc" id="L439" title="All 2 branches covered.">    if (part.varGroup().isPresent()) {</span>
-<span class="fc" id="L440">      VarGroup vg = part.varGroup().get();</span>
-<span class="fc bfc" id="L441" title="All 2 branches covered.">      if (null != (sf = stringifiers.get(new StringifierId(vg)))) {</span>
-<span class="fc" id="L442">        return sf;</span>
+<span class="fc bfc" id="L443" title="All 2 branches covered.">    if (part.varGroup().isPresent()) {</span>
+<span class="fc" id="L444">      VarGroup vg = part.varGroup().get();</span>
+<span class="fc bfc" id="L445" title="All 2 branches covered.">      if (null != (sf = stringifiers.get(new StringifierId(vg)))) {</span>
+<span class="fc" id="L446">        return sf;</span>
       }
       // else the inline group name prefix was not associated with
       // a stringifier, which is pointless but allowed (in the future
       // we might want to use variable groups for other purposes).
     }
-<span class="fc bfc" id="L448" title="All 2 branches covered.">    if (varGroup != null) {</span>
-<span class="fc bfc" id="L449" title="All 2 branches covered.">      if (null != (sf = stringifiers.get(new StringifierId(varGroup)))) {</span>
-<span class="fc" id="L450">        return sf;</span>
+<span class="fc bfc" id="L452" title="All 2 branches covered.">    if (varGroup != null) {</span>
+<span class="fc bfc" id="L453" title="All 2 branches covered.">      if (null != (sf = stringifiers.get(new StringifierId(varGroup)))) {</span>
+<span class="fc" id="L454">        return sf;</span>
       }
     }
-<span class="fc" id="L453">    Template tmpl = part.getParentTemplate();</span>
-<span class="fc" id="L454">    String var = part.name();</span>
-<span class="fc bfc" id="L455" title="All 2 branches covered.">    if (null != (sf = stringifiers.get(new StringifierId(tmpl, var)))) {</span>
-<span class="fc" id="L456">      return sf;</span>
+<span class="fc" id="L457">    Template tmpl = part.getParentTemplate();</span>
+<span class="fc" id="L458">    String var = part.name();</span>
+<span class="fc bfc" id="L459" title="All 2 branches covered.">    if (null != (sf = stringifiers.get(new StringifierId(tmpl, var)))) {</span>
+<span class="fc" id="L460">      return sf;</span>
     }
-<span class="fc bfc" id="L458" title="All 2 branches covered.">    if (null != (sf = stringifiers.get(new StringifierId(null, var)))) {</span>
-<span class="fc" id="L459">      return sf;</span>
+<span class="fc bfc" id="L462" title="All 2 branches covered.">    if (null != (sf = stringifiers.get(new StringifierId(null, var)))) {</span>
+<span class="fc" id="L463">      return sf;</span>
     }
-<span class="fc bfc" id="L461" title="All 2 branches covered.">    for (Tuple2&lt;String, Stringifier&gt; partial : partialNames) {</span>
-<span class="fc" id="L462">      String name = partial.first();</span>
-<span class="fc bfc" id="L463" title="All 2 branches covered.">      if (name.startsWith(&quot;*&quot;)) {</span>
-<span class="pc bpc" id="L464" title="1 of 4 branches missed.">        if (name.endsWith(&quot;*&quot;) &amp;&amp; var.contains(trim(name, &quot;*&quot;))) {</span>
-<span class="fc" id="L465">          return partial.second();</span>
-<span class="pc bpc" id="L466" title="1 of 2 branches missed.">        } else if (var.endsWith(ltrim(name, &quot;*&quot;))) {</span>
-<span class="nc" id="L467">          return partial.second();</span>
+<span class="fc bfc" id="L465" title="All 2 branches covered.">    for (Tuple2&lt;String, Stringifier&gt; partial : partialNames) {</span>
+<span class="fc" id="L466">      String name = partial.first();</span>
+<span class="fc bfc" id="L467" title="All 2 branches covered.">      if (name.startsWith(&quot;*&quot;)) {</span>
+<span class="pc bpc" id="L468" title="1 of 4 branches missed.">        if (name.endsWith(&quot;*&quot;) &amp;&amp; var.contains(trim(name, &quot;*&quot;))) {</span>
+<span class="fc" id="L469">          return partial.second();</span>
+<span class="pc bpc" id="L470" title="1 of 2 branches missed.">        } else if (var.endsWith(ltrim(name, &quot;*&quot;))) {</span>
+<span class="nc" id="L471">          return partial.second();</span>
         }
-<span class="fc bfc" id="L469" title="All 2 branches covered.">      } else if (var.startsWith(rtrim(name, &quot;*&quot;))) {</span>
-<span class="fc" id="L470">        return partial.second();</span>
+<span class="fc bfc" id="L473" title="All 2 branches covered.">      } else if (var.startsWith(rtrim(name, &quot;*&quot;))) {</span>
+<span class="fc" id="L474">        return partial.second();</span>
       }
-<span class="fc" id="L472">    }</span>
-<span class="fc" id="L473">    Class&lt;?&gt; type = typeLookup.get(Tuple2.of(tmpl, var));</span>
-<span class="fc bfc" id="L474" title="All 4 branches covered.">    if (type == null &amp;&amp; value != null) {</span>
-<span class="fc" id="L475">      type = value.getClass();</span>
+<span class="fc" id="L476">    }</span>
+<span class="fc" id="L477">    Class&lt;?&gt; type = typeLookup.get(Tuple2.of(tmpl, var));</span>
+<span class="fc bfc" id="L478" title="All 4 branches covered.">    if (type == null &amp;&amp; value != null) {</span>
+<span class="fc" id="L479">      type = value.getClass();</span>
     }
-<span class="fc bfc" id="L477" title="All 2 branches covered.">    if (type != null) {</span>
-<span class="fc bfc" id="L478" title="All 2 branches covered.">      if (null != (sf = typeStringifiers.get(type))) {</span>
-<span class="fc" id="L479">        return sf;</span>
+<span class="fc bfc" id="L481" title="All 2 branches covered.">    if (type != null) {</span>
+<span class="fc bfc" id="L482" title="All 2 branches covered.">      if (null != (sf = typeStringifiers.get(type))) {</span>
+<span class="fc" id="L483">        return sf;</span>
       }
     }
-<span class="fc" id="L482">    return defStringifier;</span>
+<span class="fc" id="L486">    return defStringifier;</span>
   }
 
 }

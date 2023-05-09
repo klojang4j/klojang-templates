@@ -140,14 +140,15 @@ public final class StringifierRegistry {
      * <p>To assign the stringifier to <i>all</i> variables in the specified
      * template (non-recursively), specify an empty string array.
      *
-     * @param template the template containing the variables
+     * @param template    the template containing the variables
      * @param stringifier the stringifier
-     * @param varNames any array of fully-qualified variable names
+     * @param varNames    any array of fully-qualified variable names
      * @return this {@code Builder}
      * @see TemplateUtils#getFQN(Template, String)
      * @see TemplateUtils#getContainingTemplate(Template, String)
      */
-    public Builder register(Template template, Stringifier stringifier,
+    public Builder register(
+        Template template, Stringifier stringifier,
         String... varNames) {
       Check.notNull(stringifier, STRINGIFIER);
       Check.notNull(template, TEMPLATE);
@@ -198,18 +199,19 @@ public final class StringifierRegistry {
      * <p>To assign the stringifier to <i>all</i> variables in the nested template,
      * specify an empty string array.
      *
-     * @param root the root template
+     * @param root               the root template
      * @param nestedTemplateName the name of a template descending from the root
-     *     template, or {@code null} if you want to target the variables in the root
-     *     template itself
-     * @param stringifier the stringifier
-     * @param varNames the names of the variables to which to assign the
-     *     stringifier, or an empty string array if you want to assign the
-     *     stringifier to all variables within the target template
+     *                           template, or {@code null} if you want to target the variables in the root
+     *                           template itself
+     * @param stringifier        the stringifier
+     * @param varNames           the names of the variables to which to assign the
+     *                           stringifier, or an empty string array if you want to assign the
+     *                           stringifier to all variables within the target template
      * @return this {@code Builder}
      * @see TemplateUtils#getNestedTemplate(Template, String)
      */
-    public Builder forTemplate(Template root,
+    public Builder forTemplate(
+        Template root,
         String nestedTemplateName,
         Stringifier stringifier,
         String... varNames) {
@@ -241,8 +243,8 @@ public final class StringifierRegistry {
      * same variable within the same template can be assigned to different variable
      * groups (for example: {@code ~%html:fullName%} and {@code ~%js:fullName%}).
      *
-     * @param groupName the name of the variable group to which to assign the
-     *     stringifier
+     * @param groupName   the name of the variable group to which to assign the
+     *                    stringifier
      * @param stringifier the stringifier
      * @return this {@code Builder}
      */
@@ -264,7 +266,7 @@ public final class StringifierRegistry {
      * formatter to all variables whose name ends with "Price", specify
      * {@code *Price} as the variable name.
      *
-     * @param name the variable name to associate the stringifier with.
+     * @param name        the variable name to associate the stringifier with.
      * @param stringifier the stringifier
      * @return this {@code Builder}
      */
@@ -290,7 +292,7 @@ public final class StringifierRegistry {
      * This saves you from having to specify a stringifier for each and every
      * subclass of {@code Number} if they can all be stringified in the same way.
      *
-     * @param type the type to associate the stringifier with.
+     * @param type        the type to associate the stringifier with.
      * @param stringifier the stringifier
      * @return this {@code Builder}
      */
@@ -309,7 +311,7 @@ public final class StringifierRegistry {
      * available to determine the variable's type). The variable names are taken to
      * be fully-qualified names, relative to the specified template.
      *
-     * @param type the data type to set for the specified variables
+     * @param type     the data type to set for the specified variables
      * @param template the template containing the variables
      * @param varNames the fully-qualified names of the variables
      * @return this {@code Builder}
@@ -336,7 +338,8 @@ public final class StringifierRegistry {
      * @return A new, immutable {@code StringifierRegistry} instance
      */
     public StringifierRegistry freeze() {
-      return new StringifierRegistry(stringifiers,
+      return new StringifierRegistry(
+          stringifiers,
           typeStringifiers,
           typeLookup,
           partialNames,
@@ -396,7 +399,7 @@ public final class StringifierRegistry {
    * stringifiers for the standard {@linkplain VarGroup variable groups}.
    *
    * @return A {@code Builder} instance that lets you configure a
-   *     {@code StringifierRegistry}
+   * {@code StringifierRegistry}
    */
   public static Builder configure() {
     return new Builder(true);
@@ -409,7 +412,7 @@ public final class StringifierRegistry {
    * non-HTML templates.
    *
    * @return A {@code Builder} instance that lets you configure a
-   *     {@code StringifierRegistry}
+   * {@code StringifierRegistry}
    */
   public static Builder cleanSlate() {
     return new Builder(false);
@@ -421,7 +424,8 @@ public final class StringifierRegistry {
   private final List<Tuple2<String, Stringifier>> partialNames;
   private final Stringifier defStringifier;
 
-  private StringifierRegistry(Map<StringifierId, Stringifier> stringifiers,
+  private StringifierRegistry(
+      Map<StringifierId, Stringifier> stringifiers,
       Map<Class<?>, Stringifier> typeStringifiers,
       Map<Tuple2<Template, String>, Class<?>> typeLookup,
       List<Tuple2<String, Stringifier>> partials,

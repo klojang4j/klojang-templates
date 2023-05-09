@@ -592,7 +592,7 @@ raw, unprocessed state.
 The
 [RenderSession](https://klojang4j.github.io/klojang-templates/1/api/org.klojang.templates/org/klojang/templates/RenderSession.html)
 class contains quite a few more methods that help you populate a Klojang template,
-and we have not covered every single way in which you can finetune the behaviour of
+and we have not covered every single way in which you can fine-tune the behaviour of
 _Klojang Templates_, but this is all covered in great detail in 
 the [javadocs](https://klojang4j.github.io/klojang-templates/1/api).
 

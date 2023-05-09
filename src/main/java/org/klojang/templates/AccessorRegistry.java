@@ -18,9 +18,9 @@ import static org.klojang.templates.x.MTag.TEMPLATE;
 
 /**
  * <p>A registry of {@linkplain Accessor accessors}. Accessors are used by the
- * {@link RenderSession} to extract values from data provided by the data access
- * layer. This is how an {@code AccessorRegistry} decides which accessor to use for a
- * particular type of object:
+ * {@link RenderSession} to extract values from data provided by the data access layer.
+ * This is how an {@code AccessorRegistry} decides which accessor to use for a particular
+ * type of object:
  *
  * <ol>
  *   <li>If you have {@linkplain Builder#register(Accessor, Class) registered} your
@@ -85,19 +85,18 @@ import static org.klojang.templates.x.MTag.TEMPLATE;
 public final class AccessorRegistry {
 
   /**
-   * An {@code AccessorRegistry} that should be sufficient for most use cases. It
-   * assumes that template variables map <i>as-is</i> to names used in source data
-   * objects.
+   * The default {@code AccessorRegistry}. It assumes that template variables map
+   * <i>as-is</i> to names used in source data objects.
    */
   public static final AccessorRegistry STANDARD_ACCESSORS = configure().freeze();
 
   /**
-   * Returns an {@code AccessorRegistry} that should be sufficient for most use
-   * cases. It allows you to specify one global {@link NameMapper} for mapping the
-   * template variables to the names used in source data objects.
+   * Returns an {@code AccessorRegistry} that should be sufficient for most use cases. It
+   * allows you to specify one global {@link NameMapper} for mapping the template
+   * variables to the names used in source data objects.
    *
-   * @param nameMapper the {@code NameMapper} to be used to map template
-   *     variables to bean properties and/or map keys.
+   * @param nameMapper the {@code NameMapper} to be used to map template variables to
+   *     bean properties and/or map keys.
    * @return an {@code AccessorRegistry} the should sufficient for most use cases
    */
   public static AccessorRegistry standard(NameMapper nameMapper) {
@@ -105,11 +104,10 @@ public final class AccessorRegistry {
   }
 
   /**
-   * Returns an {@code AccessorRegistry} that should be sufficient for most use
-   * cases.
+   * Returns an {@code AccessorRegistry} that should be sufficient for most use cases.
    *
-   * @param nullEqualsUndefined whether {@code null} values should be treated the
-   *     same way as {@link Accessor#UNDEFINED}
+   * @param nullEqualsUndefined whether {@code null} values should be treated the same
+   *     way as {@link Accessor#UNDEFINED}
    * @return an {@code AccessorRegistry} the should sufficient for most use cases
    */
   public static AccessorRegistry standard(boolean nullEqualsUndefined) {
@@ -117,17 +115,18 @@ public final class AccessorRegistry {
   }
 
   /**
-   * Returns an {@code AccessorRegistry} that should be sufficient for most use
-   * cases. It allows you to specify one global {@link NameMapper} for mapping the
-   * template variables to the names used in source data objects.
+   * Returns an {@code AccessorRegistry} that should be sufficient for most use cases. It
+   * allows you to specify one global {@link NameMapper} for mapping the template
+   * variables to the names used in source data objects.
    *
-   * @param nameMapper the {@code NameMapper} to be used to map template
-   *     variables to bean properties and/or map keys.
-   * @param nullEqualsUndefined whether {@code null} values should be treated the
-   *     same way as {@link Accessor#UNDEFINED}
+   * @param nameMapper the {@code NameMapper} to be used to map template variables to
+   *     bean properties and/or map keys.
+   * @param nullEqualsUndefined whether {@code null} values should be treated the same
+   *     way as {@link Accessor#UNDEFINED}
    * @return an {@code AccessorRegistry} the should sufficient for most use cases
    */
-  public static AccessorRegistry standard(NameMapper nameMapper,
+  public static AccessorRegistry standard(
+      NameMapper nameMapper,
       boolean nullEqualsUndefined) {
     return configure()
         .setDefaultNameMapper(nameMapper)
@@ -164,8 +163,8 @@ public final class AccessorRegistry {
 
     /**
      * Sets the default {@code NameMapper} used to map template variables to bean
-     * properties and/or map keys. If no default {@code NameMapper} is specified,
-     * template variables will be mapped as-is to bean properties and/or map keys.
+     * properties and/or map keys. If no default {@code NameMapper} is specified, template
+     * variables will be mapped as-is to bean properties and/or map keys.
      *
      * @param nameMapper the name mapper
      * @return this {@code Builder} instance
@@ -228,7 +227,8 @@ public final class AccessorRegistry {
      * @param template the template for which to use the {@code Accessor}
      * @return this {@code Builder} instance
      */
-    public <T> Builder register(Accessor<T> accessor, Class<T> forType,
+    public <T> Builder register(
+        Accessor<T> accessor, Class<T> forType,
         Template template) {
       Check.notNull(forType, TYPE);
       Check.notNull(template, TEMPLATE);
@@ -273,8 +273,8 @@ public final class AccessorRegistry {
      * {@link BeanReader#forClass(Class)}.
      *
      * @param br the {@code BeanReader}
-     * @param nameMapper the {@code NameMapper} to be used to map template
-     *     variables to bean properties
+     * @param nameMapper the {@code NameMapper} to be used to map template variables
+     *     to bean properties
      * @param <T> the type of the beans
      * @return this {@code Builder} instance
      */
@@ -293,18 +293,20 @@ public final class AccessorRegistry {
      * @param beanReader the {@code BeanReader}
      * @param template the template for which to use the accessor (may be a root
      *     template or a nested template)
-     * @param nameMapper the {@code NameMapper} to be used to map template
-     *     variables to bean properties
+     * @param nameMapper the {@code NameMapper} to be used to map template variables
+     *     to bean properties
      * @param <T> the type of the beans
      * @return this {@code Builder} instance
      */
-    public <T> Builder register(BeanReader<T> beanReader,
+    public <T> Builder register(
+        BeanReader<T> beanReader,
         Template template,
         NameMapper nameMapper) {
       Check.notNull(beanReader, "BeanReader");
       Check.notNull(template, TEMPLATE);
       Check.notNull(nameMapper, NAME_MAPPER);
-      return register0(new BeanAccessor<>(beanReader, nameMapper),
+      return register0(
+          new BeanAccessor<>(beanReader, nameMapper),
           beanReader.getBeanClass(),
           template
       );
@@ -342,8 +344,7 @@ public final class AccessorRegistry {
    * Returns a {@code Builder} object that lets you configure an
    * {@code AccessorRegistry}.
    *
-   * @return a {@code Builder} object that lets you configure an
-   *     {@code AccessorRegistry}
+   * @return a {@code Builder} object that lets you configure an {@code AccessorRegistry}
    */
   public static Builder configure() {
     return new Builder();
@@ -354,7 +355,8 @@ public final class AccessorRegistry {
   private final boolean nullEqualsUndefined;
   private final Map<Template, NameMapper> mappers;
 
-  private AccessorRegistry(Map<Class<?>, Map<Template, Accessor<?>>> accs,
+  private AccessorRegistry(
+      Map<Class<?>, Map<Template, Accessor<?>>> accs,
       NameMapper defMapper,
       boolean nullEqualsUndefined,
       Map<Template, NameMapper> mappers) {
