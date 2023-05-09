@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Renderer.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Klojang Templates</a> &gt; <a href="index.source.html" class="el_package">org.klojang.templates</a> &gt; <span class="el_source">Renderer.java</span></div><h1>Renderer.java</h1><pre class="source lang-java linenums">package org.klojang.templates;
 
 import org.klojang.templates.x.Lazy;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -9,91 +11,103 @@ import java.util.List;
 
 import static org.klojang.templates.RenderErrorCode.UNEXPECTED_ERROR;
 import static org.klojang.templates.RenderUtil.stringify;
-import static org.klojang.util.StringMethods.concat;
+import static org.klojang.templates.TemplateUtils.getFQN;
 
 final class Renderer {
 
-  private final RenderState state;
+<span class="fc" id="L18">    private static final Logger LOG = LoggerFactory.getLogger(Renderer.class);</span>
 
-<span class="fc" id="L18">  Renderer(RenderState state) {</span>
-<span class="fc" id="L19">    this.state = state;</span>
-<span class="fc" id="L20">  }</span>
 
-  void render(OutputStream out) {
-<span class="pc bpc" id="L23" title="1 of 2 branches missed.">    Appendable appendable = out instanceof Appendable a ? a : new PrintStream(out);</span>
-    try {
-<span class="fc" id="L25">      render(state, appendable);</span>
-<span class="nc" id="L26">    } catch (IOException e) {</span>
-<span class="nc" id="L27">      throw new RenderException(UNEXPECTED_ERROR, e.toString());</span>
-<span class="fc" id="L28">    }</span>
-<span class="fc" id="L29">  }</span>
+    private final RenderState state;
 
-  void render(StringBuilder sb) {
-    try {
-<span class="fc" id="L33">      render(state, sb);</span>
-<span class="nc" id="L34">    } catch (IOException e) {</span>
-<span class="nc" id="L35">      throw new RenderException(UNEXPECTED_ERROR, e.toString());</span>
-<span class="fc" id="L36">    }</span>
-<span class="fc" id="L37">  }</span>
+<span class="fc" id="L23">    Renderer(RenderState state) {</span>
+<span class="fc" id="L24">        this.state = state;</span>
+<span class="fc" id="L25">    }</span>
 
-  @Override
-  public String toString() {
-<span class="nc" id="L41">    Template t = state.getSessionConfig().template();</span>
-<span class="nc bnc" id="L42" title="All 2 branches missed.">    if (t.path().isPresent()) {</span>
-<span class="nc" id="L43">      return concat(Renderer.class.getName(), &quot;[source=&quot;, t.path().get(), &quot;]&quot;);</span>
-    }
-<span class="nc" id="L45">    return concat(Renderer.class.getName(), &quot;[template=&quot;, t.getName(), &quot;]&quot;);</span>
-  }
+    void render(OutputStream out) {
+<span class="pc bpc" id="L28" title="1 of 2 branches missed.">        Appendable appendable = out instanceof Appendable a ? a : new PrintStream(out);</span>
+        try {
+<span class="fc" id="L30">            render(state, appendable);</span>
+<span class="nc" id="L31">        } catch (IOException e) {</span>
+<span class="nc" id="L32">            throw new RenderException(UNEXPECTED_ERROR, e.toString());</span>
+<span class="fc" id="L33">        }</span>
+<span class="fc" id="L34">    }</span>
 
-  private void render(RenderState state0, Appendable out) throws IOException {
-<span class="fc" id="L49">    List&lt;Part&gt; parts = state0.getSessionConfig().template().parts();</span>
-<span class="fc bfc" id="L50" title="All 2 branches covered.">    for (int i = 0; i &lt; parts.size(); ++i) {</span>
-<span class="fc" id="L51">      Part part = parts.get(i);</span>
-<span class="fc bfc" id="L52" title="All 2 branches covered.">      if (part instanceof TextPart tp) {</span>
-<span class="fc" id="L53">        out.append(tp.text());</span>
-<span class="fc bfc" id="L54" title="All 2 branches covered.">      } else if (part instanceof VariablePart vp) {</span>
-<span class="fc bfc" id="L55" title="All 2 branches covered.">        if (state0.getVar(i) != null) {</span>
-<span class="fc" id="L56">          Object val = state0.getVar(i);</span>
-<span class="fc bfc" id="L57" title="All 2 branches covered.">          if (val instanceof Lazy lazy) {</span>
-<span class="fc" id="L58">            out.append(eval(lazy, state0, vp));</span>
-          } else {
-<span class="fc" id="L60">            out.append(val.toString());</span>
-          }
-<span class="fc" id="L62">        }</span>
-      } else /* TemplatePart */ {
-<span class="fc" id="L64">        renderNestedTemplate(out, (NestedTemplatePart) part, state0);</span>
-      }
-    }
-<span class="fc" id="L67">  }</span>
+    void render(StringBuilder sb) {
+        try {
+<span class="fc" id="L38">            render(state, sb);</span>
+<span class="nc" id="L39">        } catch (IOException e) {</span>
+<span class="nc" id="L40">            throw new RenderException(UNEXPECTED_ERROR, e.toString());</span>
+<span class="fc" id="L41">        }</span>
+<span class="fc" id="L42">    }</span>
 
-  private void renderNestedTemplate(Appendable out,
-      NestedTemplatePart part,
-      RenderState state) throws IOException {
-<span class="fc" id="L72">    SoloSession[] sessions = state.getChildSessions(part.getTemplate());</span>
-<span class="fc bfc" id="L73" title="All 2 branches covered.">    if (sessions != null) {</span>
-<span class="fc" id="L74">      Template t = part.getTemplate();</span>
-<span class="fc bfc" id="L75" title="All 2 branches covered.">      if (t.isTextOnly()) {</span>
-        // Then the RenderSession[] array will contain only null values
-        // and we just want to know its length to determine the number
-        // of repetitions
-<span class="fc" id="L79">        String text = ((TextPart) t.parts().get(0)).text();</span>
-<span class="fc bfc" id="L80" title="All 2 branches covered.">        for (int i = 0; i &lt; sessions.length; ++i) {</span>
-<span class="fc" id="L81">          out.append(text);</span>
+    private void render(RenderState state0, Appendable out) throws IOException {
+<span class="pc bpc" id="L45" title="1 of 2 branches missed.">        if (LOG.isTraceEnabled()) {</span>
+<span class="fc" id="L46">            log(state0.getSessionConfig().template());</span>
         }
-<span class="fc" id="L83">      } else {</span>
-<span class="fc bfc" id="L84" title="All 2 branches covered.">        for (SoloSession s : sessions) {</span>
-<span class="fc" id="L85">          render(s.state(), out);</span>
+<span class="fc" id="L48">        List&lt;Part&gt; parts = state0.getSessionConfig().template().parts();</span>
+<span class="fc bfc" id="L49" title="All 2 branches covered.">        for (int i = 0; i &lt; parts.size(); ++i) {</span>
+<span class="fc" id="L50">            Part part = parts.get(i);</span>
+<span class="fc bfc" id="L51" title="All 2 branches covered.">            if (part instanceof TextPart tp) {</span>
+<span class="fc" id="L52">                out.append(tp.text());</span>
+<span class="fc bfc" id="L53" title="All 2 branches covered.">            } else if (part instanceof VariablePart vp) {</span>
+<span class="fc bfc" id="L54" title="All 2 branches covered.">                if (state0.getVar(i) != null) {</span>
+<span class="fc" id="L55">                    Object val = state0.getVar(i);</span>
+<span class="fc bfc" id="L56" title="All 2 branches covered.">                    if (val instanceof Lazy lazy) {</span>
+<span class="fc" id="L57">                        out.append(eval(lazy, state0, vp));</span>
+                    } else {
+<span class="fc" id="L59">                        out.append(val.toString());</span>
+                    }
+<span class="fc" id="L61">                }</span>
+            } else /* TemplatePart */ {
+<span class="fc" id="L63">                renderNestedTemplate(out, (NestedTemplatePart) part, state0);</span>
+            }
         }
-      }
-    }
-<span class="fc" id="L89">  }</span>
+<span class="fc" id="L66">    }</span>
 
-  private static String eval(Lazy lazy, RenderState state, VariablePart part) {
-<span class="fc" id="L92">    StringifierRegistry reg = state.getSessionConfig().stringifiers();</span>
-<span class="fc" id="L93">    Object val = lazy.value().get();</span>
-<span class="fc" id="L94">    Stringifier stringifier = reg.getStringifier(part, lazy.varGroup(), val);</span>
-<span class="fc" id="L95">    return stringify(val, stringifier, part, lazy.varGroup());</span>
-  }
+    private void renderNestedTemplate(Appendable out,
+                                      NestedTemplatePart part,
+                                      RenderState state) throws IOException {
+<span class="fc" id="L71">        SoloSession[] sessions = state.getChildSessions(part.getTemplate());</span>
+<span class="fc bfc" id="L72" title="All 2 branches covered.">        if (sessions != null) {</span>
+<span class="fc" id="L73">            Template t = part.getTemplate();</span>
+<span class="fc bfc" id="L74" title="All 2 branches covered.">            if (t.isTextOnly()) {</span>
+                // Then the RenderSession[] array will contain only null values
+                // and we just want to know its length to determine the number
+                // of repetitions
+<span class="fc" id="L78">                String text = ((TextPart) t.parts().get(0)).text();</span>
+<span class="fc bfc" id="L79" title="All 2 branches covered.">                for (int i = 0; i &lt; sessions.length; ++i) {</span>
+<span class="fc" id="L80">                    out.append(text);</span>
+                }
+<span class="fc" id="L82">            } else {</span>
+<span class="fc bfc" id="L83" title="All 2 branches covered.">                for (SoloSession s : sessions) {</span>
+<span class="fc" id="L84">                    render(s.state(), out);</span>
+                }
+            }
+        }
+<span class="fc" id="L88">    }</span>
+
+    private static String eval(Lazy lazy, RenderState state, VariablePart part) {
+<span class="fc" id="L91">        StringifierRegistry reg = state.getSessionConfig().stringifiers();</span>
+<span class="fc" id="L92">        Object val = lazy.value().get();</span>
+<span class="fc" id="L93">        Stringifier stringifier = reg.getStringifier(part, lazy.varGroup(), val);</span>
+<span class="fc" id="L94">        return stringify(val, stringifier, part, lazy.varGroup());</span>
+    }
+
+    private static void log(Template t) {
+<span class="fc bfc" id="L98" title="All 2 branches covered.">        if (t.getParent() == null) {</span>
+<span class="fc bfc" id="L99" title="All 2 branches covered.">            if (t.path().isEmpty()) {</span>
+<span class="fc" id="L100">                LOG.trace(&quot;Rendering string template&quot;);</span>
+            } else {
+<span class="fc" id="L102">                LOG.trace(&quot;Rendering  {}&quot;, t.path().get());</span>
+            }
+<span class="pc bpc" id="L104" title="1 of 2 branches missed.">        } else if (t.location().isString()) {</span>
+<span class="fc" id="L105">            LOG.trace(&quot;Rendering inline template \&quot;{}\&quot;&quot;, getFQN(t));</span>
+        } else {
+<span class="nc" id="L107">            LOG.trace(&quot;Rendering included template \&quot;{}\&quot;&quot;, getFQN(t));</span>
+        }
+<span class="fc" id="L109">    }</span>
+
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

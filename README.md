@@ -65,8 +65,8 @@ does not hook into any of them in any deep way. You can use _Klojang Templates_
 with any of the Jakarta/JAX-RS based frameworks, but equally well with non-Servlet
 based frameworks like [Micronaut](https://micronaut.io/). 
 
-_Klojang Templates_ uses [SLF4J](https://www.slf4j.org/) to log statements about 
-the template parsing and rendering process.
+_Klojang Templates_ uses [SLF4J](https://www.slf4j.org/) to log messages about 
+the template parsing and rendering process. All message are logged at TRACE level.
 
 ## Hello, World
 
@@ -100,7 +100,7 @@ public class HelloWorld {
 ## Escaping
 
 _Klojang Templates_ is not tied to any particular output format. There is no reason
-why you couldn't use _Klojang Templates_ to write SQL or JSON templates for example.
+why you couldn't use _Klojang Templates_ to write SQL or JSON templates, for example.
 However, it does provide some extra help in case you are writing HTML templates.
 
 ```html
@@ -159,7 +159,7 @@ public class EmployeeResource {
 }
 ```
 
-This time the resource method returns a method reference to
+The resource method now returns a method reference to
 [RenderSession.render(OutputStream)](https://klojang4j.github.io/klojang-templates/1/api/org.klojang.templates/org/klojang/templates/RenderSession.html#render(java.io.OutputStream))),
 which neatly targets the JAX-RS
 [StreamingOutput](https://docs.oracle.com/javaee/7/api/javax/ws/rs/core/StreamingOutput.html)
@@ -374,17 +374,21 @@ public class EmployeeResource {
   public String list() throws ParseException {
     Template template = Template.fromResource(getClass(), "/views/employees.html");
     List<Employee> employees = dao.list();
-    return template.newRenderSession().populate("employees", employees).render();
+    return template.newRenderSession()
+            .populate("employees", employees)
+            .render();
   }
 
 }
 ```
 
-If the second argument to 
-[RenderSession.populate()](https://klojang4j.github.io/klojang-templates/1/api/org.klojang.templates/org/klojang/templates/RenderSession.html#populate(java.lang.String,java.lang.Object,java.lang.String...)) 
-is an array or collection, the
-nested template automatically turns into a _repeating template_, repeating itself for
-each element in the array or collection.
+This time we use the
+[populate()](https://klojang4j.github.io/klojang-templates/1/api/org.klojang.templates/org/klojang/templates/RenderSession.html#populate(java.lang.String,java.lang.Object,java.lang.String...))
+method of the `RenderSession` class, rather than the
+[insert()](https://klojang4j.github.io/klojang-templates/1/api/org.klojang.templates/org/klojang/templates/RenderSession.html#insert(java.lang.Object,java.lang.String...))
+method. `populate()` is used to populate nested templates while `insert()` is used to populate the main template. If the
+second argument to `populate()` is an array or collection, the nested template automatically turns into a
+_repeating template_, repeating itself for each element in the array or collection.
 
 ### Newline Suppression in Practice
 
@@ -411,14 +415,14 @@ template above would render somewhat like this:
 </html>
 ```
 
-If this fails to make you spill your coffee, notice that there are **two**
-newline characters inside the employees template (one after
-"~%%begin:employees%" and one after "&lt;/tr&gt;"). Yet when rendered, the table rows
-stay tightly packed together. You could achieve the same by writing:
+If this fails to make you spill your coffee, notice that there are **two** newline characters inside the employees
+template &#8212; one after
+`~%%begin:employees%` and one after `</tr>`. Yet when rendered, the table rows stay tightly packed together. You
+could achieve the same by writing:
 
 ```html
 <tbody>
-~%%begin:employees%    <tr><td>~%firstName%</td><td>~%lastName%</td><td>~%birthDate%</td></tr>
+~%%begin:employees%        <tr><td>~%firstName%</td><td>~%lastName%</td><td>~%birthDate%</td></tr>
 ~%%end:employees%
 </tbody>
 ```
@@ -492,7 +496,7 @@ being rendered.
 
 `Optional` objects containing some data model object are typically returned by the
 find-by-id method of data access objects. With _Klojang Templates_ it is perfectly
-valid to insert an `Optional` into a template. If the `Optional` is empty, the
+valid to populate a bested template with an `Optional`. If the `Optional` is empty, the
 template will not be rendered. Otherwise it will be populated and rendered using the
 data model object.
 

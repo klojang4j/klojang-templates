@@ -52,7 +52,7 @@ public class RenderErrorTest {
     } catch (RenderException e) {
       //System.out.println(e.getMessage());
       assertEquals("Template foo not instantiated yet", e.getMessage());
-      assertEquals(TEMPLATE_NOT_INSTANTIATED, e.getErrorCode());
+      assertEquals(NO_CHILD_SESSIONS, e.getErrorCode());
       return;
     }
     fail();

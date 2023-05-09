@@ -102,12 +102,11 @@ final class Parser {
     private static void log(String name, TemplateLocation location) {
         if (LOG.isTraceEnabled()) {
             if (name.equals(ROOT_TEMPLATE_NAME)) {
-                String src = location.isString() ? "string" : location.path();
-                LOG.trace("Parsing root template (source={})", src);
+                LOG.trace("Parsing root template");
             } else if (location.isString()) {
                 LOG.trace("Parsing inline template \"{}\"", name);
             } else {
-                LOG.trace("Parsing included template \"{}\" (source={})", name, location);
+                LOG.trace("Parsing included template \"{}\"", name);
             }
         }
     }

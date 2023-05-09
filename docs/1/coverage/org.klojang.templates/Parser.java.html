@@ -102,15 +102,14 @@ final class Parser {
     private static void log(String name, TemplateLocation location) {
 <span class="pc bpc" id="L103" title="1 of 2 branches missed.">        if (LOG.isTraceEnabled()) {</span>
 <span class="fc bfc" id="L104" title="All 2 branches covered.">            if (name.equals(ROOT_TEMPLATE_NAME)) {</span>
-<span class="fc bfc" id="L105" title="All 2 branches covered.">                String src = location.isString() ? &quot;string&quot; : location.path();</span>
-<span class="fc" id="L106">                LOG.trace(&quot;Parsing root template (source={})&quot;, src);</span>
-<span class="fc bfc" id="L107" title="All 2 branches covered.">            } else if (location.isString()) {</span>
-<span class="fc" id="L108">                LOG.trace(&quot;Parsing inline template \&quot;{}\&quot;&quot;, name);</span>
+<span class="fc" id="L105">                LOG.trace(&quot;Parsing root template&quot;);</span>
+<span class="fc bfc" id="L106" title="All 2 branches covered.">            } else if (location.isString()) {</span>
+<span class="fc" id="L107">                LOG.trace(&quot;Parsing inline template \&quot;{}\&quot;&quot;, name);</span>
             } else {
-<span class="fc" id="L110">                LOG.trace(&quot;Parsing included template \&quot;{}\&quot; (source={})&quot;, name, location);</span>
+<span class="fc" id="L109">                LOG.trace(&quot;Parsing included template \&quot;{}\&quot;&quot;, name);</span>
             }
         }
-<span class="fc" id="L113">    }</span>
+<span class="fc" id="L112">    }</span>
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

@@ -29,7 +29,7 @@ public enum RenderErrorCode {
    *
    * @see RenderSession#getChildSessions(String)
    */
-  TEMPLATE_NOT_INSTANTIATED("Template %s not instantiated yet"),
+  NO_CHILD_SESSIONS("Template %s not instantiated yet"),
 
   /**
    * An error occurred while retrieving the value for a template variable.

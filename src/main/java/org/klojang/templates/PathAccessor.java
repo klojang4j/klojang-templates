@@ -4,7 +4,7 @@ import org.klojang.path.Path;
 import org.klojang.path.PathWalker;
 import org.klojang.path.PathWalkerException;
 
-import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
 import static org.klojang.templates.RenderErrorCode.ACCESS_EXCEPTION;
 
 final class PathAccessor implements Accessor<Object> {
@@ -18,7 +18,7 @@ final class PathAccessor implements Accessor<Object> {
   @Override
   public Object access(Object data, String name) {
     String path = nm == null ? name : nm.map(name);
-    PathWalker pw = new PathWalker(asList(Path.from(path)), false);
+    PathWalker pw = new PathWalker(singletonList(Path.from(path)), false);
     try {
       return pw.read(data);
     } catch (PathWalkerException e) {
