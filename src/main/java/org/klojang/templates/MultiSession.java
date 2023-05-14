@@ -11,8 +11,7 @@ import java.util.List;
 import java.util.function.IntFunction;
 import java.util.function.Supplier;
 
-record MultiSession(Template template, SoloSession[] sessions) implements
-    RenderSession {
+record MultiSession(Template template, SoloSession[] sessions) implements RenderSession {
 
   @Override
   public RenderSession set(String var, Object value) {
@@ -33,17 +32,15 @@ record MultiSession(Template template, SoloSession[] sessions) implements
   }
 
   @Override
-  public RenderSession setDelayed(String var,
-      VarGroup group, Supplier<Object> val) {
+  public RenderSession setDelayed(String var, VarGroup group, Supplier<Object> val) {
     Arrays.stream(sessions).forEach(s -> s.setDelayed(var, group, val));
     return this;
   }
 
   /*
    * setPath() is about the only method where we don't immediately delegate to
-   * SoloSession. We use the happy fact that we have an IntFunction to (potentially)
-   * set different values for different instances of the template managed by THIS
-   * MultiSession.
+   * SoloSession. We use the happy fact that we have an IntFunction to set different
+   * values for different instances of the template managed by THIS MultiSession.
    */
   @Override
   public RenderSession setPath(String path, IntFunction<Object> val) {
@@ -59,8 +56,11 @@ record MultiSession(Template template, SoloSession[] sessions) implements
   }
 
   @Override
-  public RenderSession setPath(String path,
-      VarGroup group, boolean force, IntFunction<Object> val) {
+  public RenderSession setPath(
+      String path,
+      VarGroup group,
+      boolean force,
+      IntFunction<Object> val) {
     Path p = Check.notNull(path, Tag.PATH).ok(Path::from);
     if (p.size() == 1) {
       for (int i = 0; i < sessions.length; ++i) {
@@ -121,7 +121,8 @@ record MultiSession(Template template, SoloSession[] sessions) implements
   }
 
   @Override
-  public RenderSession populate(String tmplName,
+  public RenderSession populate(
+      String tmplName,
       Object data,
       VarGroup group,
       String... names) {
@@ -178,8 +179,7 @@ record MultiSession(Template template, SoloSession[] sessions) implements
 
   @Override
   public RenderSession populate1(String tmplName, VarGroup group, Object... values) {
-    Arrays.stream(sessions).forEach(
-        s -> s.populate1(tmplName, group, values));
+    Arrays.stream(sessions).forEach(s -> s.populate1(tmplName, group, values));
     return this;
   }
 

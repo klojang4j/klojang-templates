@@ -90,42 +90,43 @@ final class InlineTemplateParser {
 
   }
 
-  private EndTag getEndTag(CommentType type,
+  private EndTag getEndTag(
+      CommentType type,
       UnparsedPart unparsed,
       String tmplName,
       int offset,
       int level)
       throws ParseException {
-<span class="fc" id="L99">    Matcher mEnd = type.endPattern(tmplName).matcher(unparsed.text());</span>
-<span class="fc" id="L100">    Check.that(mEnd.find(offset)).is(yes(),</span>
-<span class="fc" id="L101">        MISSING_END_TAG.getExceptionSupplier(src, offset, tmplName));</span>
-<span class="fc" id="L102">    Matcher mStart = type.beginPattern(tmplName).matcher(unparsed.text());</span>
-<span class="fc bfc" id="L103" title="All 2 branches covered.">    if (!mStart.find(offset)) {</span>
-<span class="fc bfc" id="L104" title="All 2 branches covered.">      if (level == 0) {</span>
-<span class="fc" id="L105">        return new EndTag(mEnd.start(), mEnd.end());</span>
+<span class="fc" id="L100">    Matcher mEnd = type.endPattern(tmplName).matcher(unparsed.text());</span>
+<span class="fc" id="L101">    Check.that(mEnd.find(offset)).is(yes(),</span>
+<span class="fc" id="L102">        MISSING_END_TAG.getExceptionSupplier(src, offset, tmplName));</span>
+<span class="fc" id="L103">    Matcher mStart = type.beginPattern(tmplName).matcher(unparsed.text());</span>
+<span class="fc bfc" id="L104" title="All 2 branches covered.">    if (!mStart.find(offset)) {</span>
+<span class="fc bfc" id="L105" title="All 2 branches covered.">      if (level == 0) {</span>
+<span class="fc" id="L106">        return new EndTag(mEnd.start(), mEnd.end());</span>
       }
-<span class="fc" id="L107">      return getEndTag(type, unparsed, tmplName, mEnd.end(), --level);</span>
+<span class="fc" id="L108">      return getEndTag(type, unparsed, tmplName, mEnd.end(), --level);</span>
     }
-<span class="fc bfc" id="L109" title="All 2 branches covered.">    if (mEnd.start() &lt; mStart.start()) {</span>
-<span class="fc bfc" id="L110" title="All 2 branches covered.">      if (level == 0) {</span>
-<span class="fc" id="L111">        return new EndTag(mEnd.start(), mEnd.end());</span>
+<span class="fc bfc" id="L110" title="All 2 branches covered.">    if (mEnd.start() &lt; mStart.start()) {</span>
+<span class="fc bfc" id="L111" title="All 2 branches covered.">      if (level == 0) {</span>
+<span class="fc" id="L112">        return new EndTag(mEnd.start(), mEnd.end());</span>
       }
-<span class="fc" id="L113">      return getEndTag(type, unparsed, tmplName, mEnd.end(), --level);</span>
+<span class="fc" id="L114">      return getEndTag(type, unparsed, tmplName, mEnd.end(), --level);</span>
     }
-<span class="fc" id="L115">    return getEndTag(type, unparsed, tmplName, mStart.end(), ++level);</span>
+<span class="fc" id="L116">    return getEndTag(type, unparsed, tmplName, mStart.end(), ++level);</span>
   }
 
   private void validate(String name, Set&lt;String&gt; names, Matcher matcher, int offset)
       throws ParseException {
-<span class="fc" id="L120">    Check.that(name).isNot(equalTo(), ROOT_TEMPLATE_NAME,</span>
-<span class="fc" id="L121">        ILLEGAL_TMPL_NAME.getExceptionSupplier(src,</span>
-<span class="fc" id="L122">            offset + matcher.start(1),</span>
+<span class="fc" id="L121">    Check.that(name).isNot(equalTo(), ROOT_TEMPLATE_NAME,</span>
+<span class="fc" id="L122">        ILLEGAL_TMPL_NAME.getExceptionSupplier(src,</span>
+<span class="fc" id="L123">            offset + matcher.start(1),</span>
             name));
-<span class="fc" id="L124">    Check.that(name).isNot(in(), names,</span>
-<span class="fc" id="L125">        DUPLICATE_TMPL_NAME.getExceptionSupplier(src,</span>
-<span class="fc" id="L126">            offset + matcher.start(1),</span>
+<span class="fc" id="L125">    Check.that(name).isNot(in(), names,</span>
+<span class="fc" id="L126">        DUPLICATE_TMPL_NAME.getExceptionSupplier(src,</span>
+<span class="fc" id="L127">            offset + matcher.start(1),</span>
             name));
-<span class="fc" id="L128">  }</span>
+<span class="fc" id="L129">  }</span>
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

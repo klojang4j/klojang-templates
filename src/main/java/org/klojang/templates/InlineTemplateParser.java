@@ -90,7 +90,8 @@ final class InlineTemplateParser {
 
   }
 
-  private EndTag getEndTag(CommentType type,
+  private EndTag getEndTag(
+      CommentType type,
       UnparsedPart unparsed,
       String tmplName,
       int offset,

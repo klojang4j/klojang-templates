@@ -10,10 +10,11 @@ import static org.klojang.templates.RenderErrorCode.STRINGIFIER_RETURNED_NULL;
 
 final class RenderUtil {
 
-  static String stringify(Object value,
-      Stringifier stringifier,
-      VariablePart part,
-      VarGroup adhoc) {
+  static String stringify(
+        Object value,
+        Stringifier stringifier,
+        VariablePart part,
+        VarGroup adhoc) {
     VarGroup group = part.varGroup().orElse(adhoc);
     if (value == null && group == VarGroup.DEF && part.placeholder() != null) {
       return part.placeholder();
@@ -30,21 +31,23 @@ final class RenderUtil {
     return s;
   }
 
-  static RenderSession ifNotSet(SoloSession session,
-      Path path,
-      IntFunction<Object> valueGenerator,
-      VarGroup varGroup) {
+  static RenderSession ifNotSet(
+        SoloSession session,
+        Path path,
+        IntFunction<Object> valueGenerator,
+        VarGroup varGroup) {
     if (!session.state().isSet(path)) {
       setPath(session, path, varGroup, true, valueGenerator);
     }
     return session;
   }
 
-  static void setPath(SoloSession session,
-      Path path,
-      VarGroup group,
-      boolean force,
-      IntFunction<Object> valueGenerator) {
+  static void setPath(
+        SoloSession session,
+        Path path,
+        VarGroup group,
+        boolean force,
+        IntFunction<Object> valueGenerator) {
     if (path.size() == 1) {
       session.setVar(path.segment(0), group, valueGenerator.apply(0));
     } else {

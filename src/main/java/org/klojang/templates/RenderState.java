@@ -42,37 +42,29 @@ final class RenderState {
   }
 
   SoloSession[] createChildSessions(Template t, int repeats) {
-    SoloSession[] children;
+    SoloSession[] sessions;
     if (repeats == 0) {
-      children = ZERO_SESSIONS;
+      sessions = ZERO_SESSIONS;
     } else {
-      children = new SoloSession[repeats];
+      sessions = new SoloSession[repeats];
       for (int i = 0; i < repeats; ++i) {
-        children[i] = config.newChildSession(t);
+        sessions[i] = config.newChildSession(t);
       }
     }
-    this.children.put(t, children);
-    return children;
+    this.children.put(t, sessions);
+    return sessions;
   }
 
   SoloSession[] getOrCreateChildSessions(Template t, int repeats) {
     SoloSession[] children = this.children.get(t);
     if (children == null) {
-      if (repeats == 0) {
-        children = ZERO_SESSIONS;
-      } else {
-        children = new SoloSession[repeats];
-        for (int i = 0; i < repeats; ++i) {
-          children[i] = config.newChildSession(t);
-        }
-      }
-      this.children.put(t, children);
+      return createChildSessions(t, repeats);
     }
-    if (repeats != children.length) {
-      throw REPETITION_MISMATCH.getException(getFQN(t), children.length, repeats);
-    }
+    Check.that(repeats).is(eq(), children.length, REPETITION_MISMATCH
+          .getExceptionSupplier(getFQN(t), children.length, repeats));
     return children;
   }
+
 
   boolean isProcessed(Template template) {
     return children.get(template) != null;
@@ -114,8 +106,7 @@ final class RenderState {
   }
 
   // collects absolute paths
-  private static void collectUnsetVariables(RenderState state,
-      ArrayList<String> vars) {
+  private static void collectUnsetVariables(RenderState state, ArrayList<String> vars) {
     Template myTmpl = state.config.template();
     state.todo.stream().map(var -> getFQN(myTmpl, var)).forEach(vars::add);
     myTmpl.getNestedTemplates().forEach(t -> {
@@ -129,9 +120,10 @@ final class RenderState {
   }
 
   // collects relative paths
-  private static void collectUnsetVariables(RenderState state,
-      ArrayList<Path> vars,
-      Path path) {
+  private static void collectUnsetVariables(
+        RenderState state,
+        ArrayList<Path> vars,
+        Path path) {
     state.todo.stream().map(path::append).forEach(vars::add);
     Template myTmpl = state.config.template();
     myTmpl.getNestedTemplates().forEach(t -> {
@@ -175,13 +167,13 @@ final class RenderState {
     if (path.size() == 1) {
       IntList occurrences = state.config.template().variables().get(name);
       Check.that(occurrences).is(notNull(),
-          NO_SUCH_VARIABLE.getExceptionSupplier(name));
+            NO_SUCH_VARIABLE.getExceptionSupplier(name));
       state.todo.add(name);
       occurrences.stream().forEach(state.varValues.keySet()::remove);
     } else {
       Template tmpl = state.config.template();
       Check.that(name).is(in(), tmpl.getNestedTemplateNames(),
-          NO_SUCH_TEMPLATE.getExceptionSupplier(getFQN(tmpl, name)));
+            NO_SUCH_TEMPLATE.getExceptionSupplier(getFQN(tmpl, name)));
       Template nested = tmpl.getNestedTemplate(name);
       SoloSession[] childSessions = state.children.get(nested);
       if (childSessions != null) {
@@ -215,12 +207,12 @@ final class RenderState {
       }
       Template tmpl = state.config.template();
       Check.that(name).is(keyIn(), tmpl.variables(),
-          NO_SUCH_VARIABLE.getExceptionSupplier(getFQN(tmpl, name)));
+            NO_SUCH_VARIABLE.getExceptionSupplier(getFQN(tmpl, name)));
       return true;
     }
     Template tmpl = state.config.template();
     Check.that(name).is(in(), tmpl.getNestedTemplateNames(),
-        NO_SUCH_TEMPLATE.getExceptionSupplier(getFQN(tmpl, name)));
+          NO_SUCH_TEMPLATE.getExceptionSupplier(getFQN(tmpl, name)));
     Template nested = tmpl.getNestedTemplate(name);
     SoloSession[] childSessions = state.children.get(nested);
     if (childSessions == null) {
