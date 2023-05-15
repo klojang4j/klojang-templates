@@ -50,14 +50,14 @@ To get started with _Klojang Templates_, add the following dependency to you pro
 <dependency>
     <groupId>org.klojang</groupId>
     <artifactId>klojang-templates</artifactId>
-    <version>1.0.2</version>
+    <version>1.0.3</version>
 </dependency>
 ```
 
 **Gradle**:
 
 ```
-implementation group: 'org.klojang', name: 'klojang-templates', version: '1.0.2'
+implementation group: 'org.klojang', name: 'klojang-templates', version: '1.0.3'
 ```
 
 _Klojang Templates_ is agnostic about the web or application framework you use. It
@@ -567,7 +567,7 @@ public class EmployeeResource {
 ## Accessors and Name Mappers
 
 When you `set` a template variable to some value, obviously it is you who provides the
-value, but when you `insert` a hash map or JavaBean into the template, or use it to 
+value. But when you `insert` a hash map or JavaBean into a template, or use it to 
 `populate` a nested template, who or what is responsible for extracting the values inside 
 the hash map or JavaBean? This is done by a set of
 [accessors](https://klojang4j.github.io/klojang-templates/1/api/org.klojang.templates/org/klojang/templates/Accessor.html),
@@ -578,7 +578,7 @@ While you are quite likely to want to write some custom
 [stringifiers](https://klojang4j.github.io/klojang-templates/1/api/org.klojang.templates/org/klojang/templates/Stringifier.html)
 for your application, you may not ever need to implement an `Accessor` yourself. _Klojang
 Templates_ internally uses a single `Accessor` implementation that can handle most object 
-types. However, should you need or want to, you can certainly do so. For example:
+types. However, should you need or want to, you can certainly do so.
 
 ```java
 import org.klojang.templates.Accessor;
@@ -598,13 +598,11 @@ public class Setup {
   }
 
   private static Accessor<Employee> getEmployeeAccessor() {
-    return (employee, property) -> {
-      return switch (property) {
-        case "firstName" -> employee.getFirstName();
-        case "lastName" -> employee.getLastName();
-        case "birtDate" -> employee.getBirthDate();
-        default -> Accessor.UNDEFINED;
-      };
+    return (employee, property) -> switch (property) {
+      case "firstName" -> employee.getFirstName();
+      case "lastName" -> employee.getLastName();
+      case "birtDate" -> employee.getBirthDate();
+      default -> Accessor.UNDEFINED;
     };
   }
 
