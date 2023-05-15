@@ -59,10 +59,10 @@ final class RenderState {
 <span class="fc" id="L59">    SoloSession[] children = this.children.get(t);</span>
 <span class="fc bfc" id="L60" title="All 2 branches covered.">    if (children == null) {</span>
 <span class="fc" id="L61">      return createChildSessions(t, repeats);</span>
+<span class="fc bfc" id="L62" title="All 2 branches covered.">    } else if (children.length == repeats) {</span>
+<span class="fc" id="L63">      return children;</span>
     }
-<span class="fc" id="L63">    Check.that(repeats).is(eq(), children.length, REPETITION_MISMATCH</span>
-<span class="fc" id="L64">          .getExceptionSupplier(getFQN(t), children.length, repeats));</span>
-<span class="fc" id="L65">    return children;</span>
+<span class="fc" id="L65">    throw REPETITION_MISMATCH.getException(getFQN(t), children.length, repeats);</span>
   }
 
 

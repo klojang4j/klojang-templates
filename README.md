@@ -527,6 +527,7 @@ import org.klojang.templates.StringifierRegistry;
 
 import java.time.LocalDate;
 
+// Used for and during application startup
 public class Setup {
 
   private static final StringifierRegistry stringifiers = configureStringifiers();
@@ -563,6 +564,98 @@ public class EmployeeResource {
 }
 ```
 
+## Accessors and Name Mappers
+
+When you `set` a template variable to some value, obviously it is you who provides the
+value, but when you `insert` a hash map or JavaBean into the template, or use it to 
+`populate` a nested template, who or what is responsible for extracting the values inside 
+the hash map or JavaBean? This is done by a set of
+[accessors](https://klojang4j.github.io/klojang-templates/1/api/org.klojang.templates/org/klojang/templates/Accessor.html),
+bundled together in an
+[AccessorRegistry](https://klojang4j.github.io/klojang-templates/1/api/org.klojang.templates/org/klojang/templates/StringifierRegistry.html).
+
+While you are quite likely to want to write some custom 
+[stringifiers](https://klojang4j.github.io/klojang-templates/1/api/org.klojang.templates/org/klojang/templates/Stringifier.html)
+for your application, you may not ever need to implement an `Accessor` yourself. _Klojang
+Templates_ internally uses a single `Accessor` implementation that can handle most object 
+types. However, should you need or want to, you can certainly do so. For example:
+
+```java
+import org.klojang.templates.Accessor;
+import org.klojang.templates.AccessorRegistry;
+
+// Used for and during application startup
+public class Setup {
+
+  private static final AccessorRegistry accessors = configureAccessors();
+
+  public static AccessorRegistry getAccessors() {return accessors;}
+
+  private static AccessorRegistry configureAccessors() {
+    return AccessorRegistry.configure()
+          .register(getEmployeeAccessor(), Employee.class)
+          .freeze();
+  }
+
+  private static Accessor<Employee> getEmployeeAccessor() {
+    return (employee, property) -> {
+      return switch (property) {
+        case "firstName" -> employee.getFirstName();
+        case "lastName" -> employee.getLastName();
+        case "birtDate" -> employee.getBirthDate();
+        default -> Accessor.UNDEFINED;
+      };
+    };
+  }
+
+}
+```
+
+```java
+public class EmployeeResource {
+
+  @GET
+  @Path("/john")
+  public StreamingOutput john() throws ParseException {
+    Employee employee = new Employee("John", "Smith", LocalDate.of(1980, 6, 13));
+    Template template = Template.fromResource(getClass(), "/views/employee.html");
+    RenderSession session = template.newRenderSession(Setup.getAccessors());
+    session.insert(employee);
+    return session::render;
+  }
+
+}
+```
+
+By default, _Klojang Templates_ assumes that template variables can be mapped _as-is_ to
+bean properties or map keys. In other words, it assumes that template variable `firstName` 
+maps to map key "firstName", or to a getter named `getFirstName()`. You can use
+[name mappers](https://klojang4j.github.io/klojang-templates/1/api/org.klojang.templates/org/klojang/templates/NameMapper.html)
+to loosen this up. _Klojang Templates_ provides various predefined name mappers, but you
+can also implement your own `NameMapper`.
+
+```java
+import org.klojang.templates.AccessorRegistry;
+import org.klojang.templates.name.SnakeCaseToCamelCase;
+
+// Used for and during application startup
+public class Setup {
+
+  private static final AccessorRegistry accessors = configureAccessors();
+
+  public static AccessorRegistry getAccessors() {return accessors;}
+
+  private static AccessorRegistry configureAccessors() {
+    // use the predefined snake-case-to-camel-case mapper
+    return AccessorRegistry.configure()
+          .setDefaultNameMapper(new SnakeCaseToCamelCase())
+          .freeze();
+  }
+
+}
+```
+
+
 ## Template Caching
 
 [Template](https://klojang4j.github.io/klojang-templates/1/api/org.klojang.templates/org/klojang/templates/Template)
@@ -585,7 +678,7 @@ KJT_CACHE_SIZE to 0 (zero).
 
 ## Conclusion
 
-That's it, really. The next paragraph will only be of interest to you if your goal is
+That's it, really. The next paragraphs will only be of interest to you if your goal is
 to write templates that are well-formed, valid and pleasing to the eye even in their
 raw, unprocessed state.
 
