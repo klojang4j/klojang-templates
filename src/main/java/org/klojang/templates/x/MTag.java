@@ -33,4 +33,5 @@ public final class MTag {
 
   public static final String VALUE_GENERATOR = "value generator";
 
+  public static final String NAME_MAPPER = "name mapper";
 }

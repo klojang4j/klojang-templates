@@ -3,6 +3,7 @@ package org.klojang.templates;
 import org.klojang.check.Check;
 import org.klojang.check.Tag;
 import org.klojang.path.Path;
+import org.klojang.path.PathWalker;
 import org.klojang.templates.x.Lazy;
 import org.klojang.templates.x.MTag;
 import org.klojang.util.collection.IntList;
@@ -16,6 +17,7 @@ import java.util.function.IntFunction;
 import java.util.function.Supplier;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.util.Collections.singletonList;
 import static java.util.Collections.singletonMap;
 import static org.klojang.check.CommonChecks.*;
 import static org.klojang.check.CommonProperties.length;
@@ -171,7 +173,7 @@ final class SoloSession implements RenderSession {
     } else if (data == null) {
       Template t = config.template();
       Check.that(t.isTextOnly())
-           .is(yes(), NOT_TEXT_ONLY.getExceptionSupplier(t.getName()));
+            .is(yes(), NOT_TEXT_ONLY.getExceptionSupplier(t.getName()));
       // If we get past this check, the entire template is in fact
       // static HTML. Expensive way to render static HTML, but no
       // reason not to support it.
@@ -409,9 +411,9 @@ final class SoloSession implements RenderSession {
   @Override
   public List<RenderSession> getChildSessions(String tmpl) {
     Template t = getNestedTemplate(tmpl);
-    return Check.that(state.getChildSessions(t)).is(notNull(),
-                      NO_CHILD_SESSIONS.getExceptionSupplier(t.getName()))
-                .ok(List::of);
+    RenderSession[] rs = state.getChildSessions(t);
+    Check.that(rs).is(notNull(), NO_CHILD_SESSIONS.getExceptionSupplier(t.getName()));
+    return List.of(rs);
   }
 
   @Override

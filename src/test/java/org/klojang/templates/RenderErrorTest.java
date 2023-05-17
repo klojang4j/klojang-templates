@@ -64,7 +64,7 @@ public class RenderErrorTest {
       throw new RuntimeException();
     };
     AccessorRegistry reg = AccessorRegistry.configure()
-        .register(acc, Object.class)
+        .register(Object.class, acc)
         .freeze();
     String src = """
         ~%%begin:foo%

@@ -98,7 +98,7 @@ public class AccessorRegistryTest {
     Template t = Template.fromString(src);
     AccessorRegistry ar = AccessorRegistry.configure()
         .register(br)
-        .register(acc, Person.class, t.getNestedTemplate("foo"))
+        .register(t.getNestedTemplate("foo"), Person.class, acc)
         .freeze();
     RenderSession rs = t.newRenderSession(ar);
     rs.insert(new Person(10, "John"));
@@ -120,7 +120,7 @@ public class AccessorRegistryTest {
         """;
     Template t = Template.fromString(src);
     AccessorRegistry ar = AccessorRegistry.configure()
-        .register(acc, Person.class)
+        .register(Person.class, acc)
         .register(br, t, String::toLowerCase)
         .freeze();
     RenderSession rs = t.newRenderSession(ar);
@@ -143,7 +143,7 @@ public class AccessorRegistryTest {
         """;
     Template t = Template.fromString(src);
     AccessorRegistry ar = AccessorRegistry.configure()
-        .register(acc, Person.class)
+        .register(Person.class, acc)
         .register(br, t, String::toLowerCase)
         .freeze();
     RenderSession rs = t.newRenderSession(ar);
@@ -167,7 +167,7 @@ public class AccessorRegistryTest {
         """;
     Template t = Template.fromString(src);
     AccessorRegistry ar = AccessorRegistry.configure()
-        .register(acc, Person.class, t)
+        .register(t, Person.class, acc)
         .register(br)
         .freeze();
     RenderSession rs = t.newRenderSession(ar);
@@ -190,7 +190,7 @@ public class AccessorRegistryTest {
         """;
     Template t = Template.fromString(src);
     AccessorRegistry ar = AccessorRegistry.configure()
-        .register(acc, Person.class, t)
+        .register(t, Person.class, acc)
         .register(br)
         .freeze();
     RenderSession rs = t.newRenderSession(ar);
@@ -220,7 +220,7 @@ public class AccessorRegistryTest {
         """;
     Template t = Template.fromString(src);
     AccessorRegistry ar = AccessorRegistry.configure()
-        .register(acc, Person.class, t)
+        .register(t, Person.class, acc)
         .register(br)
         .freeze();
     RenderSession rs = t.newRenderSession(ar);
@@ -250,7 +250,7 @@ public class AccessorRegistryTest {
         """;
     Template t = Template.fromString(src);
     AccessorRegistry ar = AccessorRegistry.configure()
-        .register(acc, Person.class)
+        .register(Person.class, acc)
         .register(br, t)
         .freeze();
     RenderSession rs = t.newRenderSession(ar);

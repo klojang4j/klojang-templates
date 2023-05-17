@@ -574,11 +574,12 @@ the hash map or JavaBean? This is done by a set of
 bundled together in an
 [AccessorRegistry](https://klojang4j.github.io/klojang-templates/1/api/org.klojang.templates/org/klojang/templates/StringifierRegistry.html).
 
-While you are quite likely to want to write some custom 
+While you are quite likely to want to write some custom
 [stringifiers](https://klojang4j.github.io/klojang-templates/1/api/org.klojang.templates/org/klojang/templates/Stringifier.html)
 for your application, you may not ever need to implement an `Accessor` yourself. _Klojang
-Templates_ internally uses a single `Accessor` implementation that can handle most object 
-types. However, should you need or want to, you can certainly do so.
+Templates_ internally uses a single `Accessor` implementation that can handle most object
+types. However, should you need or want to, you can certainly provide your own `Accessor`
+implementations.
 
 ```java
 import org.klojang.templates.Accessor;
@@ -593,7 +594,7 @@ public class Setup {
 
   private static AccessorRegistry configureAccessors() {
     return AccessorRegistry.configure()
-          .register(getEmployeeAccessor(), Employee.class)
+          .register(Employee.class, getEmployeeAccessor())
           .freeze();
   }
 
@@ -626,8 +627,7 @@ public class EmployeeResource {
 ```
 
 By default, _Klojang Templates_ assumes that template variables can be mapped _as-is_ to
-bean properties or map keys. In other words, it assumes that template variable `firstName` 
-maps to map key "firstName", or to a getter named `getFirstName()`. You can use
+map keys or bean properties. You can use
 [name mappers](https://klojang4j.github.io/klojang-templates/1/api/org.klojang.templates/org/klojang/templates/NameMapper.html)
 to loosen this up. _Klojang Templates_ provides various predefined name mappers, but you
 can also implement your own `NameMapper`.
@@ -636,7 +636,6 @@ can also implement your own `NameMapper`.
 import org.klojang.templates.AccessorRegistry;
 import org.klojang.templates.name.SnakeCaseToCamelCase;
 
-// Used for and during application startup
 public class Setup {
 
   private static final AccessorRegistry accessors = configureAccessors();
@@ -659,12 +658,13 @@ public class Setup {
 [Template](https://klojang4j.github.io/klojang-templates/1/api/org.klojang.templates/org/klojang/templates/Template)
 instances created from a
 [file system resource](https://klojang4j.github.io/klojang-templates/1/api/org.klojang.templates/org/klojang/templates/Template.html#fromFile(java.lang.String))
-or from a 
+or from a
 [classpath resource](https://klojang4j.github.io/klojang-templates/1/api/org.klojang.templates/org/klojang/templates/Template.html#fromResource(java.lang.Class,java.lang.String))
 are by default always cached. Thus, the cost of parsing the template is paid just
 once. Included templates are cached separately from the templates in which they are
-included, so the next time you include them, either in the same template or in
-another template, you do so essentially for free.
+included. This makes the template retrieval process even more efficient. The first time
+you include a template it needs to be parsed; the next time you include it, either in
+the same template or in another template, you do so essentially for free.
 
 #### Disabling Template Caching
 

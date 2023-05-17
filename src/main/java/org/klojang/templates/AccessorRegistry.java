@@ -5,6 +5,7 @@ import org.klojang.collections.TypeMap;
 import org.klojang.invoke.BeanReader;
 import org.klojang.invoke.BeanReaderBuilder;
 import org.klojang.path.PathWalker;
+import org.klojang.templates.x.MTag;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -13,8 +14,7 @@ import static java.util.Collections.emptyMap;
 import static org.klojang.check.CommonChecks.keyIn;
 import static org.klojang.check.CommonChecks.no;
 import static org.klojang.check.Tag.TYPE;
-import static org.klojang.templates.x.MTag.ACCESSOR;
-import static org.klojang.templates.x.MTag.TEMPLATE;
+import static org.klojang.templates.x.MTag.*;
 
 /**
  * <p>A registry of {@linkplain Accessor accessors}. Accessors are used by the
@@ -25,7 +25,7 @@ import static org.klojang.templates.x.MTag.TEMPLATE;
  * particular type of object:
  *
  * <ol>
- *   <li>If you have {@linkplain Builder#register(Accessor, Class) registered} your
+ *   <li>If you have {@linkplain Builder#register(Class, Accessor) registered} your
  *       own {@code Accessor} for that particular type of object, then that is the
  *       {@code Accessor} that is going to be used.
  *   <li>Otherwise an internally defined, non-exposed {@code Accessor} implementation
@@ -128,12 +128,12 @@ public final class AccessorRegistry {
    * @return an {@code AccessorRegistry} the should sufficient for most use cases
    */
   public static AccessorRegistry standard(
-      NameMapper nameMapper,
-      boolean nullEqualsUndefined) {
+        NameMapper nameMapper,
+        boolean nullEqualsUndefined) {
     return configure()
-        .setDefaultNameMapper(nameMapper)
-        .nullEqualsUndefined(nullEqualsUndefined)
-        .freeze();
+          .setDefaultNameMapper(nameMapper)
+          .nullEqualsUndefined(nullEqualsUndefined)
+          .freeze();
   }
 
   /* ++++++++++++++++++++[ BEGIN BUILDER CLASS ]+++++++++++++++++ */
@@ -145,16 +145,14 @@ public final class AccessorRegistry {
    */
   public static final class Builder {
 
-    private static final String NAME_MAPPER = "name mapper";
-
     private static final String MAPPER_ALREADY_SET =
-        "name mapper already set for template ${0}";
+          "name mapper already set for template ${0}";
 
     private static final String TEMPLATE_ALREADY_SET =
-        "template ${0} already has accessor for ${1}";
+          "template ${0} already has accessor for ${1}";
 
     private static final String TYPE_ALREADY_SET =
-        "${arg} has already been associated with an accessor";
+          "${arg} has already been associated with an accessor";
 
     private NameMapper defMapper = NameMapper.AS_IS;
     private boolean nullEqualsUndefined = false;
@@ -199,7 +197,7 @@ public final class AccessorRegistry {
      */
     public Builder setNameMapper(Template template, NameMapper nameMapper) {
       Check.notNull(template, TEMPLATE)
-           .isNot(keyIn(), mappers, MAPPER_ALREADY_SET, template.getName());
+            .isNot(keyIn(), mappers, MAPPER_ALREADY_SET, template.getName());
       Check.notNull(nameMapper, NAME_MAPPER);
       mappers.put(template, nameMapper);
       return this;
@@ -209,14 +207,14 @@ public final class AccessorRegistry {
      * Sets the {@code Accessor} to be used for objects of the specified type.
      *
      * @param <T> the type of the objects for which to use the {@code Accessor}
+     * @param type the {@code Class} object corresponding to the type
      * @param accessor the {@code Accessor}
-     * @param forType the {@code Class} object corresponding to the type
      * @return this {@code Builder} instance
      */
-    public <T> Builder register(Accessor<T> accessor, Class<T> forType) {
+    public <T> Builder register(Class<T> type, Accessor<T> accessor) {
+      Check.notNull(type, TYPE);
       Check.notNull(accessor, ACCESSOR);
-      Check.notNull(forType, TYPE);
-      return register0(accessor, forType, null);
+      return register0(null, type, accessor);
     }
 
     /**
@@ -224,18 +222,16 @@ public final class AccessorRegistry {
      * inserted into the specified template.
      *
      * @param <T> the type of the objects for which to use the {@code Accessor}
-     * @param accessor the {@code Accessor}
-     * @param forType the {@code Class} object corresponding to the type
      * @param template the template for which to use the {@code Accessor}
+     * @param type the {@code Class} object corresponding to the type
+     * @param accessor the {@code Accessor}
      * @return this {@code Builder} instance
      */
-    public <T> Builder register(
-        Accessor<T> accessor, Class<T> forType,
-        Template template) {
-      Check.notNull(forType, TYPE);
+    public <T> Builder register(Template template, Class<T> type, Accessor<T> accessor) {
       Check.notNull(template, TEMPLATE);
+      Check.notNull(type, TYPE);
       Check.notNull(accessor, ACCESSOR);
-      return register0(accessor, forType, template);
+      return register0(template, type, accessor);
     }
 
     /**
@@ -283,7 +279,7 @@ public final class AccessorRegistry {
     public <T> Builder register(BeanReader<T> br, NameMapper nameMapper) {
       Check.notNull(br, "BeanReader");
       Check.notNull(nameMapper, NAME_MAPPER);
-      return register0(new BeanAccessor<>(br, nameMapper), br.getBeanClass(), null);
+      return register0(null, br.getBeanClass(), new BeanAccessor<>(br, nameMapper));
     }
 
     /**
@@ -301,16 +297,16 @@ public final class AccessorRegistry {
      * @return this {@code Builder} instance
      */
     public <T> Builder register(
-        BeanReader<T> beanReader,
-        Template template,
-        NameMapper nameMapper) {
+          BeanReader<T> beanReader,
+          Template template,
+          NameMapper nameMapper) {
       Check.notNull(beanReader, "BeanReader");
       Check.notNull(template, TEMPLATE);
       Check.notNull(nameMapper, NAME_MAPPER);
       return register0(
-          new BeanAccessor<>(beanReader, nameMapper),
-          beanReader.getBeanClass(),
-          template
+            template,
+            beanReader.getBeanClass(),
+            new BeanAccessor<>(beanReader, nameMapper)
       );
     }
 
@@ -323,7 +319,7 @@ public final class AccessorRegistry {
       return new AccessorRegistry(accs, defMapper, nullEqualsUndefined, mappers);
     }
 
-    private <T> Builder register0(Accessor<T> acc, Class<T> clazz, Template tmpl) {
+    private <T> Builder register0(Template tmpl, Class<T> clazz, Accessor<T> acc) {
       Map<Template, Accessor<?>> map = accs.get(clazz);
       if (map == null) {
         accs.put(clazz, map = new HashMap<>());
@@ -332,7 +328,7 @@ public final class AccessorRegistry {
         Check.that(map.containsKey(null)).is(no(), TYPE_ALREADY_SET, clazz);
       } else {
         Check.that(map.containsKey(tmpl)).is(no(),
-            TEMPLATE_ALREADY_SET, tmpl.getName(), clazz);
+              TEMPLATE_ALREADY_SET, tmpl.getName(), clazz);
       }
       map.put(tmpl, acc);
       return this;
@@ -358,10 +354,10 @@ public final class AccessorRegistry {
   private final Map<Template, NameMapper> mappers;
 
   private AccessorRegistry(
-      Map<Class<?>, Map<Template, Accessor<?>>> accs,
-      NameMapper defMapper,
-      boolean nullEqualsUndefined,
-      Map<Template, NameMapper> mappers) {
+        Map<Class<?>, Map<Template, Accessor<?>>> accs,
+        NameMapper defMapper,
+        boolean nullEqualsUndefined,
+        Map<Template, NameMapper> mappers) {
     this.accs = accs.isEmpty() ? emptyMap() : TypeMap.fixedTypeMap(accs);
     this.defMapper = defMapper;
     this.nullEqualsUndefined = nullEqualsUndefined;
