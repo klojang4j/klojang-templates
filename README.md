@@ -24,10 +24,9 @@ in their raw state. (See
 
 Klojang templates arguably are even simpler than Mustache templates. There are just
 five syntactical constructs. Three if you discount for the fact that two of them are
-comments-like constructs. Two if you consider that, of those three, two are
-functionally equivalent. However, _Klojang Templates_ is unashamedly Java-only.
-The finer details of the syntax are carefully calibrated to give the Java API maximum
-leverage. In particular, _Klojang Templates_ allows you to
+comments-like constructs. Two if you consider that, of the remaining three, two are
+functionally equivalent. However, the finer details of the syntax are carefully calibrated
+to give the Java API maximum leverage. In particular, _Klojang Templates_ allows you to
 [nest templates](#nested-templates) inside other templates. This makes the API very
 efficient and concise when it comes to populating the templates.
 
@@ -170,7 +169,7 @@ interface.
 In _Klojang Templates_ templates can be nested inside other templates (ad infinitum
 if you like). Syntactically, this can be done in two ways: via
 _inline templates_ or via _included templates_. Functionally, there is no difference
-between these two options. They are populated using the exact same methods.
+between the two options. They are populated using the exact same methods.
 
 ### Inline Templates
 
@@ -264,7 +263,7 @@ also use the following syntax:
 ~%%include:employees:/views/employees-2023-01-01.txt%%
 ```
 
-### Indentation and Newline Suppression
+#### Indentation and Newline Suppression
 
 Ordinarily, when rendering a template, its structure is left completely intact. For
 inline templates the begin tag (e.g. `~%%begin:foo%`) is removed and the text
@@ -279,8 +278,7 @@ output. If an included template tag is all by itself on a separate line, the lin
 preserved, but any whitespace on it is removed.
 
 It may sound contrived, but it actually allows you to write elegant templates with
-indentation that stays in place upon rendering. The consequences and usefulness of
-this behaviour are illustrated in
+indentation that stays in place upon rendering. This is illustrated in
 [Newline Suppression in Practice](#newline-suppression-in-practice)
 
 ## Using Nested Templates
@@ -390,7 +388,7 @@ method. `populate()` is used to populate nested templates while `insert()` is us
 second argument to `populate()` is an array or collection, the nested template automatically turns into a
 _repeating template_, repeating itself for each element in the array or collection.
 
-### Newline Suppression in Practice
+#### Newline Suppression in Practice
 
 Tables especially benefit from
 [newline suppression](#indentation-and-newline-suppression) as described above. The
@@ -496,7 +494,7 @@ being rendered.
 
 `Optional` objects containing some data model object are typically returned by the
 find-by-id method of data access objects. With _Klojang Templates_ it is perfectly
-valid to populate a bested template with an `Optional`. If the `Optional` is empty, the
+valid to populate a nested template with an `Optional`. If the `Optional` is empty, the
 template will not be rendered. Otherwise it will be populated and rendered using the
 data model object.
 
@@ -578,7 +576,7 @@ While you are quite likely to want to write some custom
 [stringifiers](https://klojang4j.github.io/klojang-templates/1/api/org.klojang.templates/org/klojang/templates/Stringifier.html)
 for your application, you may not ever need to implement an `Accessor` yourself. _Klojang
 Templates_ internally uses a single `Accessor` implementation that can handle most object
-types. However, should you need or want to, you can certainly provide your own `Accessor`
+types. However, should you need or want to, you can provide your own `Accessor`
 implementations.
 
 ```java
@@ -626,6 +624,8 @@ public class EmployeeResource {
 }
 ```
 
+### Name Mappers
+
 By default, _Klojang Templates_ assumes that template variables can be mapped _as-is_ to
 map keys or bean properties. You can use
 [name mappers](https://klojang4j.github.io/klojang-templates/1/api/org.klojang.templates/org/klojang/templates/NameMapper.html)
@@ -663,7 +663,7 @@ or from a
 are by default always cached. Thus, the cost of parsing the template is paid just
 once. Included templates are cached separately from the templates in which they are
 included. This makes the template retrieval process even more efficient. The first time
-you include a template it needs to be parsed; the next time you include it, either in
+you include a template it needs to be parsed, but the next time you include it, either in
 the same template or in another template, you do so essentially for free.
 
 #### Disabling Template Caching
