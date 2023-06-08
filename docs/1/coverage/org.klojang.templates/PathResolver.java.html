@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PathResolver.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Klojang Templates</a> &gt; <a href="index.source.html" class="el_package">org.klojang.templates</a> &gt; <span class="el_source">PathResolver.java</span></div><h1>PathResolver.java</h1><pre class="source lang-java linenums">package org.klojang.templates;
+
+import java.io.IOException;
+import java.io.InputStream;
+
+/**
+ * Path resolvers are used by the template parser to load the source code for a
+ * template. Implementations are given the path string extracted from
+ * {@code ~%%include:/path/to/resource.html%%} and must return an {@link InputStream}
+ * to the source code. This enables you to implement and use a custom mechanism for
+ * loading templates. &lt;i&gt;Klojang Templates&lt;/i&gt; provides two implementations itself:
+ * one that loads templates from the file system (used under the hood by
+ * {@link Template#fromFile(String) Template.fromFile()}), and another one that loads
+ * templates from the classpath (used by
+ * {@link Template#fromResource(Class, String) Template.fromResource()}). You can use
+ * different path resolvers for different templates, but nested templates always
+ * inherit the {@code PathResolver} from the root template (the template that was
+ * explicitly instantiated using one of the {@code fromXXX()} methods on the
+ * {@code Template} class.
+ *
+ * @author Ayco Holleman
+ * @see Template#fromResolver(PathResolver, String)
+ * @see Template#fromFile(String)
+ * @see Template#fromResource(Class, String)
+ */
+@FunctionalInterface
+public interface PathResolver {
+
+  /**
+   * Returns whether the path specified in an included template (like
+   * {@code ~%%include:/path/to/foo.html%%}) points to an existing resource. If it is
+   * expensive to determine this (e.g. it requires a database lookup or an FTP
+   * connection), you may simply return {@code true}. Parsing will still fail
+   * graciously when the path turns out to be invalid, but it will be some time after
+   * the included template was first encountered, which may make it harder to
+   * understand what was wrong with the template code. If this method returns
+   * {@code false}, parsing will be aborted immediately. The default implementation
+   * returns {@code true}.
+   *
+   * @param path the path to verify
+   * @return whether it is a valid path
+   */
+  default boolean isValidPath(String path) {
+<span class="nc" id="L44">    return true;</span>
+  }
+
+  /**
+   * Returns an {@code InputStream} to the resource denoted by the specified path.
+   *
+   * @param path the path
+   * @return an {@code InputStream} to the resource denoted by the specified path
+   * @throws IOException If an error occurred while setting up the
+   *     {@code InputStream}.
+   */
+  InputStream resolve(String path) throws IOException;
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

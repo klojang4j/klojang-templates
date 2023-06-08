@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Accessor.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Klojang Templates</a> &gt; <a href="index.source.html" class="el_package">org.klojang.templates</a> &gt; <span class="el_source">Accessor.java</span></div><h1>Accessor.java</h1><pre class="source lang-java linenums">package org.klojang.templates;
+
+import java.util.function.IntFunction;
+
+/**
+ * Accessors are used to extract values from objects. The {@link RenderSession} uses
+ * them to extract values from the objects passed to
+ * {@link RenderSession#insert(Object, String...) insert()} and
+ * {@link RenderSession#populate(String, Object, String...) populate()}. Object
+ * access is name-based and requires a mapping between template variables and bean
+ * properties or map keys. By default, &lt;i&gt;Klojang Templates&lt;/i&gt; assumes an as-is
+ * mapping between the two, but you can use {@linkplain NameMapper name mappers} for
+ * more sophisticated mappings.
+ *
+ * @param &lt;T&gt; the type of the source data object
+ * @author Ayco Holleman
+ * @see AccessorRegistry
+ */
+@FunctionalInterface
+public interface Accessor&lt;T&gt; {
+
+  /**
+   * &lt;p&gt;
+   * The value that &lt;b&gt;should&lt;/b&gt; be returned by accessors if a template variable
+   * cannot be mapped to a value in the source data object. {@code Accessor}
+   * implementations should not throw an exception and they should not return
+   * {@code null} in this case.
+   * &lt;/p&gt;
+   * &lt;h4&gt;Null vs. UNDEFINED&lt;/h4&gt;
+   * &lt;p&gt;
+   * There is a subtle difference in how a {@link RenderSession} treats {@code null}
+   * values versus how it treats {@code UNDEFINED}. {@code null} is a valid and
+   * legitimate value for a template variable. If the value of a bean property or map key
+   * is {@code null}, the corresponding template variable will be set to
+   * whatever {@code null} is stringified to &amp;#8212;. The
+   * {@linkplain Stringifier#DEFAULT default stringifier} stringifies {@code null} to an
+   * empty string. If, on the other hand, the {@code RenderSession} receives
+   * {@code UNDEFINED} as the value for a template variable, it will just skip
+   * setting that variable. By itself this will make no difference when the template
+   * is rendered. An unset variable will be replaced with &quot;nothing&quot; &amp;#8212;
+   * i.e. an empty string. However, it &lt;i&gt;does&lt;/i&gt; make a difference
+   * if you want to set all unset variables to some default value after you have
+   * populated your template with model objects, hash maps, and/or anything else for
+   * which you have defined an accessor:
+   * &lt;/p&gt;
+   * &lt;blockquote&gt;&lt;pre&gt;{@code
+   * CompanyDao dao = new CompanyDao();
+   * Template template = Template.fromResource(getClass(), &quot;/views/companies.html&quot;);
+   * RenderSession session = template.newRenderSession();
+   * session.populate(&quot;companies&quot;, dao.list());
+   * session.getAllUnsetVariables().forEach(var -&gt; session.setPath(var, i -&gt; &quot;(unknown)&quot;);
+   * }&lt;/pre&gt;&lt;/blockquote&gt;
+   * &lt;p&gt;
+   * You can make the {@code RenderSession} treat {@code null} just like
+   * {@code UNDEFINED}:
+   * &lt;/p&gt;
+   * &lt;blockquote&gt;&lt;pre&gt;{@code
+   * AccessorRegistry accessors = AccessorRegistry.build()
+   *    .nullEqualsUndefined(true);
+   *    .freeze();
+   * Template template = Template.fromResource(getClass(), &quot;/views/companies.html&quot;);
+   * RenderSession session = template.newRenderSession(accessors);
+   * }&lt;/pre&gt;&lt;/blockquote&gt;
+   *
+   * @see AccessorRegistry.Builder#nullEqualsUndefined(boolean)
+   * @see RenderSession#setPath(String, IntFunction)
+   */
+<span class="fc" id="L68">  Object UNDEFINED = new Object();</span>
+
+  /**
+   * Returns the value identified by the specified name from the specified source
+   * data object. If the source data object is a {@code Map}, {@code name} would
+   * likely be a map key; if it is a JavaBean, {@code name} would likely be a bean
+   * property. However, it is up to individual {@code Accessor} implementations to
+   * determine the type of objects they provide access to, and how names are to be
+   * interpreted.
+   *
+   * @param data the data to be accessed
+   * @param name the name by which to retrieve the desired value from the data
+   * @return the value
+   */
+  Object access(T data, String name);
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

@@ -1,0 +1,1 @@
+packageSearchIndex = [{"l":"All Packages","u":"allpackages-index.html"},{"m":"org.klojang.templates","l":"org.klojang.templates"},{"m":"org.klojang.templates","l":"org.klojang.templates.name"}];updateSearchResults();
