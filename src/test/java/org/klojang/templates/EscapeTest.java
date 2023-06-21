@@ -26,12 +26,4 @@ public class EscapeTest {
     assertEquals(escapeHtml4(ub0.toString().substring(2)), ub0.toString().substring(2));
   }
 
-  @Test
-  public void test01() throws ClassNotFoundException {
-    Class<?> c = Class.forName("org.klojang.check.Check");
-    Method[] mm = c.getDeclaredMethods();
-    for(Method m:mm) {
-      System.out.println("-> "+m.getName());
-    }
-  }
 }
