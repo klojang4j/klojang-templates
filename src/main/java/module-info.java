@@ -30,9 +30,9 @@
  * optionally be prefixed with the name of a
  * {@linkplain org.klojang.templates.VarGroup variable group}: {@code ~%html:city%}.
  * When populating a template through
- * {@link org.klojang.templates.RenderSession#insert(Object, String...)
+ * {@link org.klojang.templates.RenderSession#insert(Object)
  * RenderSession.insert()} or
- * {@link org.klojang.templates.RenderSession#populate(String, Object, String...)
+ * {@link org.klojang.templates.RenderSession#populate(String, Object)
  * RenderSession.populate()}, a variable name may be a
  * {@linkplain org.klojang.path.Path path} through the source data object passed to
  * these methods. For example: {@code ~%employee.address.city%}. Since you may be

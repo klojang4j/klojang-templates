@@ -5,7 +5,7 @@ import org.klojang.path.Path;
 import java.util.Set;
 import java.util.function.IntFunction;
 
-import static org.klojang.templates.RenderErrorCode.STRINGIFIER_NOT_NULL_RESISTENT;
+import static org.klojang.templates.RenderErrorCode.STRINGIFIER_NOT_NULL_RESISTANT;
 import static org.klojang.templates.RenderErrorCode.STRINGIFIER_RETURNED_NULL;
 
 final class RenderUtil {
@@ -23,7 +23,7 @@ final class RenderUtil {
     try {
       s = stringifier.stringify(value);
     } catch (NullPointerException e) {
-      throw STRINGIFIER_NOT_NULL_RESISTENT.getException(part.name(), group);
+      throw STRINGIFIER_NOT_NULL_RESISTANT.getException(part.name(), group);
     }
     if (s == null) {
       throw STRINGIFIER_RETURNED_NULL.getException(part.name(), group);
@@ -57,7 +57,7 @@ final class RenderUtil {
         if (!force) {
           return;
         }
-        children = session.state().createChildSessions(t, 1);
+        children = session.state().createChildSessions(t, null, 1);
       }
       if (path.size() == 2) {
         for (int i = 0; i < children.length; ++i) {
@@ -72,7 +72,7 @@ final class RenderUtil {
   }
 
   static void enableRecursive(SoloSession s0, Template t0) {
-    s0.state().createChildSessions(t0, 1);
+    s0.state().createChildSessions(t0, null, 1);
     if (!t0.getNestedTemplates().isEmpty()) {
       SoloSession s = s0.state().getChildSessions(t0)[0];
       t0.getNestedTemplates().forEach(t -> enableRecursive(s, t));
@@ -81,7 +81,7 @@ final class RenderUtil {
 
   static void enableRecursive(SoloSession s0, Template t0, Set<String> names) {
     if (names.contains(t0.getName())) {
-      s0.state().createChildSessions(t0, 1);
+      s0.state().createChildSessions(t0, null, 1);
       if (!t0.getNestedTemplates().isEmpty()) {
         SoloSession s = s0.state().getChildSessions(t0)[0];
         t0.getNestedTemplates().forEach(t -> enableRecursive(s, t, names));

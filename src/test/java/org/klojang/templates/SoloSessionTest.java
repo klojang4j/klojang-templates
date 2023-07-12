@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.klojang.templates.VarGroup.JS_ATTR;
 
 public class SoloSessionTest {
 
@@ -19,7 +20,7 @@ public class SoloSessionTest {
           """;
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
-    String out = rs.populate1("companies", "Shell").render();
+    String out = rs.populate1("companies", List.of("Shell")).render();
     //System.out.println(out);
     String expected = """
           <html><body>
@@ -38,7 +39,7 @@ public class SoloSessionTest {
           """;
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
-    String out = rs.populate1("companies", "MacDonald's", "Shell").render();
+    String out = rs.populate1("companies", List.of("MacDonald's", "Shell")).render();
     //System.out.println(out);
     String expected = """
           <html><body>
@@ -58,7 +59,7 @@ public class SoloSessionTest {
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
     String out = rs
-          .populate1("companies", VarGroup.JS_ATTR, "MacDonald's", "Shell")
+          .populate1("companies", JS_ATTR, null, List.of("MacDonald's", "Shell"))
           .render();
     //System.out.println(out);
     String expected = """
@@ -80,7 +81,7 @@ public class SoloSessionTest {
           """;
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
-    String out = rs.populate2("companies", "Shell", "USA").render();
+    String out = rs.populate2("companies", List.of("Shell", "USA")).render();
     //System.out.println(out);
     String expected = """
           <html><body>
@@ -101,7 +102,8 @@ public class SoloSessionTest {
           """;
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
-    String out = rs.populate1("companies", "MacDonald's", "USA", "Shell", "UK")
+    String out = rs
+          .populate1("companies", List.of("MacDonald's", "USA", "Shell", "UK"))
           .render();
     //System.out.println(out);
     String expected = """
@@ -126,11 +128,13 @@ public class SoloSessionTest {
     RenderSession rs = tmpl.newRenderSession();
     String out = rs
           .populate1("companies",
-                VarGroup.JS_ATTR,
-                "MacDonald's",
-                "USA",
-                "Shell",
-                "UK")
+                JS_ATTR,
+                null,
+                List.of(
+                      "MacDonald's",
+                      "USA",
+                      "Shell",
+                      "UK"))
           .render();
     //System.out.println(out);
     String expected = """
@@ -168,7 +172,7 @@ public class SoloSessionTest {
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
     String out = rs.in("companies")
-          .insert(Map.of("name", "MacDonald's"), VarGroup.JS_ATTR)
+          .insert(Map.of("name", "MacDonald's"), JS_ATTR, null)
           .render();
     //System.out.println(out);
     String expected = """

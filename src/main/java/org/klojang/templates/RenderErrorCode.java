@@ -1,5 +1,6 @@
 package org.klojang.templates;
 
+import java.util.List;
 import java.util.function.Supplier;
 
 /**
@@ -48,7 +49,7 @@ public enum RenderErrorCode {
    * {@code RenderSession.populate1()} was called on a nested template, but it was
    * not a template with exactly one variable.
    *
-   * @see RenderSession#populate1(String, Object...)
+   * @see RenderSession#populate1(String, List) 
    */
   NOT_ONE_VAR_TEMPLATE("Not a one-variable template: %s"),
 
@@ -56,7 +57,7 @@ public enum RenderErrorCode {
    * {@code RenderSession.populate2()} was called on a nested template, but it was
    * not a template with exactly two variables.
    *
-   * @see RenderSession#populate2(String, Object...)
+   * @see RenderSession#populate2(String, List)
    */
   NOT_TWO_VAR_TEMPLATE("Not a two-variable template: %s"),
 
@@ -72,20 +73,20 @@ public enum RenderErrorCode {
    * {@code NullPointerException}, but stringifiers <i>must</i> be capable of
    * stringifying {@code null}.
    */
-  STRINGIFIER_NOT_NULL_RESISTENT(
+  STRINGIFIER_NOT_NULL_RESISTANT(
       "Stringifier for variable %s in variable group %s threw NullPointerException"),
 
   /**
    * A call to {@link RenderSession#repeat(String, int) RenderSession.repeat()} was
    * made, but the number of repetitions had already been fixed, either by a previous
    * call to {@code repeat()}, or implicitly, via the
-   * {@link RenderSession#populate(String, Object, String...) popupate()} method.
+   * {@link RenderSession#populate(String, Object) popupate()} method.
    */
   REPETITIONS_FIXED("Number of repetitions already fixed for template %s"),
 
   /**
    * The number of elements in the array or {@code Collection} passed to
-   * {@link RenderSession#populate(String, Object, String...)
+   * {@link RenderSession#populate(String, Object)
    * RenderSession.populate()} differed from the number of repetitions fixed by the
    * first call to {@code populate()} or {@code repeat()}.
    */

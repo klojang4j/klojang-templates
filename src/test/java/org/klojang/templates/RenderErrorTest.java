@@ -2,6 +2,8 @@ package org.klojang.templates;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.klojang.templates.RenderErrorCode.*;
@@ -41,10 +43,10 @@ public class RenderErrorTest {
   @Test
   public void templateNotInstantiated00() throws ParseException {
     String src = """
-        ~%%begin:foo%
-          ~%name%
-        ~%%end:foo%
-        """;
+          ~%%begin:foo%
+            ~%name%
+          ~%%end:foo%
+          """;
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
     try {
@@ -64,13 +66,13 @@ public class RenderErrorTest {
       throw new RuntimeException();
     };
     AccessorRegistry reg = AccessorRegistry.configure()
-        .register(Object.class, acc)
-        .freeze();
+          .register(Object.class, acc)
+          .freeze();
     String src = """
-        ~%%begin:foo%
-          ~%name%
-        ~%%end:foo%
-        """;
+          ~%%begin:foo%
+            ~%name%
+          ~%%end:foo%
+          """;
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession(reg);
     try {
@@ -78,8 +80,8 @@ public class RenderErrorTest {
     } catch (RenderException e) {
       //System.out.println(e.getMessage());
       assertEquals(
-          "Error while retrieving value for foo.name: java.lang.RuntimeException",
-          e.getMessage());
+            "Error while retrieving value for foo.name: java.lang.RuntimeException",
+            e.getMessage());
       assertEquals(ACCESS_EXCEPTION, e.getErrorCode());
       return;
     }
@@ -89,10 +91,10 @@ public class RenderErrorTest {
   @Test
   public void notTextOnly00() throws ParseException {
     String src = """
-        ~%%begin:foo%
-          ~%name%
-        ~%%end:foo%
-        """;
+          ~%%begin:foo%
+            ~%name%
+          ~%%end:foo%
+          """;
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
     try {
@@ -100,8 +102,8 @@ public class RenderErrorTest {
     } catch (RenderException e) {
       //System.out.println(e.getMessage());
       assertEquals(
-          "Not a text-only template: foo",
-          e.getMessage());
+            "Not a text-only template: foo",
+            e.getMessage());
       assertEquals(NOT_TEXT_ONLY, e.getErrorCode());
       return;
     }
@@ -111,20 +113,20 @@ public class RenderErrorTest {
   @Test
   public void notOneVarTemplate00() throws ParseException {
     String src = """
-        ~%%begin:foo%
-          ~%name%
-          ~%age%
-        ~%%end:foo%
-        """;
+          ~%%begin:foo%
+            ~%name%
+            ~%age%
+          ~%%end:foo%
+          """;
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
     try {
-      rs.populate1("foo", 23);
+      rs.populate1("foo", List.of(23));
     } catch (RenderException e) {
       //System.out.println(e.getMessage());
       assertEquals(
-          "Not a one-variable template: foo",
-          e.getMessage());
+            "Not a one-variable template: foo",
+            e.getMessage());
       assertEquals(NOT_ONE_VAR_TEMPLATE, e.getErrorCode());
       return;
     }
@@ -134,19 +136,19 @@ public class RenderErrorTest {
   @Test
   public void notTwoVarTemplate00() throws ParseException {
     String src = """
-        ~%%begin:foo%
-          ~%name%
-         ~%%end:foo%
-        """;
+          ~%%begin:foo%
+            ~%name%
+           ~%%end:foo%
+          """;
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
     try {
-      rs.populate2("foo", "john", "smith");
+      rs.populate2("foo", List.of("john", "smith"));
     } catch (RenderException e) {
       //System.out.println(e.getMessage());
       assertEquals(
-          "Not a two-variable template: foo",
-          e.getMessage());
+            "Not a two-variable template: foo",
+            e.getMessage());
       assertEquals(NOT_TWO_VAR_TEMPLATE, e.getErrorCode());
       return;
     }
@@ -158,8 +160,8 @@ public class RenderErrorTest {
     String src = "~%xyz:name%";
     Stringifier sf = obj -> null;
     StringifierRegistry reg = StringifierRegistry.configure()
-        .forVarGroup("xyz", sf)
-        .freeze();
+          .forVarGroup("xyz", sf)
+          .freeze();
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession(reg);
     try {
@@ -167,8 +169,8 @@ public class RenderErrorTest {
     } catch (RenderException e) {
       //System.out.println(e.getMessage());
       assertEquals(
-          "Stringifier for variable name in variable group xyz returned null",
-          e.getMessage());
+            "Stringifier for variable name in variable group xyz returned null",
+            e.getMessage());
       assertEquals(STRINGIFIER_RETURNED_NULL, e.getErrorCode());
       return;
     }
@@ -182,8 +184,8 @@ public class RenderErrorTest {
       throw new NullPointerException();
     };
     StringifierRegistry reg = StringifierRegistry.configure()
-        .forVarGroup("xyz", sf)
-        .freeze();
+          .forVarGroup("xyz", sf)
+          .freeze();
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession(reg);
     try {
@@ -191,9 +193,9 @@ public class RenderErrorTest {
     } catch (RenderException e) {
       //System.out.println(e.getMessage());
       assertEquals(
-          "Stringifier for variable name in variable group xyz threw NullPointerException",
-          e.getMessage());
-      assertEquals(STRINGIFIER_NOT_NULL_RESISTENT, e.getErrorCode());
+            "Stringifier for variable name in variable group xyz threw NullPointerException",
+            e.getMessage());
+      assertEquals(STRINGIFIER_NOT_NULL_RESISTANT, e.getErrorCode());
       return;
     }
     fail();
@@ -202,10 +204,10 @@ public class RenderErrorTest {
   @Test
   public void repetitionsFixed00() throws ParseException {
     String src = """
-        ~%%begin:foo%
-          ~%name%
-         ~%%end:foo%
-        """;
+          ~%%begin:foo%
+            ~%name%
+           ~%%end:foo%
+          """;
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
     try {
@@ -214,8 +216,8 @@ public class RenderErrorTest {
     } catch (RenderException e) {
       //System.out.println(e.getMessage());
       assertEquals(
-          "Number of repetitions already fixed for template foo",
-          e.getMessage());
+            "Number of repetitions already fixed for template foo",
+            e.getMessage());
       assertEquals(REPETITIONS_FIXED, e.getErrorCode());
       return;
     }
@@ -225,20 +227,20 @@ public class RenderErrorTest {
   @Test
   public void repetitionMismatch00() throws ParseException {
     String src = """
-        ~%%begin:foo%
-          ~%name%
-         ~%%end:foo%
-        """;
+          ~%%begin:foo%
+            ~%name%
+           ~%%end:foo%
+          """;
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
     try {
       rs.repeat("foo", 2);
-      rs.populate1("foo", "bar");
+      rs.populate1("foo", List.of("bar"));
     } catch (RenderException e) {
       System.out.println(e.getMessage());
       assertEquals(
-          "Error while populating foo. When populating a nested template in multiple passes you must always provide the same number of source data objects. Received 2 source data object(s) in first round. Now got 1.",
-          e.getMessage());
+            "Error while populating foo. When populating a nested template in multiple passes you must always provide the same number of source data objects. Received 2 source data object(s) in first round. Now got 1.",
+            e.getMessage());
       assertEquals(REPETITION_MISMATCH, e.getErrorCode());
       return;
     }

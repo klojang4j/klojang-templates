@@ -18,8 +18,8 @@ import static org.klojang.templates.x.MTag.*;
 
 /**
  * <p>A registry of {@linkplain Accessor accessors}. Accessors are used by the
- * {@link RenderSession#insert(Object, String...) insert()} and
- * {@link RenderSession#populate(String, Object, String...) populate()} methods of the
+ * {@link RenderSession#insert(Object) insert()} and
+ * {@link RenderSession#populate(String, Object) populate()} methods of the
  * {@code RenderSession} class to extract values from data provided by the data access
  * layer. This is how an {@code AccessorRegistry} decides which accessor to use for a
  * particular type of object:

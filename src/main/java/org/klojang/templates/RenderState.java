@@ -10,6 +10,8 @@ import static java.util.stream.Collectors.toList;
 import static org.klojang.check.CommonChecks.*;
 import static org.klojang.templates.RenderErrorCode.*;
 import static org.klojang.templates.TemplateUtils.getFQN;
+import static org.klojang.util.ObjectMethods.ifNotNull;
+import static org.klojang.util.ObjectMethods.n2e;
 
 final class RenderState {
 
@@ -20,7 +22,7 @@ final class RenderState {
   // variables that have not been set yet
   private final Set<String> todo;
 
-  private final Map<Template, SoloSession[]> children;
+  private final Map<Template, SessionData> children;
 
   // variable occurrence values. A variable may occur multiple times
   // within the same template, and occurrences may end up having
@@ -41,7 +43,11 @@ final class RenderState {
     return config;
   }
 
-  SoloSession[] createChildSessions(Template t, int repeats) {
+  SessionData getSessionData(Template tmpl) {
+    return children.get(tmpl);
+  }
+
+  SoloSession[] createChildSessions(Template t, String separator, int repeats) {
     SoloSession[] sessions;
     if (repeats == 0) {
       sessions = ZERO_SESSIONS;
@@ -51,31 +57,34 @@ final class RenderState {
         sessions[i] = config.newChildSession(t);
       }
     }
-    this.children.put(t, sessions);
+    this.children.put(t, new SessionData(sessions, n2e(separator)));
     return sessions;
   }
 
-  SoloSession[] getOrCreateChildSessions(Template t, int repeats) {
-    SoloSession[] children = this.children.get(t);
+  SoloSession[] getOrCreateChildSessions(Template t, String separator, int repeats) {
+    SessionData children = this.children.get(t);
     if (children == null) {
-      return createChildSessions(t, repeats);
-    } else if (children.length == repeats) {
-      return children;
+      return createChildSessions(t, separator, repeats);
+    } else if (children.sessions().length == repeats) {
+      return children.sessions();
     }
-    throw REPETITION_MISMATCH.getException(getFQN(t), children.length, repeats);
+    throw REPETITION_MISMATCH.getException(
+          getFQN(t),
+          children.sessions().length,
+          repeats);
   }
-
 
   boolean isProcessed(Template template) {
     return children.get(template) != null;
   }
 
   boolean isDisabled(Template template) {
-    return isProcessed(template) && children.get(template).length == 0;
+    SessionData sd = children.get(template);
+    return sd != null && sd.sessions().length == 0;
   }
 
   SoloSession[] getChildSessions(Template template) {
-    return children.get(template);
+    return ifNotNull(children.get(template), SessionData::sessions);
   }
 
   Object getVar(int partIndex) {
@@ -110,11 +119,11 @@ final class RenderState {
     Template myTmpl = state.config.template();
     state.todo.stream().map(var -> getFQN(myTmpl, var)).forEach(vars::add);
     myTmpl.getNestedTemplates().forEach(t -> {
-      SoloSession[] children = state.children.get(t);
+      SessionData children = state.children.get(t);
       if (children == null) {
         TemplateUtils.collectFQNs(t, vars);
-      } else if (children.length > 0) {
-        collectUnsetVariables(children[0].state(), vars);
+      } else if (children.sessions().length > 0) {
+        collectUnsetVariables(children.sessions()[0].state(), vars);
       }
     });
   }
@@ -128,11 +137,11 @@ final class RenderState {
     Template myTmpl = state.config.template();
     myTmpl.getNestedTemplates().forEach(t -> {
       Path next = path.append(t.getName());
-      SoloSession[] children = state.children.get(t);
-      if (children == null) {
+      SessionData sd = state.children.get(t);
+      if (sd == null) {
         TemplateUtils.collectFQNs(t, vars, next);
-      } else if (children.length > 0) {
-        collectUnsetVariables(children[0].state(), vars, next);
+      } else if (sd.sessions().length > 0) {
+        collectUnsetVariables(sd.sessions()[0].state(), vars, next);
       }
     });
   }
@@ -144,12 +153,13 @@ final class RenderState {
   private static boolean ready(RenderState state) {
     if (state.todo.isEmpty()) {
       for (Template t : state.config.template().getNestedTemplates()) {
-        SoloSession[] children = state.children.get(t);
-        if (children == null) {
+        SessionData sd = state.children.get(t);
+        if (sd == null) {
           if (t.hasVariables()) {
             return false;
           }
-        } else if (children.length > 0 && !ready(children[0].state())) {
+        } else if (sd.sessions().length > 0
+              && !ready(sd.sessions()[0].state())) {
           return false;
         }
       }
@@ -175,15 +185,15 @@ final class RenderState {
       Check.that(name).is(in(), tmpl.getNestedTemplateNames(),
             NO_SUCH_TEMPLATE.getExceptionSupplier(getFQN(tmpl, name)));
       Template nested = tmpl.getNestedTemplate(name);
-      SoloSession[] childSessions = state.children.get(nested);
-      if (childSessions != null) {
-        Arrays.stream(childSessions).forEach(s -> unset(s.state(), path.shift()));
+      SessionData children = state.children.get(nested);
+      if (children != null) {
+        Arrays.stream(children.sessions()).forEach(s -> unset(s.state(), path.shift()));
       }
     }
   }
 
   void clear(Template tmpl) {
-    Arrays.stream(children.get(tmpl)).forEach(this::clear);
+    Arrays.stream(children.get(tmpl).sessions()).forEach(this::clear);
     children.remove(tmpl);
   }
 
@@ -191,7 +201,11 @@ final class RenderState {
     RenderState state = session.state();
     state.varValues.clear();
     state.todo.addAll(state.config.template().getVariables());
-    state.children.values().stream().flatMap(Arrays::stream).forEach(this::clear);
+    state.children.values()
+          .stream()
+          .map(SessionData::sessions)
+          .flatMap(Arrays::stream)
+          .forEach(this::clear);
     state.children.clear();
   }
 
@@ -214,13 +228,13 @@ final class RenderState {
     Check.that(name).is(in(), tmpl.getNestedTemplateNames(),
           NO_SUCH_TEMPLATE.getExceptionSupplier(getFQN(tmpl, name)));
     Template nested = tmpl.getNestedTemplate(name);
-    SoloSession[] childSessions = state.children.get(nested);
-    if (childSessions == null) {
+    SessionData children = state.children.get(nested);
+    if (children == null) {
       return false;
-    } else if (childSessions.length == 0) {
+    } else if (children.sessions().length == 0) {
       return true;
     }
-    return isSet(childSessions[0].state(), path.shift());
+    return isSet(children.sessions()[0].state(), path.shift());
   }
 
 }

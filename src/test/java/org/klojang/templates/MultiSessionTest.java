@@ -9,58 +9,59 @@ import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.klojang.templates.VarGroup.JS_ATTR;
 
 public class MultiSessionTest {
 
   @Test
   public void set00() throws ParseException {
     String src = """
-        <html><body>
-        ~%%begin:companies%
-            <p>Name: ~%name%</p>
-            <p>Country: ~%country%</p>
-        ~%%end:companies%
-        </body></html>
-        """;
+          <html><body>
+          ~%%begin:companies%
+              <p>Name: ~%name%</p>
+              <p>Country: ~%country%</p>
+          ~%%end:companies%
+          </body></html>
+          """;
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
     String out = rs.repeat("companies", 2)
-        .set("name", "Apple")
-        .set("country", "USA")
-        .render();
+          .set("name", "Apple")
+          .set("country", "USA")
+          .render();
     String expected = """
-            <p>Name: Apple</p>
-            <p>Country: USA</p>
-                
-            <p>Name: Apple</p>
-            <p>Country: USA</p>
-        """;
+              <p>Name: Apple</p>
+              <p>Country: USA</p>
+                  
+              <p>Name: Apple</p>
+              <p>Country: USA</p>
+          """;
     assertEquals(nospace(expected), nospace(out));
   }
 
   @Test
   public void set01() throws ParseException {
     String src = """
-        <html><body>
-        ~%%begin:companies%
-            <p>Name: ~%name%</p>
-            <p>Country: ~%country%</p>
-        ~%%end:companies%
-        </body></html>
-        """;
+          <html><body>
+          ~%%begin:companies%
+              <p>Name: ~%name%</p>
+              <p>Country: ~%country%</p>
+          ~%%end:companies%
+          </body></html>
+          """;
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
     String out = rs.repeat("companies", 2)
-        .set("name", VarGroup.JS, "Apple")
-        .set("country", VarGroup.TEXT, "USA")
-        .render();
+          .set("name", VarGroup.JS, "Apple")
+          .set("country", VarGroup.TEXT, "USA")
+          .render();
     String expected = """
-            <p>Name: Apple</p>
-            <p>Country: USA</p>
-                
-            <p>Name: Apple</p>
-            <p>Country: USA</p>
-        """;
+              <p>Name: Apple</p>
+              <p>Country: USA</p>
+                  
+              <p>Name: Apple</p>
+              <p>Country: USA</p>
+          """;
     assertEquals(nospace(expected), nospace(out));
   }
 
@@ -71,8 +72,8 @@ public class MultiSessionTest {
     RenderSession rs = tmpl.newRenderSession();
     MutableInt mi = new MutableInt();
     String out = rs.repeat("companies", 2)
-        .setDelayed("name", () -> "foo" + mi.pp())
-        .render();
+          .setDelayed("name", () -> "foo" + mi.pp())
+          .render();
     // System.out.println(out);
     assertEquals("foo0foo1foo2foo3", out);
   }
@@ -84,8 +85,8 @@ public class MultiSessionTest {
     RenderSession rs = tmpl.newRenderSession();
     MutableInt mi = new MutableInt();
     String out = rs.repeat("companies", 2)
-        .setDelayed("name", VarGroup.HTML, () -> ">" + mi.pp())
-        .render();
+          .setDelayed("name", VarGroup.HTML, () -> ">" + mi.pp())
+          .render();
     // System.out.println(out);
     assertEquals("&gt;0&gt;1&gt;2&gt;3", out);
   }
@@ -93,10 +94,10 @@ public class MultiSessionTest {
   @Test
   public void setPath00() throws ParseException {
     String src = """
-        ~%%begin:companies%
-             ~%%begin:departments%~%name%~%%end:departments%
-        ~%%end:companies%
-        """;
+          ~%%begin:companies%
+               ~%%begin:departments%~%name%~%%end:departments%
+          ~%%end:companies%
+          """;
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
     rs.setPath("companies.departments.name", i -> "foo");
@@ -108,10 +109,10 @@ public class MultiSessionTest {
   @Test
   public void setPath01() throws ParseException {
     String src = """
-        ~%%begin:companies%
-             ~%%begin:departments%~%name%~%%end:departments%
-        ~%%end:companies%
-        """;
+          ~%%begin:companies%
+               ~%%begin:departments%~%name%~%%end:departments%
+          ~%%end:companies%
+          """;
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
     rs.setPath("companies.departments.name", VarGroup.HTML, true, i -> "<");
@@ -123,10 +124,10 @@ public class MultiSessionTest {
   @Test
   public void setPath02() throws ParseException {
     String src = """
-        ~%%begin:companies%
-             ~%%begin:departments%~%name%~%%end:departments%
-        ~%%end:companies%
-        """;
+          ~%%begin:companies%
+               ~%%begin:departments%~%name%~%%end:departments%
+          ~%%end:companies%
+          """;
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
     rs.repeat("companies", 3);
@@ -139,10 +140,10 @@ public class MultiSessionTest {
   @Test
   public void setPath03() throws ParseException {
     String src = """
-        ~%%begin:companies%
-             ~%%begin:departments%~%name%~%%end:departments%
-        ~%%end:companies%
-        """;
+          ~%%begin:companies%
+               ~%%begin:departments%~%name%~%%end:departments%
+          ~%%end:companies%
+          """;
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
     rs.repeat("companies", 3);
@@ -155,10 +156,10 @@ public class MultiSessionTest {
   @Test
   public void setPath04() throws ParseException {
     String src = """
-        ~%%begin:companies%
-             ~%%begin:departments%~%name%~%%end:departments%
-        ~%%end:companies%
-        """;
+          ~%%begin:companies%
+               ~%%begin:departments%~%name%~%%end:departments%
+          ~%%end:companies%
+          """;
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
     rs.in("companies").repeat("departments", 3);
@@ -171,10 +172,10 @@ public class MultiSessionTest {
   @Test
   public void setPath05() throws ParseException {
     String src = """
-        ~%%begin:companies%
-            ~%name%
-        ~%%end:companies%
-        """;
+          ~%%begin:companies%
+              ~%name%
+          ~%%end:companies%
+          """;
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
     rs.repeat("companies", 3).setPath("name", i -> "foo" + i);
@@ -186,10 +187,10 @@ public class MultiSessionTest {
   @Test
   public void setPath06() throws ParseException {
     String src = """
-        ~%%begin:companies%
-            ~%name%
-        ~%%end:companies%
-        """;
+          ~%%begin:companies%
+              ~%name%
+          ~%%end:companies%
+          """;
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
     rs.setPath("companies.name", VarGroup.HTML, false, i -> "foo");
@@ -200,12 +201,12 @@ public class MultiSessionTest {
   @Test
   public void setPath07() throws ParseException {
     String src = """
-        ~%%begin:companies%
-            ~%%begin:departments%
-                ~%name%
-            ~%%end:departments%
-        ~%%end:companies%
-        """;
+          ~%%begin:companies%
+              ~%%begin:departments%
+                  ~%name%
+              ~%%end:departments%
+          ~%%end:companies%
+          """;
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
     rs.in("companies").setPath("departments.name", VarGroup.HTML, false, i -> "foo");
@@ -216,12 +217,12 @@ public class MultiSessionTest {
   @Test
   public void setPath08() throws ParseException {
     String src = """
-        ~%%begin:companies%
-            ~%%begin:departments%
-                ~%name%
-            ~%%end:departments%
-        ~%%end:companies%
-        """;
+          ~%%begin:companies%
+              ~%%begin:departments%
+                  ~%name%
+              ~%%end:departments%
+          ~%%end:companies%
+          """;
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
     rs.in("companies").setPath("departments.name", VarGroup.HTML, true, i -> "foo");
@@ -232,17 +233,17 @@ public class MultiSessionTest {
   @Test
   public void setPath09() throws ParseException {
     String src = """
-        ~%%begin:companies%
-            ~%%begin:departments%
-                ~%name%
-            ~%%end:departments%
-        ~%%end:companies%
-        """;
+          ~%%begin:companies%
+              ~%%begin:departments%
+                  ~%name%
+              ~%%end:departments%
+          ~%%end:companies%
+          """;
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
     rs.in("companies")
-        .repeat("departments", 2)
-        .setPath("name", VarGroup.HTML, true, i -> "Foo");
+          .repeat("departments", 2)
+          .setPath("name", VarGroup.HTML, true, i -> "Foo");
     String out = rs.render();
     assertEquals("FooFoo", nospace(out));
   }
@@ -250,10 +251,10 @@ public class MultiSessionTest {
   @Test
   public void ifNotSet00() throws ParseException {
     String src = """
-        ~%%begin:companies%
-            ~%name%
-        ~%%end:companies%
-        """;
+          ~%%begin:companies%
+              ~%name%
+          ~%%end:companies%
+          """;
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
     rs.repeat("companies", 2);
@@ -263,76 +264,76 @@ public class MultiSessionTest {
   @Test
   public void ifNotSet01() throws ParseException {
     String src = """
-        ~%%begin:companies%
-            ~%%begin:departments%
-                ~%%begin:employees%
-                    ~%%begin:roles%
-                        ~%role%
-                    ~%%end:roles%
-                ~%%end:employees%
-            ~%%end:departments%
-        ~%%end:companies%
-        """;
+          ~%%begin:companies%
+              ~%%begin:departments%
+                  ~%%begin:employees%
+                      ~%%begin:roles%
+                          ~%role%
+                      ~%%end:roles%
+                  ~%%end:employees%
+              ~%%end:departments%
+          ~%%end:companies%
+          """;
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
 
     rs.repeat("companies", 2).ifNotSet("departments.employees.roles.role",
-        i -> "Director");
+          i -> "Director");
     assertEquals("DirectorDirector", nospace(rs.render()));
     rs.in("companies").ifNotSet("departments.employees.roles.role",
-        i -> "Programmer");
+          i -> "Programmer");
     assertEquals("DirectorDirector", nospace(rs.render()));
     rs.in("companies").unset("departments.employees.roles.role");
     rs.in("companies").ifNotSet("departments.employees.roles.role",
-        i -> "Programmer");
+          i -> "Programmer");
     assertEquals("ProgrammerProgrammer", nospace(rs.render()));
   }
 
   @Test
   public void ifNotSet02() throws ParseException {
     String src = """
-        ~%%begin:companies%
-            ~%%begin:departments%
-                ~%%begin:employees%
-                    ~%%begin:roles%
-                        ~%role%
-                    ~%%end:roles%
-                ~%%end:employees%
-            ~%%end:departments%
-        ~%%end:companies%
-        """;
+          ~%%begin:companies%
+              ~%%begin:departments%
+                  ~%%begin:employees%
+                      ~%%begin:roles%
+                          ~%role%
+                      ~%%end:roles%
+                  ~%%end:employees%
+              ~%%end:departments%
+          ~%%end:companies%
+          """;
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
 
     rs.repeat("companies", 2).ifNotSet("departments.employees.roles.role",
-        i -> "Director");
+          i -> "Director");
     assertEquals("DirectorDirector", nospace(rs.render()));
     rs.in("companies").ifNotSet("departments.employees.roles.role",
-        i -> "Programmer");
+          i -> "Programmer");
     assertEquals("DirectorDirector", nospace(rs.render()));
     rs.in("companies").unset("departments.employees.roles.role");
     rs.in("companies").ifNotSet("departments.employees.roles.role",
-        i -> "Programmer");
+          i -> "Programmer");
     assertEquals("ProgrammerProgrammer", nospace(rs.render()));
   }
 
   @Test
   public void ifNotSet03() throws ParseException {
     String src = """
-        ~%global_var%
-        ~%%begin:companies%
-            ~%company_var%
-            ~%%begin:departments%
-                ~%department_var%
-                ~%%begin:employees%
-                   ~%employee_var%
-                    ~%%begin:roles%
-                        ~%role%
-                    ~%%end:roles%
-                ~%%end:employees%
-            ~%%end:departments%
-        ~%%end:companies%
-        """;
+          ~%global_var%
+          ~%%begin:companies%
+              ~%company_var%
+              ~%%begin:departments%
+                  ~%department_var%
+                  ~%%begin:employees%
+                     ~%employee_var%
+                      ~%%begin:roles%
+                          ~%role%
+                      ~%%end:roles%
+                  ~%%end:employees%
+              ~%%end:departments%
+          ~%%end:companies%
+          """;
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
 
@@ -356,8 +357,8 @@ public class MultiSessionTest {
     rs.clear("companies");
 
     rs.in("companies")
-        .repeat("departments", 3)
-        .ifNotSet("department_var", i -> "Pooh");
+          .repeat("departments", 3)
+          .ifNotSet("department_var", i -> "Pooh");
     assertEquals("PoohPoohPooh", nospace(rs.render()));
     rs.in("companies").unset("departments.department_var");
 
@@ -366,7 +367,7 @@ public class MultiSessionTest {
 
     rs.in("companies.departments.employees").unset("employee_var");
     rs.in("companies.departments")
-        .ifNotSet("employees.roles.role", VarGroup.TEXT, i -> "Boom");
+          .ifNotSet("employees.roles.role", VarGroup.TEXT, i -> "Boom");
     assertEquals("BoomBoomBoom", nospace(rs.render()));
     rs.in("companies.departments.employees.roles").ifNotSet("role", i -> "Foo");
     assertEquals("BoomBoomBoom", nospace(rs.render()));
@@ -379,47 +380,47 @@ public class MultiSessionTest {
   @Test
   public void repeat00() throws ParseException {
     String src = """
-        <html><body>
-        ~%%begin:companies%
-            <p>~%name%</p>
-            ~%%begin:departments%<p>~%name%</p>~%%end:departments%
-        ~%%end:companies%
-        </body></html>
-        """;
+          <html><body>
+          ~%%begin:companies%
+              <p>~%name%</p>
+              ~%%begin:departments%<p>~%name%</p>~%%end:departments%
+          ~%%end:companies%
+          </body></html>
+          """;
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
     rs.repeat("companies", 3).set("name", "Shell").repeat("departments", 3).set(
-        "name",
-        "HR");
+          "name",
+          "HR");
     String out = rs.render();
     //System.out.println(out);
     String expected = """
-        <html><body>
-                
-            <p>Shell</p>
-            <p>HR</p><p>HR</p><p>HR</p>
-                
-            <p>Shell</p>
-            <p>HR</p><p>HR</p><p>HR</p>
-                
-            <p>Shell</p>
-            <p>HR</p><p>HR</p><p>HR</p>
-                
-        </body></html>
-        """;
+          <html><body>
+                  
+              <p>Shell</p>
+              <p>HR</p><p>HR</p><p>HR</p>
+                  
+              <p>Shell</p>
+              <p>HR</p><p>HR</p><p>HR</p>
+                  
+              <p>Shell</p>
+              <p>HR</p><p>HR</p><p>HR</p>
+                  
+          </body></html>
+          """;
     assertEquals(nospace(expected), nospace(out));
   }
 
   @Test
   public void allSet00() throws ParseException {
     String src = """
-        <html><body>
-        ~%%begin:companies%
-            <p>~%name%</p>
-            ~%%begin:departments%<p>~%name%</p>~%%end:departments%
-        ~%%end:companies%
-        </body></html>
-        """;
+          <html><body>
+          ~%%begin:companies%
+              <p>~%name%</p>
+              ~%%begin:departments%<p>~%name%</p>~%%end:departments%
+          ~%%end:companies%
+          </body></html>
+          """;
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
     rs.repeat("companies", 3).set("name", "Shell");
@@ -431,13 +432,13 @@ public class MultiSessionTest {
   @Test
   public void allSet01() throws ParseException {
     String src = """
-        <html><body>
-        ~%%begin:companies%
-            <p>~%name%</p>
-            ~%%begin:departments%<p>~%name%</p>~%%end:departments%
-        ~%%end:companies%
-        </body></html>
-        """;
+          <html><body>
+          ~%%begin:companies%
+              <p>~%name%</p>
+              ~%%begin:departments%<p>~%name%</p>~%%end:departments%
+          ~%%end:companies%
+          </body></html>
+          """;
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
     rs.repeat("companies", 3).set("name", "Shell");
@@ -456,255 +457,254 @@ public class MultiSessionTest {
   @Test
   public void populate00() throws ParseException {
     String src = """
-        <html><body>
-        ~%%begin:companies%
-            ~%%begin:departments%
-                <p>Name: ~%name%</p>
-                <p>Description: ~%description%</p>
-            ~%%end:departments%
-        ~%%end:companies%
-        </body></html>
-        """;
+          <html><body>
+          ~%%begin:companies%
+              ~%%begin:departments%
+                  <p>Name: ~%name%</p>
+                  <p>Description: ~%description%</p>
+              ~%%end:departments%
+          ~%%end:companies%
+          </body></html>
+          """;
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
     String out = rs.repeat("companies", 2)
-        .populate("departments",
-            Map.of("name", "HR", "description", "Human Resources"))
-        .render();
+          .populate("departments",
+                Map.of("name", "HR", "description", "Human Resources"))
+          .render();
     String expected = """
-        <p>Name: HR</p>
-        <p>Description: Human Resources</p>
-            
-        <p>Name: HR</p>
-        <p>Description: Human Resources</p>
-        """;
+          <p>Name: HR</p>
+          <p>Description: Human Resources</p>
+              
+          <p>Name: HR</p>
+          <p>Description: Human Resources</p>
+          """;
     assertEquals(nospace(expected), nospace(out));
   }
 
   @Test
   public void populate01() throws ParseException {
     String src = """
-        <html><body>
-        ~%%begin:companies%
-            ~%%begin:departments%
-                <p>Name: ~%name%</p>
-                <p>Description: ~%description%</p>
-            ~%%end:departments%
-        ~%%end:companies%
-        </body></html>
-        """;
+          <html><body>
+          ~%%begin:companies%
+              ~%%begin:departments%
+                  <p>Name: ~%name%</p>
+                  <p>Description: ~%description%</p>
+              ~%%end:departments%
+          ~%%end:companies%
+          </body></html>
+          """;
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
     String out = rs.repeat("companies", 2)
-        .populate("departments",
-            Map.of("name", "ICT", "description", "Information Technology"),
-            "name")
-        .populate("departments",
-            Map.of("name", "HR", "description", "Human Resources"),
-            "description")
-        .render();
+          .populate(
+                "departments",
+                Map.of("name", "ICT", "description", "Information Technology"))
+          .render();
     String expected = """
-        <p>Name: ICT</p>
-        <p>Description: Human Resources</p>
-            
-        <p>Name: ICT</p>
-        <p>Description: Human Resources</p>
-        """;
+          <p>Name: ICT</p>
+          <p>Description: Information Technology</p>
+              
+          <p>Name: ICT</p>
+          <p>Description: Information Technology</p>
+          """;
     assertEquals(nospace(expected), nospace(out));
   }
 
   @Test
   public void populate02() throws ParseException {
     String src = """
-        <html><body>
-        ~%%begin:companies%
-            ~%%begin:departments%
-                <p>Name: ~%name%</p>
-                <p>Description: ~%description%</p>
-            ~%%end:departments%
-        ~%%end:companies%
-        </body></html>
-        """;
+          <html><body>
+          ~%%begin:companies%
+              ~%%begin:departments%
+                  <p>Name: ~%name%</p>
+                  <p>Description: ~%description%</p>
+              ~%%end:departments%
+          ~%%end:companies%
+          </body></html>
+          """;
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
     String out = rs.repeat("companies", 2)
-        .populate("departments",
-            Map.of("name", "HR", "description", "Human Resources"),
-            VarGroup.HTML)
-        .render();
+          .populate("departments",
+                Map.of("name", "HR", "description", "Human Resources"),
+                VarGroup.HTML,
+                null,
+                null)
+          .render();
     String expected = """
-        <p>Name: HR</p>
-        <p>Description: Human Resources</p>
-            
-        <p>Name: HR</p>
-        <p>Description: Human Resources</p>
-        """;
+          <p>Name: HR</p>
+          <p>Description: Human Resources</p>
+              
+          <p>Name: HR</p>
+          <p>Description: Human Resources</p>
+          """;
     assertEquals(nospace(expected), nospace(out));
   }
 
   @Test
   public void in00() throws ParseException {
     String src = """
-        <html><body>
-        ~%%begin:companies%
-            ~%%begin:departments%
-                <p>Name: ~%name%</p>
-                <p>Description: ~%description%</p>
-            ~%%end:departments%
-        ~%%end:companies%
-        </body></html>
-        """;
+          <html><body>
+          ~%%begin:companies%
+              ~%%begin:departments%
+                  <p>Name: ~%name%</p>
+                  <p>Description: ~%description%</p>
+              ~%%end:departments%
+          ~%%end:companies%
+          </body></html>
+          """;
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
     rs.in("companies")
-        .in("departments")
-        .set("name", "HR");
+          .in("departments")
+          .set("name", "HR");
     rs.in("companies")
-        .in("departments")
-        .set("description", "Human Resources");
+          .in("departments")
+          .set("description", "Human Resources");
     String out = rs.in("companies").render();
     String expected = """
-        <p>Name: HR</p>
-        <p>Description: Human Resources</p>
-        """;
+          <p>Name: HR</p>
+          <p>Description: Human Resources</p>
+          """;
     assertEquals(nospace(expected), nospace(out));
   }
 
   @Test
   public void in01() throws ParseException {
     String src = """
-        <html><body>
-        ~%%begin:companies%
-            ~%%begin:departments%
-                <p>Name: ~%name%</p>
-                <p>Description: ~%description%</p>
-            ~%%end:departments%
-        ~%%end:companies%
-        </body></html>
-        """;
+          <html><body>
+          ~%%begin:companies%
+              ~%%begin:departments%
+                  <p>Name: ~%name%</p>
+                  <p>Description: ~%description%</p>
+              ~%%end:departments%
+          ~%%end:companies%
+          </body></html>
+          """;
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
     rs.repeat("companies", 2)
-        .in("departments")
-        .set("name", "HR");
+          .in("departments")
+          .set("name", "HR");
     rs.in("companies")
-        .in("departments")
-        .set("description", "Human Resources");
+          .in("departments")
+          .set("description", "Human Resources");
     String out = rs.in("companies").render();
     String expected = """
-        <p>Name: HR</p>
-        <p>Description: Human Resources</p>
-            
-        <p>Name: HR</p>
-        <p>Description: Human Resources</p>
-        """;
+          <p>Name: HR</p>
+          <p>Description: Human Resources</p>
+              
+          <p>Name: HR</p>
+          <p>Description: Human Resources</p>
+          """;
     assertEquals(nospace(expected), nospace(out));
   }
 
   @Test
   public void enable00() throws ParseException {
     String src = """
-        <html><body>
-        ~%%begin:companies%
-            ~%%begin:text-only1% Hello ~%%end:text-only1%
-            ~%%begin:text-only2% World ~%%end:text-only2%
-        ~%%end:companies%
-        </body></html>
-        """;
+          <html><body>
+          ~%%begin:companies%
+              ~%%begin:text-only1% Hello ~%%end:text-only1%
+              ~%%begin:text-only2% World ~%%end:text-only2%
+          ~%%end:companies%
+          </body></html>
+          """;
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
     String out = rs.repeat("companies", 2).enable().render();
     //System.out.println(out);
     String expected = """
 
-        Hello 
-        World 
+          Hello 
+          World 
 
-        Hello 
-        World 
+          Hello 
+          World 
 
-        """;
+          """;
     assertEquals(nospace(expected), nospace(out));
   }
 
   @Test
   public void enable01() throws ParseException {
     String src = """
-        <html><body>
-        ~%%begin:companies%
-            ~%%begin:text-only1% Hello ~%%end:text-only1%
-            ~%%begin:text-only2% World ~%%end:text-only2%
-        ~%%end:companies%
-        </body></html>
-        """;
+          <html><body>
+          ~%%begin:companies%
+              ~%%begin:text-only1% Hello ~%%end:text-only1%
+              ~%%begin:text-only2% World ~%%end:text-only2%
+          ~%%end:companies%
+          </body></html>
+          """;
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
     String out = rs.repeat("companies", 2).enable("text-only2").render();
     //System.out.println(out);
     String expected = """
 
-        World 
+          World 
 
-        World 
+          World 
 
-        """;
+          """;
     assertEquals(nospace(expected), nospace(out));
   }
 
   @Test
   public void enable02() throws ParseException {
     String src = """
-        <html><body>
-        ~%%begin:companies%
-            ~%%begin:text-only1% Hello ~%%end:text-only1%
-            ~%%begin:text-only2% World ~%%end:text-only2%
-        ~%%end:companies%
-        </body></html>
-        """;
+          <html><body>
+          ~%%begin:companies%
+              ~%%begin:text-only1% Hello ~%%end:text-only1%
+              ~%%begin:text-only2% World ~%%end:text-only2%
+          ~%%end:companies%
+          </body></html>
+          """;
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
     String out = rs.repeat("companies", 2)
-        .enable("text-only2")
-        .enable("text-only1")
-        .render();
+          .enable("text-only2")
+          .enable("text-only1")
+          .render();
     //System.out.println(out);
     String expected = """
 
-        Hello
-        World 
+          Hello
+          World 
 
-        Hello
-        World 
+          Hello
+          World 
 
-        """;
+          """;
     assertEquals(nospace(expected), nospace(out));
   }
 
   @Test
   public void enable03() throws ParseException {
     String src = """
-        <html><body>
-        ~%%begin:companies%
-            ~%%begin:text-only1% Hello ~%%end:text-only1%
-            ~%%begin:text-only2% World ~%%end:text-only2%
-        ~%%end:companies%
-        </body></html>
-        """;
+          <html><body>
+          ~%%begin:companies%
+              ~%%begin:text-only1% Hello ~%%end:text-only1%
+              ~%%begin:text-only2% World ~%%end:text-only2%
+          ~%%end:companies%
+          </body></html>
+          """;
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
     String out = rs.repeat("companies", 2)
-        .enable("text-only2", "text-only1")
-        .render();
+          .enable("text-only2", "text-only1")
+          .render();
     //System.out.println(out);
     String expected = """
 
-        Hello
-        World 
+          Hello
+          World 
 
-        Hello
-        World 
+          Hello
+          World 
 
-        """;
+          """;
     assertEquals(nospace(expected), nospace(out));
   }
 
@@ -744,284 +744,288 @@ public class MultiSessionTest {
   @Test
   public void enable07() throws ParseException {
     String src = """
-        ~%%begin:companies%
-            ~%%begin:departments%
-                Foo
-            ~%%end:departments%
-        ~%%end:companies%
-        """;
+          ~%%begin:companies%
+              ~%%begin:departments%
+                  Foo
+              ~%%end:departments%
+          ~%%end:companies%
+          """;
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
     rs.repeat("companies", 3).enable(2, "departments");
-     assertEquals("FooFooFooFooFooFoo", nospace(rs.render()));
+    assertEquals("FooFooFooFooFooFoo", nospace(rs.render()));
   }
 
   @Test
   public void enableRecursive00() throws ParseException {
     String src = """
-        <html><body>
-        ~%%begin:companies%
-            ~%%begin:text-only1% Hello
-                ~%%begin:text-only3% Brave ~%%end:text-only3%
-            ~%%end:text-only1%
-            ~%%begin:text-only2% World ~%%end:text-only2%
-        ~%%end:companies%
-        </body></html>
-        """;
+          <html><body>
+          ~%%begin:companies%
+              ~%%begin:text-only1% Hello
+                  ~%%begin:text-only3% Brave ~%%end:text-only3%
+              ~%%end:text-only1%
+              ~%%begin:text-only2% World ~%%end:text-only2%
+          ~%%end:companies%
+          </body></html>
+          """;
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
     String out = rs.in("companies").enableRecursive().render();
     //System.out.println(out);
     String expected = """
 
-        Hello
-               Brave
-            
-        World 
+          Hello
+                 Brave
+              
+          World 
 
-        """;
+          """;
     assertEquals(nospace(expected), nospace(out));
   }
 
   @Test
   public void enableRecursive01() throws ParseException {
     String src = """
-        <html><body>
-        ~%%begin:companies%
-            ~%%begin:text-only1% Hello
-                ~%%begin:text-only3% Brave ~%%end:text-only3%
-            ~%%end:text-only1%
-            ~%%begin:text-only2% World ~%%end:text-only2%
-        ~%%end:companies%
-        </body></html>
-        """;
+          <html><body>
+          ~%%begin:companies%
+              ~%%begin:text-only1% Hello
+                  ~%%begin:text-only3% Brave ~%%end:text-only3%
+              ~%%end:text-only1%
+              ~%%begin:text-only2% World ~%%end:text-only2%
+          ~%%end:companies%
+          </body></html>
+          """;
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
     String out = rs.in("companies").enableRecursive("text-only1").render();
     //System.out.println(out);
     String expected = """
 
-        Hello
+          Hello
 
-        """;
+          """;
     assertEquals(nospace(expected), nospace(out));
   }
 
   @Test
   public void enableRecursive02() throws ParseException {
     String src = """
-        <html><body>
-        ~%%begin:companies%
-            ~%%begin:text-only1% Hello
-                ~%%begin:text-only3% Brave ~%%end:text-only3%
-            ~%%end:text-only1%
-            ~%%begin:text-only2% World ~%%end:text-only2%
-        ~%%end:companies%
-        </body></html>
-        """;
+          <html><body>
+          ~%%begin:companies%
+              ~%%begin:text-only1% Hello
+                  ~%%begin:text-only3% Brave ~%%end:text-only3%
+              ~%%end:text-only1%
+              ~%%begin:text-only2% World ~%%end:text-only2%
+          ~%%end:companies%
+          </body></html>
+          """;
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
     String out = rs.in("companies")
-        .enableRecursive("text-only1", "text-only3")
-        .render();
+          .enableRecursive("text-only1", "text-only3")
+          .render();
     //System.out.println(out);
     String expected = """
 
-        Hello
-            Brave
+          Hello
+              Brave
 
-        """;
+          """;
     assertEquals(nospace(expected), nospace(out));
   }
 
   @Test
   public void populate1_00() throws ParseException {
     String src = """
-        <html><body>~%%begin:foo%
-        ~%%begin:companies%<p>~%name%</p>~%%end:companies%
-        ~%%end:foo%</body></html>
-        """;
+          <html><body>~%%begin:foo%
+          ~%%begin:companies%<p>~%name%</p>~%%end:companies%
+          ~%%end:foo%</body></html>
+          """;
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
-    rs.in("foo").populate1("companies", "Shell");
+    rs.in("foo").populate1("companies", List.of("Shell"));
     String out = rs.render();
     //System.out.println(out);
     String expected = """
-        <html><body>
-        <p>Shell</p>
-        </body></html>
-        """;
+          <html><body>
+          <p>Shell</p>
+          </body></html>
+          """;
     assertEquals(nospace(expected), nospace(out));
   }
 
   @Test
   public void populate1_01() throws ParseException {
     String src = """
-        <html><body>~%%begin:foo%
-        ~%%begin:companies%<p>~%name%</p>~%%end:companies%
-        ~%%end:foo%</body></html>
-        """;
+          <html><body>~%%begin:foo%
+          ~%%begin:companies%<p>~%name%</p>~%%end:companies%
+          ~%%end:foo%</body></html>
+          """;
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
-    rs.repeat("foo", 1).populate1("companies", "MacDonald's", "Shell");
+    rs.repeat("foo", 1).populate1("companies", List.of("MacDonald's", "Shell"));
     String out = rs.render();
     //System.out.println(out);
     String expected = """
-        <html><body>
-        <p>MacDonald's</p><p>Shell</p>
-        </body></html>
-        """;
+          <html><body>
+          <p>MacDonald's</p><p>Shell</p>
+          </body></html>
+          """;
     assertEquals(nospace(expected), nospace(out));
   }
 
   @Test
   public void populate1_02() throws ParseException {
     String src = """
-        <html><body>~%%begin:foo%
-        ~%%begin:companies%<p>~%name%</p>~%%end:companies%
-        ~%%end:foo%</body></html>
-        """;
+          <html><body>~%%begin:foo%
+          ~%%begin:companies%<p>~%name%</p>~%%end:companies%
+          ~%%end:foo%</body></html>
+          """;
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
-    rs.in("foo").populate1("companies", VarGroup.JS_ATTR, "MacDonald's", "Shell");
+    rs.in("foo").populate1("companies", JS_ATTR, null, List.of("MacDonald's", "Shell"));
     String out = rs.render();
     //System.out.println(out);
     String expected = """
-        <html><body>
-        <p>MacDonald\\&#39;s</p><p>Shell</p>
-        </body></html>
-        """;
+          <html><body>
+          <p>MacDonald\\&#39;s</p><p>Shell</p>
+          </body></html>
+          """;
     assertEquals(nospace(expected), nospace(out));
   }
 
   @Test
   public void populate2_00() throws ParseException {
     String src = """
-        <html><body>~%%begin:foo%
-        ~%%begin:companies%
-        <p>~%name% (~%country%)</p>
-        ~%%end:companies%
-        ~%%end:foo%</body></html>
-        """;
+          <html><body>~%%begin:foo%
+          ~%%begin:companies%
+          <p>~%name% (~%country%)</p>
+          ~%%end:companies%
+          ~%%end:foo%</body></html>
+          """;
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
-    rs.in("foo").populate2("companies", "Shell", "USA");
+    rs.in("foo").populate2("companies", List.of("Shell", "USA"));
     String out = rs.render();
     //System.out.println(out);
     String expected = """
-        <html><body>
-        <p>Shell (USA)</p>
-        </body></html>
-        """;
+          <html><body>
+          <p>Shell (USA)</p>
+          </body></html>
+          """;
     assertEquals(nospace(expected), nospace(out));
   }
 
   @Test
   public void populate2_01() throws ParseException {
     String src = """
-        <html><body>~%%begin:foo%
-        ~%%begin:companies%
-        <p>~%name% (~%country%)</p>
-        ~%%end:companies%
-        ~%%end:foo%</body></html>
-        """;
+          <html><body>~%%begin:foo%
+          ~%%begin:companies%
+          <p>~%name% (~%country%)</p>
+          ~%%end:companies%
+          ~%%end:foo%</body></html>
+          """;
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
     rs.in("foo").populate2("companies",
-        VarGroup.HTML,
-        "MacDonald<<<s",
-        "USA",
-        "Shell",
-        "UK");
+          VarGroup.HTML,
+          null,
+          List.of(
+                "MacDonald<<<s",
+                "USA",
+                "Shell",
+                "UK"));
     String out = rs.render();
     //System.out.println(out);
     String expected = """
-        <html><body>
-        <p>MacDonald&lt;&lt;&lt;s (USA)</p>
-        <p>Shell (UK)</p>
-        </body></html>
-         """;
+          <html><body>
+          <p>MacDonald&lt;&lt;&lt;s (USA)</p>
+          <p>Shell (UK)</p>
+          </body></html>
+           """;
     assertEquals(nospace(expected), nospace(out));
   }
 
   @Test
   public void populate2_02() throws ParseException {
     String src = """
-        <html><body>~%%begin:foo%
-        ~%%begin:companies%<p>~%name%</p>~%%end:companies%
-        ~%%end:foo%</body></html>
-        """;
+          <html><body>~%%begin:foo%
+          ~%%begin:companies%<p>~%name%</p>~%%end:companies%
+          ~%%end:foo%</body></html>
+          """;
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
     rs.in("foo").populate1("companies",
-        VarGroup.JS_ATTR,
-        "MacDonald's",
-        "USA",
-        "Shell",
-        "UK");
+          JS_ATTR,
+          null,
+          List.of(
+                "MacDonald's",
+                "USA",
+                "Shell",
+                "UK"));
     String out = rs.render();
     //System.out.println(out);
     String expected = """
-        <html><body>
-        <p>MacDonald\\&#39;s</p><p>USA</p><p>Shell</p><p>UK</p>
-        </body></html>
-        """;
+          <html><body>
+          <p>MacDonald\\&#39;s</p><p>USA</p><p>Shell</p><p>UK</p>
+          </body></html>
+          """;
     assertEquals(nospace(expected), nospace(out));
   }
 
   @Test
   public void insert00() throws ParseException {
     String src = """
-        <html><body>
-        ~%%begin:companies%<p>~%name%</p>~%%end:companies%
-        </body></html>
-        """;
+          <html><body>
+          ~%%begin:companies%<p>~%name%</p>~%%end:companies%
+          </body></html>
+          """;
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
     String out = rs.in("companies").insert(Map.of("name", "Shell")).render();
     //System.out.println(out);
     String expected = """
-        <p>Shell</p>
-        """;
+          <p>Shell</p>
+          """;
     assertEquals(nospace(expected), nospace(out));
   }
 
   @Test
   public void insert01() throws ParseException {
     String src = """
-        <html><body>
-        ~%%begin:companies%<p>~%name%</p>~%%end:companies%
-        </body></html>
-        """;
+          <html><body>
+          ~%%begin:companies%<p>~%name%</p>~%%end:companies%
+          </body></html>
+          """;
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
     String out = rs.in("companies")
-        .insert(Map.of("name", "MacDonald's"), VarGroup.JS_ATTR)
-        .render();
+          .insert(Map.of("name", "MacDonald's"), JS_ATTR, null)
+          .render();
     //System.out.println(out);
     String expected = """
-        <p>MacDonald\\&#39;s</p>
-        """;
+          <p>MacDonald\\&#39;s</p>
+          """;
     assertEquals(nospace(expected), nospace(out));
   }
 
   @Test
   public void getChildSessions00() throws ParseException {
     String src = """
-        ~%%begin:companies%
-          ~%%begin:departments%
-            ~%%begin:employees%
-            ~%%end:employees%
-          ~%%end:departments%
-        ~%%end:companies%
-        """;
+          ~%%begin:companies%
+            ~%%begin:departments%
+              ~%%begin:employees%
+              ~%%end:employees%
+            ~%%end:departments%
+          ~%%end:companies%
+          """;
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
     rs.repeat("companies", 2).repeat("departments", 3).repeat("employees", 4);
     assertEquals(2, rs.getChildSessions("companies").size());
     assertEquals(6, rs.in("companies").getChildSessions("departments").size());
     assertEquals(24,
-        rs.in("companies").in("departments").getChildSessions("employees").size());
+          rs.in("companies").in("departments").getChildSessions("employees").size());
   }
 
   @Test
@@ -1062,12 +1066,12 @@ public class MultiSessionTest {
   @Test
   public void clear00() throws ParseException {
     String src = """
-        ~%%begin:companies%
-          ~%%begin:departments%
-            ~%name%
-          ~%%end:departments%
-        ~%%end:companies%
-        """;
+          ~%%begin:companies%
+            ~%%begin:departments%
+              ~%name%
+            ~%%end:departments%
+          ~%%end:companies%
+          """;
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
     RenderSession rs2 = rs.repeat("companies", 2);
@@ -1085,39 +1089,39 @@ public class MultiSessionTest {
   @Test
   public void getTemplate00() throws ParseException {
     String src = """
-        ~%%begin:companies%
-            ~%%begin:departments%
-                ~%%begin:employees%
-                    ~%%begin:roles%
-                        ~%role%
-                    ~%%end:roles%
-                ~%%end:employees%
-            ~%%end:departments%
-        ~%%end:companies%
-        """;
+          ~%%begin:companies%
+              ~%%begin:departments%
+                  ~%%begin:employees%
+                      ~%%begin:roles%
+                          ~%role%
+                      ~%%end:roles%
+                  ~%%end:employees%
+              ~%%end:departments%
+          ~%%end:companies%
+          """;
     Template tmpl = Template.fromString(src);
     assertEquals("employees", tmpl.newRenderSession()
-        .in("companies.departments.employees")
-        .getTemplate().getName());
+          .in("companies.departments.employees")
+          .getTemplate().getName());
   }
 
   @Test
   public void getUnsetVars00() throws ParseException {
     String src = """
-        ~%global_var%
-        ~%%begin:companies%
-            ~%company_var%
-            ~%%begin:departments%
-                ~%department_var%
-                ~%%begin:employees%
-                   ~%employee_var%
-                    ~%%begin:roles%
-                        ~%role%
-                    ~%%end:roles%
-                ~%%end:employees%
-            ~%%end:departments%
-        ~%%end:companies%
-        """;
+          ~%global_var%
+          ~%%begin:companies%
+              ~%company_var%
+              ~%%begin:departments%
+                  ~%department_var%
+                  ~%%begin:employees%
+                     ~%employee_var%
+                      ~%%begin:roles%
+                          ~%role%
+                      ~%%end:roles%
+                  ~%%end:employees%
+              ~%%end:departments%
+          ~%%end:companies%
+          """;
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
     List<String> vars = rs.repeat("companies", 2).getUnsetVariables();
@@ -1127,109 +1131,109 @@ public class MultiSessionTest {
   @Test
   public void getUnsetVars01() throws ParseException {
     String src = """
-        ~%%begin:companies%
-            ~%company_var%
-            ~%%begin:departments%
-                ~%department_var%
-                ~%%begin:employees%
-                   ~%employee_var%
-                    ~%%begin:roles%
-                        ~%role%
-                    ~%%end:roles%
-                ~%%end:employees%
-            ~%%end:departments%
-        ~%%end:companies%
-        """;
+          ~%%begin:companies%
+              ~%company_var%
+              ~%%begin:departments%
+                  ~%department_var%
+                  ~%%begin:employees%
+                     ~%employee_var%
+                      ~%%begin:roles%
+                          ~%role%
+                      ~%%end:roles%
+                  ~%%end:employees%
+              ~%%end:departments%
+          ~%%end:companies%
+          """;
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
     assertEquals(List.of(), rs.repeat("companies", 0).getUnsetVariables());
     assertEquals(List.of(),
-        rs.in("companies").repeat("departments", 0).getUnsetVariables());
+          rs.in("companies").repeat("departments", 0).getUnsetVariables());
   }
 
   @Test
   public void getAllUnsetVars00() throws ParseException {
     String src = """
-        ~%global_var%
-        ~%%begin:companies%
-            ~%company_var%
-            ~%%begin:departments%
-                ~%department_var%
-                ~%%begin:employees%
-                   ~%employee_var%
-                    ~%%begin:roles%
-                        ~%role%
-                    ~%%end:roles%
-                ~%%end:employees%
-            ~%%end:departments%
-        ~%%end:companies%
-        """;
+          ~%global_var%
+          ~%%begin:companies%
+              ~%company_var%
+              ~%%begin:departments%
+                  ~%department_var%
+                  ~%%begin:employees%
+                     ~%employee_var%
+                      ~%%begin:roles%
+                          ~%role%
+                      ~%%end:roles%
+                  ~%%end:employees%
+              ~%%end:departments%
+          ~%%end:companies%
+          """;
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
     List<String> vars = rs.repeat("companies", 2).getAllUnsetVariables();
     assertEquals(List.of(
-            "companies.company_var",
-            "companies.departments.department_var",
-            "companies.departments.employees.employee_var",
-            "companies.departments.employees.roles.role"),
-        vars);
+                "companies.company_var",
+                "companies.departments.department_var",
+                "companies.departments.employees.employee_var",
+                "companies.departments.employees.roles.role"),
+          vars);
     vars = rs.in("companies").getAllUnsetVariables(true);
     assertEquals(List.of(
-            "company_var",
-            "departments.department_var",
-            "departments.employees.employee_var",
-            "departments.employees.roles.role"),
-        vars);
+                "company_var",
+                "departments.department_var",
+                "departments.employees.employee_var",
+                "departments.employees.roles.role"),
+          vars);
     rs.setPath("companies.company_var", i -> "Foo");
     vars = rs.in("companies").getAllUnsetVariables(false);
     assertEquals(List.of(
-            "companies.departments.department_var",
-            "companies.departments.employees.employee_var",
-            "companies.departments.employees.roles.role"),
-        vars);
+                "companies.departments.department_var",
+                "companies.departments.employees.employee_var",
+                "companies.departments.employees.roles.role"),
+          vars);
 
     rs.in("companies.departments").setPath("employees.employee_var", i -> "Bar");
 
     vars = rs.in("companies.departments").getAllUnsetVariables(true);
     //System.out.println(vars);
     assertEquals(List.of(
-            "department_var",
-            "employees.roles.role"),
-        vars);
+                "department_var",
+                "employees.roles.role"),
+          vars);
 
     vars = rs.in("companies.departments").getAllUnsetVariables(false);
     //System.out.println(vars);
     assertEquals(List.of(
-            "companies.departments.department_var",
-            "companies.departments.employees.roles.role"),
-        vars);
+                "companies.departments.department_var",
+                "companies.departments.employees.roles.role"),
+          vars);
   }
 
   @Test
   public void getAllUnsetVars01() throws ParseException {
     String src = """
-        ~%%begin:companies%
-            ~%company_var%
-            ~%%begin:departments%
-                ~%department_var%
-                ~%%begin:employees%
-                   ~%employee_var%
-                    ~%%begin:roles%
-                        ~%role%
-                    ~%%end:roles%
-                ~%%end:employees%
-            ~%%end:departments%
-        ~%%end:companies%
-        """;
+          ~%%begin:companies%
+              ~%company_var%
+              ~%%begin:departments%
+                  ~%department_var%
+                  ~%%begin:employees%
+                     ~%employee_var%
+                      ~%%begin:roles%
+                          ~%role%
+                      ~%%end:roles%
+                  ~%%end:employees%
+              ~%%end:departments%
+          ~%%end:companies%
+          """;
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
     assertEquals(List.of(), rs.repeat("companies", 0).getAllUnsetVariables());
     assertEquals(List.of(),
-        rs.in("companies").repeat("departments", 0).getAllUnsetVariables());
+          rs.in("companies").repeat("departments", 0).getAllUnsetVariables());
     assertEquals(List.of(),
-        rs.in("companies.departments").getAllUnsetVariables(false));
+          rs.in("companies.departments").getAllUnsetVariables(false));
     assertEquals(List.of(),
-        rs.in("companies.departments").getAllUnsetVariables(true));
+          rs.in("companies.departments").getAllUnsetVariables(true));
   }
 
   private static String nospace(String s) {

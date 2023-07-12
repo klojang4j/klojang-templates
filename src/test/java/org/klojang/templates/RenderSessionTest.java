@@ -24,8 +24,8 @@ public class RenderSessionTest {
   public void set01() throws ParseException {
     Stringifier stringifier = obj -> String.valueOf(obj).toUpperCase();
     StringifierRegistry registry = StringifierRegistry.configure()
-        .forVarGroup("upper", stringifier)
-        .freeze();
+          .forVarGroup("upper", stringifier)
+          .freeze();
     String src = "~%upper:foo%";
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession(registry);
@@ -38,8 +38,8 @@ public class RenderSessionTest {
   public void set02() throws ParseException {
     Stringifier stringifier = obj -> String.valueOf(obj).toUpperCase();
     StringifierRegistry registry = StringifierRegistry.configure()
-        .forVarGroup("upper", stringifier)
-        .freeze();
+          .forVarGroup("upper", stringifier)
+          .freeze();
     String src = "<td>~%foo%</td>";
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession(registry);
@@ -62,35 +62,35 @@ public class RenderSessionTest {
   @Test
   public void populate01() throws ParseException {
     String src = """
-        <html><body>
-          <table>
-            ~%%begin:companies%
-            <tr>
-              <td>Name</td><td>~%name%</td>
-              <td>Profits</td><td>~%profits%</td>
-              <td>Departments</td>
-              <td><table>
-                ~%%begin:departments%
-                <tr>
-                  <td>Name</td><td>~%name%</td>
-                  <td>Boss</td><td>~%boss%</td>
-                  <td>Employees</td>
-                  <td><table>
-                    ~%%begin:employees%
-                    <tr>
-                      <td>Name</td><td>~%name%</td>
-                      <td>Age</td><td>~%age%</td>
-                    </tr>
-                    ~%%end:employees%
+          <html><body>
+            <table>
+              ~%%begin:companies%
+              <tr>
+                <td>Name</td><td>~%name%</td>
+                <td>Profits</td><td>~%profits%</td>
+                <td>Departments</td>
+                <td><table>
+                  ~%%begin:departments%
+                  <tr>
+                    <td>Name</td><td>~%name%</td>
+                    <td>Boss</td><td>~%boss%</td>
+                    <td>Employees</td>
+                    <td><table>
+                      ~%%begin:employees%
+                      <tr>
+                        <td>Name</td><td>~%name%</td>
+                        <td>Age</td><td>~%age%</td>
+                      </tr>
+                      ~%%end:employees%
+                  </table></td>
+                  </tr>
+                  ~%%end:departments%
                 </table></td>
-                </tr>
-                ~%%end:departments%
-              </table></td>
-            </tr>
-            ~%%end:companies%
-          </table>
-        </body></html>
-        """;
+              </tr>
+              ~%%end:companies%
+            </table>
+          </body></html>
+          """;
     //@formatter:off
     List<Map<String,Object>> companies = List.of(
         new MapBuilder()
@@ -164,101 +164,101 @@ public class RenderSessionTest {
     String out = rs.render();
     //System.out.println(out);
     String expected = """
-        <html><body>
-          <table>
-            <tr>
-              <td>Name</td><td>Shell</td>
-              <td>Profits</td><td>5029872.8</td>
-              <td>Departments</td>
-              <td><table>
-                <tr>
-                  <td>Name</td><td>ICT</td>
-                  <td>Boss</td><td>John</td>
-                  <td>Employees</td>
-                  <td><table>
-                    <tr>
-                      <td>Name</td><td>Pete</td>
-                      <td>Age</td><td>27</td>
-                    </tr>
-                    
-                    <tr>
-                      <td>Name</td><td>Jake</td>
-                      <td>Age</td><td>52</td>
-                    </tr>
-                    </table></td>
-                </tr>
-                <tr>
-                  <td>Name</td><td>HR</td>
-                  <td>Boss</td><td>Joanna</td>
-                  <td>Employees</td>
-                  <td><table>
-                    <tr>
-                      <td>Name</td><td>Mary</td>
-                      <td>Age</td><td>27</td>
-                    </tr>
-                    
-                    <tr>
-                      <td>Name</td><td>John</td>
-                      <td>Age</td><td>52</td>
-                    </tr>
-                    </table></td>
-                </tr>
-              </table></td>
-            </tr>
-            <tr>
-              <td>Name</td><td>Goggle</td>
-              <td>Profits</td><td>3.8632534578E8</td>
-              <td>Departments</td>
-              <td><table>
-                <tr>
-                  <td>Name</td><td>ICT</td>
-                  <td>Boss</td><td>Jane</td>
-                  <td>Employees</td>
-                  <td><table>
-                    <tr>
-                      <td>Name</td><td>Capote</td>
-                      <td>Age</td><td>66</td>
-                    </tr>
-                    
-                    <tr>
-                      <td>Name</td><td>Joan</td>
-                      <td>Age</td><td>51</td>
-                    </tr>
-                    </table></td>
-                </tr>
-                <tr>
-                  <td>Name</td><td>HR</td>
-                  <td>Boss</td><td>Eric</td>
-                  <td>Employees</td>
-                  <td><table>
-                    <tr>
-                      <td>Name</td><td>Mary</td>
-                      <td>Age</td><td>54</td>
-                    </tr>
-                    
-                    <tr>
-                      <td>Name</td><td>John</td>
-                      <td>Age</td><td>46</td>
-                    </tr>
-                    </table></td>
-                </tr>
-              </table></td>
-            </tr>
-          </table>
-        </body></html>
-        """;
+          <html><body>
+            <table>
+              <tr>
+                <td>Name</td><td>Shell</td>
+                <td>Profits</td><td>5029872.8</td>
+                <td>Departments</td>
+                <td><table>
+                  <tr>
+                    <td>Name</td><td>ICT</td>
+                    <td>Boss</td><td>John</td>
+                    <td>Employees</td>
+                    <td><table>
+                      <tr>
+                        <td>Name</td><td>Pete</td>
+                        <td>Age</td><td>27</td>
+                      </tr>
+                      
+                      <tr>
+                        <td>Name</td><td>Jake</td>
+                        <td>Age</td><td>52</td>
+                      </tr>
+                      </table></td>
+                  </tr>
+                  <tr>
+                    <td>Name</td><td>HR</td>
+                    <td>Boss</td><td>Joanna</td>
+                    <td>Employees</td>
+                    <td><table>
+                      <tr>
+                        <td>Name</td><td>Mary</td>
+                        <td>Age</td><td>27</td>
+                      </tr>
+                      
+                      <tr>
+                        <td>Name</td><td>John</td>
+                        <td>Age</td><td>52</td>
+                      </tr>
+                      </table></td>
+                  </tr>
+                </table></td>
+              </tr>
+              <tr>
+                <td>Name</td><td>Goggle</td>
+                <td>Profits</td><td>3.8632534578E8</td>
+                <td>Departments</td>
+                <td><table>
+                  <tr>
+                    <td>Name</td><td>ICT</td>
+                    <td>Boss</td><td>Jane</td>
+                    <td>Employees</td>
+                    <td><table>
+                      <tr>
+                        <td>Name</td><td>Capote</td>
+                        <td>Age</td><td>66</td>
+                      </tr>
+                      
+                      <tr>
+                        <td>Name</td><td>Joan</td>
+                        <td>Age</td><td>51</td>
+                      </tr>
+                      </table></td>
+                  </tr>
+                  <tr>
+                    <td>Name</td><td>HR</td>
+                    <td>Boss</td><td>Eric</td>
+                    <td>Employees</td>
+                    <td><table>
+                      <tr>
+                        <td>Name</td><td>Mary</td>
+                        <td>Age</td><td>54</td>
+                      </tr>
+                      
+                      <tr>
+                        <td>Name</td><td>John</td>
+                        <td>Age</td><td>46</td>
+                      </tr>
+                      </table></td>
+                  </tr>
+                </table></td>
+              </tr>
+            </table>
+          </body></html>
+          """;
     assertEquals(nospace(expected), nospace(out));
   }
 
   @Test
   public void populate02() throws ParseException {
     String src = """
-        FOO
-            ~%%begin:companies%
-            BAR
-            ~%%end:companies%
-        FOO
-        """;
+          FOO
+              ~%%begin:companies%
+              BAR
+              ~%%end:companies%
+          FOO
+          """;
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
     rs.populate("companies", null);
@@ -271,12 +271,12 @@ public class RenderSessionTest {
   @Test
   public void populate03() throws ParseException {
     String src = """
-        FOO
-            ~%%begin:companies%
-            BAR
-            ~%%end:companies%
-        FOO
-        """;
+          FOO
+              ~%%begin:companies%
+              BAR
+              ~%%end:companies%
+          FOO
+          """;
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
     rs.populate("companies", Accessor.UNDEFINED);
@@ -289,13 +289,13 @@ public class RenderSessionTest {
   @Test
   public void populate04() throws ParseException {
     String src = """
-        <html><body>
-            ~%%begin:main-table%
-              FOO
-            ~%%end:main-table%
-            ~%%include:contents2:include-01.html%%
-        </body></html>
-        """;
+          <html><body>
+              ~%%begin:main-table%
+                FOO
+              ~%%end:main-table%
+              ~%%include:contents2:include-01.html%%
+          </body></html>
+          """;
     Template tmpl = Template.fromString(getClass(), src);
     assertNotNull(tmpl);
   }
@@ -303,10 +303,10 @@ public class RenderSessionTest {
   @Test
   public void populate05() throws ParseException {
     String src = """
-        <!--~%%begin:companies%-->
-          <!--~%foo%-->
-        <!--~%%end:companies%-->
-        """;
+          <!--~%%begin:companies%-->
+            <!--~%foo%-->
+          <!--~%%end:companies%-->
+          """;
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
     String out = rs.populate("companies", Map.of("foo", "bar")).render();
@@ -317,10 +317,10 @@ public class RenderSessionTest {
   @Test
   public void populate06() throws ParseException {
     String src = """
-        <!--~%%begin:companies%-->
-          <!-- ~%foo% -->
-        <!--~%%end:companies%-->
-        """;
+          <!--~%%begin:companies%-->
+            <!-- ~%foo% -->
+          <!--~%%end:companies%-->
+          """;
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
     String out = rs.populate("companies", Map.of("foo", "bar")).render();
@@ -331,10 +331,10 @@ public class RenderSessionTest {
   @Test
   public void populate07() throws ParseException {
     String src = """
-        <!--~%%begin:companies%-->
-          <!--  ~%foo%  -->
-        <!--~%%end:companies%-->
-        """;
+          <!--~%%begin:companies%-->
+            <!--  ~%foo%  -->
+          <!--~%%end:companies%-->
+          """;
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
     String out = rs.populate("companies", Map.of("foo", "bar")).render();
@@ -345,10 +345,10 @@ public class RenderSessionTest {
   @Test
   public void populate08() throws ParseException {
     String src = """
-        <!--~%%begin:companies%
-          <!--  ~%foo%  -->
-        ~%%end:companies%-->
-        """;
+          <!--~%%begin:companies%
+            <!--  ~%foo%  -->
+          ~%%end:companies%-->
+          """;
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
     String out = rs.populate("companies", Map.of("foo", "bar")).render();
@@ -369,15 +369,15 @@ public class RenderSessionTest {
   @Test
   public void enable01() throws ParseException {
     String src = """
-        FOO
-            ~%%begin:companies%
-            BAR
-            ~%%end:companies%
-            ~%%begin:teapots%
-            BOZO
-            ~%%end:teapots%
-        FOO
-        """;
+          FOO
+              ~%%begin:companies%
+              BAR
+              ~%%end:companies%
+              ~%%begin:teapots%
+              BOZO
+              ~%%end:teapots%
+          FOO
+          """;
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
     rs.enable(2);
@@ -390,15 +390,15 @@ public class RenderSessionTest {
   @Test
   public void enable02() throws ParseException {
     String src = """
-        FOO
-            ~%%begin:companies%
-            BAR
-            ~%%end:companies%
-            ~%%begin:teapots%
-            BOZO
-            ~%%end:teapots%
-        FOO
-        """;
+          FOO
+              ~%%begin:companies%
+              BAR
+              ~%%end:companies%
+              ~%%begin:teapots%
+              BOZO
+              ~%%end:teapots%
+          FOO
+          """;
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
     rs.enable(2, "companies");
@@ -411,15 +411,15 @@ public class RenderSessionTest {
   @Test
   public void enable03() throws ParseException {
     String src = """
-        FOO
-            ~%%begin:companies%
-            BAR
-            ~%%end:companies%
-            ~%%begin:teapots%
-            BOZO
-            ~%%end:teapots%
-        FOO
-        """;
+          FOO
+              ~%%begin:companies%
+              BAR
+              ~%%end:companies%
+              ~%%begin:teapots%
+              BOZO
+              ~%%end:teapots%
+          FOO
+          """;
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
     rs.enable("teapots");
@@ -432,21 +432,21 @@ public class RenderSessionTest {
   @Test
   public void enableRecursive00() throws ParseException {
     String src = """
-        Foo
-            ~%%begin:companies%
-            Bar
-              ~%%begin:departments%
-                Kitchen
-                ~%%begin:employees%
-                  Sink
-                ~%%end:employees%
-              ~%%end:departments%
-            ~%%end:companies%
-            ~%%begin:teapots%
-            Bozo
-            ~%%end:teapots%
-        Foo
-        """;
+          Foo
+              ~%%begin:companies%
+              Bar
+                ~%%begin:departments%
+                  Kitchen
+                  ~%%begin:employees%
+                    Sink
+                  ~%%end:employees%
+                ~%%end:departments%
+              ~%%end:companies%
+              ~%%begin:teapots%
+              Bozo
+              ~%%end:teapots%
+          Foo
+          """;
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
     rs.enableRecursive();
@@ -459,24 +459,24 @@ public class RenderSessionTest {
   @Test
   public void enableRecursive01() throws ParseException {
     String src = """
-        Foo
-            ~%%begin:companies%
-            Bar
-              ~%%begin:departments%
-                Kitchen
-                ~%%begin:employees%
-                  Sink
-                ~%%end:employees%
-              ~%%end:departments%
-            ~%%end:companies%
-            ~%%begin:teapots%
-            Bozo
-            ~%%end:teapots%
-            ~%%begin:chairs%
-              Cheerio
-            ~%%end:chairs%
-        Foo
-        """;
+          Foo
+              ~%%begin:companies%
+              Bar
+                ~%%begin:departments%
+                  Kitchen
+                  ~%%begin:employees%
+                    Sink
+                  ~%%end:employees%
+                ~%%end:departments%
+              ~%%end:companies%
+              ~%%begin:teapots%
+              Bozo
+              ~%%end:teapots%
+              ~%%begin:chairs%
+                Cheerio
+              ~%%end:chairs%
+          Foo
+          """;
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
     rs.enableRecursive("chairs");
@@ -489,15 +489,15 @@ public class RenderSessionTest {
   @Test
   public void populate1_00() throws ParseException {
     String src = """
-        FOO
-            ~%%begin:companies%
-            ~%myVar%
-            ~%%end:companies%
-        FOO
-        """;
+          FOO
+              ~%%begin:companies%
+              ~%myVar%
+              ~%%end:companies%
+          FOO
+          """;
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
-    rs.populate1("companies", "BAR");
+    rs.populate1("companies", List.of("BAR"));
     String out = rs.render();
     out = out.replaceAll("\\s+", "");
     //System.out.println(out);
@@ -507,16 +507,16 @@ public class RenderSessionTest {
   @Test
   public void populate2_00() throws ParseException {
     String src = """
-        Foo
-            ~%%begin:companies%
-            ~%foo%
-            ~%bar%
-            ~%%end:companies%
-        Foo
-        """;
+          Foo
+              ~%%begin:companies%
+              ~%foo%
+              ~%bar%
+              ~%%end:companies%
+          Foo
+          """;
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
-    rs.populate2("companies", "Pig", "Pony");
+    rs.populate2("companies", List.of("Pig", "Pony"));
     String out = rs.render();
     out = out.replaceAll("\\s+", "");
     //System.out.println(out);
@@ -526,16 +526,16 @@ public class RenderSessionTest {
   @Test
   public void populate2_01() throws ParseException {
     String src = """
-        Foo
-            ~%%begin:companies%
-            ~%foo%
-            ~%bar%
-            ~%%end:companies%
-        Foo
-        """;
+          Foo
+              ~%%begin:companies%
+              ~%foo%
+              ~%bar%
+              ~%%end:companies%
+          Foo
+          """;
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
-    rs.populate2("companies", "Pig", "Pony", "Horse", "Cat");
+    rs.populate2("companies", List.of("Pig", "Pony", "Horse", "Cat"));
     String out = rs.render();
     out = out.replaceAll("\\s+", "");
     //System.out.println(out);
@@ -545,17 +545,17 @@ public class RenderSessionTest {
   @Test
   public void insert00() throws ParseException {
     String src = """
-        <html><body>
-        <p>~%message%</p>
-        ~%%begin:foo%
-          <p>~%bar%</p>
-        ~%%end:foo%
-        </body></html>
-        """;
+          <html><body>
+          <p>~%message%</p>
+          ~%%begin:foo%
+            <p>~%bar%</p>
+          ~%%end:foo%
+          </body></html>
+          """;
     Map<String, Object> data = new MapBuilder()
-        .set("message", "hello")
-        .set("foo.bar", "teapot")
-        .createMap();
+          .set("message", "hello")
+          .set("foo.bar", "teapot")
+          .createMap();
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
     rs.insert(data);
@@ -568,20 +568,20 @@ public class RenderSessionTest {
   @Test
   public void insert01() throws ParseException {
     String src = """
-        <html><body>
-        <p>~%message%</p>
-        ~%%begin:foo%
-          <p>~%bar%</p>
-        ~%%end:foo%
-        </body></html>
-        """;
+          <html><body>
+          <p>~%message%</p>
+          ~%%begin:foo%
+            <p>~%bar%</p>
+          ~%%end:foo%
+          </body></html>
+          """;
     Map<String, Object> data = new MapBuilder()
-        .set("message", "1 < 2")
-        .set("foo.bar", "teapot")
-        .createMap();
+          .set("message", "1 < 2")
+          .set("foo.bar", "teapot")
+          .createMap();
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
-    rs.insert(data, VarGroup.HTML);
+    rs.insert(data, VarGroup.HTML, null);
     String out = rs.render();
     out = out.replaceAll("\\s+", "");
     //System.out.println(out);
@@ -591,20 +591,20 @@ public class RenderSessionTest {
   @Test
   public void insert02() throws ParseException {
     String src = """
-        <html><body>
-        <p>~%message%</p>
-        ~%%begin:foo%
-          <p>~%bar%</p>
-        ~%%end:foo%
-        </body></html>
-        """;
+          <html><body>
+          <p>~%message%</p>
+          ~%%begin:foo%
+            <p>~%bar%</p>
+          ~%%end:foo%
+          </body></html>
+          """;
     Map<String, Object> data = new MapBuilder()
-        .set("message", "hello")
-        .createMap();
+          .set("message", "hello")
+          .createMap();
     data.put("foo", List.of(Map.of("bar", "tea"), Map.of("bar", "pot")));
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
-    rs.insert(data, VarGroup.HTML);
+    rs.insert(data);
     String out = rs.render();
     out = out.replaceAll("\\s+", "");
     //System.out.println(out);
@@ -614,20 +614,20 @@ public class RenderSessionTest {
   @Test
   public void insert03() throws ParseException {
     String src = """
-        <html><body>
-        <p>~%message%</p>
-        ~%%begin:foo%
-          <p>~%bar%</p>
-        ~%%end:foo%
-        </body></html>
-        """;
+          <html><body>
+          <p>~%message%</p>
+          ~%%begin:foo%
+            <p>~%bar%</p>
+          ~%%end:foo%
+          </body></html>
+          """;
     Map<String, Object> data = new MapBuilder()
-        .set("message", Accessor.UNDEFINED)
-        .createMap();
+          .set("message", Accessor.UNDEFINED)
+          .createMap();
     data.put("foo", Accessor.UNDEFINED);
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
-    rs.insert(data, VarGroup.HTML);
+    rs.insert(data);
     String out = rs.render();
     out = out.replaceAll("\\s+", "");
     //System.out.println(out);
@@ -649,20 +649,20 @@ public class RenderSessionTest {
   @Test
   public void insert05() throws ParseException {
     String src = """
-        <html><body>
-        <p>~%message%</p>
-        ~%%begin:foo%
-          <p>~%bar%</p>
-        ~%%end:foo%
-        </body></html>
-        """;
+          <html><body>
+          <p>~%message%</p>
+          ~%%begin:foo%
+            <p>~%bar%</p>
+          ~%%end:foo%
+          </body></html>
+          """;
     Map<String, Object> data = new MapBuilder()
-        .set("message", "hello")
-        .createMap();
+          .set("message", "hello")
+          .createMap();
     data.put("foo", List.of(Map.of("bar", "tea"), Map.of("bar", "pot")));
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
-    rs.insert(data, "message");
+    rs.insert(data, null, List.of("message"));
     String out = rs.render();
     out = out.replaceAll("\\s+", "");
     //System.out.println(out);
@@ -672,20 +672,20 @@ public class RenderSessionTest {
   @Test
   public void insert06() throws ParseException {
     String src = """
-        <html><body>
-        <p>~%message%</p>
-        ~%%begin:foo%
-          <p>~%bar%</p>
-        ~%%end:foo%
-        </body></html>
-        """;
+          <html><body>
+          <p>~%message%</p>
+          ~%%begin:foo%
+            <p>~%bar%</p>
+          ~%%end:foo%
+          </body></html>
+          """;
     Map<String, Object> data = new MapBuilder()
-        .set("message", "hello")
-        .createMap();
+          .set("message", "hello")
+          .createMap();
     data.put("foo", List.of(Map.of("bar", "tea"), Map.of("bar", "pot")));
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
-    rs.insert(data, "foo", "bar");
+    rs.insert(data, null, List.of("foo", "bar"));
     String out = rs.render();
     out = out.replaceAll("\\s+", "");
     //System.out.println(out);
@@ -695,20 +695,20 @@ public class RenderSessionTest {
   @Test // render to StringBuilder, just to have that covered
   public void render00() throws ParseException {
     String src = """
-        <html><body>
-        <p>~%message%</p>
-        ~%%begin:foo%
-          <p>~%bar%</p>
-        ~%%end:foo%
-        </body></html>
-        """;
+          <html><body>
+          <p>~%message%</p>
+          ~%%begin:foo%
+            <p>~%bar%</p>
+          ~%%end:foo%
+          </body></html>
+          """;
     Map<String, Object> data = new MapBuilder()
-        .set("message", "hello")
-        .createMap();
+          .set("message", "hello")
+          .createMap();
     data.put("foo", List.of(Map.of("bar", "tea"), Map.of("bar", "pot")));
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
-    rs.insert(data, "foo", "bar");
+    rs.insert(data, null, List.of("foo", "bar"));
     StringBuilder sb = new StringBuilder("hello");
     rs.render(sb);
     String out = sb.toString().replaceAll("\\s+", "");
@@ -719,17 +719,17 @@ public class RenderSessionTest {
   @Test
   public void allSet00() throws ParseException {
     String src = """
-        <html><body>
-        <p>~%message%</p>
-        ~%%begin:foo%
-          <p>~%bar%</p>
-          <p>~%bozo%</p>
-        ~%%end:foo%
-        </body></html>
-        """;
+          <html><body>
+          <p>~%message%</p>
+          ~%%begin:foo%
+            <p>~%bar%</p>
+            <p>~%bozo%</p>
+          ~%%end:foo%
+          </body></html>
+          """;
     Map<String, Object> data = new MapBuilder()
-        .set("message", "hello")
-        .createMap();
+          .set("message", "hello")
+          .createMap();
     data.put("foo", List.of(Map.of("bar", "tea"), Map.of("bar", "pot")));
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
@@ -780,112 +780,112 @@ public class RenderSessionTest {
   @Test
   public void newlines00() throws ParseException {
     String src = """
-        <table>~%%begin:foo%<tr><td>Hello</td></tr>~%%end:foo%
-        </table>
-        """;
+          <table>~%%begin:foo%<tr><td>Hello</td></tr>~%%end:foo%
+          </table>
+          """;
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
     rs.repeat("foo", 3);
     String out = rs.render();
     //System.out.println(out);
     String expected = """
-        <table><tr><td>Hello</td></tr><tr><td>Hello</td></tr><tr><td>Hello</td></tr>
-        </table>
-        """;
+          <table><tr><td>Hello</td></tr><tr><td>Hello</td></tr><tr><td>Hello</td></tr>
+          </table>
+          """;
     assertEquals(expected, out);
   }
 
   @Test
   public void newlines01() throws ParseException {
     String src = """
-        <table>~%%begin:foo%
-        <tr><td>Hello</td></tr>~%%end:foo%
-        </table>
-        """;
+          <table>~%%begin:foo%
+          <tr><td>Hello</td></tr>~%%end:foo%
+          </table>
+          """;
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
     rs.repeat("foo", 3);
     String out = rs.render();
     //System.out.println(out);
     String expected = """
-        <table>
-        <tr><td>Hello</td></tr>
-        <tr><td>Hello</td></tr>
-        <tr><td>Hello</td></tr>
-        </table>
-        """;
+          <table>
+          <tr><td>Hello</td></tr>
+          <tr><td>Hello</td></tr>
+          <tr><td>Hello</td></tr>
+          </table>
+          """;
     assertEquals(expected, out);
   }
 
   @Test
   public void newlines02() throws ParseException {
     String src = """
-        <table>
-        ~%%begin:foo%<tr>
-        <td>Hello</td></tr>~%%end:foo%
-        </table>
-        """;
+          <table>
+          ~%%begin:foo%<tr>
+          <td>Hello</td></tr>~%%end:foo%
+          </table>
+          """;
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
     rs.repeat("foo", 3);
     String out = rs.render();
     //System.out.println(out);
     String expected = """
-        <table>
-        <tr>
-        <td>Hello</td></tr><tr>
-        <td>Hello</td></tr><tr>
-        <td>Hello</td></tr>
-        </table>
-        """;
+          <table>
+          <tr>
+          <td>Hello</td></tr><tr>
+          <td>Hello</td></tr><tr>
+          <td>Hello</td></tr>
+          </table>
+          """;
     assertEquals(expected, out);
   }
 
   @Test
   public void newlines03() throws ParseException {
     String src = """
-        <table>
-        ~%%begin:foo%
-        <tr><td>Hello</td></tr>
-        ~%%end:foo%
-        </table>
-        """;
+          <table>
+          ~%%begin:foo%
+          <tr><td>Hello</td></tr>
+          ~%%end:foo%
+          </table>
+          """;
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
     rs.repeat("foo", 3);
     String out = rs.render();
     //System.out.println(out);
     String expected = """
-        <table>
-        <tr><td>Hello</td></tr>
-        <tr><td>Hello</td></tr>
-        <tr><td>Hello</td></tr>
-        </table>
-        """;
+          <table>
+          <tr><td>Hello</td></tr>
+          <tr><td>Hello</td></tr>
+          <tr><td>Hello</td></tr>
+          </table>
+          """;
     assertEquals(expected, out);
   }
 
   @Test
   public void newlines04() throws ParseException {
     String src = """
-        <table>~%%begin:foo%<tr>
-        <td>Hello</td>
-        </tr>~%%end:foo%</table>
-        """;
+          <table>~%%begin:foo%<tr>
+          <td>Hello</td>
+          </tr>~%%end:foo%</table>
+          """;
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
     rs.repeat("foo", 3);
     String out = rs.render();
     //System.out.println(out);
     String expected = """
-        <table><tr>
-        <td>Hello</td>
-        </tr><tr>
-        <td>Hello</td>
-        </tr><tr>
-        <td>Hello</td>
-        </tr></table>
-        """;
+          <table><tr>
+          <td>Hello</td>
+          </tr><tr>
+          <td>Hello</td>
+          </tr><tr>
+          <td>Hello</td>
+          </tr></table>
+          """;
     assertEquals(expected, out);
   }
 

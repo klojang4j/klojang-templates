@@ -47,19 +47,19 @@ public class AccessorRegistryTest {
   };
 
   BeanReader br = BeanReader.forClass(Person.class)
-      .withInt("id")
-      .withString("name")
-      .build();
+        .withInt("id")
+        .withString("name")
+        .build();
 
   @Test
   public void test00() throws ParseException {
     AccessorRegistry ar = AccessorRegistry.configure()
-        .register(br)
-        .freeze();
+          .register(br)
+          .freeze();
     String src = """
-        id: ~%id%
-        name: ~%name%
-        """;
+          id: ~%id%
+          name: ~%name%
+          """;
     Template t = Template.fromString(src);
     RenderSession rs = t.newRenderSession(ar);
     rs.insert(new Person(10, "John"));
@@ -71,12 +71,12 @@ public class AccessorRegistryTest {
   @Test
   public void test01() throws ParseException {
     AccessorRegistry ar = AccessorRegistry.configure()
-        .register(br, String::toLowerCase)
-        .freeze();
+          .register(br, String::toLowerCase)
+          .freeze();
     String src = """
-        id: ~%id%
-        name: ~%name%
-        """;
+          id: ~%id%
+          name: ~%name%
+          """;
     Template t = Template.fromString(src);
     RenderSession rs = t.newRenderSession(ar);
     rs.insert(new Person(10, "John"));
@@ -88,18 +88,18 @@ public class AccessorRegistryTest {
   @Test
   public void test02() throws ParseException {
     String src = """
-        id: ~%id%
-        name: ~%name%;
-        ~%%begin:foo%
           id: ~%id%
-          name: ~%name%
-        ~%%end:foo%
-        """;
+          name: ~%name%;
+          ~%%begin:foo%
+            id: ~%id%
+            name: ~%name%
+          ~%%end:foo%
+          """;
     Template t = Template.fromString(src);
     AccessorRegistry ar = AccessorRegistry.configure()
-        .register(br)
-        .register(t.getNestedTemplate("foo"), Person.class, acc)
-        .freeze();
+          .register(br)
+          .register(t.getNestedTemplate("foo"), Person.class, acc)
+          .freeze();
     RenderSession rs = t.newRenderSession(ar);
     rs.insert(new Person(10, "John"));
     rs.populate("foo", new Person(12, "Mark"));
@@ -111,18 +111,18 @@ public class AccessorRegistryTest {
   @Test
   public void test03() throws ParseException {
     String src = """
-        id: ~%id%
-        name: ~%name%;
-        ~%%begin:foo%
           id: ~%id%
-          name: ~%name%
-        ~%%end:foo%
-        """;
+          name: ~%name%;
+          ~%%begin:foo%
+            id: ~%id%
+            name: ~%name%
+          ~%%end:foo%
+          """;
     Template t = Template.fromString(src);
     AccessorRegistry ar = AccessorRegistry.configure()
-        .register(Person.class, acc)
-        .register(br, t, String::toLowerCase)
-        .freeze();
+          .register(Person.class, acc)
+          .register(br, t, String::toLowerCase)
+          .freeze();
     RenderSession rs = t.newRenderSession(ar);
     rs.insert(new Person(10, "John"));
     rs.populate("foo", new Person(12, "Mark"));
@@ -134,18 +134,18 @@ public class AccessorRegistryTest {
   @Test
   public void test04() throws ParseException {
     String src = """
-        id: ~%id%
-        name: ~%name%;
-        ~%%begin:foo%
           id: ~%id%
-          name: ~%name%
-        ~%%end:foo%
-        """;
+          name: ~%name%;
+          ~%%begin:foo%
+            id: ~%id%
+            name: ~%name%
+          ~%%end:foo%
+          """;
     Template t = Template.fromString(src);
     AccessorRegistry ar = AccessorRegistry.configure()
-        .register(Person.class, acc)
-        .register(br, t, String::toLowerCase)
-        .freeze();
+          .register(Person.class, acc)
+          .register(br, t, String::toLowerCase)
+          .freeze();
     RenderSession rs = t.newRenderSession(ar);
     rs.insert(Optional.empty());
     rs.populate("foo", Optional.of(new Person(12, "Mark")));
@@ -158,18 +158,18 @@ public class AccessorRegistryTest {
   @Test
   public void test05() throws ParseException {
     String src = """
-        id: ~%id%
-        name: ~%name%;
-        ~%%begin:foo%
           id: ~%id%
-          name: ~%name%
-        ~%%end:foo%
-        """;
+          name: ~%name%;
+          ~%%begin:foo%
+            id: ~%id%
+            name: ~%name%
+          ~%%end:foo%
+          """;
     Template t = Template.fromString(src);
     AccessorRegistry ar = AccessorRegistry.configure()
-        .register(t, Person.class, acc)
-        .register(br)
-        .freeze();
+          .register(t, Person.class, acc)
+          .register(br)
+          .freeze();
     RenderSession rs = t.newRenderSession(ar);
     rs.insert(Optional.of(new Person(10, "John")));
     rs.populate("foo", Optional.empty());
@@ -181,27 +181,27 @@ public class AccessorRegistryTest {
   @Test
   public void test06() throws ParseException {
     String src = """
-        id: ~%bar.id%
-        name: ~%bar.name%;
-        ~%%begin:foo%
-          id: ~%teapot.id%
-          name: ~%teapot.name%
-        ~%%end:foo%
-        """;
+          id: ~%bar.id%
+          name: ~%bar.name%;
+          ~%%begin:foo%
+            id: ~%teapot.id%
+            name: ~%teapot.name%
+          ~%%end:foo%
+          """;
     Template t = Template.fromString(src);
     AccessorRegistry ar = AccessorRegistry.configure()
-        .register(t, Person.class, acc)
-        .register(br)
-        .freeze();
+          .register(t, Person.class, acc)
+          .register(br)
+          .freeze();
     RenderSession rs = t.newRenderSession(ar);
     Map<String, Object> map = MapBuilder.begin()
-        .in("bar")
-        .set("id", 9)
-        .set("name", "Mary")
-        .jump("foo.teapot")
-        .set("id", "10")
-        .set("name", "John")
-        .createMap();
+          .in("bar")
+          .set("id", 9)
+          .set("name", "Mary")
+          .jump("foo.teapot")
+          .set("id", "10")
+          .set("name", "John")
+          .createMap();
     rs.insert(map);
     String out = rs.render();
     out = out.replaceAll("\\s+", " ").strip();
@@ -211,28 +211,28 @@ public class AccessorRegistryTest {
   @Test
   public void test07() throws ParseException {
     String src = """
-        id: ~%bar.id%
-        name: ~%bar.name%;
-        ~%%begin:foo%
-          id: ~%teapot.id%
-          name: ~%teapot.name%
-        ~%%end:foo%
-        """;
+          id: ~%bar.id%
+          name: ~%bar.name%;
+          ~%%begin:foo%
+            id: ~%teapot.id%
+            name: ~%teapot.name%
+          ~%%end:foo%
+          """;
     Template t = Template.fromString(src);
     AccessorRegistry ar = AccessorRegistry.configure()
-        .register(t, Person.class, acc)
-        .register(br)
-        .freeze();
+          .register(t, Person.class, acc)
+          .register(br)
+          .freeze();
     RenderSession rs = t.newRenderSession(ar);
     Map<String, Object> map = MapBuilder.begin()
-        .in("bar")
-        .set("id", 9)
-        .set("name", "Mary")
-        .jump("foo.teapot")
-        .set("id", "10")
-        .set("name", "John")
-        .createMap();
-    rs.insert(map, "bar.id");
+          .in("bar")
+          .set("id", 9)
+          .set("name", "Mary")
+          .jump("foo.teapot")
+          .set("id", "10")
+          .set("name", "John")
+          .createMap();
+    rs.insert(map, null, List.of("bar.id"));
     String out = rs.render();
     out = out.replaceAll("\\s+", " ").strip();
     assertEquals("id: 9 name: ;", out);
@@ -241,28 +241,28 @@ public class AccessorRegistryTest {
   @Test
   public void test08() throws ParseException {
     String src = """
-        id: ~%bar.id%
-        name: ~%bar.name%;
-        ~%%begin:foo%
-          id: ~%teapot.id%
-          name: ~%teapot.name%
-        ~%%end:foo%
-        """;
+          id: ~%bar.id%
+          name: ~%bar.name%;
+          ~%%begin:foo%
+            id: ~%teapot.id%
+            name: ~%teapot.name%
+          ~%%end:foo%
+          """;
     Template t = Template.fromString(src);
     AccessorRegistry ar = AccessorRegistry.configure()
-        .register(Person.class, acc)
-        .register(br, t)
-        .freeze();
+          .register(Person.class, acc)
+          .register(br, t)
+          .freeze();
     RenderSession rs = t.newRenderSession(ar);
     Map<String, Object> map = MapBuilder.begin()
-        .in("bar")
-        .set("id", 9)
-        .set("name", "Mary")
-        .jump("foo.teapot")
-        .set("id", "10")
-        .set("name", "John")
-        .createMap();
-    rs.insert(map, "foo", "teapot.id", "teapot.name");
+          .in("bar")
+          .set("id", 9)
+          .set("name", "Mary")
+          .jump("foo.teapot")
+          .set("id", "10")
+          .set("name", "John")
+          .createMap();
+    rs.insert(map, null, List.of("foo", "teapot.id", "teapot.name"));
     String out = rs.render();
     out = out.replaceAll("\\s+", " ").strip();
     assertEquals("id: name: ; id: 10 name: John", out);
@@ -271,12 +271,12 @@ public class AccessorRegistryTest {
   @Test
   public void test09() throws ParseException {
     AccessorRegistry ar = AccessorRegistry.configure()
-        .setDefaultNameMapper(String::toLowerCase)
-        .freeze();
+          .setDefaultNameMapper(String::toLowerCase)
+          .freeze();
     String src = """
-        id: ~%ID%
-        name: ~%NAME%
-        """;
+          id: ~%ID%
+          name: ~%NAME%
+          """;
     Template t = Template.fromString(src);
     RenderSession rs = t.newRenderSession(ar);
     rs.insert(new Person(10, "John"));
@@ -288,13 +288,13 @@ public class AccessorRegistryTest {
   @Test
   public void test10() throws ParseException {
     String src = """
-        id: ~%ID%
-        name: ~%NAME%
-        """;
+          id: ~%ID%
+          name: ~%NAME%
+          """;
     Template t = Template.fromString(src);
     AccessorRegistry ar = AccessorRegistry.configure()
-        .setNameMapper(t, String::toLowerCase)
-        .freeze();
+          .setNameMapper(t, String::toLowerCase)
+          .freeze();
     RenderSession rs = t.newRenderSession(ar);
     rs.insert(new Person(10, "John"));
     String out = rs.render();
@@ -305,9 +305,9 @@ public class AccessorRegistryTest {
   @Test
   public void test11() throws ParseException {
     String src = """
-        id: ~%ID%
-        name: ~%NAME%
-        """;
+          id: ~%ID%
+          name: ~%NAME%
+          """;
     Template t = Template.fromString(src);
     AccessorRegistry ar = AccessorRegistry.standard(String::toLowerCase);
     RenderSession rs = t.newRenderSession(ar);

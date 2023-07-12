@@ -5,8 +5,8 @@ import java.util.function.IntFunction;
 /**
  * Accessors are used to extract values from objects. The {@link RenderSession} uses
  * them to extract values from the objects passed to
- * {@link RenderSession#insert(Object, String...) insert()} and
- * {@link RenderSession#populate(String, Object, String...) populate()}. Object
+ * {@link RenderSession#insert(Object) insert()} and
+ * {@link RenderSession#populate(String, Object) populate()}. Object
  * access is name-based and requires a mapping between template variables and bean
  * properties or map keys. By default, <i>Klojang Templates</i> assumes an as-is
  * mapping between the two, but you can use {@linkplain NameMapper name mappers} for

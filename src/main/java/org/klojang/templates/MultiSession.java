@@ -10,30 +10,31 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.function.IntFunction;
 import java.util.function.Supplier;
+import java.util.stream.Stream;
 
 record MultiSession(Template template, SoloSession[] sessions) implements RenderSession {
 
   @Override
   public RenderSession set(String var, Object value) {
-    Arrays.stream(sessions).forEach(s -> s.set(var, value));
+    stream().forEach(s -> s.set(var, value));
     return this;
   }
 
   @Override
   public RenderSession set(String var, VarGroup group, Object value) {
-    Arrays.stream(sessions).forEach(s -> s.set(var, group, value));
+    stream().forEach(s -> s.set(var, group, value));
     return this;
   }
 
   @Override
   public RenderSession setDelayed(String var, Supplier<Object> val) {
-    Arrays.stream(sessions).forEach(s -> s.setDelayed(var, val));
+    stream().forEach(s -> s.setDelayed(var, val));
     return this;
   }
 
   @Override
   public RenderSession setDelayed(String var, VarGroup group, Supplier<Object> val) {
-    Arrays.stream(sessions).forEach(s -> s.setDelayed(var, group, val));
+    stream().forEach(s -> s.setDelayed(var, group, val));
     return this;
   }
 
@@ -50,24 +51,24 @@ record MultiSession(Template template, SoloSession[] sessions) implements Render
         sessions[i].set(path, val.apply(i));
       }
     } else { // do delegate to SoloSession
-      Arrays.stream(sessions).forEach(s -> s.setPath(path, val));
+      stream().forEach(s -> s.setPath(path, val));
     }
     return this;
   }
 
   @Override
   public RenderSession setPath(
-      String path,
-      VarGroup group,
-      boolean force,
-      IntFunction<Object> val) {
+        String path,
+        VarGroup group,
+        boolean force,
+        IntFunction<Object> val) {
     Path p = Check.notNull(path, Tag.PATH).ok(Path::from);
     if (p.size() == 1) {
       for (int i = 0; i < sessions.length; ++i) {
         sessions[i].set(path, group, val.apply(i));
       }
     } else {
-      Arrays.stream(sessions).forEach(s -> s.setPath(path, group, force, val));
+      stream().forEach(s -> s.setPath(path, group, force, val));
     }
     return this;
   }
@@ -82,7 +83,7 @@ record MultiSession(Template template, SoloSession[] sessions) implements Render
         }
       }
     } else {
-      Arrays.stream(sessions).forEach(s -> s.ifNotSet(path, val));
+      stream().forEach(s -> s.ifNotSet(path, val));
     }
     return this;
   }
@@ -97,45 +98,34 @@ record MultiSession(Template template, SoloSession[] sessions) implements Render
         }
       }
     } else {
-      Arrays.stream(sessions).forEach(s -> s.ifNotSet(path, group, val));
+      stream().forEach(s -> s.ifNotSet(path, group, val));
     }
     return this;
   }
 
   @Override
-  public RenderSession insert(Object data, String... names) {
-    Arrays.stream(sessions).forEach(s -> s.insert(data, names));
-    return this;
-  }
-
-  @Override
-  public RenderSession insert(Object data, VarGroup group, String... names) {
-    Arrays.stream(sessions).forEach(s -> s.insert(data, group, names));
-    return this;
-  }
-
-  @Override
-  public RenderSession populate(String tmplName, Object data, String... names) {
-    Arrays.stream(sessions).forEach(s -> s.populate(tmplName, data, names));
+  public RenderSession insert(Object data, VarGroup group, List<String> names) {
+    stream().forEach(s -> s.insert(data, group, names));
     return this;
   }
 
   @Override
   public RenderSession populate(
-      String tmplName,
-      Object data,
-      VarGroup group,
-      String... names) {
-    Arrays.stream(sessions).forEach(s -> s.populate(tmplName, data, group, names));
+        String tmplName,
+        Object data,
+        VarGroup group,
+        String sep,
+        List<String> names) {
+    stream().forEach(s -> s.populate(tmplName, data, group, sep, names));
     return this;
   }
 
   @Override
-  public RenderSession repeat(String tmplName, int times) {
+  public RenderSession repeat(String tmplName, String sep, int times) {
     Template nested = template.getNestedTemplate(tmplName);
     ArrayList<SoloSession> list = new ArrayList<>();
     for (RenderSession rs : sessions) {
-      RenderSession ms = rs.repeat(tmplName, times);
+      RenderSession ms = rs.repeat(tmplName, sep, times);
       SoloSession[] ss = ((MultiSession) ms).sessions;
       list.addAll(Arrays.asList(ss));
     }
@@ -154,44 +144,34 @@ record MultiSession(Template template, SoloSession[] sessions) implements Render
   }
 
   @Override
-  public RenderSession enable(String... tmplNames) {
-    Arrays.stream(sessions).forEach(s -> s.enable(tmplNames));
-    return this;
-  }
-
-  @Override
-  public RenderSession enable(int repeats, String... tmplNames) {
-    Arrays.stream(sessions).forEach(s -> s.enable(repeats, tmplNames));
+  public RenderSession enable(String sep, int repeats, String... tmplNames) {
+    stream().forEach(s -> s.enable(sep, repeats, tmplNames));
     return this;
   }
 
   @Override
   public RenderSession enableRecursive(String... tmplNames) {
-    Arrays.stream(sessions).forEach(s -> s.enableRecursive(tmplNames));
+    stream().forEach(s -> s.enableRecursive(tmplNames));
     return this;
   }
 
   @Override
-  public RenderSession populate1(String tmplName, Object... values) {
-    Arrays.stream(sessions).forEach(s -> s.populate1(tmplName, values));
+  public RenderSession populate1(
+        String tmplName,
+        VarGroup group,
+        String sep,
+        List<?> values) {
+    stream().forEach(s -> s.populate1(tmplName, group, sep, values));
     return this;
   }
 
   @Override
-  public RenderSession populate1(String tmplName, VarGroup group, Object... values) {
-    Arrays.stream(sessions).forEach(s -> s.populate1(tmplName, group, values));
-    return this;
-  }
-
-  @Override
-  public RenderSession populate2(String tmplName, Object... values) {
-    Arrays.stream(sessions).forEach(s -> s.populate2(tmplName, values));
-    return this;
-  }
-
-  @Override
-  public RenderSession populate2(String tmplName, VarGroup group, Object... values) {
-    Arrays.stream(sessions).forEach(s -> s.populate2(tmplName, group, values));
+  public RenderSession populate2(
+        String tmplName,
+        VarGroup group,
+        String sep,
+        List<?> values) {
+    stream().forEach(s -> s.populate2(tmplName, group, sep, values));
     return this;
   }
 
@@ -207,48 +187,48 @@ record MultiSession(Template template, SoloSession[] sessions) implements Render
 
   public List<String> getAllUnsetVariables(boolean relative) {
     return sessions.length == 0
-        ? List.of()
-        : sessions[0].getAllUnsetVariables(relative);
+          ? List.of()
+          : sessions[0].getAllUnsetVariables(relative);
   }
 
   @Override
   public boolean allSet() {
-    return Arrays.stream(sessions).allMatch(RenderSession::allSet);
+    return stream().allMatch(RenderSession::allSet);
   }
 
   @Override
   public RenderSession unset(String... paths) {
-    Arrays.stream(sessions).forEach(s -> s.unset(paths));
+    stream().forEach(s -> s.unset(paths));
     return this;
   }
 
   @Override
   public RenderSession clear(String... tmplNames) {
-    Arrays.stream(sessions).forEach(s -> s.clear(tmplNames));
+    stream().forEach(s -> s.clear(tmplNames));
     return this;
   }
 
   @Override
   public List<RenderSession> getChildSessions(String tmplName) {
     ArrayList<RenderSession> flat = new ArrayList<>();
-    Arrays.stream(sessions).forEach(s -> flat.addAll(s.getChildSessions(tmplName)));
+    stream().forEach(s -> flat.addAll(s.getChildSessions(tmplName)));
     return flat;
   }
 
   @Override
   public void render(OutputStream out) {
-    Arrays.stream(sessions).forEach(s -> s.render(out));
+    stream().forEach(s -> s.render(out));
   }
 
   @Override
   public void render(StringBuilder sb) {
-    Arrays.stream(sessions).forEach(s -> s.render(sb));
+    stream().forEach(s -> s.render(sb));
   }
 
   @Override
   public String render() {
     StringBuilder sb = new StringBuilder(255);
-    Arrays.stream(sessions).forEach(s -> s.render(sb));
+    stream().forEach(s -> s.render(sb));
     return sb.toString();
   }
 
@@ -256,5 +236,10 @@ record MultiSession(Template template, SoloSession[] sessions) implements Render
   public Template getTemplate() {
     return template;
   }
+
+  private Stream<SoloSession> stream() {
+    return Arrays.stream(sessions);
+  }
+
 
 }
