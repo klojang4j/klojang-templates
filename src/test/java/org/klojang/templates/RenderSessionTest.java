@@ -497,7 +497,7 @@ public class RenderSessionTest {
           """;
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
-    rs.populate1("companies", List.of("BAR"));
+    rs.populateSolo("companies", List.of("BAR"));
     String out = rs.render();
     out = out.replaceAll("\\s+", "");
     //System.out.println(out);
@@ -516,7 +516,7 @@ public class RenderSessionTest {
           """;
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
-    rs.populate2("companies", List.of("Pig", "Pony"));
+    rs.populateDuo("companies", List.of("Pig", "Pony"));
     String out = rs.render();
     out = out.replaceAll("\\s+", "");
     //System.out.println(out);
@@ -535,7 +535,7 @@ public class RenderSessionTest {
           """;
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
-    rs.populate2("companies", List.of("Pig", "Pony", "Horse", "Cat"));
+    rs.populateDuo("companies", List.of("Pig", "Pony", "Horse", "Cat"));
     String out = rs.render();
     out = out.replaceAll("\\s+", "");
     //System.out.println(out);

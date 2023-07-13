@@ -328,7 +328,7 @@ final class SoloSession implements RenderSession {
   }
 
   @Override
-  public RenderSession populate1(
+  public RenderSession populateSolo(
         String nestedTemplateName,
         VarGroup group,
         String separator,
@@ -343,7 +343,7 @@ final class SoloSession implements RenderSession {
   }
 
   @Override
-  public RenderSession populate2(
+  public RenderSession populateDuo(
         String nestedTemplateName,
         VarGroup varGroup,
         String separator,

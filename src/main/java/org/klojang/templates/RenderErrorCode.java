@@ -49,7 +49,7 @@ public enum RenderErrorCode {
    * {@code RenderSession.populate1()} was called on a nested template, but it was
    * not a template with exactly one variable.
    *
-   * @see RenderSession#populate1(String, List) 
+   * @see RenderSession#populateSolo(String, List)
    */
   NOT_ONE_VAR_TEMPLATE("Not a one-variable template: %s"),
 
@@ -57,7 +57,7 @@ public enum RenderErrorCode {
    * {@code RenderSession.populate2()} was called on a nested template, but it was
    * not a template with exactly two variables.
    *
-   * @see RenderSession#populate2(String, List)
+   * @see RenderSession#populateDuo(String, List)
    */
   NOT_TWO_VAR_TEMPLATE("Not a two-variable template: %s"),
 

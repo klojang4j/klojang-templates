@@ -121,7 +121,7 @@ public class RenderErrorTest {
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
     try {
-      rs.populate1("foo", List.of(23));
+      rs.populateSolo("foo", List.of(23));
     } catch (RenderException e) {
       //System.out.println(e.getMessage());
       assertEquals(
@@ -143,7 +143,7 @@ public class RenderErrorTest {
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
     try {
-      rs.populate2("foo", List.of("john", "smith"));
+      rs.populateDuo("foo", List.of("john", "smith"));
     } catch (RenderException e) {
       //System.out.println(e.getMessage());
       assertEquals(
@@ -235,7 +235,7 @@ public class RenderErrorTest {
     RenderSession rs = tmpl.newRenderSession();
     try {
       rs.repeat("foo", 2);
-      rs.populate1("foo", List.of("bar"));
+      rs.populateSolo("foo", List.of("bar"));
     } catch (RenderException e) {
       System.out.println(e.getMessage());
       assertEquals(

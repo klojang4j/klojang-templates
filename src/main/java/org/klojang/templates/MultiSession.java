@@ -156,22 +156,22 @@ record MultiSession(Template template, SoloSession[] sessions) implements Render
   }
 
   @Override
-  public RenderSession populate1(
+  public RenderSession populateSolo(
         String tmplName,
         VarGroup group,
         String sep,
         List<?> values) {
-    stream().forEach(s -> s.populate1(tmplName, group, sep, values));
+    stream().forEach(s -> s.populateSolo(tmplName, group, sep, values));
     return this;
   }
 
   @Override
-  public RenderSession populate2(
+  public RenderSession populateDuo(
         String tmplName,
         VarGroup group,
         String sep,
         List<?> values) {
-    stream().forEach(s -> s.populate2(tmplName, group, sep, values));
+    stream().forEach(s -> s.populateDuo(tmplName, group, sep, values));
     return this;
   }
 

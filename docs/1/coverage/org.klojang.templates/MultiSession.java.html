@@ -156,22 +156,22 @@ import java.util.stream.Stream;
   }
 
   @Override
-  public RenderSession populate1(
+  public RenderSession populateSolo(
         String tmplName,
         VarGroup group,
         String sep,
         List&lt;?&gt; values) {
-<span class="fc" id="L164">    stream().forEach(s -&gt; s.populate1(tmplName, group, sep, values));</span>
+<span class="fc" id="L164">    stream().forEach(s -&gt; s.populateSolo(tmplName, group, sep, values));</span>
 <span class="fc" id="L165">    return this;</span>
   }
 
   @Override
-  public RenderSession populate2(
+  public RenderSession populateDuo(
         String tmplName,
         VarGroup group,
         String sep,
         List&lt;?&gt; values) {
-<span class="fc" id="L174">    stream().forEach(s -&gt; s.populate2(tmplName, group, sep, values));</span>
+<span class="fc" id="L174">    stream().forEach(s -&gt; s.populateDuo(tmplName, group, sep, values));</span>
 <span class="fc" id="L175">    return this;</span>
   }
 

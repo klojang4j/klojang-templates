@@ -843,7 +843,7 @@ public class MultiSessionTest {
           """;
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
-    rs.in("foo").populate1("companies", List.of("Shell"));
+    rs.in("foo").populateSolo("companies", List.of("Shell"));
     String out = rs.render();
     //System.out.println(out);
     String expected = """
@@ -863,7 +863,7 @@ public class MultiSessionTest {
           """;
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
-    rs.repeat("foo", 1).populate1("companies", List.of("MacDonald's", "Shell"));
+    rs.repeat("foo", 1).populateSolo("companies", List.of("MacDonald's", "Shell"));
     String out = rs.render();
     //System.out.println(out);
     String expected = """
@@ -883,7 +883,7 @@ public class MultiSessionTest {
           """;
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
-    rs.in("foo").populate1("companies", JS_ATTR, null, List.of("MacDonald's", "Shell"));
+    rs.in("foo").populateSolo("companies", JS_ATTR, null, List.of("MacDonald's", "Shell"));
     String out = rs.render();
     //System.out.println(out);
     String expected = """
@@ -905,7 +905,7 @@ public class MultiSessionTest {
           """;
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
-    rs.in("foo").populate2("companies", List.of("Shell", "USA"));
+    rs.in("foo").populateDuo("companies", List.of("Shell", "USA"));
     String out = rs.render();
     //System.out.println(out);
     String expected = """
@@ -927,7 +927,7 @@ public class MultiSessionTest {
           """;
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
-    rs.in("foo").populate2("companies",
+    rs.in("foo").populateDuo("companies",
           VarGroup.HTML,
           null,
           List.of(
@@ -955,7 +955,7 @@ public class MultiSessionTest {
           """;
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
-    rs.in("foo").populate1("companies",
+    rs.in("foo").populateSolo("companies",
           JS_ATTR,
           null,
           List.of(

@@ -49,7 +49,7 @@ import java.util.function.Supplier;
    * {@code RenderSession.populate1()} was called on a nested template, but it was
    * not a template with exactly one variable.
    *
-   * @see RenderSession#populate1(String, List) 
+   * @see RenderSession#populateSolo(String, List)
    */
 <span class="fc" id="L54">  NOT_ONE_VAR_TEMPLATE(&quot;Not a one-variable template: %s&quot;),</span>
 
@@ -57,7 +57,7 @@ import java.util.function.Supplier;
    * {@code RenderSession.populate2()} was called on a nested template, but it was
    * not a template with exactly two variables.
    *
-   * @see RenderSession#populate2(String, List)
+   * @see RenderSession#populateDuo(String, List)
    */
 <span class="fc" id="L62">  NOT_TWO_VAR_TEMPLATE(&quot;Not a two-variable template: %s&quot;),</span>
 

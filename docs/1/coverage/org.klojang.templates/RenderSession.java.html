@@ -489,15 +489,17 @@ public sealed interface RenderSession permits SoloSession, MultiSession {
   /**
    * Convenience method for populating a nested template that contains exactly one
    * variable. The variable may still occur multiple times within the template. The
-   * template is going to be repeated for each value in the provided list.
+   * template is going to be repeated for each value in the provided list. In other words,
+   * if the list contains one value, the template will be rendered once, with its one and
+   * only variable being set to that value.
    *
    * @param nestedTemplateName the name of the nested template. &lt;i&gt;Must&lt;/i&gt; contain
    *       exactly one variable
    * @param values the value to populate the nested template with
    * @return this {@code RenderSession}
    */
-  default RenderSession populate1(String nestedTemplateName, List&lt;?&gt; values) {
-<span class="fc" id="L500">    return populate1(nestedTemplateName, null, null, values);</span>
+  default RenderSession populateSolo(String nestedTemplateName, List&lt;?&gt; values) {
+<span class="fc" id="L502">    return populateSolo(nestedTemplateName, null, null, values);</span>
   }
 
   /**
@@ -516,7 +518,7 @@ public sealed interface RenderSession permits SoloSession, MultiSession {
    *       with
    * @return this {@code RenderSession}
    */
-  RenderSession populate1(String nestedTemplateName,
+  RenderSession populateSolo(String nestedTemplateName,
         VarGroup varGroup,
         String separator,
         List&lt;?&gt; values);
@@ -533,13 +535,13 @@ public sealed interface RenderSession permits SoloSession, MultiSession {
    *       template variable and a value for the second one
    * @return this {@code RenderSession}
    */
-  default RenderSession populate2(String nestedTemplateName, List&lt;?&gt; values) {
-<span class="fc" id="L537">    return populate2(nestedTemplateName, null, null, values);</span>
+  default RenderSession populateDuo(String nestedTemplateName, List&lt;?&gt; values) {
+<span class="fc" id="L539">    return populateDuo(nestedTemplateName, null, null, values);</span>
   }
 
   /**
    * Convenience method for populating a nested template that contains exactly two
-   * variables. The provided varargs array must contain an even number of elements,
+   * variables. The provided list of values must contain an even number of elements,
    * alternating between a value for the first template variable and a value for the
    * second one. The template is going to be repeated for each &lt;i&gt;pair&lt;/i&gt; of values in
    * the varargs array.
@@ -554,7 +556,7 @@ public sealed interface RenderSession permits SoloSession, MultiSession {
    *       template variable and a value for the second one
    * @return this {@code RenderSession}
    */
-  RenderSession populate2(
+  RenderSession populateDuo(
         String nestedTemplateName,
         VarGroup varGroup,
         String separator,
@@ -565,10 +567,10 @@ public sealed interface RenderSession permits SoloSession, MultiSession {
    * When you populate a nested template, the {@code RenderSession} tacitly spawns a new
    * {@code RenderSession} for that template. For example, the
    * {@link #populate(String, Object) populate()} method basically comes down to calling
-   * {@link #insert(Object) insert()} on the child session. Since the nested
-   * template may be repeating, the parent session actually spawns an array of child
-   * sessions. In most cases you don't need to be aware of all this, but if you want full
-   * control over what happens in the nested template, you can have it via this method. A
+   * {@link #insert(Object) insert()} on the child session. Since the nested template may
+   * be repeating, the parent session actually spawns an array of child sessions. In most
+   * cases you don't need to be aware of all this, but if you want full control over what
+   * happens in the nested template, you can have it via this method. A
    * {@code RenderException} is thrown if no child sessions have been created yet for the
    * specified nested template.
    *

@@ -20,7 +20,7 @@ public class SoloSessionTest {
           """;
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
-    String out = rs.populate1("companies", List.of("Shell")).render();
+    String out = rs.populateSolo("companies", List.of("Shell")).render();
     //System.out.println(out);
     String expected = """
           <html><body>
@@ -39,7 +39,7 @@ public class SoloSessionTest {
           """;
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
-    String out = rs.populate1("companies", List.of("MacDonald's", "Shell")).render();
+    String out = rs.populateSolo("companies", List.of("MacDonald's", "Shell")).render();
     //System.out.println(out);
     String expected = """
           <html><body>
@@ -59,7 +59,7 @@ public class SoloSessionTest {
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
     String out = rs
-          .populate1("companies", JS_ATTR, null, List.of("MacDonald's", "Shell"))
+          .populateSolo("companies", JS_ATTR, null, List.of("MacDonald's", "Shell"))
           .render();
     //System.out.println(out);
     String expected = """
@@ -81,7 +81,7 @@ public class SoloSessionTest {
           """;
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
-    String out = rs.populate2("companies", List.of("Shell", "USA")).render();
+    String out = rs.populateDuo("companies", List.of("Shell", "USA")).render();
     //System.out.println(out);
     String expected = """
           <html><body>
@@ -103,7 +103,7 @@ public class SoloSessionTest {
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
     String out = rs
-          .populate1("companies", List.of("MacDonald's", "USA", "Shell", "UK"))
+          .populateSolo("companies", List.of("MacDonald's", "USA", "Shell", "UK"))
           .render();
     //System.out.println(out);
     String expected = """
@@ -127,7 +127,7 @@ public class SoloSessionTest {
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
     String out = rs
-          .populate1("companies",
+          .populateSolo("companies",
                 JS_ATTR,
                 null,
                 List.of(
@@ -216,6 +216,35 @@ public class SoloSessionTest {
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
     rs.populate("companies", List.of(comp, comp));
+    System.out.println(rs.render());
+  }
+
+  @Test
+  public void populate01() throws ParseException {
+    Address addr = new Address("Main st 7", "New York", "NY12345");
+    Employee emp = new Employee("John", "Smith", addr);
+    Department dept = new Department("ICT", List.of(emp, emp, emp, emp));
+    Company comp = new Company("Shell", 1_200_000_000, List.of(dept, dept, dept));
+
+    String src = """
+          ~%%begin:companies%
+              Name ......: ~%name%
+              Profits....: ~%profits%
+              ~%%begin:departments%
+                  Name ......: ~%name%
+                  ~%%begin:employees%
+                      ~%firstName% ~%lastName%
+                      ~%%begin:address%
+                      ~%line1%, ~%city%, ~%zip%
+                      ~%%end:address%
+                  ~%%end:employees%
+              ~%%end:departments%
+          ~%%end:companies%
+          """;
+
+    Template tmpl = Template.fromString(src);
+    RenderSession rs = tmpl.newRenderSession();
+    rs.populate("companies", List.of(comp, comp), null, "*****************\n", null);
     System.out.println(rs.render());
   }
 
