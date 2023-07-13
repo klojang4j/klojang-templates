@@ -43,7 +43,7 @@ public class RenderSessionTest {
     String src = "<td>~%foo%</td>";
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession(registry);
-    rs.set("foo", VarGroup.forName("upper"), "bar");
+    rs.set("foo", "bar", VarGroup.forName("upper"));
     String out = rs.render();
     assertEquals("<td>BAR</td>", out);
   }

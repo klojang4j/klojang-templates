@@ -3,7 +3,7 @@
 _Klojang Templates_ is a Java templating API written with two goals in mind:
 
 1. Writing templates should be so simple that there is essentially no learning curve.
-2. The API used to populate the templates, by contrast, should be rich and 
+2. The API used to populate the templates, by contrast, should be rich and
    flexible, and more than make up for the simplicity of the templates.
 
 In short: leverage the skills of Java programmers, rather than make them learn a
@@ -46,6 +46,7 @@ To get started with _Klojang Templates_, add the following dependency to you pro
 **Maven**:
 
 ```xml
+
 <dependency>
     <groupId>org.klojang</groupId>
     <artifactId>klojang-templates</artifactId>
@@ -62,9 +63,9 @@ implementation group: 'org.klojang', name: 'klojang-templates', version: '1.0.3'
 _Klojang Templates_ is agnostic about the web or application framework you use. It
 does not hook into any of them in any deep way. You can use _Klojang Templates_
 with any of the Jakarta/JAX-RS based frameworks, but equally well with non-Servlet
-based frameworks like [Micronaut](https://micronaut.io/). 
+based frameworks like [Micronaut](https://micronaut.io/).
 
-_Klojang Templates_ uses [SLF4J](https://www.slf4j.org/) to log messages about 
+_Klojang Templates_ uses [SLF4J](https://www.slf4j.org/) to log messages about
 the template parsing and rendering process. All message are logged at TRACE level.
 
 ## Hello, World
@@ -106,9 +107,9 @@ However, it does provide some extra help in case you are writing HTML templates.
 <!-- hello.html -->
 <html>
 <head>
-<script>
-    const greeting = '~%js:greeting%';
-</script>
+    <script>
+        const greeting = '~%js:greeting%';
+    </script>
 </head>
 <body>
 <p>~%html:greeting%</p>
@@ -175,7 +176,7 @@ between the two options. They are populated using the exact same methods.
 
 Inline templates are defined within the parent template itself. Here is an example of
 a template which contains an inline template ("companies"), which itself contains an
-inline template ("departments"), which also contains an inline template 
+inline template ("departments"), which also contains an inline template
 ("employees"). For clarity's sake, this is a non-HTML template.
 
 _/views/company-overview.txt:_
@@ -211,10 +212,10 @@ public class CompanyResource {
     RenderSession session = template.newRenderSession();
     // Will *only* render the employees template:
     String out = session.in("companies").in("departments").in("employees")
-        .set("firstName", "John")
-        .set("lastName", "Smith")
-        .set("birthDate", LocalDate.of(1980, 6, 13))
-        .render();
+          .set("firstName", "John")
+          .set("lastName", "Smith")
+          .set("birthDate", LocalDate.of(1980, 6, 13))
+          .render();
     LOG.debug(out);
     // more stuff ...
     return session::render;
@@ -269,7 +270,7 @@ Ordinarily, when rendering a template, its structure is left completely intact. 
 inline templates the begin tag (e.g. `~%%begin:foo%`) is removed and the text
 following it is brought that much closer to the text preceding it, as though the
 begin tag had not been there. The same applies to the end tag of an inline template.
-For included templates the entire tag (e.g. `~%%include:foo.html%%`) is replaced 
+For included templates the entire tag (e.g. `~%%include:foo.html%%`) is replaced
 with the contents of the included file.
 
 However, if the begin or end tag of an inline template is all by itself on a separate
@@ -289,6 +290,7 @@ structure of the template reflects the structure of the model object, you can fi
 the entire template with a single call. The following code snippets illustrate this.
 
 _The Model:_
+
 ```java
 record Employee(int id, String firstName, String lastName, Address address) {}
 
@@ -296,24 +298,27 @@ record Address(String line1, String zipCode, String city, State state) {}
 ```
 
 _The View:_
+
 ```html
 <!-- label.html -->
 <html>
 <body>
 
-    <p>~%firstName% ~%lastName%</p>
-    
-    ~%%begin:address%
-    <p>~%line1%</p>
-    <p>~%city%, ~%state%, ~%zipCode%</p>
-    ~%%end:address%
+<p>~%firstName% ~%lastName%</p>
+
+~%%begin:address%
+<p>~%line1%</p>
+<p>~%city%, ~%state%, ~%zipCode%</p>
+~%%end:address%
 
 </body>
 </html>
 ```
 
 _The Controller:_
+
 ```java
+
 @Path("/print")
 public class LabelPrintResource {
 
@@ -346,11 +351,19 @@ Nested templates enable you to create tables and other repetitive structures.
 <body>
 <table>
     <thead>
-        <tr><th>First name</th><th>Last name</th><th>Birth date</th></tr>
+    <tr>
+        <th>First name</th>
+        <th>Last name</th>
+        <th>Birth date</th>
+    </tr>
     </thead>
     <tbody>
     ~%%begin:employees%
-        <tr><td>~%firstName%</td><td>~%lastName%</td><td>~%birthDate%</td></tr>
+    <tr>
+        <td>~%firstName%</td>
+        <td>~%lastName%</td>
+        <td>~%birthDate%</td>
+    </tr>
     ~%%end:employees%
     </tbody>
 </table>
@@ -373,8 +386,8 @@ public class EmployeeResource {
     Template template = Template.fromResource(getClass(), "/views/employees.html");
     List<Employee> employees = dao.list();
     return template.newRenderSession()
-            .populate("employees", employees)
-            .render();
+          .populate("employees", employees)
+          .render();
   }
 
 }
@@ -395,18 +408,33 @@ Tables especially benefit from
 template above would render somewhat like this:
 
 ```html
+
 <html>
 <body>
 <table>
     <thead>
     <tr>
-        <th>First name</th><th>Last name</th><th>Birth date</th>
+        <th>First name</th>
+        <th>Last name</th>
+        <th>Birth date</th>
     </tr>
     </thead>
     <tbody>
-        <tr><td>John</td><td>Smith</td><td>1980-06-13</td></tr>
-        <tr><td>Mary</td><td>Bear</td><td>1977-11-10</td></tr>
-        <tr><td>Tracey</td><td>Peterson</td><td>2001-04-03</td></tr>
+    <tr>
+        <td>John</td>
+        <td>Smith</td>
+        <td>1980-06-13</td>
+    </tr>
+    <tr>
+        <td>Mary</td>
+        <td>Bear</td>
+        <td>1977-11-10</td>
+    </tr>
+    <tr>
+        <td>Tracey</td>
+        <td>Peterson</td>
+        <td>2001-04-03</td>
+    </tr>
     </tbody>
 </table>
 </body>
@@ -419,13 +447,33 @@ template &#8212; one after
 could achieve the same by writing:
 
 ```html
+
 <tbody>
-~%%begin:employees%        <tr><td>~%firstName%</td><td>~%lastName%</td><td>~%birthDate%</td></tr>
+~%%begin:employees%
+<tr>
+    <td>~%firstName%</td>
+    <td>~%lastName%</td>
+    <td>~%birthDate%</td>
+</tr>
 ~%%end:employees%
 </tbody>
 ```
 
 But, well ...
+
+#### Separators
+
+<i>Klojang Templates</i> allows you to specify a separator string to be inserted between the instances of a repeating
+template. This can be especially useful for non-HTML templates, when you want to have a comma, semicolon, or whatever
+between the instances of the template, but of course not before the first or after the last instance.
+
+```java
+List<Employee> employees = ...; // got it from somewhere
+Template template = Template.fromString("~%%begin:emp%~%firstName% ~%lastName%~%%end:emp%");
+RenderSession session = template.newRenderSession();
+session.populate("emp", employees, ", "); // use comma-space as separator
+```
+
 
 ### Complex Information
 
@@ -475,7 +523,7 @@ the Employee class, but visually it actually _flattens_ the relationship between
 ### Conditional Rendering
 
 Conditional rendering &#8212; that is, rendering a block of text within a template
-only if a certain condition is met &#8212; is also done by means of nested 
+only if a certain condition is met &#8212; is also done by means of nested
 templates.
 
 The first thing to note here is that, by default, neither template variables nor
@@ -530,12 +578,12 @@ public class Setup {
 
   private static final StringifierRegistry stringifiers = configureStringifiers();
 
-  public static StringifierRegistry getStringifiers() { return stringifiers; }
+  public static StringifierRegistry getStringifiers() {return stringifiers;}
 
   private static StringifierRegistry configureStringifiers() {
     return StringifierRegistry.configure()
-        .forVarGroup("date-format1", getDateStringifier())
-        .freeze();
+          .forVarGroup("date-format1", getDateStringifier())
+          .freeze();
   }
 
   private static Stringifier getDateStringifier() {
@@ -565,8 +613,8 @@ public class EmployeeResource {
 ## Accessors and Name Mappers
 
 When you `set` a template variable to some value, obviously it is you who provides the
-value. But when you `insert` a hash map or JavaBean into a template, or use it to 
-`populate` a nested template, who or what is responsible for extracting the values inside 
+value. But when you `insert` a hash map or JavaBean into a template, or use it to
+`populate` a nested template, who or what is responsible for extracting the values inside
 the hash map or JavaBean? This is done by a set of
 [accessors](https://klojang4j.github.io/klojang-templates/1/api/org.klojang.templates/org/klojang/templates/Accessor.html),
 bundled together in an
@@ -652,7 +700,6 @@ public class Setup {
 }
 ```
 
-
 ## Template Caching
 
 [Template](https://klojang4j.github.io/klojang-templates/1/api/org.klojang.templates/org/klojang/templates/Template)
@@ -684,7 +731,7 @@ The
 [RenderSession](https://klojang4j.github.io/klojang-templates/1/api/org.klojang.templates/org/klojang/templates/RenderSession.html)
 class contains quite a few more methods that help you populate a Klojang template,
 and we have not covered every single way in which you can fine-tune the behaviour of
-_Klojang Templates_, but this is all covered in great detail in 
+_Klojang Templates_, but this is all covered in great detail in
 the [javadocs](https://klojang4j.github.io/klojang-templates/1/api).
 
 ## Evolving the Raw Template
@@ -763,6 +810,7 @@ _Klojang Templates_ renders the template, it will remove the `<!--%-->` tokens a
 any text inside it.
 
 ```html
+
 <td>
     <!-- ~%firstName% -->
     <!--%-->John<!--%-->
@@ -780,6 +828,7 @@ If the variable and placeholder together fit on a single line, this can be contr
 to:
 
 ```html
+
 <td><!-- ~%firstName% -->John<!--%--></td>
 <td><!-- ~%lastName% -->Smith<!--%--></td>
 ```
@@ -841,21 +890,21 @@ In this case you can use _ditch blocks_ to restore renderability to the raw temp
 ```html
 
 <tbody>
-    <!--%%-->
-    <tr>
-        <td>John</td>
-        <td>Smith</td>
-    </tr>
-    <!--%%-->
-    
-    <!-- ~%%include:employee:/views/employee-row.html%% -->
+<!--%%-->
+<tr>
+    <td>John</td>
+    <td>Smith</td>
+</tr>
+<!--%%-->
+
+<!-- ~%%include:employee:/views/employee-row.html%% -->
 </tbody>
 ```
 
 Ditch blocks are pairs of `<!--%%-->` tokens and any text between them. As with
 placeholders (`<!--%-->`), these tokens are self-closed HTML comments, so the text
 between them will be visible in the browser. But when _Klojang Templates_ renders the
-template, all ditch blocks will be removed from the template. (In fact, they will 
+template, all ditch blocks will be removed from the template. (In fact, they will
 already happen very early in the parsing phase. The
 [Template](https://klojang4j.github.io/klojang-templates/1/api/org.klojang.templates/org/klojang/templates/Template.html)
 instance produced by the parser cannot tell you whether there were any ditch blocks
@@ -886,6 +935,7 @@ Notice how, this time, it is not just the begin and end tags of the inline
 template that are placed inside HTML comments. It is the _entire_ inline template.
 
 #### Ditch Blocks vs. Placeholders
+
 Ditch blocks really are just comments &#8212; comparable to HTML or Java comments.
 You can even use ditch blocks to "comment out" nested templates:
 

@@ -24,7 +24,9 @@ import static org.klojang.templates.RenderErrorCode.*;
 import static org.klojang.templates.RenderUtil.stringify;
 import static org.klojang.templates.TemplateUtils.getAllVariables;
 import static org.klojang.templates.TemplateUtils.getFQN;
-import static org.klojang.templates.x.MTag.*;
+import static org.klojang.templates.x.MTag.VALUE_GENERATOR;
+import static org.klojang.templates.x.MTag.VAR_NAME;
+import static org.klojang.util.CollectionMethods.initializeMap;
 import static org.klojang.util.CollectionMethods.listify;
 import static org.klojang.util.ObjectMethods.isEmpty;
 
@@ -48,15 +50,8 @@ final class SoloSession implements RenderSession {
   }
 
   @Override
-  public RenderSession set(String varName, Object value) {
+  public RenderSession set(String varName, Object value, VarGroup varGroup) {
     Check.notNull(varName, VAR_NAME);
-    return setVar(varName, null, value);
-  }
-
-  @Override
-  public RenderSession set(String varName, VarGroup varGroup, Object value) {
-    Check.notNull(varName, VAR_NAME);
-    Check.notNull(varGroup, VAR_GROUP);
     return setVar(varName, varGroup, value);
   }
 
@@ -82,26 +77,16 @@ final class SoloSession implements RenderSession {
   }
 
   @Override
-  public RenderSession setDelayed(String varName, Supplier<Object> valueGenerator) {
-    Check.notNull(varName, VAR_NAME);
-    Check.notNull(valueGenerator, VALUE_GENERATOR);
-    return setDelayed0(varName, valueGenerator, null);
-  }
-
-  @Override
   public RenderSession setDelayed(
         String varName,
         VarGroup varGroup, Supplier<Object> valueGenerator) {
     Check.notNull(varName, VAR_NAME);
     Check.notNull(valueGenerator, VALUE_GENERATOR);
-    Check.notNull(varGroup, VAR_GROUP);
-    return setDelayed0(varName, valueGenerator, varGroup);
+    return setDelayed0(varName, varGroup, valueGenerator);
   }
 
   private RenderSession setDelayed0(
-        String var,
-        Supplier<Object> func,
-        VarGroup group) {
+        String var, VarGroup group, Supplier<Object> func) {
     Template t = config.template();
     Check.that(var).is(keyIn(), t.variables(), NO_SUCH_VARIABLE
           .getExceptionSupplier(getFQN(t, var)));
@@ -112,38 +97,24 @@ final class SoloSession implements RenderSession {
   }
 
   @Override
-  public RenderSession setPath(String path, IntFunction<Object> valueGenerator) {
-    Path p = Check.notNull(path, Tag.PATH).ok(Path::from);
-    Check.notNull(valueGenerator, VALUE_GENERATOR);
-    RenderUtil.setPath(this, p, null, true, valueGenerator);
-    return this;
-  }
-
-  @Override
   public RenderSession setPath(
         String path,
-        VarGroup varGroup, boolean force, IntFunction<Object> valueGenerator) {
+        VarGroup varGroup,
+        boolean force,
+        IntFunction<Object> valueGenerator) {
     Path p = Check.notNull(path, Tag.PATH).ok(Path::from);
     Check.notNull(valueGenerator, VALUE_GENERATOR);
-    Check.notNull(varGroup, VAR_GROUP);
     RenderUtil.setPath(this, p, varGroup, force, valueGenerator);
     return this;
   }
 
   @Override
-  public RenderSession ifNotSet(String path, IntFunction<Object> valueGenerator) {
-    Path p = Check.notNull(path, Tag.PATH).ok(Path::from);
-    Check.notNull(valueGenerator, VALUE_GENERATOR);
-    return RenderUtil.ifNotSet(this, p, valueGenerator, null);
-  }
-
-  @Override
   public RenderSession ifNotSet(
         String path,
-        VarGroup varGroup, IntFunction<Object> valueGenerator) {
+        VarGroup varGroup,
+        IntFunction<Object> valueGenerator) {
     Path p = Check.notNull(path, Tag.PATH).ok(Path::from);
     Check.notNull(valueGenerator, VALUE_GENERATOR);
-    Check.notNull(varGroup, VAR_GROUP);
     return RenderUtil.ifNotSet(this, p, valueGenerator, varGroup);
   }
 
@@ -216,8 +187,7 @@ final class SoloSession implements RenderSession {
   public RenderSession populate(
         String tmpl,
         Object data,
-        VarGroup group,
-        String separator,
+        String separator, VarGroup group,
         List<String> names) {
     return doPopulate(getNestedTemplate(tmpl), data, group, separator, names);
   }
@@ -330,8 +300,8 @@ final class SoloSession implements RenderSession {
   @Override
   public RenderSession populateSolo(
         String nestedTemplateName,
-        VarGroup group,
         String separator,
+        VarGroup group,
         List<?> values) {
     Check.that(values, Tag.VALUES).isNot(empty());
     Template t = getNestedTemplate(nestedTemplateName);
@@ -345,18 +315,17 @@ final class SoloSession implements RenderSession {
   @Override
   public RenderSession populateDuo(
         String nestedTemplateName,
-        VarGroup varGroup,
         String separator,
+        VarGroup varGroup,
         List<?> values) {
     Template t = getNestedTemplate(nestedTemplateName);
     Check.that(t.getVariables()).has(size(), eq(), 2,
           NOT_TWO_VAR_TEMPLATE.getExceptionSupplier(t.getName()));
     Check.that(values, Tag.VALUES).isNot(empty()).has(size(), even());
-    Check.that(separator).is(empty().or(values.size() > 2));
     String[] vars = t.getVariables().toArray(String[]::new);
     List<Map<String, Object>> data = new ArrayList<>(values.size() / 2);
     for (int i = 0; i < values.size(); i += 2) {
-      data.add(Map.of(vars[0], values.get(i), vars[1], values.get(i + 1)));
+      data.add(initializeMap(vars[0], values.get(i), vars[1], values.get(i + 1)));
     }
     return doPopulate(t, data, varGroup, separator, null);
   }

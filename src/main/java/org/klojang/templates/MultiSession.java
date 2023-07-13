@@ -15,14 +15,8 @@ import java.util.stream.Stream;
 record MultiSession(Template template, SoloSession[] sessions) implements RenderSession {
 
   @Override
-  public RenderSession set(String var, Object value) {
-    stream().forEach(s -> s.set(var, value));
-    return this;
-  }
-
-  @Override
-  public RenderSession set(String var, VarGroup group, Object value) {
-    stream().forEach(s -> s.set(var, group, value));
+  public RenderSession set(String var, Object value, VarGroup group) {
+    stream().forEach(s -> s.set(var, value, group));
     return this;
   }
 
@@ -65,7 +59,7 @@ record MultiSession(Template template, SoloSession[] sessions) implements Render
     Path p = Check.notNull(path, Tag.PATH).ok(Path::from);
     if (p.size() == 1) {
       for (int i = 0; i < sessions.length; ++i) {
-        sessions[i].set(path, group, val.apply(i));
+        sessions[i].set(path, val.apply(i), group);
       }
     } else {
       stream().forEach(s -> s.setPath(path, group, force, val));
@@ -113,10 +107,9 @@ record MultiSession(Template template, SoloSession[] sessions) implements Render
   public RenderSession populate(
         String tmplName,
         Object data,
-        VarGroup group,
-        String sep,
+        String sep, VarGroup group,
         List<String> names) {
-    stream().forEach(s -> s.populate(tmplName, data, group, sep, names));
+    stream().forEach(s -> s.populate(tmplName, data, sep, group, names));
     return this;
   }
 
@@ -158,20 +151,18 @@ record MultiSession(Template template, SoloSession[] sessions) implements Render
   @Override
   public RenderSession populateSolo(
         String tmplName,
-        VarGroup group,
-        String sep,
+        String sep, VarGroup group,
         List<?> values) {
-    stream().forEach(s -> s.populateSolo(tmplName, group, sep, values));
+    stream().forEach(s -> s.populateSolo(tmplName, sep, group, values));
     return this;
   }
 
   @Override
   public RenderSession populateDuo(
         String tmplName,
-        VarGroup group,
-        String sep,
+        String sep, VarGroup group,
         List<?> values) {
-    stream().forEach(s -> s.populateDuo(tmplName, group, sep, values));
+    stream().forEach(s -> s.populateDuo(tmplName, sep, group, values));
     return this;
   }
 

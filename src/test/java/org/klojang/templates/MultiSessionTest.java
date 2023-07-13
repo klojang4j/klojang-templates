@@ -52,8 +52,8 @@ public class MultiSessionTest {
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
     String out = rs.repeat("companies", 2)
-          .set("name", VarGroup.JS, "Apple")
-          .set("country", VarGroup.TEXT, "USA")
+          .set("name", "Apple", VarGroup.JS)
+          .set("country", "USA", VarGroup.TEXT)
           .render();
     String expected = """
               <p>Name: Apple</p>
@@ -528,8 +528,7 @@ public class MultiSessionTest {
     String out = rs.repeat("companies", 2)
           .populate("departments",
                 Map.of("name", "HR", "description", "Human Resources"),
-                VarGroup.HTML,
-                null,
+                null, VarGroup.HTML,
                 null)
           .render();
     String expected = """
@@ -883,7 +882,7 @@ public class MultiSessionTest {
           """;
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
-    rs.in("foo").populateSolo("companies", JS_ATTR, null, List.of("MacDonald's", "Shell"));
+    rs.in("foo").populateSolo("companies", null, JS_ATTR, List.of("MacDonald's", "Shell"));
     String out = rs.render();
     //System.out.println(out);
     String expected = """
@@ -928,8 +927,7 @@ public class MultiSessionTest {
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
     rs.in("foo").populateDuo("companies",
-          VarGroup.HTML,
-          null,
+          null, VarGroup.HTML,
           List.of(
                 "MacDonald<<<s",
                 "USA",
@@ -956,8 +954,7 @@ public class MultiSessionTest {
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
     rs.in("foo").populateSolo("companies",
-          JS_ATTR,
-          null,
+          null, JS_ATTR,
           List.of(
                 "MacDonald's",
                 "USA",

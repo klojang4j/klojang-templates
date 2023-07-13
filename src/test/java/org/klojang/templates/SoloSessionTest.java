@@ -59,7 +59,7 @@ public class SoloSessionTest {
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
     String out = rs
-          .populateSolo("companies", JS_ATTR, null, List.of("MacDonald's", "Shell"))
+          .populateSolo("companies", null, JS_ATTR, List.of("MacDonald's", "Shell"))
           .render();
     //System.out.println(out);
     String expected = """
@@ -128,8 +128,7 @@ public class SoloSessionTest {
     RenderSession rs = tmpl.newRenderSession();
     String out = rs
           .populateSolo("companies",
-                JS_ATTR,
-                null,
+                null, JS_ATTR,
                 List.of(
                       "MacDonald's",
                       "USA",
@@ -244,7 +243,7 @@ public class SoloSessionTest {
 
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
-    rs.populate("companies", List.of(comp, comp), null, "*****************\n", null);
+    rs.populate("companies", List.of(comp, comp), "*****************\n", null, null);
     System.out.println(rs.render());
   }
 
