@@ -463,15 +463,14 @@ But, well ...
 
 #### Separators
 
-<i>Klojang Templates</i> allows you to specify a separator string to be inserted between the instances of a repeating
-template. This can be especially useful for non-HTML templates, when you want to have a comma, semicolon, or whatever
-between the instances of the template, but of course not before the first or after the last instance.
+<i>Klojang Templates</i> allows you to specify a separator to be inserted between the instances of a repeating
+template. This can be especially useful for non-HTML templates:
 
 ```java
 List<Employee> employees = ...; // got it from somewhere
-Template template = Template.fromString("~%%begin:emp%~%firstName% ~%lastName%~%%end:emp%");
-RenderSession session = template.newRenderSession();
-session.populate("emp", employees, ", "); // use comma-space as separator
+Template.fromString("~%%begin:employee%~%firstName% ~%lastName%~%%end:employee%")
+    .newRenderSession();
+    .populate("employee", employees, ", "); // use comma-space as separator
 ```
 
 
@@ -507,12 +506,12 @@ record Department(String name, String manager, List<Employee> employees) {}
 record Employee(String firstName, String lastName, LocalDate birthDate) {}
 ```
 
-Then, when inserting a list of Company instances into the template, the employees
+Then, when inserting a ```List<Company>``` into the template, the employees
 template would repeat within the departments template, which would repeat within the
 companies template, which would repeat within the company-overview template. All this
 would happen with a single call to
 [RenderSession.populate()](https://klojang4j.github.io/klojang-templates/1/api/org.klojang.templates/org/klojang/templates/RenderSession.html#populate(java.lang.String,java.lang.Object,java.lang.String...)),
-simply because the structure of the template matches the structure of the data model.
+because the structure of the template matches the structure of the data model.
 
 Note that this does not mean that the _visual_ appearance of the template must
 somehow reflect the structure of the data model.
