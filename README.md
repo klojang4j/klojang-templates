@@ -391,7 +391,7 @@ method of the `RenderSession` class, rather than the
 method. `populate()` is used to populate nested templates while `insert()` is used to
 populate the main template. If the second argument to `populate()` is an array or
 collection, the nested template automatically turns into a
-_repeating template_, repeating itself for each element in the array or collection.
+**repeating template**, repeating itself for each element in the array or collection.
 
 #### Newline Suppression in Practice
 
