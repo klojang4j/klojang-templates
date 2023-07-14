@@ -468,9 +468,10 @@ template. This can be especially useful for non-HTML templates:
 
 ```java
 List<Employee> employees = ...; // got it from somewhere
-Template.fromString("~%%begin:employee%~%firstName% ~%lastName%~%%end:employee%")
-    .newRenderSession();
-    .populate("employee", employees, ", "); // use comma-space as separator
+String src = "~%%begin:employee%~%firstName% ~%lastName%~%%end:employee%";   
+Template template = Template.fromString(src);
+RenderSession session = template.newRenderSession();
+session.populate("employee", employees, ", "); // use comma-space as separator
 ```
 
 
