@@ -318,7 +318,6 @@ _The View:_
 _The Controller:_
 
 ```java
-
 @Path("/print")
 public class LabelPrintResource {
 
@@ -351,20 +350,12 @@ Nested templates enable you to create tables and other repetitive structures.
 <body>
 <table>
     <thead>
-    <tr>
-        <th>First name</th>
-        <th>Last name</th>
-        <th>Birth date</th>
-    </tr>
+        <tr><th>First name</th><th>Last name</th><th>Birth date</th></tr>
     </thead>
     <tbody>
-    ~%%begin:employees%
-    <tr>
-        <td>~%firstName%</td>
-        <td>~%lastName%</td>
-        <td>~%birthDate%</td>
-    </tr>
-    ~%%end:employees%
+        ~%%begin:employees%
+        <tr><td>~%firstName%</td><td>~%lastName%</td><td>~%birthDate%</td></tr>
+        ~%%end:employees%
     </tbody>
 </table>
 </body>
@@ -397,8 +388,9 @@ This time we use the
 [populate()](https://klojang4j.github.io/klojang-templates/1/api/org.klojang.templates/org/klojang/templates/RenderSession.html#populate(java.lang.String,java.lang.Object,java.lang.String...))
 method of the `RenderSession` class, rather than the
 [insert()](https://klojang4j.github.io/klojang-templates/1/api/org.klojang.templates/org/klojang/templates/RenderSession.html#insert(java.lang.Object,java.lang.String...))
-method. `populate()` is used to populate nested templates while `insert()` is used to populate the main template. If the
-second argument to `populate()` is an array or collection, the nested template automatically turns into a
+method. `populate()` is used to populate nested templates while `insert()` is used to
+populate the main template. If the second argument to `populate()` is an array or
+collection, the nested template automatically turns into a
 _repeating template_, repeating itself for each element in the array or collection.
 
 #### Newline Suppression in Practice
@@ -408,63 +400,32 @@ Tables especially benefit from
 template above would render somewhat like this:
 
 ```html
-
 <html>
 <body>
 <table>
     <thead>
-    <tr>
-        <th>First name</th>
-        <th>Last name</th>
-        <th>Birth date</th>
-    </tr>
+        <tr><th>First name</th><th>Last name</th><th>Birth date</th></tr>
     </thead>
     <tbody>
-    <tr>
-        <td>John</td>
-        <td>Smith</td>
-        <td>1980-06-13</td>
-    </tr>
-    <tr>
-        <td>Mary</td>
-        <td>Bear</td>
-        <td>1977-11-10</td>
-    </tr>
-    <tr>
-        <td>Tracey</td>
-        <td>Peterson</td>
-        <td>2001-04-03</td>
-    </tr>
+        <tr><td>John</td><td>Smith</td><td>1980-06-13</td></tr>
+        <tr><td>Mary</td><td>Bear</td><td>1977-11-10</td></tr>
+        <tr><td>Tracey</td><td>Peterson</td><td>2001-04-03</td></tr>
     </tbody>
 </table>
 </body>
 </html>
 ```
 
-If this fails to make you spill your coffee, notice that there are **two** newline characters inside the employees
-template &#8212; one after
-`~%%begin:employees%` and one after `</tr>`. Yet when rendered, the table rows stay tightly packed together. You
-could achieve the same by writing:
-
-```html
-
-<tbody>
-~%%begin:employees%
-<tr>
-    <td>~%firstName%</td>
-    <td>~%lastName%</td>
-    <td>~%birthDate%</td>
-</tr>
-~%%end:employees%
-</tbody>
-```
-
-But, well ...
+If this fails to make you spill your coffee, notice that there are **two**
+newline characters inside the employees template &#8212; one
+after `~%%begin:employees%` and one after `</tr>`. Yet when rendered, the table rows
+stay tightly packed together.
 
 #### Separators
 
-<i>Klojang Templates</i> allows you to specify a separator to be inserted between the instances of a repeating
-template. This can be especially useful for non-HTML templates:
+<i>Klojang Templates</i> allows you to specify a separator to be inserted between the
+instances of a repeating template. This can be especially useful for non-HTML
+templates:
 
 ```java
 List<Employee> employees = ...; // got it from somewhere
@@ -542,9 +503,9 @@ being rendered.
 
 `Optional` objects containing some data model object are typically returned by the
 find-by-id method of data access objects. With _Klojang Templates_ it is perfectly
-valid to populate a nested template with an `Optional`. If the `Optional` is empty, the
-template will not be rendered. Otherwise it will be populated and rendered using the
-data model object.
+valid to populate a nested template with an `Optional`. If the `Optional` is empty,
+the template will not be rendered. Otherwise it will be populated and rendered using
+the data model object.
 
 ## Stringifiers and Variable Groups
 
@@ -612,13 +573,11 @@ public class EmployeeResource {
 
 ## Accessors and Name Mappers
 
-When you `set` a template variable to some value, obviously it is you who provides the
-value. But when you `insert` a hash map or JavaBean into a template, or use it to
-`populate` a nested template, who or what is responsible for extracting the values inside
-the hash map or JavaBean? This is done by a set of
-[accessors](https://klojang4j.github.io/klojang-templates/1/api/org.klojang.templates/org/klojang/templates/Accessor.html),
-bundled together in an
-[AccessorRegistry](https://klojang4j.github.io/klojang-templates/1/api/org.klojang.templates/org/klojang/templates/StringifierRegistry.html).
+When you `set` a template variable to some value, obviously it is you who provides
+the value. But when you `insert` a hash map or JavaBean into a template, who or what
+is responsible for extracting the values inside the hash map or JavaBean? This is
+done by
+[accessors](https://klojang4j.github.io/klojang-templates/1/api/org.klojang.templates/org/klojang/templates/Accessor.html).
 
 While you are quite likely to want to write some custom
 [stringifiers](https://klojang4j.github.io/klojang-templates/1/api/org.klojang.templates/org/klojang/templates/Stringifier.html)
@@ -709,17 +668,16 @@ or from a
 [classpath resource](https://klojang4j.github.io/klojang-templates/1/api/org.klojang.templates/org/klojang/templates/Template.html#fromResource(java.lang.Class,java.lang.String))
 are by default always cached. Thus, the cost of parsing the template is paid just
 once. Included templates are cached separately from the templates in which they are
-included. This makes the template retrieval process even more efficient. The first time
-you include a template it needs to be parsed, but the next time you include it, either in
-the same template or in another template, you do so essentially for free.
+included. This makes the template retrieval process even more efficient. The first
+time you include a template it needs to be parsed, but the next time you include it,
+either in the same template or in another template, you do so essentially for free.
 
 #### Disabling Template Caching
 
 During development you might want to disable caching so you can modify the template
 and immediately verify the result when you hit the Refresh button in your browser.
-This can be done by adding `-Dorg.klojang.templates.cacheSize=0` to the java
-command line. Alternatively, you can set an environment variable named
-KJT_CACHE_SIZE to 0 (zero).
+This can be done by adding `-Dorg.klojang.templates.cacheSize=0` to the java command
+line. Alternatively, you can set an environment variable named KJT_CACHE_SIZE to 0.
 
 ## Conclusion
 
@@ -800,8 +758,7 @@ look like this:
 ### Placeholders
 
 That's nice. The user won't see ugly `~%` tokens when viewing the raw template in
-a browser. Unfortunately, the example row containing "John Smith" now has effectively
-disappeared from view.
+a browser. Unfortunately, the row now has disappeared from view in the raw template.
 
 This can be remedied by using _placeholders_. A placeholder is a value that is placed
 inside a pair of `<!--%-->` tokens. Since `<!--%-->` is a self-closed HTML comment,
@@ -821,8 +778,8 @@ any text inside it.
 </td>
 ```
 
-If you remove all HTML comments from the above HTML snippet, you are back to the
-original design.
+If you remove everything that is an comment from the above HTML snippet, you are back
+to where you started.
 
 If the variable and placeholder together fit on a single line, this can be contracted
 to:
@@ -882,7 +839,7 @@ It may have occurred to you that this will not work for included templates:
 ```
 
 This, too, _will_ be rendered just like
-`~%%include:employee:/views/employee-row.html%%` (without HTML comments), but the raw
+`~%%include:employee:/views/employee-row.html%%` (without the `<!--` and `-->`), but the raw
 template now unfortunately simply has an empty table body.
 
 In this case you can use _ditch blocks_ to restore renderability to the raw template:
@@ -904,13 +861,10 @@ In this case you can use _ditch blocks_ to restore renderability to the raw temp
 Ditch blocks are pairs of `<!--%%-->` tokens and any text between them. As with
 placeholders (`<!--%-->`), these tokens are self-closed HTML comments, so the text
 between them will be visible in the browser. But when _Klojang Templates_ renders the
-template, all ditch blocks will be removed from the template. (In fact, they will
-already happen very early in the parsing phase. The
-[Template](https://klojang4j.github.io/klojang-templates/1/api/org.klojang.templates/org/klojang/templates/Template.html)
-instance produced by the parser cannot tell you whether there were any ditch blocks
-in the template source.)
+template, all ditch blocks will be removed from the template.
 
-Ditch blocks can also be combined with inline templates to produce the same result:
+Ditch blocks can in fact also be combined with inline templates to produce the same
+result:
 
 ```html
 
@@ -936,7 +890,7 @@ template that are placed inside HTML comments. It is the _entire_ inline templat
 
 #### Ditch Blocks vs. Placeholders
 
-Ditch blocks really are just comments &#8212; comparable to HTML or Java comments.
+Ditch blocks really are just comments, comparable to HTML or Java comments.
 You can even use ditch blocks to "comment out" nested templates:
 
 ```
