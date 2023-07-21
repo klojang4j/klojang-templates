@@ -27,14 +27,14 @@ Klojang Templates,org.klojang.templates,BeanAccessor,2,30,1,3,0,8,1,3,0,2
 Klojang Templates,org.klojang.templates,PathResolver,2,0,0,0,1,0,1,0,1,0
 Klojang Templates,org.klojang.templates,ParseUtils,12,315,18,52,3,53,18,27,1,9
 Klojang Templates,org.klojang.templates,Regex,6,68,0,0,2,17,1,2,1,2
-Klojang Templates,org.klojang.templates,SoloSession,2,1205,7,71,1,212,7,80,0,48
+Klojang Templates,org.klojang.templates,SoloSession,2,1144,7,69,1,198,7,76,0,45
 Klojang Templates,org.klojang.templates,Accessor,0,5,0,0,0,1,0,1,0,1
 Klojang Templates,org.klojang.templates,UnparsedPart,3,10,0,0,1,4,1,2,1,2
 Klojang Templates,org.klojang.templates,PartsPrinter,0,325,0,18,0,72,0,18,0,9
 Klojang Templates,org.klojang.templates,AccessorRegistry,0,92,0,8,0,26,0,12,0,8
 Klojang Templates,org.klojang.templates,IncludedTemplateParser,0,196,1,11,0,39,1,8,0,3
 Klojang Templates,org.klojang.templates,PathAccessor,26,26,3,1,4,6,2,2,0,2
-Klojang Templates,org.klojang.templates,RenderSession,7,51,0,0,1,8,1,8,1,8
+Klojang Templates,org.klojang.templates,RenderSession,8,70,0,0,1,11,1,11,1,11
 Klojang Templates,org.klojang.templates,TextPart,0,17,0,0,0,7,0,4,0,4
 Klojang Templates,org.klojang.templates,TemplateCache,66,138,13,15,13,35,12,7,0,5
 Klojang Templates,org.klojang.templates,RenderUtil,3,218,1,27,1,38,2,20,1,7

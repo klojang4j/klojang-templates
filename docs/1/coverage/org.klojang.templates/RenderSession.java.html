@@ -40,13 +40,13 @@ public sealed interface RenderSession permits SoloSession, MultiSession {
    * Sets the specified variable to the specified value. The {@link Stringifier}
    * associated with the specified {@link VarGroup variable group} will be used to
    * stringify and/or escape the value. If the variable has an inline group name prefix
-   * (as in {@code ~%html:firstName%}), the group specified through the prefix will
-   * prevail.
+   * (as in {@code ~%html:firstName%}), the variable group specified through the prefix
+   * will prevail.
    *
    * @param varName the name of the variable to set
    * @param value the value
    * @param varGroup the variable group to assign the variable to if the variable
-   *       has no group name prefix.
+   *       has no group name prefix. May be {@code null}.
    * @return this {@code RenderSession}
    * @see StringifierRegistry.Builder#forVarGroup(String, Stringifier)
    */
@@ -62,7 +62,9 @@ public sealed interface RenderSession permits SoloSession, MultiSession {
    * @param valueGenerator the supplier of the value
    * @return this {@code RenderSession}
    */
-  RenderSession setDelayed(String varName, Supplier&lt;Object&gt; valueGenerator);
+  default RenderSession setDelayed(String varName, Supplier&lt;Object&gt; valueGenerator) {
+<span class="fc" id="L66">    return setDelayed(varName, null, valueGenerator);</span>
+  }
 
   /**
    * Sets the specified variable to the value produced by the specified {@code Supplier}.
@@ -95,7 +97,7 @@ public sealed interface RenderSession permits SoloSession, MultiSession {
    * @see #setPath(String, VarGroup, boolean, IntFunction)
    */
   default RenderSession setPath(String path, IntFunction&lt;Object&gt; valueGenerator) {
-<span class="nc" id="L98">    return setPath(path, null, true, valueGenerator);</span>
+<span class="fc" id="L100">    return setPath(path, null, true, valueGenerator);</span>
   }
 
   /**
@@ -165,7 +167,9 @@ public sealed interface RenderSession permits SoloSession, MultiSession {
    * @return this {@code RenderSession}
    * @see #ifNotSet(String, VarGroup, IntFunction)
    */
-  RenderSession ifNotSet(String path, IntFunction&lt;Object&gt; valueGenerator);
+  default RenderSession ifNotSet(String path, IntFunction&lt;Object&gt; valueGenerator) {
+<span class="fc" id="L171">    return ifNotSet(path, null, valueGenerator);</span>
+  }
 
   /**
    * Sets the specified variable to the value produced by the specified
@@ -209,7 +213,7 @@ public sealed interface RenderSession permits SoloSession, MultiSession {
    * @return this {@code RenderSession}
    */
   default RenderSession insert(Object data) {
-<span class="fc" id="L212">    return insert(data, null, null);</span>
+<span class="fc" id="L216">    return insert(data, null, null);</span>
   }
 
   /**
@@ -242,7 +246,28 @@ public sealed interface RenderSession permits SoloSession, MultiSession {
    * @return this {@code RenderSession}
    */
   default RenderSession populate(String nestedTemplateName, Object data) {
-<span class="fc" id="L245">    return populate(nestedTemplateName, data, null, null, null);</span>
+<span class="fc" id="L249">    return populate(nestedTemplateName, data, null, null, null);</span>
+  }
+
+  /**
+   * Populates a template nested inside the template managed by this
+   * {@code RenderSession}. The template is populated with values retrieved from the
+   * specified source data.
+   *
+   * @param nestedTemplateName the name of the nested template
+   * @param data an object that provides data for all or some of the nested
+   *       template's variables and nested templates
+   * @param separator the separator to place between instances of the template. May
+   *       be {@code null} (no separator). The argument is ignored (and may be anything)
+   *       if {@code data} is not a {@code Collection} or an array, or if it is any array
+   *       or {@code Collection} containing less than two elements
+   * @return this {@code RenderSession}
+   */
+  default RenderSession populate(
+        String nestedTemplateName,
+        Object data,
+        String separator) {
+<span class="nc" id="L270">    return populate(nestedTemplateName, data, separator, null, null);</span>
   }
 
   /**
@@ -285,8 +310,9 @@ public sealed interface RenderSession permits SoloSession, MultiSession {
    *       {@code Collection}, the template will be rendered multiple times, once for each
    *       element in the array or {@code Collection}.
    * @param separator the separator to place between instances of the template. May
-   *       be {@code null} (no separator). May only be non-null if {@code data} is a
-   *       {@code Collection} or an array
+   *       be {@code null} (no separator). The argument is ignored (and may be anything)
+   *       if {@code data} is not a {@code Collection} or an array, or if it is any array
+   *       or {@code Collection} containing less than two elements
    * @param varGroup the variable group to assign the variables to if they have no
    *       group name prefix. May be {@code null}.
    * @param names the names of the variables and doubly-nested templates that you
@@ -314,7 +340,7 @@ public sealed interface RenderSession permits SoloSession, MultiSession {
    * @see #getChildSessions(String)
    */
   default RenderSession repeat(String nestedTemplateName, int times) {
-<span class="fc" id="L317">    return repeat(nestedTemplateName, null, times);</span>
+<span class="fc" id="L343">    return repeat(nestedTemplateName, null, times);</span>
   }
 
   /**
@@ -360,8 +386,8 @@ public sealed interface RenderSession permits SoloSession, MultiSession {
    *
    * @param nestedTemplateName the name of the nested template
    * @param separator the separator to place between instances of the template. May
-   *       be {@code null} (no separator). May only be non-null if {@code times} is
-   *       greater than 1.
+   *       be {@code null} (no separator). The argument is ignored (and may be anything)
+   *       {@code times} is less than 2.
    * @param times the number of times the template will repeat itself
    * @return a {@code RenderSession} that works on all instances (repetitions) of the
    *       nested template
@@ -427,7 +453,7 @@ public sealed interface RenderSession permits SoloSession, MultiSession {
    * @return this {@code RenderSession}
    */
   default RenderSession enable(String... nestedTemplateNames) {
-<span class="fc" id="L430">    return enable(1, nestedTemplateNames);</span>
+<span class="fc" id="L456">    return enable(1, nestedTemplateNames);</span>
   }
 
   /**
@@ -452,7 +478,7 @@ public sealed interface RenderSession permits SoloSession, MultiSession {
    * @see Template#isTextOnly()
    */
   default RenderSession enable(int repeats, String... nestedTemplateNames) {
-<span class="fc" id="L455">    return enable(null, repeats, nestedTemplateNames);</span>
+<span class="fc" id="L481">    return enable(null, repeats, nestedTemplateNames);</span>
   }
 
   /**
@@ -471,8 +497,8 @@ public sealed interface RenderSession permits SoloSession, MultiSession {
    * that should &lt;i&gt;not&lt;/i&gt; be rendered.
    *
    * @param separator the separator to place between instances of the template. May
-   *       be {@code null} (no separator). May only be non-null if {@code repeats} is
-   *       greater than 1.
+   *       be {@code null} (no separator). The argument is ignored (and may be anything)
+   *       if {@code repeats} is less than 2.
    * @param repeats the number of times the nested template(s) must be repeated
    * @param nestedTemplateNames the names of the nested text-only templates to be
    *       rendered
@@ -505,7 +531,7 @@ public sealed interface RenderSession permits SoloSession, MultiSession {
    * @return this {@code RenderSession}
    */
   default RenderSession populateSolo(String nestedTemplateName, List&lt;?&gt; values) {
-<span class="fc" id="L508">    return populateSolo(nestedTemplateName, null, null, values);</span>
+<span class="fc" id="L534">    return populateSolo(nestedTemplateName, null, null, values);</span>
   }
 
   /**
@@ -516,8 +542,8 @@ public sealed interface RenderSession permits SoloSession, MultiSession {
    * @param nestedTemplateName the name of the nested template. &lt;i&gt;Must&lt;/i&gt; contain
    *       exactly one variable
    * @param separator the separator to place between instances of the template. May
-   *       be {@code null} (no separator). May only be non-null if the length of the
-   *       {@code values} array is greater than 1.
+   *       be {@code null} (no separator). The argument is ignored (and may be anything)
+   *       if {@code values} contains less than two elements
    * @param varGroup the variable group to assign the variable to if the variable
    *       has no group name prefix.
    * @param values the values to populate the instances of the specified template
@@ -543,7 +569,7 @@ public sealed interface RenderSession permits SoloSession, MultiSession {
    * @return this {@code RenderSession}
    */
   default RenderSession populateDuo(String nestedTemplateName, List&lt;?&gt; values) {
-<span class="fc" id="L546">    return populateDuo(nestedTemplateName, null, null, values);</span>
+<span class="fc" id="L572">    return populateDuo(nestedTemplateName, null, null, values);</span>
   }
 
   /**
@@ -555,8 +581,8 @@ public sealed interface RenderSession permits SoloSession, MultiSession {
    *
    * @param nestedTemplateName the name of the nested template
    * @param separator the separator to place between instances of the template. May
-   *       be {@code null} (no separator). May only be non-null if the length of the
-   *       {@code values} array is greater than 2.
+   *       be {@code null} (no separator). The argument is ignored (and may be anything)
+   *       if {@code values} contains zero or two elements.
    * @param varGroup the variable group to assign the variables to if they have no
    *       group name prefix
    * @param values an array of values, alternating between a value for the first

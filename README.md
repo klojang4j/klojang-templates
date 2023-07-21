@@ -417,9 +417,8 @@ template above would render somewhat like this:
 ```
 
 If this fails to make you spill your coffee, notice that there are **two**
-newline characters inside the employees template &#8212; one
-after `~%%begin:employees%` and one after `</tr>`. Yet when rendered, the table rows
-stay tightly packed together.
+newline characters inside the employees template (one after `~%%begin:employees%` and
+one after `</tr>`). Yet when rendered, the table rows stay tightly packed together.
 
 #### Separators
 
