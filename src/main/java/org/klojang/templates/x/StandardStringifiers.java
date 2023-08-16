@@ -20,11 +20,11 @@ public final class StandardStringifiers {
 
   // Copied from StringEscapeUtils and added the 4th LookupTranslator
   private static final CharSequenceTranslator HTML_ATTR_TRANSLATOR =
-      new AggregateTranslator(
-          new LookupTranslator(EntityArrays.BASIC_ESCAPE),
-          new LookupTranslator(EntityArrays.ISO8859_1_ESCAPE),
-          new LookupTranslator(EntityArrays.HTML40_EXTENDED_ESCAPE),
-          new LookupTranslator(Map.of("'", "&#39;", "\"", "&#34;")));
+        new AggregateTranslator(
+              new LookupTranslator(EntityArrays.BASIC_ESCAPE),
+              new LookupTranslator(EntityArrays.ISO8859_1_ESCAPE),
+              new LookupTranslator(EntityArrays.HTML40_EXTENDED_ESCAPE),
+              new LookupTranslator(Map.of("'", "&#39;", "\"", "&#34;")));
 
   public static final Stringifier ESCAPE_HTML = wrap(StringEscapeUtils::escapeHtml4);
 
@@ -40,13 +40,13 @@ public final class StandardStringifiers {
 
   public static Map<VarGroup, Stringifier> get() {
     return Map.of(
-        TEXT, Stringifier.DEFAULT,
-        HTML, ESCAPE_HTML,
-        JS, ESCAPE_JS,
-        ATTR, ESCAPE_ATTR,
-        JS_ATTR, ESCAPE_JS_ATTR,
-        PARAM, ESCAPE_QUERY_PARAM,
-        PATH, ESCAPE_PATH);
+          TEXT, Stringifier.DEFAULT,
+          HTML, ESCAPE_HTML,
+          JS, ESCAPE_JS,
+          ATTR, ESCAPE_ATTR,
+          JS_ATTR, ESCAPE_JS_ATTR,
+          PARAM, ESCAPE_QUERY_PARAM,
+          PATH, ESCAPE_PATH);
   }
 
   private static String escapeJsAttr(String s) {
@@ -54,11 +54,11 @@ public final class StandardStringifiers {
   }
 
   private static String escapeParam(String s) {
-    return new URIBuilder().setPathSegments(s).toString().substring(1);
+    return new URIBuilder().addParameter("x", s).toString().substring(3);
   }
 
   private static String escapePath(String s) {
-    return new URIBuilder().addParameter("x", s).toString().substring(3);
+    return new URIBuilder().setPathSegments(s).toString().substring(1);
   }
 
   private static Stringifier wrap(UnaryOperator<String> stringifier) {
