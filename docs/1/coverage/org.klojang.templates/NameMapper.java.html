@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>NameMapper.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Klojang Templates</a> &gt; <a href="index.source.html" class="el_package">org.klojang.templates</a> &gt; <span class="el_source">NameMapper.java</span></div><h1>NameMapper.java</h1><pre class="source lang-java linenums">package org.klojang.templates;
+
+/**
+ * Generic name mapping interface. Name mappers can optionally be used to map the
+ * names used in a Klojang template to the names used in the data access layer, thus
+ * allowing for an extra level of indirection between the view layer and the data
+ * layer. The {@link org.klojang.templates.name} package contains various prefab name
+ * mappers, for example to map snake case names to camel case names.
+ *
+ * @author Ayco Holleman
+ * @see AccessorRegistry.Builder#setDefaultNameMapper(NameMapper)
+ */
+@FunctionalInterface
+public interface NameMapper {
+
+  /**
+   * The no-op name mapper. Returns the input string as-is.
+   */
+<span class="fc" id="L19">  NameMapper AS_IS = x -&gt; x;</span>
+
+  /**
+   * Maps the specified name to another name.
+   *
+   * @param name the name used in the source system
+   * @return the name used in the target system
+   */
+  String map(String name);
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

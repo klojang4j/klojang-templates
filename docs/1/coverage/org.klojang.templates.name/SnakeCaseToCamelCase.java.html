@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SnakeCaseToCamelCase.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Klojang Templates</a> &gt; <a href="index.source.html" class="el_package">org.klojang.templates.name</a> &gt; <span class="el_source">SnakeCaseToCamelCase.java</span></div><h1>SnakeCaseToCamelCase.java</h1><pre class="source lang-java linenums">package org.klojang.templates.name;
+
+import org.klojang.check.Check;
+import org.klojang.templates.NameMapper;
+
+import static java.lang.Character.toLowerCase;
+import static java.lang.Character.toUpperCase;
+import static org.klojang.check.CommonChecks.emptyString;
+import static org.klojang.util.StringMethods.trim;
+
+/**
+ * Converts snake case identifiers to word case identifiers. For example
+ * {@code my_bloody_valentine} becomes {@code myBloodyValentine}. Note that it
+ * doesn't matter whether the snake case identifier consists of lowercase letters,
+ * uppercase letters or both. {@code MY_BLOODY_VALENTINE} and
+ * {@code My_Bloody_Valentine} would also become {@code myBloodyValentine}.
+ *
+ * @author Ayco Holleman
+ */
+<span class="fc" id="L20">public class SnakeCaseToCamelCase implements NameMapper {</span>
+
+  /**
+   * Returns an instance of {@code SnakeCaseToCamelCase}.
+   *
+   * @return an instance of {@code SnakeCaseToCamelCase}
+   */
+  public static SnakeCaseToCamelCase snakeCaseToCamelCase() {
+<span class="nc" id="L28">    return new SnakeCaseToCamelCase();</span>
+  }
+
+  /**
+   * Maps a snake case name to a camel case name. Any leading and trailing
+   * underscores in the name are ignored.
+   *
+   * @param name a snake case name
+   * @return a camel case name
+   */
+  @Override
+  public String map(String name) {
+<span class="fc" id="L40">    String in = Check.that(trim(name, &quot;_\t\r\n&quot;))</span>
+<span class="fc" id="L41">        .isNot(emptyString(), &quot;cannot map \&quot;%s\&quot;&quot;, name).ok();</span>
+<span class="fc" id="L42">    char[] out = new char[in.length()];</span>
+<span class="fc" id="L43">    out[0] = toLowerCase(in.charAt(0));</span>
+<span class="fc" id="L44">    boolean nextWord = false;</span>
+<span class="fc" id="L45">    int j = 1;</span>
+<span class="fc bfc" id="L46" title="All 2 branches covered.">    for (int i = 1; i &lt; in.length(); ++i) {</span>
+<span class="fc" id="L47">      char c = in.charAt(i);</span>
+<span class="fc bfc" id="L48" title="All 2 branches covered.">      if (c == '_') {</span>
+<span class="fc" id="L49">        nextWord = true;</span>
+      } else {
+<span class="fc bfc" id="L51" title="All 2 branches covered.">        out[j++] = nextWord ? toUpperCase(c) : toLowerCase(c);</span>
+<span class="fc" id="L52">        nextWord = false;</span>
+      }
+    }
+<span class="fc" id="L55">    return new String(out, 0, j);</span>
+  }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

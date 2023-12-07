@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>RenderErrorCode.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Klojang Templates</a> &gt; <a href="index.source.html" class="el_package">org.klojang.templates</a> &gt; <span class="el_source">RenderErrorCode.java</span></div><h1>RenderErrorCode.java</h1><pre class="source lang-java linenums">package org.klojang.templates;
+
+import java.util.List;
+import java.util.function.Supplier;
+
+/**
+ * Symbolic constants for errors that may occur while populating or rendering a
+ * template.
+ *
+ * @author Ayco Holleman
+ * @see RenderException#getErrorCode()
+ */
+<span class="fc" id="L13">public enum RenderErrorCode {</span>
+
+  /**
+   * A non-existent variable name was specified when calling
+   * {@link RenderSession#set(String, Object) RenderSession.set()}, or other methods
+   * taking a variable name as argument.
+   */
+<span class="fc" id="L20">  NO_SUCH_VARIABLE(&quot;No such variable: \&quot;%s\&quot;&quot;),</span>
+
+  /**
+   * A non-existent nested template name was specified.
+   */
+<span class="fc" id="L25">  NO_SUCH_TEMPLATE(&quot;No such nested template: \&quot;%s\&quot;&quot;),</span>
+
+  /**
+   * The child sessions for a nested template were requested, but none were created
+   * yet.
+   *
+   * @see RenderSession#getChildSessions(String)
+   */
+<span class="fc" id="L33">  NO_CHILD_SESSIONS(&quot;Template %s not instantiated yet&quot;),</span>
+
+  /**
+   * An error occurred while retrieving the value for a template variable.
+   */
+<span class="fc" id="L38">  ACCESS_EXCEPTION(&quot;Error while retrieving value for %s: %s&quot;),</span>
+
+  /**
+   * {@code RenderSession.enable()} was called on a nested template, but it was not a
+   * text-only template.
+   *
+   * @see RenderSession#enable(String...)
+   */
+<span class="fc" id="L46">  NOT_TEXT_ONLY(&quot;Not a text-only template: %s&quot;),</span>
+
+  /**
+   * {@code RenderSession.populate1()} was called on a nested template, but it was
+   * not a template with exactly one variable.
+   *
+   * @see RenderSession#populateSolo(String, List)
+   */
+<span class="fc" id="L54">  NOT_ONE_VAR_TEMPLATE(&quot;Not a one-variable template: %s&quot;),</span>
+
+  /**
+   * {@code RenderSession.populate2()} was called on a nested template, but it was
+   * not a template with exactly two variables.
+   *
+   * @see RenderSession#populateDuo(String, List)
+   */
+<span class="fc" id="L62">  NOT_TWO_VAR_TEMPLATE(&quot;Not a two-variable template: %s&quot;),</span>
+
+  /**
+   * A stringifier's {@link Stringifier#stringify(Object) stringify} method returned
+   * {@code null}, but stringifiers must &lt;i&gt;never&lt;/i&gt; return {@code null}.
+   */
+<span class="fc" id="L68">  STRINGIFIER_RETURNED_NULL(</span>
+      &quot;Stringifier for variable %s in variable group %s returned null&quot;),
+
+  /**
+   * A stringifier's {@link Stringifier#stringify(Object) stringify} method threw a
+   * {@code NullPointerException}, but stringifiers &lt;i&gt;must&lt;/i&gt; be capable of
+   * stringifying {@code null}.
+   */
+<span class="fc" id="L76">  STRINGIFIER_NOT_NULL_RESISTANT(</span>
+      &quot;Stringifier for variable %s in variable group %s threw NullPointerException&quot;),
+
+  /**
+   * A call to {@link RenderSession#repeat(String, int) RenderSession.repeat()} was
+   * made, but the number of repetitions had already been fixed, either by a previous
+   * call to {@code repeat()}, or implicitly, via the
+   * {@link RenderSession#populate(String, Object) popupate()} method.
+   */
+<span class="fc" id="L85">  REPETITIONS_FIXED(&quot;Number of repetitions already fixed for template %s&quot;),</span>
+
+  /**
+   * The number of elements in the array or {@code Collection} passed to
+   * {@link RenderSession#populate(String, Object)
+   * RenderSession.populate()} differed from the number of repetitions fixed by the
+   * first call to {@code populate()} or {@code repeat()}.
+   */
+<span class="fc" id="L93">  REPETITION_MISMATCH(&quot;Error while populating %s. When populating a nested template &quot;</span>
+      + &quot;in multiple passes you must always provide the same number of source data &quot;
+      + &quot;objects. Received %d source data object(s) in first round. Now got %d.&quot;),
+
+  /**
+   * An unexpected error occurred while rendering the template.
+   */
+<span class="fc" id="L100">  UNEXPECTED_ERROR(null);</span>
+
+  private String format;
+
+<span class="fc" id="L104">  RenderErrorCode(String format) {</span>
+<span class="fc" id="L105">    this.format = format;</span>
+<span class="fc" id="L106">  }</span>
+
+  RenderException getException(Object... msgArgs) {
+<span class="fc" id="L109">    return new RenderException(this, String.format(format, msgArgs));</span>
+  }
+
+  Supplier&lt;RenderException&gt; getExceptionSupplier(Object... msgArgs) {
+<span class="fc" id="L113">    return () -&gt; getException(msgArgs);</span>
+  }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

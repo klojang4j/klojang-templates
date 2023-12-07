@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>RenderState.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Klojang Templates</a> &gt; <a href="index.source.html" class="el_package">org.klojang.templates</a> &gt; <span class="el_source">RenderState.java</span></div><h1>RenderState.java</h1><pre class="source lang-java linenums">package org.klojang.templates;
+
+import org.klojang.check.Check;
+import org.klojang.path.Path;
+import org.klojang.util.collection.IntList;
+
+import java.util.*;
+
+import static java.util.stream.Collectors.toList;
+import static org.klojang.check.CommonChecks.*;
+import static org.klojang.templates.RenderErrorCode.*;
+import static org.klojang.templates.TemplateUtils.getFQN;
+import static org.klojang.util.ObjectMethods.ifNotNull;
+import static org.klojang.util.ObjectMethods.n2e;
+
+final class RenderState {
+
+<span class="fc" id="L18">  private static final SoloSession[] ZERO_SESSIONS = new SoloSession[0];</span>
+
+  private final SessionConfig config;
+
+  // variables that have not been set yet
+  private final Set&lt;String&gt; todo;
+
+  private final Map&lt;Template, SessionData&gt; children;
+
+  // variable occurrence values. A variable may occur multiple times
+  // within the same template, and occurrences may end up having
+  // different values due to being escaped differently. The keys in
+  // the map are the indices of VarPart parts.
+  private final Map&lt;Integer, Object&gt; varValues;
+
+<span class="fc" id="L33">  RenderState(SessionConfig config) {</span>
+<span class="fc" id="L34">    this.config = config;</span>
+<span class="fc" id="L35">    int sz = config.template().countNestedTemplates();</span>
+<span class="fc" id="L36">    this.children = new IdentityHashMap&lt;&gt;(sz);</span>
+<span class="fc" id="L37">    sz = config.template().countVariableOccurrences();</span>
+<span class="fc" id="L38">    this.varValues = HashMap.newHashMap(sz);</span>
+<span class="fc" id="L39">    this.todo = new HashSet&lt;&gt;(config.template().getVariables());</span>
+<span class="fc" id="L40">  }</span>
+
+  SessionConfig getSessionConfig() {
+<span class="fc" id="L43">    return config;</span>
+  }
+
+  SessionData getSessionData(Template tmpl) {
+<span class="fc" id="L47">    return children.get(tmpl);</span>
+  }
+
+  SoloSession[] createChildSessions(Template t, String separator, int repeats) {
+    SoloSession[] sessions;
+<span class="fc bfc" id="L52" title="All 2 branches covered.">    if (repeats == 0) {</span>
+<span class="fc" id="L53">      sessions = ZERO_SESSIONS;</span>
+    } else {
+<span class="fc" id="L55">      sessions = new SoloSession[repeats];</span>
+<span class="fc bfc" id="L56" title="All 2 branches covered.">      for (int i = 0; i &lt; repeats; ++i) {</span>
+<span class="fc" id="L57">        sessions[i] = config.newChildSession(t);</span>
+      }
+    }
+<span class="fc" id="L60">    this.children.put(t, new SessionData(sessions, n2e(separator)));</span>
+<span class="fc" id="L61">    return sessions;</span>
+  }
+
+  SoloSession[] getOrCreateChildSessions(Template t, String separator, int repeats) {
+<span class="fc" id="L65">    SessionData children = this.children.get(t);</span>
+<span class="fc bfc" id="L66" title="All 2 branches covered.">    if (children == null) {</span>
+<span class="fc" id="L67">      return createChildSessions(t, separator, repeats);</span>
+<span class="pc bpc" id="L68" title="1 of 2 branches missed.">    } else if (children.sessions().length == repeats) {</span>
+<span class="nc" id="L69">      return children.sessions();</span>
+    }
+<span class="fc" id="L71">    throw REPETITION_MISMATCH.getException(</span>
+<span class="fc" id="L72">          getFQN(t),</span>
+<span class="fc" id="L73">          children.sessions().length,</span>
+<span class="fc" id="L74">          repeats);</span>
+  }
+
+  boolean isProcessed(Template template) {
+<span class="pc bpc" id="L78" title="1 of 2 branches missed.">    return children.get(template) != null;</span>
+  }
+
+  boolean isDisabled(Template template) {
+<span class="fc" id="L82">    SessionData sd = children.get(template);</span>
+<span class="pc bpc" id="L83" title="3 of 4 branches missed.">    return sd != null &amp;&amp; sd.sessions().length == 0;</span>
+  }
+
+  SoloSession[] getChildSessions(Template template) {
+<span class="fc" id="L87">    return ifNotNull(children.get(template), SessionData::sessions);</span>
+  }
+
+  Object getVar(int partIndex) {
+<span class="fc" id="L91">    return varValues.get(partIndex);</span>
+  }
+
+  void setVar(int partIndex, Object value) {
+<span class="fc" id="L95">    varValues.put(partIndex, value);</span>
+<span class="fc" id="L96">  }</span>
+
+  void done(String var) {
+<span class="fc" id="L99">    todo.remove(var);</span>
+<span class="fc" id="L100">  }</span>
+
+  List&lt;String&gt; todo() {
+<span class="fc" id="L103">    return List.copyOf(todo);</span>
+  }
+
+  List&lt;String&gt; getAllUnsetVariables(boolean relative) {
+<span class="fc bfc" id="L107" title="All 2 branches covered.">    if (relative) {</span>
+<span class="fc" id="L108">      ArrayList&lt;Path&gt; paths = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L109">      collectUnsetVariables(this, paths, Path.empty());</span>
+<span class="fc" id="L110">      return paths.stream().map(Path::toString).collect(toList());</span>
+    }
+<span class="fc" id="L112">    ArrayList&lt;String&gt; vars = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L113">    collectUnsetVariables(this, vars);</span>
+<span class="fc" id="L114">    return vars;</span>
+  }
+
+  // collects absolute paths
+  private static void collectUnsetVariables(RenderState state, ArrayList&lt;String&gt; vars) {
+<span class="fc" id="L119">    Template myTmpl = state.config.template();</span>
+<span class="fc" id="L120">    state.todo.stream().map(var -&gt; getFQN(myTmpl, var)).forEach(vars::add);</span>
+<span class="fc" id="L121">    myTmpl.getNestedTemplates().forEach(t -&gt; {</span>
+<span class="fc" id="L122">      SessionData children = state.children.get(t);</span>
+<span class="fc bfc" id="L123" title="All 2 branches covered.">      if (children == null) {</span>
+<span class="fc" id="L124">        TemplateUtils.collectFQNs(t, vars);</span>
+<span class="pc bpc" id="L125" title="1 of 2 branches missed.">      } else if (children.sessions().length &gt; 0) {</span>
+<span class="fc" id="L126">        collectUnsetVariables(children.sessions()[0].state(), vars);</span>
+      }
+<span class="fc" id="L128">    });</span>
+<span class="fc" id="L129">  }</span>
+
+  // collects relative paths
+  private static void collectUnsetVariables(
+        RenderState state,
+        ArrayList&lt;Path&gt; vars,
+        Path path) {
+<span class="fc" id="L136">    state.todo.stream().map(path::append).forEach(vars::add);</span>
+<span class="fc" id="L137">    Template myTmpl = state.config.template();</span>
+<span class="fc" id="L138">    myTmpl.getNestedTemplates().forEach(t -&gt; {</span>
+<span class="fc" id="L139">      Path next = path.append(t.getName());</span>
+<span class="fc" id="L140">      SessionData sd = state.children.get(t);</span>
+<span class="fc bfc" id="L141" title="All 2 branches covered.">      if (sd == null) {</span>
+<span class="fc" id="L142">        TemplateUtils.collectFQNs(t, vars, next);</span>
+<span class="pc bpc" id="L143" title="1 of 2 branches missed.">      } else if (sd.sessions().length &gt; 0) {</span>
+<span class="fc" id="L144">        collectUnsetVariables(sd.sessions()[0].state(), vars, next);</span>
+      }
+<span class="fc" id="L146">    });</span>
+<span class="fc" id="L147">  }</span>
+
+  boolean allSet() {
+<span class="fc" id="L150">    return ready(this);</span>
+  }
+
+  private static boolean ready(RenderState state) {
+<span class="fc bfc" id="L154" title="All 2 branches covered.">    if (state.todo.isEmpty()) {</span>
+<span class="fc bfc" id="L155" title="All 2 branches covered.">      for (Template t : state.config.template().getNestedTemplates()) {</span>
+<span class="fc" id="L156">        SessionData sd = state.children.get(t);</span>
+<span class="fc bfc" id="L157" title="All 2 branches covered.">        if (sd == null) {</span>
+<span class="fc bfc" id="L158" title="All 2 branches covered.">          if (t.hasVariables()) {</span>
+<span class="fc" id="L159">            return false;</span>
+          }
+<span class="pc bpc" id="L161" title="1 of 2 branches missed.">        } else if (sd.sessions().length &gt; 0</span>
+<span class="fc bfc" id="L162" title="All 2 branches covered.">              &amp;&amp; !ready(sd.sessions()[0].state())) {</span>
+<span class="fc" id="L163">          return false;</span>
+        }
+<span class="fc" id="L165">      }</span>
+<span class="fc" id="L166">      return true;</span>
+    }
+<span class="fc" id="L168">    return false;</span>
+  }
+
+  void unset(Path path) {
+<span class="fc" id="L172">    unset(this, path);</span>
+<span class="fc" id="L173">  }</span>
+
+  private static void unset(RenderState state, Path path) {
+<span class="fc" id="L176">    String name = path.segment(0);</span>
+<span class="fc bfc" id="L177" title="All 2 branches covered.">    if (path.size() == 1) {</span>
+<span class="fc" id="L178">      IntList occurrences = state.config.template().variables().get(name);</span>
+<span class="fc" id="L179">      Check.that(occurrences).is(notNull(),</span>
+<span class="fc" id="L180">            NO_SUCH_VARIABLE.getExceptionSupplier(name));</span>
+<span class="fc" id="L181">      state.todo.add(name);</span>
+<span class="fc" id="L182">      occurrences.stream().forEach(state.varValues.keySet()::remove);</span>
+<span class="fc" id="L183">    } else {</span>
+<span class="fc" id="L184">      Template tmpl = state.config.template();</span>
+<span class="fc" id="L185">      Check.that(name).is(in(), tmpl.getNestedTemplateNames(),</span>
+<span class="fc" id="L186">            NO_SUCH_TEMPLATE.getExceptionSupplier(getFQN(tmpl, name)));</span>
+<span class="fc" id="L187">      Template nested = tmpl.getNestedTemplate(name);</span>
+<span class="fc" id="L188">      SessionData children = state.children.get(nested);</span>
+<span class="pc bpc" id="L189" title="1 of 2 branches missed.">      if (children != null) {</span>
+<span class="fc" id="L190">        Arrays.stream(children.sessions()).forEach(s -&gt; unset(s.state(), path.shift()));</span>
+      }
+    }
+<span class="fc" id="L193">  }</span>
+
+  void clear(Template tmpl) {
+<span class="fc" id="L196">    Arrays.stream(children.get(tmpl).sessions()).forEach(this::clear);</span>
+<span class="fc" id="L197">    children.remove(tmpl);</span>
+<span class="fc" id="L198">  }</span>
+
+  private void clear(SoloSession session) {
+<span class="fc" id="L201">    RenderState state = session.state();</span>
+<span class="fc" id="L202">    state.varValues.clear();</span>
+<span class="fc" id="L203">    state.todo.addAll(state.config.template().getVariables());</span>
+<span class="fc" id="L204">    state.children.values()</span>
+<span class="fc" id="L205">          .stream()</span>
+<span class="fc" id="L206">          .map(SessionData::sessions)</span>
+<span class="fc" id="L207">          .flatMap(Arrays::stream)</span>
+<span class="fc" id="L208">          .forEach(this::clear);</span>
+<span class="fc" id="L209">    state.children.clear();</span>
+<span class="fc" id="L210">  }</span>
+
+  boolean isSet(Path path) {
+<span class="fc" id="L213">    return isSet(this, path);</span>
+  }
+
+  private static boolean isSet(RenderState state, Path path) {
+<span class="fc" id="L217">    String name = path.segment(0);</span>
+<span class="fc bfc" id="L218" title="All 2 branches covered.">    if (path.size() == 1) {</span>
+<span class="fc bfc" id="L219" title="All 2 branches covered.">      if (state.todo.contains(name)) {</span>
+<span class="fc" id="L220">        return false;</span>
+      }
+<span class="fc" id="L222">      Template tmpl = state.config.template();</span>
+<span class="fc" id="L223">      Check.that(name).is(keyIn(), tmpl.variables(),</span>
+<span class="fc" id="L224">            NO_SUCH_VARIABLE.getExceptionSupplier(getFQN(tmpl, name)));</span>
+<span class="fc" id="L225">      return true;</span>
+    }
+<span class="fc" id="L227">    Template tmpl = state.config.template();</span>
+<span class="fc" id="L228">    Check.that(name).is(in(), tmpl.getNestedTemplateNames(),</span>
+<span class="fc" id="L229">          NO_SUCH_TEMPLATE.getExceptionSupplier(getFQN(tmpl, name)));</span>
+<span class="fc" id="L230">    Template nested = tmpl.getNestedTemplate(name);</span>
+<span class="fc" id="L231">    SessionData children = state.children.get(nested);</span>
+<span class="fc bfc" id="L232" title="All 2 branches covered.">    if (children == null) {</span>
+<span class="fc" id="L233">      return false;</span>
+<span class="pc bpc" id="L234" title="1 of 2 branches missed.">    } else if (children.sessions().length == 0) {</span>
+<span class="nc" id="L235">      return true;</span>
+    }
+<span class="fc" id="L237">    return isSet(children.sessions()[0].state(), path.shift());</span>
+  }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

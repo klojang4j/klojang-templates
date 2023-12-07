@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>RenderUtil.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Klojang Templates</a> &gt; <a href="index.source.html" class="el_package">org.klojang.templates</a> &gt; <span class="el_source">RenderUtil.java</span></div><h1>RenderUtil.java</h1><pre class="source lang-java linenums">package org.klojang.templates;
+
+import org.klojang.path.Path;
+
+import java.util.Set;
+import java.util.function.IntFunction;
+
+import static org.klojang.templates.RenderErrorCode.STRINGIFIER_NOT_NULL_RESISTANT;
+import static org.klojang.templates.RenderErrorCode.STRINGIFIER_RETURNED_NULL;
+
+<span class="nc" id="L11">final class RenderUtil {</span>
+
+  static String stringify(
+        Object value,
+        Stringifier stringifier,
+        VariablePart part,
+        VarGroup adhoc) {
+<span class="fc" id="L18">    VarGroup group = part.varGroup().orElse(adhoc);</span>
+<span class="pc bpc" id="L19" title="1 of 6 branches missed.">    if (value == null &amp;&amp; group == VarGroup.DEF &amp;&amp; part.placeholder() != null) {</span>
+<span class="fc" id="L20">      return part.placeholder();</span>
+    }
+    String s;
+    try {
+<span class="fc" id="L24">      s = stringifier.stringify(value);</span>
+<span class="fc" id="L25">    } catch (NullPointerException e) {</span>
+<span class="fc" id="L26">      throw STRINGIFIER_NOT_NULL_RESISTANT.getException(part.name(), group);</span>
+<span class="fc" id="L27">    }</span>
+<span class="fc bfc" id="L28" title="All 2 branches covered.">    if (s == null) {</span>
+<span class="fc" id="L29">      throw STRINGIFIER_RETURNED_NULL.getException(part.name(), group);</span>
+    }
+<span class="fc" id="L31">    return s;</span>
+  }
+
+  static RenderSession ifNotSet(
+        SoloSession session,
+        Path path,
+        IntFunction&lt;Object&gt; valueGenerator,
+        VarGroup varGroup) {
+<span class="fc bfc" id="L39" title="All 2 branches covered.">    if (!session.state().isSet(path)) {</span>
+<span class="fc" id="L40">      setPath(session, path, varGroup, true, valueGenerator);</span>
+    }
+<span class="fc" id="L42">    return session;</span>
+  }
+
+  static void setPath(
+        SoloSession session,
+        Path path,
+        VarGroup group,
+        boolean force,
+        IntFunction&lt;Object&gt; valueGenerator) {
+<span class="fc bfc" id="L51" title="All 2 branches covered.">    if (path.size() == 1) {</span>
+<span class="fc" id="L52">      session.setVar(path.segment(0), group, valueGenerator.apply(0));</span>
+    } else {
+<span class="fc" id="L54">      Template t = session.getNestedTemplate(path.segment(0));</span>
+<span class="fc" id="L55">      SoloSession[] children = session.state().getChildSessions(t);</span>
+<span class="fc bfc" id="L56" title="All 2 branches covered.">      if (children == null) {</span>
+<span class="fc bfc" id="L57" title="All 2 branches covered.">        if (!force) {</span>
+<span class="fc" id="L58">          return;</span>
+        }
+<span class="fc" id="L60">        children = session.state().createChildSessions(t, null, 1);</span>
+      }
+<span class="fc bfc" id="L62" title="All 2 branches covered.">      if (path.size() == 2) {</span>
+<span class="fc bfc" id="L63" title="All 2 branches covered.">        for (int i = 0; i &lt; children.length; ++i) {</span>
+<span class="fc" id="L64">          children[i].setVar(path.segment(1), group, valueGenerator.apply(i));</span>
+        }
+      } else {
+<span class="fc bfc" id="L67" title="All 2 branches covered.">        for (SoloSession child : children) {</span>
+<span class="fc" id="L68">          setPath(child, path.shift(), group, force, valueGenerator);</span>
+        }
+      }
+    }
+<span class="fc" id="L72">  }</span>
+
+  static void enableRecursive(SoloSession s0, Template t0) {
+<span class="fc" id="L75">    s0.state().createChildSessions(t0, null, 1);</span>
+<span class="fc bfc" id="L76" title="All 2 branches covered.">    if (!t0.getNestedTemplates().isEmpty()) {</span>
+<span class="fc" id="L77">      SoloSession s = s0.state().getChildSessions(t0)[0];</span>
+<span class="fc" id="L78">      t0.getNestedTemplates().forEach(t -&gt; enableRecursive(s, t));</span>
+    }
+<span class="fc" id="L80">  }</span>
+
+  static void enableRecursive(SoloSession s0, Template t0, Set&lt;String&gt; names) {
+<span class="fc bfc" id="L83" title="All 2 branches covered.">    if (names.contains(t0.getName())) {</span>
+<span class="fc" id="L84">      s0.state().createChildSessions(t0, null, 1);</span>
+<span class="fc bfc" id="L85" title="All 2 branches covered.">      if (!t0.getNestedTemplates().isEmpty()) {</span>
+<span class="fc" id="L86">        SoloSession s = s0.state().getChildSessions(t0)[0];</span>
+<span class="fc" id="L87">        t0.getNestedTemplates().forEach(t -&gt; enableRecursive(s, t, names));</span>
+      }
+    }
+<span class="fc" id="L90">  }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>
