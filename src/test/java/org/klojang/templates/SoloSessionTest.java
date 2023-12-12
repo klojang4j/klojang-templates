@@ -1,6 +1,7 @@
 package org.klojang.templates;
 
 import org.junit.jupiter.api.Test;
+import org.klojang.invoke.BeanReader;
 import org.klojang.util.MutableInt;
 
 import java.util.List;
@@ -180,13 +181,13 @@ public class SoloSessionTest {
     assertEquals(nospace(expected), nospace(out));
   }
 
-  public record Address(String line1, String city, String zip) {}
+  public record Address(String line1, String city, String zip) { }
 
-  public record Employee(String firstName, String lastName, Address address) {}
+  public record Employee(String firstName, String lastName, Address address) { }
 
-  public record Department(String name, List<Employee> employees) {}
+  public record Department(String name, List<Employee> employees) { }
 
-  public record Company(String name, double profits, List<Department> departments) {}
+  public record Company(String name, double profits, List<Department> departments) { }
 
   // From the documentation - only print to std out to make sure it works
   @Test
@@ -645,6 +646,54 @@ public class SoloSessionTest {
     Template tmpl = Template.fromString("foo");
     RenderSession rs = tmpl.newRenderSession();
     assertSame(tmpl, rs.getTemplate());
+  }
+
+  public record Person(String firstName, String lastName, int age) { }
+
+
+  @Test
+  public void scatter00() throws ParseException {
+    Person person = new Person("John", "Smith", 38);
+    Template tmpl = Template.fromString("~%person%");
+    RenderSession rs = tmpl.newRenderSession();
+    BeanReader<Person> reader = new BeanReader<>(Person.class,
+          "firstName",
+          "lastName",
+          "age");
+    rs.scatter("person", person, reader, " ", "", "");
+    assertEquals("John Smith 38", rs.render());
+  }
+
+  @Test
+  public void scatter01() throws ParseException {
+    Person person = new Person("John", "Smith", 38);
+    Template tmpl = Template.fromString("~%person%");
+    RenderSession rs = tmpl.newRenderSession();
+    BeanReader<Person> reader = new BeanReader<>(Person.class,
+          "firstName",
+          "age",
+          "lastName");
+    rs.scatter("person", person, reader, "-", "[", "]");
+    assertEquals("[John-38-Smith]", rs.render());
+  }
+
+  @Test
+  public void scatter02() throws ParseException {
+    Person person = new Person("John", "Smith", 38);
+    Template tmpl = Template.fromString("~%person%");
+    RenderSession rs = tmpl.newRenderSession();
+    BeanReader<Person> reader = new BeanReader<>(Person.class, "firstName");
+    rs.scatter("person", person, reader, "-", "[", "]");
+    assertEquals("[John]", rs.render());
+  }
+
+  @Test
+  public void scatter03() throws ParseException {
+    Person person = new Person("John", "Smith", 38);
+    Template tmpl = Template.fromString("~%person%");
+    RenderSession rs = tmpl.newRenderSession();
+     rs.scatter("person", person, " ", "", "", "firstName", "lastName");
+    assertEquals("John Smith", rs.render());
   }
 
   private static String nospace(String s) {

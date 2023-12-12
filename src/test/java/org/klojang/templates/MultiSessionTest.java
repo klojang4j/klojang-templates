@@ -1,6 +1,7 @@
 package org.klojang.templates;
 
 import org.junit.jupiter.api.Test;
+import org.klojang.invoke.BeanReader;
 import org.klojang.util.MutableInt;
 
 import java.io.ByteArrayOutputStream;
@@ -247,6 +248,36 @@ public class MultiSessionTest {
     String out = rs.render();
     assertEquals("FooFoo", nospace(out));
   }
+
+  public record Person(String firstName, String lastName, int age) { }
+
+  @Test
+  public void scatter01() throws ParseException {
+    Person person = new Person("John", "Smith", 38);
+    BeanReader<Person> reader = new BeanReader<>(Person.class,
+          "firstName",
+          "lastName",
+          "age");
+    String src = """
+          <html><body>
+          ~%%begin:persons%
+              <p>~%person%</p>
+          ~%%end:persons%
+          </body></html>
+          """;
+    Template tmpl = Template.fromString(src);
+    RenderSession rs = tmpl.newRenderSession();
+    rs.repeat("persons", 2).scatter("person", person, reader, " ", "", "");
+    String out = rs.render();
+    String expected = """
+          <html><body>
+              <p>John Smith 38</p>
+              <p>John Smith 38</p>
+          </body></html>
+          """;
+    assertEquals(nospace(expected), nospace(out));
+  }
+
 
   @Test
   public void ifNotSet00() throws ParseException {
@@ -882,7 +913,8 @@ public class MultiSessionTest {
           """;
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
-    rs.in("foo").populateSolo("companies", null, JS_ATTR, List.of("MacDonald's", "Shell"));
+    rs.in("foo")
+          .populateSolo("companies", null, JS_ATTR, List.of("MacDonald's", "Shell"));
     String out = rs.render();
     //System.out.println(out);
     String expected = """

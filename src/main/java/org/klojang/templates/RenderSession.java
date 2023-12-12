@@ -1,5 +1,8 @@
 package org.klojang.templates;
 
+import org.klojang.check.Check;
+import org.klojang.invoke.BeanReader;
+
 import java.io.OutputStream;
 import java.util.List;
 import java.util.function.IntFunction;
@@ -203,6 +206,62 @@ public sealed interface RenderSession permits SoloSession, MultiSession {
         String path,
         VarGroup varGroup,
         IntFunction<Object> valueGenerator);
+
+  /**
+   * Sets the specified variable to the concatenation of all readable properties of the
+   * provided JavaBean. This could be used to print out simple beans and records without
+   * making use of nested templates.
+   *
+   * @param varName the name of the variable to set
+   * @param bean the bean whose values to read
+   * @param delimiter the delimiter to insert between the values. May be {@code null} or
+   * empty.
+   * @param prefix a string to insert before the concatenated values. May be {@code null}
+   * or empty.
+   * @param suffix a string to insert after the concatenated values. May be {@code null}
+   * or empty.
+   * @param properties the properties to read. An empty array causes all properties to be
+   * read and printed. A non-empty array causes the properties to be printed in the
+   * specified order.
+   * @param <T>
+   * @return this {@code RenderSession}
+   */
+  @SuppressWarnings("unchecked")
+  default <T> RenderSession scatter(String varName,
+        T bean,
+        String delimiter,
+        String prefix,
+        String suffix,
+        String... properties) {
+    Class<T> c = (Class<T>) Check.notNull(bean, "bean").ok(Object::getClass);
+    BeanReader<T> reader = new BeanReader<>(c, properties);
+    return scatter(varName, bean, reader, delimiter, prefix, suffix);
+  }
+
+  /**
+   * Sets the specified variable to the concatenation of all readable properties of the
+   * provided JavaBean. This could be used to print out simple beans and records without
+   * making use of nested templates.
+   *
+   * @param varName the name of the variable to set
+   * @param bean the bean whose values to read
+   * @param beanReader the {@code BeanReader} to be used to read the bean
+   * @param delimiter the delimiter to insert between the values. May be {@code null} or
+   * empty.
+   * @param prefix a string to insert before the concatenated values. May be {@code null}
+   * or empty.
+   * @param suffix a string to insert after the concatenated values. May be {@code null}
+   * or empty.
+   * @param <T> the type of the bean
+   * @return this {@code RenderSession}
+   * @see BeanReader
+   */
+  <T> RenderSession scatter(String varName,
+        T bean,
+        BeanReader<T> beanReader,
+        String delimiter,
+        String prefix,
+        String suffix);
 
   /**
    * <p>Populates the template with values extracted from the specified object. If the

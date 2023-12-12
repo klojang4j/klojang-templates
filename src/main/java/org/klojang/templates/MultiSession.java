@@ -2,6 +2,7 @@ package org.klojang.templates;
 
 import org.klojang.check.Check;
 import org.klojang.check.Tag;
+import org.klojang.invoke.BeanReader;
 import org.klojang.path.Path;
 
 import java.io.OutputStream;
@@ -94,6 +95,22 @@ record MultiSession(Template template, SoloSession[] sessions) implements Render
     } else {
       stream().forEach(s -> s.ifNotSet(path, group, val));
     }
+    return this;
+  }
+
+  @Override
+  public <T> RenderSession scatter(String varName,
+        T bean,
+        BeanReader<T> beanReader,
+        String delimiter,
+        String prefix,
+        String suffix) {
+    stream().forEach(s -> s.scatter(varName,
+          bean,
+          beanReader,
+          delimiter,
+          prefix,
+          suffix));
     return this;
   }
 
