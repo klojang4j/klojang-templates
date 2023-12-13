@@ -1,4 +1,4 @@
-package org.klojang.templates;
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>RenderSession.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Klojang Templates</a> &gt; <a href="index.source.html" class="el_package">org.klojang.templates</a> &gt; <span class="el_source">RenderSession.java</span></div><h1>RenderSession.java</h1><pre class="source lang-java linenums">package org.klojang.templates;
 
 import org.klojang.check.Check;
 import org.klojang.invoke.BeanReader;
@@ -16,9 +16,9 @@ import java.util.function.Supplier;
  * but can gain a lot of state as the template gets populated. Therefore, make sure they
  * don't stick around hogging the heap.
  *
- * <h2>Thead Safety</h2>
+ * &lt;h2&gt;Thead Safety&lt;/h2&gt;
  *
- * <p>The {@code RenderSession} class is not thread-safe. However, if different
+ * &lt;p&gt;The {@code RenderSession} class is not thread-safe. However, if different
  * threads populate different parts of the template, they cannot get in each other's way.
  * Of course, when using multiple threads to populate a template, the moment at which to
  * {@linkplain #render(OutputStream) render} it needs to be carefully synchronized.
@@ -36,7 +36,7 @@ public sealed interface RenderSession permits SoloSession, MultiSession {
    * @return this {@code RenderSession}
    */
   default RenderSession set(String varName, Object value) {
-    return set(varName, value, null);
+<span class="fc" id="L39">    return set(varName, value, null);</span>
   }
 
   /**
@@ -65,8 +65,8 @@ public sealed interface RenderSession permits SoloSession, MultiSession {
    * @param valueGenerator the supplier of the value
    * @return this {@code RenderSession}
    */
-  default RenderSession setDelayed(String varName, Supplier<Object> valueGenerator) {
-    return setDelayed(varName, null, valueGenerator);
+  default RenderSession setDelayed(String varName, Supplier&lt;Object&gt; valueGenerator) {
+<span class="fc" id="L69">    return setDelayed(varName, null, valueGenerator);</span>
   }
 
   /**
@@ -84,7 +84,7 @@ public sealed interface RenderSession permits SoloSession, MultiSession {
   RenderSession setDelayed(
         String varName,
         VarGroup varGroup,
-        Supplier<Object> valueGenerator);
+        Supplier&lt;Object&gt; valueGenerator);
 
   /**
    * Sets the value of the specified variable. The variable may be (deeply) nested and is
@@ -99,60 +99,60 @@ public sealed interface RenderSession permits SoloSession, MultiSession {
    * @return this {@code RenderSession}
    * @see #setPath(String, VarGroup, boolean, IntFunction)
    */
-  default RenderSession setPath(String path, IntFunction<Object> valueGenerator) {
-    return setPath(path, null, true, valueGenerator);
+  default RenderSession setPath(String path, IntFunction&lt;Object&gt; valueGenerator) {
+<span class="fc" id="L103">    return setPath(path, null, true, valueGenerator);</span>
   }
 
   /**
-   * <p>Sets the value of the specified variable. The variable may be (deeply)
+   * &lt;p&gt;Sets the value of the specified variable. The variable may be (deeply)
    * nested. For example:
    *
-   * <blockquote><pre>{@code
-   * setPath("companies.departments.employees.firstName", idx -> "John");
-   * }</pre></blockquote>
+   * &lt;blockquote&gt;&lt;pre&gt;{@code
+   * setPath(&quot;companies.departments.employees.firstName&quot;, idx -&gt; &quot;John&quot;);
+   * }&lt;/pre&gt;&lt;/blockquote&gt;
    *
-   * <p>This sets the {@code ~%firstName%} variable within the {@code employees} template
+   * &lt;p&gt;This sets the {@code ~%firstName%} variable within the {@code employees} template
    * within the {@code departments} template within the {@code companies} template within
-   * the main template to "John". Since the {@code employees} template may already have
+   * the main template to &quot;John&quot;. Since the {@code employees} template may already have
    * been instantiated as a repeating template, the value for each instance of the
    * template is set via an {@link IntFunction}. The function is given the array index of
    * the instance and must return the value for that particular instance. For example, if
    * the above statement would populate a cell in an HTML table, which had already been
    * instantiated through other calls on the {@code RenderSession}, then this call:
    *
-   * <blockquote><pre>{@code
-   * setPath("companies.departments.employees.firstName", idx -> "John" + idx);
-   * }</pre></blockquote>
+   * &lt;blockquote&gt;&lt;pre&gt;{@code
+   * setPath(&quot;companies.departments.employees.firstName&quot;, idx -&gt; &quot;John&quot; + idx);
+   * }&lt;/pre&gt;&lt;/blockquote&gt;
    *
-   * would put "John0" in the first row of the table, "John1" in the second row of the
+   * would put &quot;John0&quot; in the first row of the table, &quot;John1&quot; in the second row of the
    * table, etc.
    *
-   * <p>If {@code force} equals {@code false}, then the variable will only be set if the
+   * &lt;p&gt;If {@code force} equals {@code false}, then the variable will only be set if the
    * template containing it has already been made visible, for example via
    * {@link #repeat(String, int) repeat()} or
    * {@link #populate(String, Object) populate()}. If {@code force} equals {@code true},
    * {@code setPath()} will itself cause the template to become visible (boilerplate text
    * and all) and the variable will always be set.
    *
-   * <p>If the variable is a top-level variable (the path consists of just one path
+   * &lt;p&gt;If the variable is a top-level variable (the path consists of just one path
    * segment), this method behaves like {@link #set(String, Object, VarGroup)}. However,
    * you might still be able to put the {@code IntFunction} to good use:
    *
-   * <blockquote><pre>{@code
-   * String src = """
+   * &lt;blockquote&gt;&lt;pre&gt;{@code
+   * String src = &quot;&quot;&quot;
    *    ~%%begin:departments%
-   *    <tr><td>Department number:</td><td>~%deptNo%</td></tr>
+   *    &lt;tr&gt;&lt;td&gt;Department number:&lt;/td&gt;&lt;td&gt;~%deptNo%&lt;/td&gt;&lt;/tr&gt;
    *    ~%%end:departments%
-   *    """;
+   *    &quot;&quot;&quot;;
    * Template template = Template.fromString(src);
    * RenderSession session = template.newRenderSession();
-   * session.repeat("departments", 3).setPath("deptNo", i -> 100 + i).render();
+   * session.repeat(&quot;departments&quot;, 3).setPath(&quot;deptNo&quot;, i -&gt; 100 + i).render();
    *
    * // Output:
-   * // <tr><td>Department number:</td><td>100</td></tr>
-   * // <tr><td>Department number:</td><td>101</td></tr>
-   * // <tr><td>Department number:</td><td>102</td></tr>
-   * }</pre></blockquote>
+   * // &lt;tr&gt;&lt;td&gt;Department number:&lt;/td&gt;&lt;td&gt;100&lt;/td&gt;&lt;/tr&gt;
+   * // &lt;tr&gt;&lt;td&gt;Department number:&lt;/td&gt;&lt;td&gt;101&lt;/td&gt;&lt;/tr&gt;
+   * // &lt;tr&gt;&lt;td&gt;Department number:&lt;/td&gt;&lt;td&gt;102&lt;/td&gt;&lt;/tr&gt;
+   * }&lt;/pre&gt;&lt;/blockquote&gt;
    *
    * @param path a path to a potentially deeply-nested variable
    * @param varGroup the variable group to assign the variable to if the variable has no
@@ -169,24 +169,24 @@ public sealed interface RenderSession permits SoloSession, MultiSession {
         String path,
         VarGroup varGroup,
         boolean force,
-        IntFunction<Object> valueGenerator);
+        IntFunction&lt;Object&gt; valueGenerator);
 
   /**
    * Sets the specified variable to the value produced by the specified
-   * {@code IntFunction} <i>if</i> the variable has not already been set.
+   * {@code IntFunction} &lt;i&gt;if&lt;/i&gt; the variable has not already been set.
    *
    * @param path a path to a potentially deeply-nested variable
    * @param valueGenerator the supplier of the value
    * @return this {@code RenderSession}
    * @see #ifNotSet(String, VarGroup, IntFunction)
    */
-  default RenderSession ifNotSet(String path, IntFunction<Object> valueGenerator) {
-    return ifNotSet(path, null, valueGenerator);
+  default RenderSession ifNotSet(String path, IntFunction&lt;Object&gt; valueGenerator) {
+<span class="fc" id="L184">    return ifNotSet(path, null, valueGenerator);</span>
   }
 
   /**
    * Sets the specified variable to the value produced by the specified
-   * {@code IntFunction} <i>if</i> the variable has not already been set. The variable may
+   * {@code IntFunction} &lt;i&gt;if&lt;/i&gt; the variable has not already been set. The variable may
    * be (deeply) nested and is therefore specified as a path (like
    * {@code companies.departments.employees.firstName}). This method is especially meant
    * to be called after a call to {@link #insert(Object) insert()} or
@@ -205,7 +205,7 @@ public sealed interface RenderSession permits SoloSession, MultiSession {
   RenderSession ifNotSet(
         String path,
         VarGroup varGroup,
-        IntFunction<Object> valueGenerator);
+        IntFunction&lt;Object&gt; valueGenerator);
 
   /**
    * Sets the specified variable to the concatenation of all readable properties of the
@@ -223,21 +223,21 @@ public sealed interface RenderSession permits SoloSession, MultiSession {
    * @param properties the properties to read. An empty array causes all properties to be
    * read and printed. A non-empty array causes the properties to be printed in the
    * specified order.
-   * @param <T>
+   * @param &lt;T&gt;
    * @return this {@code RenderSession}
    * @see BeanReader
    * @see BeanReader#getReadableProperties()
    */
-  @SuppressWarnings("unchecked")
-  default <T> RenderSession scatter(String varName,
+  @SuppressWarnings(&quot;unchecked&quot;)
+  default &lt;T&gt; RenderSession scatter(String varName,
         T bean,
         String delimiter,
         String prefix,
         String suffix,
         String... properties) {
-    Class<T> c = (Class<T>) Check.notNull(bean, "bean").ok(Object::getClass);
-    BeanReader<T> reader = new BeanReader<>(c, properties);
-    return scatter(varName, bean, reader, delimiter, prefix, suffix);
+<span class="fc" id="L238">    Class&lt;T&gt; c = (Class&lt;T&gt;) Check.notNull(bean, &quot;bean&quot;).ok(Object::getClass);</span>
+<span class="fc" id="L239">    BeanReader&lt;T&gt; reader = new BeanReader&lt;&gt;(c, properties);</span>
+<span class="fc" id="L240">    return scatter(varName, bean, reader, delimiter, prefix, suffix);</span>
   }
 
   /**
@@ -254,28 +254,28 @@ public sealed interface RenderSession permits SoloSession, MultiSession {
    * or empty.
    * @param suffix a string to insert after the concatenated values. May be {@code null}
    * or empty.
-   * @param <T> the type of the bean
+   * @param &lt;T&gt; the type of the bean
    * @return this {@code RenderSession}
    * @see BeanReader
    * @see BeanReader#getReadableProperties()
    */
-  <T> RenderSession scatter(String varName,
+  &lt;T&gt; RenderSession scatter(String varName,
         T bean,
-        BeanReader<T> beanReader,
+        BeanReader&lt;T&gt; beanReader,
         String delimiter,
         String prefix,
         String suffix);
 
   /**
-   * <p>Populates the template with values extracted from the specified object. If the
+   * &lt;p&gt;Populates the template with values extracted from the specified object. If the
    * structure of the object reflects the structure of the template, the template almost
-   * literally becomes a "mold" into which to "sink" the object. On the other hand: the
+   * literally becomes a &quot;mold&quot; into which to &quot;sink&quot; the object. On the other hand: the
    * object is not
-   * <i>required</i> to exactly match the structure of the template. The
+   * &lt;i&gt;required&lt;/i&gt; to exactly match the structure of the template. The
    * {@link Accessor accessors} will grab from it what they can from the object and leave
    * the rest alone.
    *
-   * <p>Only template variables and nested templates whose name is in the provided
+   * &lt;p&gt;Only template variables and nested templates whose name is in the provided
    * {@code names} array will be populated. The {@code names} array is allowed to be
    * {@code null} or empty, in which case an attempt is made to populate the entire
    * template from the source data object.
@@ -285,7 +285,7 @@ public sealed interface RenderSession permits SoloSession, MultiSession {
    * @return this {@code RenderSession}
    */
   default RenderSession insert(Object data) {
-    return insert(data, null, null);
+<span class="fc" id="L288">    return insert(data, null, null);</span>
   }
 
   /**
@@ -304,7 +304,7 @@ public sealed interface RenderSession permits SoloSession, MultiSession {
    * be checked to see if they can be populated from the specified source data object
    * @return this {@code RenderSession}
    */
-  RenderSession insert(Object data, VarGroup varGroup, List<String> names);
+  RenderSession insert(Object data, VarGroup varGroup, List&lt;String&gt; names);
 
   /**
    * Populates a template nested inside the template managed by this
@@ -317,7 +317,7 @@ public sealed interface RenderSession permits SoloSession, MultiSession {
    * @return this {@code RenderSession}
    */
   default RenderSession populate(String nestedTemplateName, Object data) {
-    return populate(nestedTemplateName, data, null, null, null);
+<span class="fc" id="L320">    return populate(nestedTemplateName, data, null, null, null);</span>
   }
 
   /**
@@ -338,7 +338,7 @@ public sealed interface RenderSession permits SoloSession, MultiSession {
         String nestedTemplateName,
         Object data,
         String separator) {
-    return populate(nestedTemplateName, data, separator, null, null);
+<span class="nc" id="L341">    return populate(nestedTemplateName, data, separator, null, null);</span>
   }
 
   /**
@@ -348,27 +348,27 @@ public sealed interface RenderSession permits SoloSession, MultiSession {
    * present in the {@code names} argument will be populated. Values will be stringified
    * using the {@link Stringifier} associated with the specified {@link VarGroup}.
    *
-   * <h4>Repeating Templates</h4>
+   * &lt;h4&gt;Repeating Templates&lt;/h4&gt;
    *
-   * <p>If the specified object is an array or a {@code Collection}, the template
+   * &lt;p&gt;If the specified object is an array or a {@code Collection}, the template
    * will be repeated for each element in the array or {@code Collection}. This can be
    * used, for example, to generate an HTML table from a nested template that contains
-   * just a single {@code <tr>} element.
+   * just a single {@code &lt;tr&gt;} element.
    *
-   * <h4>Conditional Rendering</h4>
+   * &lt;h4&gt;Conditional Rendering&lt;/h4&gt;
    *
-   * <p>By default, nested templates are not rendered. It takes an explicit call to
+   * &lt;p&gt;By default, nested templates are not rendered. It takes an explicit call to
    * {@link #repeat(String, int) repeat()} or {@code populate()} to force the template to
    * become visible. However, you can make it more explicit that you
-   * <i>do not</i> want the template to become visible. If you pass an empty array
+   * &lt;i&gt;do not&lt;/i&gt; want the template to become visible. If you pass an empty array
    * or collection to the {@code populate()} method, the template is going to be repeated
    * zero times. In other words it will remain invisible. This can be useful in
    * combination with a subsequent call to {@link #enable(int, String...) enable()} or
    * {@link #enableRecursive(String...) enableRecursive()}.
    *
-   * <h4>Optionals</h4>
+   * &lt;h4&gt;Optionals&lt;/h4&gt;
    *
-   * <p>It is valid and legitimate to populate a nested template (or the main
+   * &lt;p&gt;It is valid and legitimate to populate a nested template (or the main
    * template for that matter) with an {@code Optional}. {@code Optional} objects are
    * typically returned from the ubiquitous find-by-id method of a data access object
    * (DAO). If the {@code Optional} is empty, the nested template is explicitly disabled,
@@ -396,7 +396,7 @@ public sealed interface RenderSession permits SoloSession, MultiSession {
         Object data,
         String separator,
         VarGroup varGroup,
-        List<String> names);
+        List&lt;String&gt; names);
 
   /**
    * Causes the specified nested template to become visible and to be repeated the
@@ -411,30 +411,30 @@ public sealed interface RenderSession permits SoloSession, MultiSession {
    * @see #getChildSessions(String)
    */
   default RenderSession repeat(String nestedTemplateName, int times) {
-    return repeat(nestedTemplateName, null, times);
+<span class="fc" id="L414">    return repeat(nestedTemplateName, null, times);</span>
   }
 
   /**
    * Causes the specified nested template to become visible and to be repeated the
    * specified number of times. If {@code times} equals zero, the template is explicitly
-   * disabled (in other words: <i>not</i> rendered). Usually it is not necessary to
+   * disabled (in other words: &lt;i&gt;not&lt;/i&gt; rendered). Usually it is not necessary to
    * disable a nested template, because nested templates are anyhow only rendered once you
    * populate them. However, it can be useful in combination with a subsequent call to
    * {@link #enable(String...) enable()} and
    * {@link #enableRecursive(String...) enableRecursive()}.
    *
-   * <p><b>Contrary to most of the other methods, this method does not return
-   * <i>this</i> {@code RenderSession}. It is not part of the fluent interface.</b>
-   * Instead, it returns a <i>new</i> {@code RenderSession} &#8212; a special
-   * implementation of {@code RenderSession} that works on <i>all</i> instances
-   * (repetitions) of the <i>nested</i> template. For example, if the nested template
-   * contains a variable {@code foo} and you set its value to "bar", then "bar" will
+   * &lt;p&gt;&lt;b&gt;Contrary to most of the other methods, this method does not return
+   * &lt;i&gt;this&lt;/i&gt; {@code RenderSession}. It is not part of the fluent interface.&lt;/b&gt;
+   * Instead, it returns a &lt;i&gt;new&lt;/i&gt; {@code RenderSession} &amp;#8212; a special
+   * implementation of {@code RenderSession} that works on &lt;i&gt;all&lt;/i&gt; instances
+   * (repetitions) of the &lt;i&gt;nested&lt;/i&gt; template. For example, if the nested template
+   * contains a variable {@code foo} and you set its value to &quot;bar&quot;, then &quot;bar&quot; will
    * appear in all instances of the template.
    *
-   * <p>Beware of the effect of chaining calls to {@code repeat()}:
+   * &lt;p&gt;Beware of the effect of chaining calls to {@code repeat()}:
    *
-   * <blockquote><pre>{@code
-   * String src = """
+   * &lt;blockquote&gt;&lt;pre&gt;{@code
+   * String src = &quot;&quot;&quot;
    * ~%%begin:companies%
    *     ~%%begin:departments%
    *         ~%%begin:employees%
@@ -442,18 +442,18 @@ public sealed interface RenderSession permits SoloSession, MultiSession {
    *         ~%%end:employees%
    *     ~%%end:departments%
    * ~%%end:companies%
-   * """;
+   * &quot;&quot;&quot;;
    * Template tmpl = Template.fromString(src);
    * RenderSession rs = tmpl.newRenderSession();
-   * rs.repeat("companies", 2)
-   *    .repeat("departments", 3)
-   *    .repeat("employees", 4)
-   *    .set("firstName", "John");
-   * assertEquals(2, rs.getChildSessions("companies").size());
-   * assertEquals(6, rs.in("companies").getChildSessions("departments").size());
-   * assertEquals(24, rs.in("companies").in("departments").getChildSessions("employees").size());
-   * // "John" will appear 24 times
-   * }</pre></blockquote>
+   * rs.repeat(&quot;companies&quot;, 2)
+   *    .repeat(&quot;departments&quot;, 3)
+   *    .repeat(&quot;employees&quot;, 4)
+   *    .set(&quot;firstName&quot;, &quot;John&quot;);
+   * assertEquals(2, rs.getChildSessions(&quot;companies&quot;).size());
+   * assertEquals(6, rs.in(&quot;companies&quot;).getChildSessions(&quot;departments&quot;).size());
+   * assertEquals(24, rs.in(&quot;companies&quot;).in(&quot;departments&quot;).getChildSessions(&quot;employees&quot;).size());
+   * // &quot;John&quot; will appear 24 times
+   * }&lt;/pre&gt;&lt;/blockquote&gt;
    *
    * @param nestedTemplateName the name of the nested template
    * @param separator the separator to place between instances of the template. May be
@@ -468,28 +468,28 @@ public sealed interface RenderSession permits SoloSession, MultiSession {
   RenderSession repeat(String nestedTemplateName, String separator, int times);
 
   /**
-   * <p>
+   * &lt;p&gt;
    * Returns a {@code RenderSession} for the specified nested template. If the template
    * has not been instantiated yet, this method behaves as though calling
    * {@code repeat(nestedTemplateName, 1)}. Otherwise it returns a {@code RenderSession}
    * that works on all instances (repetitions) of the nested template. So, like the
-   * {@link #repeat(String, int) repeat()} method, this method does not return <i>this</i>
+   * {@link #repeat(String, int) repeat()} method, this method does not return &lt;i&gt;this&lt;/i&gt;
    * {@code RenderSession}; it is not part of the fluent interface.
-   * </p>
-   * <blockquote><pre>{@code
-   * Template template = Template.fromString("""
+   * &lt;/p&gt;
+   * &lt;blockquote&gt;&lt;pre&gt;{@code
+   * Template template = Template.fromString(&quot;&quot;&quot;
    * ~%%begin:employees%
    *     ~%firstName% ~%lastName%
    * ~%%end:employees%
-   * """);
+   * &quot;&quot;&quot;);
    * RenderSession session = template.newRenderSession();
-   * session.in("employees").set("firstName", "john").set("lastName", "Smith");
-   * }</pre></blockquote>
-   * <p>
+   * session.in(&quot;employees&quot;).set(&quot;firstName&quot;, &quot;john&quot;).set(&quot;lastName&quot;, &quot;Smith&quot;);
+   * }&lt;/pre&gt;&lt;/blockquote&gt;
+   * &lt;p&gt;
    * The argument is allowed to be a fully-qualified name to a deeply nested template:
-   * </p>
-   * <blockquote><pre>{@code
-   * String src = """
+   * &lt;/p&gt;
+   * &lt;blockquote&gt;&lt;pre&gt;{@code
+   * String src = &quot;&quot;&quot;
    * ~%%begin:companies%
    *     ~%%begin:departments%
    *         ~%%begin:employees%
@@ -497,17 +497,17 @@ public sealed interface RenderSession permits SoloSession, MultiSession {
    *         ~%%end:employees%
    *     ~%%end:departments%
    * ~%%end:companies%
-   * """;
+   * &quot;&quot;&quot;;
    * Template tmpl = Template.fromString(src);
    * RenderSession rs = tmpl.newRenderSession();
-   * rs.in("companies.departments.employees").set("firstName", "John");
-   * }</pre></blockquote>
-   * <p>
+   * rs.in(&quot;companies.departments.employees&quot;).set(&quot;firstName&quot;, &quot;John&quot;);
+   * }&lt;/pre&gt;&lt;/blockquote&gt;
+   * &lt;p&gt;
    * The last statement in the above example is equivalent to:
-   * </p>
-   * <blockquote><pre>{@code
-   * rs.in("companies").in("departments").in("employees").set("firstName", "John");
-   * }</pre></blockquote>
+   * &lt;/p&gt;
+   * &lt;blockquote&gt;&lt;pre&gt;{@code
+   * rs.in(&quot;companies&quot;).in(&quot;departments&quot;).in(&quot;employees&quot;).set(&quot;firstName&quot;, &quot;John&quot;);
+   * }&lt;/pre&gt;&lt;/blockquote&gt;
    *
    * @param nestedTemplateName the name of the nested template
    * @return a {@code RenderSession} that works on all instances (repetitions) of the
@@ -524,7 +524,7 @@ public sealed interface RenderSession permits SoloSession, MultiSession {
    * @return this {@code RenderSession}
    */
   default RenderSession enable(String... nestedTemplateNames) {
-    return enable(1, nestedTemplateNames);
+<span class="fc" id="L527">    return enable(1, nestedTemplateNames);</span>
   }
 
   /**
@@ -532,15 +532,15 @@ public sealed interface RenderSession permits SoloSession, MultiSession {
    * template is a template that does not contain any variables or doubly-nested
    * templates.
    *
-   * <p>To explicitly disable the rendering of a text-only template, you can call
+   * &lt;p&gt;To explicitly disable the rendering of a text-only template, you can call
    * this method and specify 0 (zero) for the {@code repeats} argument. Note, however,
    * that by default template variables and nested templates are not rendered in the first
    * place.
    *
-   * <p>Specify an empty {@code String} array to enable <i>all</i> text-only
+   * &lt;p&gt;Specify an empty {@code String} array to enable &lt;i&gt;all&lt;/i&gt; text-only
    * templates that have not been explicitly enabled or disabled yet. In that case, of
-   * course, it <i>does</i> make sense to first explicitly disable the text-only templates
-   * that should <i>not</i> be rendered.
+   * course, it &lt;i&gt;does&lt;/i&gt; make sense to first explicitly disable the text-only templates
+   * that should &lt;i&gt;not&lt;/i&gt; be rendered.
    *
    * @param repeats the number of times the nested template(s) must be repeated
    * @param nestedTemplateNames the names of the nested text-only templates to be
@@ -549,7 +549,7 @@ public sealed interface RenderSession permits SoloSession, MultiSession {
    * @see Template#isTextOnly()
    */
   default RenderSession enable(int repeats, String... nestedTemplateNames) {
-    return enable(null, repeats, nestedTemplateNames);
+<span class="fc" id="L552">    return enable(null, repeats, nestedTemplateNames);</span>
   }
 
   /**
@@ -557,15 +557,15 @@ public sealed interface RenderSession permits SoloSession, MultiSession {
    * template is a template that does not contain any variables or doubly-nested
    * templates.
    *
-   * <p>To explicitly disable the rendering of a text-only template, you can call
+   * &lt;p&gt;To explicitly disable the rendering of a text-only template, you can call
    * this method and specify 0 (zero) for the {@code repeats} argument. Note, however,
    * that by default template variables and nested templates are not rendered in the first
    * place.
    *
-   * <p>Specify an empty {@code String} array to enable <i>all</i> text-only
+   * &lt;p&gt;Specify an empty {@code String} array to enable &lt;i&gt;all&lt;/i&gt; text-only
    * templates that have not been explicitly enabled or disabled yet. In that case, of
-   * course, it <i>does</i> make sense to first explicitly disable the text-only templates
-   * that should <i>not</i> be rendered.
+   * course, it &lt;i&gt;does&lt;/i&gt; make sense to first explicitly disable the text-only templates
+   * that should &lt;i&gt;not&lt;/i&gt; be rendered.
    *
    * @param separator the separator to place between instances of the template. May be
    * {@code null} (no separator). The argument is ignored (and may be anything) if
@@ -596,13 +596,13 @@ public sealed interface RenderSession permits SoloSession, MultiSession {
    * if the list contains one value, the template will be rendered once, with its one and
    * only variable being set to that value.
    *
-   * @param nestedTemplateName the name of the nested template. <i>Must</i> contain
+   * @param nestedTemplateName the name of the nested template. &lt;i&gt;Must&lt;/i&gt; contain
    * exactly one variable
    * @param values the value to populate the nested template with
    * @return this {@code RenderSession}
    */
-  default RenderSession populateSolo(String nestedTemplateName, List<?> values) {
-    return populateSolo(nestedTemplateName, null, null, values);
+  default RenderSession populateSolo(String nestedTemplateName, List&lt;?&gt; values) {
+<span class="fc" id="L605">    return populateSolo(nestedTemplateName, null, null, values);</span>
   }
 
   /**
@@ -610,7 +610,7 @@ public sealed interface RenderSession permits SoloSession, MultiSession {
    * variable. The variable may still occur multiple times within the template. The
    * template is going to be repeated for each value in the provided list.
    *
-   * @param nestedTemplateName the name of the nested template. <i>Must</i> contain
+   * @param nestedTemplateName the name of the nested template. &lt;i&gt;Must&lt;/i&gt; contain
    * exactly one variable
    * @param separator the separator to place between instances of the template. May be
    * {@code null} (no separator). The argument is ignored (and may be anything) if
@@ -624,13 +624,13 @@ public sealed interface RenderSession permits SoloSession, MultiSession {
         String nestedTemplateName,
         String separator,
         VarGroup varGroup,
-        List<?> values);
+        List&lt;?&gt; values);
 
   /**
    * Convenience method for populating a nested template that contains exactly two
    * variables. The provided varargs array must contain an even number of elements,
    * alternating between a value for the first template variable and a value for the
-   * second one. The template is going to be repeated for each <i>pair</i> of values in
+   * second one. The template is going to be repeated for each &lt;i&gt;pair&lt;/i&gt; of values in
    * the varargs array.
    *
    * @param nestedTemplateName the name of the nested template.
@@ -638,15 +638,15 @@ public sealed interface RenderSession permits SoloSession, MultiSession {
    * variable and a value for the second one
    * @return this {@code RenderSession}
    */
-  default RenderSession populateDuo(String nestedTemplateName, List<?> values) {
-    return populateDuo(nestedTemplateName, null, null, values);
+  default RenderSession populateDuo(String nestedTemplateName, List&lt;?&gt; values) {
+<span class="fc" id="L642">    return populateDuo(nestedTemplateName, null, null, values);</span>
   }
 
   /**
    * Convenience method for populating a nested template that contains exactly two
    * variables. The provided list of values must contain an even number of elements,
    * alternating between a value for the first template variable and a value for the
-   * second one. The template is going to be repeated for each <i>pair</i> of values in
+   * second one. The template is going to be repeated for each &lt;i&gt;pair&lt;/i&gt; of values in
    * the varargs array.
    *
    * @param nestedTemplateName the name of the nested template
@@ -663,7 +663,7 @@ public sealed interface RenderSession permits SoloSession, MultiSession {
         String nestedTemplateName,
         String separator,
         VarGroup varGroup,
-        List<?> values);
+        List&lt;?&gt; values);
 
   /**
    * Returns the child sessions that have been created for the specified nested template.
@@ -680,7 +680,7 @@ public sealed interface RenderSession permits SoloSession, MultiSession {
    * @param nestedTemplateName the nested template
    * @return A {@code List} of child sessions
    */
-  List<RenderSession> getChildSessions(String nestedTemplateName);
+  List&lt;RenderSession&gt; getChildSessions(String nestedTemplateName);
 
   /**
    * Returns all variables that have not been set yet in the template managed by this
@@ -692,7 +692,7 @@ public sealed interface RenderSession permits SoloSession, MultiSession {
    * @see AccessorRegistry.Builder#nullEqualsUndefined(boolean)
    * @see #allSet()
    */
-  List<String> getUnsetVariables();
+  List&lt;String&gt; getUnsetVariables();
 
   /**
    * Returns the {@linkplain TemplateUtils#getFQN(Template, String) fully-qualified names}
@@ -704,22 +704,22 @@ public sealed interface RenderSession permits SoloSession, MultiSession {
    * {@code RenderSession} and all templates nested inside it
    * @see #getAllUnsetVariables(boolean)
    */
-  List<String> getAllUnsetVariables();
+  List&lt;String&gt; getAllUnsetVariables();
 
   /**
-   * <p>Returns the
+   * &lt;p&gt;Returns the
    * {@linkplain TemplateUtils#getFQN(Template, String) fully-qualified names} of all
    * variables that have not been set yet in the template managed by this
    * {@code RenderSession} and all templates descending from it. If {@code relativePaths}
    * equals {@code true}, the names will be fully-qualified relative to the template being
-   * populated by <i>this</i> {@code RenderSession}. If you find yourself in a child
+   * populated by &lt;i&gt;this&lt;/i&gt; {@code RenderSession}. If you find yourself in a child
    * session, as you would after a call to {@link #in(String) in()} or
    * {@link #repeat(String, int) repeat()}, that is
-   * <i>not</i> the template that is ultimately being populated. If {@code relativePaths}
+   * &lt;i&gt;not&lt;/i&gt; the template that is ultimately being populated. If {@code relativePaths}
    * equals {@code false}, all paths will be absolute, i.e. relative to the template
    * ultimately being populated.
    *
-   * <p>Note that there is a certain indeterminacy in the result. One of the
+   * &lt;p&gt;Note that there is a certain indeterminacy in the result. One of the
    * descendent templates may be a repeating template, and it may have received
    * {@link Accessor#UNDEFINED} for a variable in one of the instances, but a regular
    * value for the same variable in another instance. In other words, the variable is not
@@ -737,11 +737,11 @@ public sealed interface RenderSession permits SoloSession, MultiSession {
    * @see AccessorRegistry.Builder#nullEqualsUndefined(boolean)
    * @see #allSet()
    */
-  List<String> getAllUnsetVariables(boolean relativePaths);
+  List&lt;String&gt; getAllUnsetVariables(boolean relativePaths);
 
   /**
    * Returns {@code true} if all variables (at whatever nesting level) have been set. Note
-   * that you may not <i>want</i> the template to be fully populated.
+   * that you may not &lt;i&gt;want&lt;/i&gt; the template to be fully populated.
    *
    * @return {@code true} if the template is fully populated
    */
@@ -798,3 +798,4 @@ public sealed interface RenderSession permits SoloSession, MultiSession {
   Template getTemplate();
 
 }
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>
