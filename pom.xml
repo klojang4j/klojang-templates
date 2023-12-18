@@ -7,7 +7,7 @@
 
     <groupId>org.klojang</groupId>
     <artifactId>klojang-templates</artifactId>
-    <version>1.0.7</version>
+    <version>1.0.8</version>
     <packaging>jar</packaging>
 
     <name>Klojang Templates</name>
@@ -369,6 +369,7 @@
                 <version>${owasp-plugin.version}</version>
                 <configuration>
                     <failBuildOnCVSS>8</failBuildOnCVSS>
+                    <nvdApiKey>29bb9b20-8dba-4ae7-94b4-6656e154e6e1</nvdApiKey>
                 </configuration>
                 <executions>
                     <execution>

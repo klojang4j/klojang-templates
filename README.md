@@ -50,14 +50,14 @@ To get started with _Klojang Templates_, add the following dependency to you pro
 <dependency>
     <groupId>org.klojang</groupId>
     <artifactId>klojang-templates</artifactId>
-    <version>1.0.7</version>
+    <version>1.0.8</version>
 </dependency>
 ```
 
 **Gradle**:
 
 ```
-implementation group: 'org.klojang', name: 'klojang-templates', version: '1.0.7'
+implementation group: 'org.klojang', name: 'klojang-templates', version: '1.0.8'
 ```
 
 _Klojang Templates_ is agnostic about the web or application framework you use. It does
@@ -218,6 +218,7 @@ public class CompanyResource {
           .render();
     LOG.debug(out);
     // more stuff ...
+    // And render the main, top-level template
     return session::render;
   }
 
@@ -336,10 +337,10 @@ public class LabelPrintResource {
 }
 ```
 
-Notice how the address template gets mapped to the address property of `Employee`, and
-how, inside the address template, you have access to the `Address`
-properties. In fact, inside the address template you are in a "different universe"
-and you can _only_ access `Address` properties.
+Looking at the template file (label.html), notice how the address template gets mapped to
+the address property of `Employee`, and how, inside the address template, you have access
+to the `Address` properties. In fact, inside the address template you are in a "different
+universe" and you can _only_ access `Address` properties.
 
 ### Tables
 
@@ -398,9 +399,9 @@ This time we use the
 method of the `RenderSession` class, rather than the
 [insert()](https://klojang4j.github.io/klojang-templates/api/org.klojang.templates/org/klojang/templates/RenderSession.html#insert(java.lang.Object,java.lang.String...))
 method. `populate()` is used to populate nested templates while `insert()` is used to
-populate the main template. If the second argument to `populate()` is an array or
-collection, the nested template automatically turns into a
-**repeating template**, repeating itself for each element in the array or collection.
+populate the main, top-level  template. If the second argument to `populate()` is an array
+or collection, the nested template automatically turns into a **repeating template**, 
+repeating itself for each element in the array or collection.
 
 #### Newline Suppression in Practice
 
@@ -452,11 +453,11 @@ after `</tr>`). Yet when rendered, the table rows stay tightly packed together.
 instances of a repeating template. This can be especially useful for non-HTML templates:
 
 ```java
-List<Employee> employees=...; // got it from somewhere
-      String src="~%%begin:employee%~%firstName% ~%lastName%~%%end:employee%";
-      Template template=Template.fromString(src);
-      RenderSession session=template.newRenderSession();
-      session.populate("employee",employees,", "); // use comma-space as separator
+List<Employee> employees= ...; // got it from somewhere
+String src="~%%begin:employee%~%firstName% ~%lastName%~%%end:employee%";
+Template template=Template.fromString(src);
+RenderSession session=template.newRenderSession();
+session.populate("employee",employees,", "); // use comma-space as separator
 ```
 
 ### Complex Information
@@ -491,18 +492,12 @@ record Department(String name, String manager, List<Employee> employees) { }
 record Employee(String firstName, String lastName, LocalDate birthDate) { }
 ```
 
-Then, when inserting a ```List<Company>``` into the template, the employees template would
+Then, when inserting a `List<Company>` into the template, the employees template would
 repeat within the departments template, which would repeat within the companies template,
 which would repeat within the company-overview template. All this would happen with a
 single call to
 [RenderSession.populate()](https://klojang4j.github.io/klojang-templates/api/org.klojang.templates/org/klojang/templates/RenderSession.html#populate(java.lang.String,java.lang.Object,java.lang.String...)),
 because the structure of the template matches the structure of the data model.
-
-Note that this does not mean that the _visual_ appearance of the template must somehow
-reflect the structure of the data model. The [label template](#using-nested-templates)
-shown above reflects the structure of the Employee class, but visually it actually
-_flattens_ the relationship between
-`Employee` and `Address`.
 
 ### Conditional Rendering
 
