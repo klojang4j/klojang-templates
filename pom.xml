@@ -7,7 +7,7 @@
 
     <groupId>org.klojang</groupId>
     <artifactId>klojang-templates</artifactId>
-    <version>1.0.8</version>
+    <version>1.0.9</version>
     <packaging>jar</packaging>
 
     <name>Klojang Templates</name>
@@ -85,11 +85,11 @@
         <!-- *** Check for updates: mvn versions:display-dependency-updates   *** -->
         <!-- *** Check dependencies: mvn dependency:analyze                   *** -->
         <!-- ==================================================================== -->
-        <klojang-check.version>3.0.0-jdk21</klojang-check.version>
-        <klojang-util.version>1.1.5</klojang-util.version>
-        <klojang-collections.version>2.0.5</klojang-collections.version>
-        <klojang-convert.version>1.0.5</klojang-convert.version>
-        <klojang-invoke.version>2.0.2</klojang-invoke.version>
+        <klojang-check.version>3.0.2-jdk21</klojang-check.version>
+        <klojang-util.version>1.1.7</klojang-util.version>
+        <klojang-collections.version>2.0.8</klojang-collections.version>
+        <klojang-convert.version>1.0.7</klojang-convert.version>
+        <klojang-invoke.version>2.0.3</klojang-invoke.version>
 
         <commons-text.version>1.10.0</commons-text.version>
         <apache-httpclient.version>4.5.14</apache-httpclient.version>
