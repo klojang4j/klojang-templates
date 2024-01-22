@@ -1,7 +1,6 @@
 package org.klojang.templates;
 
 import org.junit.jupiter.api.Test;
-import org.klojang.invoke.BeanReader;
 import org.klojang.util.MutableInt;
 
 import java.io.ByteArrayOutputStream;
@@ -12,6 +11,7 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.klojang.templates.VarGroup.JS_ATTR;
 
+@SuppressWarnings("MissingJavadoc")
 public class MultiSessionTest {
 
   @Test
@@ -248,36 +248,6 @@ public class MultiSessionTest {
     String out = rs.render();
     assertEquals("FooFoo", nospace(out));
   }
-
-  public record Person(String firstName, String lastName, int age) { }
-
-  @Test
-  public void scatter01() throws ParseException {
-    Person person = new Person("John", "Smith", 38);
-    BeanReader<Person> reader = new BeanReader<>(Person.class,
-          "firstName",
-          "lastName",
-          "age");
-    String src = """
-          <html><body>
-          ~%%begin:persons%
-              <p>~%person%</p>
-          ~%%end:persons%
-          </body></html>
-          """;
-    Template tmpl = Template.fromString(src);
-    RenderSession rs = tmpl.newRenderSession();
-    rs.repeat("persons", 2).scatter("person", person, reader, " ", "", "");
-    String out = rs.render();
-    String expected = """
-          <html><body>
-              <p>John Smith 38</p>
-              <p>John Smith 38</p>
-          </body></html>
-          """;
-    assertEquals(nospace(expected), nospace(out));
-  }
-
 
   @Test
   public void ifNotSet00() throws ParseException {

@@ -2,7 +2,6 @@ package org.klojang.templates;
 
 import org.klojang.check.Check;
 import org.klojang.check.Tag;
-import org.klojang.invoke.BeanReader;
 import org.klojang.path.Path;
 import org.klojang.templates.x.Lazy;
 import org.klojang.templates.x.MTag;
@@ -27,9 +26,9 @@ import static org.klojang.templates.TemplateUtils.getAllVariables;
 import static org.klojang.templates.TemplateUtils.getFQN;
 import static org.klojang.templates.x.MTag.VALUE_GENERATOR;
 import static org.klojang.templates.x.MTag.VAR_NAME;
-import static org.klojang.util.CollectionMethods.*;
+import static org.klojang.util.CollectionMethods.initializeMap;
+import static org.klojang.util.CollectionMethods.listify;
 import static org.klojang.util.ObjectMethods.isEmpty;
-import static org.klojang.util.ObjectMethods.n2e;
 
 final class SoloSession implements RenderSession {
 
@@ -118,24 +117,6 @@ final class SoloSession implements RenderSession {
     Check.notNull(valueGenerator, VALUE_GENERATOR);
     return RenderUtil.ifNotSet(this, p, valueGenerator, varGroup);
   }
-
-  @Override
-  public <T> RenderSession scatter(String varName,
-        T bean,
-        BeanReader<T> beanReader,
-        String delimiter,
-        String prefix,
-        String suffix) {
-    Check.notNull(varName, VAR_NAME);
-    Check.notNull(beanReader, "beanReader");
-    delimiter = n2e(delimiter);
-    prefix = n2e(prefix);
-    suffix = n2e(suffix);
-    List<Object> values = beanReader.readAllProperties(bean);
-    String imploded = prefix + implode(values, delimiter) + suffix;
-    return set(varName, imploded);
-  }
-
 
   @Override
   public RenderSession insert(
