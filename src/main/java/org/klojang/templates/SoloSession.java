@@ -26,6 +26,7 @@ import static org.klojang.templates.TemplateUtils.getAllVariables;
 import static org.klojang.templates.TemplateUtils.getFQN;
 import static org.klojang.templates.x.MTag.VALUE_GENERATOR;
 import static org.klojang.templates.x.MTag.VAR_NAME;
+import static org.klojang.util.ClassMethods.simpleClassName;
 import static org.klojang.util.CollectionMethods.initializeMap;
 import static org.klojang.util.CollectionMethods.listify;
 import static org.klojang.util.ObjectMethods.isEmpty;
@@ -124,6 +125,8 @@ final class SoloSession implements RenderSession {
         VarGroup group,
         List<String> names) {
     if (dontProcess(data)) {
+      LOG.trace("Skipping null/undefined for insertion into template \"{}\"",
+            config.template().getName());
       return this;
     } else if (data == null) {
       Template t = config.template();
@@ -134,8 +137,17 @@ final class SoloSession implements RenderSession {
       // reason not to support it.
       return this;
     } else if (data instanceof Optional<?> opt) {
-      return opt.isPresent() ? insert(opt.get(), group, names) : this;
+      if (opt.isPresent()) {
+        return insert(opt.get(), group, names);
+      }
+      LOG.trace("Skipping empty Optional for insertion into template \"{}\"",
+            config.template().getName());
+      return this;
     }
+    LOG.trace("Inserting {} into template \"{}\": {}",
+          simpleClassName(data),
+          config.template().getName(),
+          data);
     processVars(data, group, names);
     processTmpls(data, group, names);
     return this;

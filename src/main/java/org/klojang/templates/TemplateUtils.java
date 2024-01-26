@@ -35,9 +35,9 @@ public final class TemplateUtils {
   /**
    * Returns the fully-qualified name of the specified template, relative to the root
    * template. If the template <i>is</i> the root template,
-   * {@link Template#ROOT_TEMPLATE_NAME} is returned. Otherwise the fully-qualified
-   * name is the {@linkplain org.klojang.path.Path path} from the specified template
-   * to the root template, in reverse direction.
+   * {@link Template#ROOT_TEMPLATE_NAME} is returned. Otherwise the fully-qualified name
+   * is the {@linkplain org.klojang.path.Path path} from the specified template to the
+   * root template, in reverse direction.
    *
    * <blockquote><pre>{@code
    * String src = """
@@ -72,11 +72,10 @@ public final class TemplateUtils {
   }
 
   /**
-   * Returns the fully-qualified name of the specified name. The provided name
-   * supposedly is the name of a variable or nested template inside the specified
-   * template. If the specified template is the root template, this method simply
-   * returns the name as-is. Otherwise it prefixes the template's FQN (and a dot
-   * character) to the name.
+   * Returns the fully-qualified name of the specified name. The provided name supposedly
+   * is the name of a variable or nested template inside the specified template. If the
+   * specified template is the root template, this method simply returns the name as-is.
+   * Otherwise it prefixes the template's FQN (and a dot character) to the name.
    *
    * @param template the template for which to retrieve the fully-qualified name
    * @param name the name of a template variable or nested template
@@ -89,12 +88,11 @@ public final class TemplateUtils {
   }
 
   /**
-   * Returns a depth-first view of all variable occurrences within the specified
-   * template. The returned {@code List} is created on demand and modifiable.
+   * Returns a depth-first view of all variable occurrences within the specified template.
+   * The returned {@code List} is created on demand and modifiable.
    *
    * @param template the template to collect the variable occurrences from
-   * @return a depth-first view of all variable occurrences within the specified
-   *     template
+   * @return a depth-first view of all variable occurrences within the specified template
    */
   public static List<VariableOccurrence> getAllVariableOccurrences(Template template) {
     Check.notNull(template);
@@ -104,7 +102,7 @@ public final class TemplateUtils {
   }
 
   private static void collectOccurrences(Template template,
-      ArrayList<VariableOccurrence> list) {
+        ArrayList<VariableOccurrence> list) {
     for (Part part : template.parts()) {
       if (part instanceof VariablePart vp) {
         list.add(vp.toOccurrence());
@@ -115,10 +113,10 @@ public final class TemplateUtils {
   }
 
   /**
-   * Returns the specified template and all templates descending from it. The
-   * specified template will come first in de returned list and the descendant
-   * templates are retrieved in breadth-first order. The returned {@code List} is
-   * created on demand and modifiable.
+   * Returns the specified template and all templates descending from it. The specified
+   * template will come first in de returned list and the descendant templates are
+   * retrieved in breadth-first order. The returned {@code List} is created on demand and
+   * modifiable.
    *
    * @param template the template
    * @return a {@code List} containing the {@code Template} and its descendants
@@ -138,16 +136,15 @@ public final class TemplateUtils {
 
   /**
    * Returns the nested template corresponding to the specified fully-qualified name.
-   * Contrary to
-   * {@link Template#getNestedTemplate(String) Template.getNestedTemplate()} this
-   * method lets you retrieve deeply nested templates. The fully-qualified name must
+   * Contrary to {@link Template#getNestedTemplate(String) Template.getNestedTemplate()}
+   * this method lets you retrieve deeply nested templates. The fully-qualified name must
    * be relative to the specified template and must not start with the specified
    * template's name itself.
    *
    * @param template the template containing the (deeply) nested template
    * @param FQN the fully qualified name of the nested template
    * @return The (possibly deeply) nested template corresponding to the specified
-   *     fully-qualified name
+   *       fully-qualified name
    */
   public static Template getNestedTemplate(Template template, String FQN) {
     Check.notNull(template, MTag.TEMPLATE);
@@ -156,29 +153,29 @@ public final class TemplateUtils {
   }
 
   private static Template getNestedTemplate(Template t0,
-      String FQN,
-      String[] names) {
+        String FQN,
+        String[] names) {
     if (names.length == 0) {
       return t0;
     }
     Check.that(names[0]).is(in(), t0.getNestedTemplateNames(),
-        ERR_NO_SUCH_TEMPLATE, FQN);
+          ERR_NO_SUCH_TEMPLATE, FQN);
     t0 = t0.getNestedTemplate(names[0]);
     return getNestedTemplate(t0, FQN, copyOfRange(names, 1, names.length));
   }
 
   /**
-   * Returns the template that directly contains the variable or nested template
-   * denoted by the specified fully-qualified name. The specified template is
-   * supposed to be the root template, or a template at some higher level than the
-   * template containing the variable. The FQName must be relative to the specified
-   * template and it must not include the specified template's name.
+   * Returns the template that directly contains the variable or nested template denoted
+   * by the specified fully-qualified name. The specified template is supposed to be the
+   * root template, or a template at some higher level than the template containing the
+   * variable. The FQName must be relative to the specified template and it must not
+   * include the specified template's name.
    *
-   * @param template the template relative to which the fully-qualified name
-   *     should be taken
+   * @param template the template relative to which the fully-qualified name should
+   *       be taken
    * @param FQN the fully-qualified name
    * @return The template containing the variable or nested template denoted by the
-   *     specified fully-qualified name
+   *       specified fully-qualified name
    */
   public static Template getContainingTemplate(Template template, String FQN) {
     Check.notNull(template, MTag.TEMPLATE);
@@ -198,8 +195,8 @@ public final class TemplateUtils {
    * returned {@code List} is created on demand and modifiable.
    *
    * @param template the template for which to retrieve the variable names
-   * @return all variable names in this {@code Template} and the templates nested
-   *     inside it
+   * @return all variable names in this {@code Template} and the templates nested inside
+   *       it
    */
   public static List<Tuple2<Template, String>> getAllVariables(Template template) {
     Check.notNull(template, MTag.TEMPLATE);
@@ -209,20 +206,20 @@ public final class TemplateUtils {
   }
 
   private static void collectVars(Template t0,
-      ArrayList<Tuple2<Template, String>> tuples) {
+        ArrayList<Tuple2<Template, String>> tuples) {
     t0.getVariables().stream().map(s -> Tuple2.of(t0, s)).forEach(tuples::add);
     t0.getNestedTemplates().forEach(t -> collectVars(t, tuples));
   }
 
   /**
-   * Returns the fully-qualified names of all variables in the specified template and
-   * all templates descending from the specified template. The names are
-   * fully-qualified relative to the root template of the specified template (not to
-   * the specified template itself).
+   * Returns the fully-qualified names of all variables in the specified template and all
+   * templates descending from the specified template. The names are fully-qualified
+   * relative to the root template of the specified template (not to the specified
+   * template itself).
    *
    * @param template the template for which to retrieve the variable names
-   * @return the fully-qualified variable names in this {@code Template} and the
-   *     templates nested inside it
+   * @return the fully-qualified variable names in this {@code Template} and the templates
+   *       nested inside it
    */
   public static List<String> getAllVariableFQNames(Template template) {
     Check.notNull(template, MTag.TEMPLATE);
@@ -237,18 +234,18 @@ public final class TemplateUtils {
   }
 
   /**
-   * Returns the fully-qualified names of all variables in the specified template and
-   * all templates descending from the specified template.
+   * Returns the fully-qualified names of all variables in the specified template and all
+   * templates descending from the specified template.
    *
    * @param template the template for which to retrieve the variable names
-   * @param relative if {@code true}, the names are fully-qualified relative to
-   *     the specified template, otherwise relative to the root template of the
-   *     specified template
-   * @return the fully-qualified variable names in this {@code Template} and the
-   *     templates nested inside it
+   * @param relative if {@code true}, the names are fully-qualified relative to the
+   *       specified template, otherwise relative to the root template of the specified
+   *       template
+   * @return the fully-qualified variable names in this {@code Template} and the templates
+   *       nested inside it
    */
   public static List<String> getAllVariableFQNames(Template template,
-      boolean relative) {
+        boolean relative) {
     if (relative) {
       Check.notNull(template, MTag.TEMPLATE);
       ArrayList<Path> paths = new ArrayList<>();
@@ -261,12 +258,22 @@ public final class TemplateUtils {
   static void collectFQNs(Template t0, ArrayList<Path> vars, Path path) {
     t0.getVariables().stream().map(path::append).forEach(vars::add);
     t0.getNestedTemplates().forEach(
-        t -> collectFQNs(t, vars, path.append(t.getName())));
+          t -> collectFQNs(t, vars, path.append(t.getName())));
   }
 
   /**
-   * Prints out the constituent parts of the specified {@code Template}. Can be used
-   * for debugging purposes.
+   * Prints out the constituent parts of the specified {@code Template}. Can be used for
+   * debugging purposes.
+   *
+   * @param template the {@code Template} whose parts to print
+   */
+  public static void printParts(Template template) {
+    printParts(template, System.out);
+  }
+
+  /**
+   * Prints out the constituent parts of the specified {@code Template}. Can be used for
+   * debugging purposes.
    *
    * @param template the {@code Template} whose parts to print
    * @param out the {@code PrintStream} to which to print
