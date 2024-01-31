@@ -1,8 +1,5 @@
 package org.klojang.templates;
 
-import org.klojang.check.Check;
-import org.klojang.invoke.BeanReader;
-
 import java.io.OutputStream;
 import java.util.List;
 import java.util.function.IntFunction;
@@ -625,14 +622,14 @@ public sealed interface RenderSession permits SoloSession, MultiSession {
   List<RenderSession> getChildSessions(String nestedTemplateName);
 
   /**
-   * Returns all variables that have not been set yet in the template managed by this
-   * {@code RenderSession}. Variables in nested templates are not considered.
+   * Returns all variables that have not been set yet in the template managed by
+   * <i>this</i> {@code RenderSession}. Variables in nested templates are not considered.
    *
    * @return all variables that have not been set yet in the template managed by this
    *       {@code RenderSession}
    * @see Accessor#UNDEFINED
    * @see AccessorRegistry.Builder#nullEqualsUndefined(boolean)
-   * @see #allSet()
+   * @see #hasUnsetVariables()
    */
   List<String> getUnsetVariables();
 
@@ -654,47 +651,50 @@ public sealed interface RenderSession permits SoloSession, MultiSession {
    * variables that have not been set yet in the template managed by this
    * {@code RenderSession} and all templates descending from it. If {@code relativePaths}
    * equals {@code true}, the names will be fully-qualified relative to the template being
-   * populated by <i>this</i> {@code RenderSession}. If you find yourself in a child
-   * session, as you would after a call to {@link #in(String) in()} or
-   * {@link #repeat(String, int) repeat()}, that is
-   * <i>not</i> the template that is ultimately being populated. If {@code relativePaths}
-   * equals {@code false}, all paths will be absolute, i.e. relative to the template
-   * ultimately being populated.
+   * populated by <i>this</i> {@code RenderSession}. That may not be the root template
+   * (the template ultimately being rendered). For example, after a call to
+   * {@link #in(String) in()} or {@link #repeat(String, int) repeat()}, you will tacitly
+   * have descended into a child of the {@code RenderSession} that you originally set up.
+   * If {@code relativePaths} equals {@code false}, all paths will be absolute, that is,
+   * relative to the root template.
    *
-   * <p>Note that there is a certain indeterminacy in the result. One of the
-   * descendent templates may be a repeating template, and it may have received
-   * {@link Accessor#UNDEFINED} for a variable in one of the instances, but a regular
-   * value for the same variable in another instance. In other words, the variable is not
-   * set in one instance of the template, but set in another instance of the same
-   * template. You need to establish whether this can actually happen in your case and, if
-   * so, whether it has any practical effect (again, see {@link Accessor#UNDEFINED}). This
-   * method only looks at the first instance of a repeating template. If you need more
-   * precision, you will have to drill down into the child template using methods like
-   * {@link #in(String) in()} or {@link #getChildSessions(String) getChildSessions()}.
+   * <p><i>Beware that there is a certain indeterminacy in the result. One of the
+   * (deeply) nested templates may be repeating, and it may have received
+   * {@link Accessor#UNDEFINED} for a variable in one of the repetitions, but a regular
+   * value for the same variable in another repetition. In other words, the variable is
+   * not set in one repetition of the template, but set in another repetition of the same
+   * template. You need to establish whether this can actually happen in your particular
+   * case and, if so, whether it has any practical effect. It may still not matter &#8212;
+   * again, see {@link Accessor#UNDEFINED}. This method only looks at the first repetition
+   * of the template. If you need more precision, you will have to drill down into the
+   * child template using methods like {@link #in(String) in()} or
+   * {@link #getChildSessions(String) getChildSessions()}.</i>
    *
    * @param relativePaths whether to return paths relative to the template being
    *       populated by this {@code RenderSession}
    * @return all variables that have not been set yet in the template managed by this
    *       {@code RenderSession} and all templates nested inside it
    * @see AccessorRegistry.Builder#nullEqualsUndefined(boolean)
-   * @see #allSet()
+   * @see #hasUnsetVariables()
    */
   List<String> getAllUnsetVariables(boolean relativePaths);
 
   /**
-   * Returns {@code true} if all variables (at whatever nesting level) have been set. Note
-   * that you may not <i>want</i> the template to be fully populated.
+   * Returns {@code true} if at least one variable has not been set yet in the template
+   * managed by this {@code RenderSession} or any of the templates descending from it.
+   * Note that you may not <i>want</i> the template to be fully populated.
    *
+   * @see
    * @return {@code true} if the template is fully populated
    */
-  boolean allSet();
+  boolean hasUnsetVariables();
 
   /**
    * Unsets the specified variables. You could also simply set their value to the empty
    * string and get the exact same result when rendering. However, this method more
    * thoroughly unregisters the variables, which will likely affect the outcome of, for
-   * example, {@link #allSet()}. You can unset deeply nested variables by specifying a
-   * path string. For example: {@code unset(companies.departments.name)}.
+   * example, {@link #hasUnsetVariables()}. You can unset deeply nested variables by
+   * specifying a path string. For example: {@code unset(companies.departments.name)}.
    *
    * @param paths the variables to unset
    * @return this {@code RenderSession}

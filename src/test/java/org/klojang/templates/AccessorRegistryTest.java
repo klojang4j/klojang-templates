@@ -324,19 +324,19 @@ public class AccessorRegistryTest {
     AccessorRegistry ar = AccessorRegistry.standard(true);
     RenderSession rs = t.newRenderSession(ar);
     rs.set("foo", Accessor.UNDEFINED);
-    assertFalse(rs.allSet());
+    assertTrue(rs.hasUnsetVariables());
     assertEquals(List.of("foo"), rs.getUnsetVariables());
     assertEquals(List.of("foo"), rs.getAllUnsetVariables());
     rs.set("foo", null);
-    assertFalse(rs.allSet());
+    assertTrue(rs.hasUnsetVariables());
     assertEquals(List.of("foo"), rs.getUnsetVariables());
     assertEquals(List.of("foo"), rs.getAllUnsetVariables());
     rs.set("foo", "bar");
-    assertTrue(rs.allSet());
+    assertFalse(rs.hasUnsetVariables());
     assertEquals(List.of(), rs.getUnsetVariables());
     assertEquals(List.of(), rs.getAllUnsetVariables());
     rs.unset("foo");
-    assertFalse(rs.allSet());
+    assertTrue(rs.hasUnsetVariables());
     assertEquals(List.of("foo"), rs.getUnsetVariables());
     assertEquals(List.of("foo"), rs.getAllUnsetVariables());
   }
@@ -348,11 +348,11 @@ public class AccessorRegistryTest {
     AccessorRegistry ar = AccessorRegistry.standard(false);
     RenderSession rs = t.newRenderSession(ar);
     rs.set("foo", Accessor.UNDEFINED);
-    assertFalse(rs.allSet());
+    assertTrue(rs.hasUnsetVariables());
     assertEquals(List.of("foo"), rs.getUnsetVariables());
     assertEquals(List.of("foo"), rs.getAllUnsetVariables());
     rs.set("foo", null);
-    assertTrue(rs.allSet());
+    assertFalse(rs.hasUnsetVariables());
     assertEquals(List.of(), rs.getUnsetVariables());
     assertEquals(List.of(), rs.getAllUnsetVariables());
   }
@@ -364,7 +364,7 @@ public class AccessorRegistryTest {
     AccessorRegistry ar = AccessorRegistry.standard(String::toLowerCase, false);
     RenderSession rs = t.newRenderSession(ar);
     rs.insert(Map.of("foo", Accessor.UNDEFINED));
-    assertFalse(rs.allSet());
+    assertTrue(rs.hasUnsetVariables());
     assertEquals(List.of("FOO"), rs.getUnsetVariables());
     assertEquals(List.of("FOO"), rs.getAllUnsetVariables());
   }

@@ -366,8 +366,8 @@ final class SoloSession implements RenderSession {
   }
 
   @Override
-  public boolean allSet() {
-    return state.allSet();
+  public boolean hasUnsetVariables() {
+    return !state.ready();
   }
 
   @Override

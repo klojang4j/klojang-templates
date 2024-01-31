@@ -734,11 +734,11 @@ public class RenderSessionTest {
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
     rs.set("message", "hi");
-    assertFalse(rs.allSet());
+    assertTrue(rs.hasUnsetVariables());
     rs.repeat("foo", 1).set("bar", "teapot");
-    assertFalse(rs.allSet());
+    assertTrue(rs.hasUnsetVariables());
     rs.in("foo").set("bozo", "coffeepot");
-    assertTrue(rs.allSet());
+    assertFalse(rs.hasUnsetVariables());
   }
 
   @Test

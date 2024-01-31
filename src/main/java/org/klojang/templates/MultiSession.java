@@ -183,8 +183,8 @@ record MultiSession(Template template, SoloSession[] sessions) implements Render
   }
 
   @Override
-  public boolean allSet() {
-    return stream().allMatch(RenderSession::allSet);
+  public boolean hasUnsetVariables() {
+    return stream().allMatch(RenderSession::hasUnsetVariables);
   }
 
   @Override

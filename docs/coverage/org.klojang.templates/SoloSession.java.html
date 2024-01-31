@@ -366,8 +366,8 @@ final class SoloSession implements RenderSession {
   }
 
   @Override
-  public boolean allSet() {
-<span class="fc" id="L370">    return state.allSet();</span>
+  public boolean hasUnsetVariables() {
+<span class="fc bfc" id="L370" title="All 2 branches covered.">    return !state.ready();</span>
   }
 
   @Override

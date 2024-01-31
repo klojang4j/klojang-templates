@@ -183,8 +183,8 @@ import java.util.stream.Stream;
   }
 
   @Override
-  public boolean allSet() {
-<span class="fc" id="L187">    return stream().allMatch(RenderSession::allSet);</span>
+  public boolean hasUnsetVariables() {
+<span class="fc" id="L187">    return stream().allMatch(RenderSession::hasUnsetVariables);</span>
   }
 
   @Override

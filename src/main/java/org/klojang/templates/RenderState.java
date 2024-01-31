@@ -134,8 +134,8 @@ final class RenderState {
         ArrayList<Path> vars,
         Path path) {
     state.todo.stream().map(path::append).forEach(vars::add);
-    Template myTmpl = state.config.template();
-    myTmpl.getNestedTemplates().forEach(t -> {
+    Template tmpl = state.config.template();
+    tmpl.getNestedTemplates().forEach(t -> {
       Path next = path.append(t.getName());
       SessionData sd = state.children.get(t);
       if (sd == null) {
@@ -146,7 +146,7 @@ final class RenderState {
     });
   }
 
-  boolean allSet() {
+  boolean ready() {
     return ready(this);
   }
 
@@ -158,8 +158,7 @@ final class RenderState {
           if (t.hasVariables()) {
             return false;
           }
-        } else if (sd.sessions().length > 0
-              && !ready(sd.sessions()[0].state())) {
+        } else if (sd.sessions().length > 0 && !ready(sd.sessions()[0].state())) {
           return false;
         }
       }

@@ -425,9 +425,9 @@ public class MultiSessionTest {
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
     rs.repeat("companies", 3).set("name", "Shell");
-    assertFalse(rs.in("companies").allSet());
+    assertTrue(rs.in("companies").hasUnsetVariables());
     rs.in("companies").repeat("departments", 3).set("name", "HR");
-    assertTrue(rs.in("companies").allSet());
+    assertFalse(rs.in("companies").hasUnsetVariables());
   }
 
   @Test
@@ -443,16 +443,16 @@ public class MultiSessionTest {
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
     rs.repeat("companies", 3).set("name", "Shell");
-    assertFalse(rs.allSet());
-    assertFalse(rs.in("companies").allSet());
+    assertTrue(rs.hasUnsetVariables());
+    assertTrue(rs.in("companies").hasUnsetVariables());
     rs.in("companies").repeat("departments", 3);
-    assertFalse(rs.allSet());
-    assertFalse(rs.in("companies").allSet());
-    assertFalse(rs.in("companies").in("departments").allSet());
+    assertTrue(rs.hasUnsetVariables());
+    assertTrue(rs.in("companies").hasUnsetVariables());
+    assertTrue(rs.in("companies").in("departments").hasUnsetVariables());
     rs.in("companies").in("departments").set("name", "HR");
-    assertTrue(rs.allSet());
-    assertTrue(rs.in("companies").allSet());
-    assertTrue(rs.in("companies").in("departments").allSet());
+    assertFalse(rs.hasUnsetVariables());
+    assertFalse(rs.in("companies").hasUnsetVariables());
+    assertFalse(rs.in("companies").in("departments").hasUnsetVariables());
   }
 
   @Test
@@ -1055,11 +1055,11 @@ public class MultiSessionTest {
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
     RenderSession rs2 = rs.repeat("companies", 2).set("var", 2);
-    assertTrue(rs.allSet());
-    assertTrue(rs2.allSet());
+    assertFalse(rs.hasUnsetVariables());
+    assertFalse(rs2.hasUnsetVariables());
     rs2.unset("var");
-    assertFalse(rs.allSet());
-    assertFalse(rs2.allSet());
+    assertTrue(rs.hasUnsetVariables());
+    assertTrue(rs2.hasUnsetVariables());
   }
 
   @Test
@@ -1076,13 +1076,13 @@ public class MultiSessionTest {
     RenderSession rs2 = rs.repeat("companies", 2);
     RenderSession rs3 = rs2.repeat("departments", 3);
     rs.setPath("companies.departments.name", i -> "D" + i);
-    assertTrue(rs.allSet());
-    assertTrue(rs2.allSet());
-    assertTrue(rs3.allSet());
+    assertFalse(rs.hasUnsetVariables());
+    assertFalse(rs2.hasUnsetVariables());
+    assertFalse(rs3.hasUnsetVariables());
     rs2.clear("departments");
-    assertFalse(rs.allSet());
-    assertFalse(rs2.allSet());
-    assertFalse(rs3.allSet());
+    assertTrue(rs.hasUnsetVariables());
+    assertTrue(rs2.hasUnsetVariables());
+    assertTrue(rs3.hasUnsetVariables());
   }
 
   @Test

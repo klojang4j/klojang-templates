@@ -544,11 +544,11 @@ public class SoloSessionTest {
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
     rs.set("foo", "bar");
-    assertTrue(rs.allSet());
+    assertFalse(rs.hasUnsetVariables());
     rs.set("foo", "");
-    assertTrue(rs.allSet());
+    assertFalse(rs.hasUnsetVariables());
     rs.unset("foo");
-    assertFalse(rs.allSet());
+    assertTrue(rs.hasUnsetVariables());
   }
 
   @Test
@@ -557,11 +557,11 @@ public class SoloSessionTest {
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
     rs.set("foo", "foo");
-    assertFalse(rs.allSet());
+    assertTrue(rs.hasUnsetVariables());
     rs.set("bar", "bar");
-    assertTrue(rs.allSet());
+    assertFalse(rs.hasUnsetVariables());
     rs.unset("foo", "bar");
-    assertFalse(rs.allSet());
+    assertTrue(rs.hasUnsetVariables());
   }
 
   @Test
@@ -570,14 +570,14 @@ public class SoloSessionTest {
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
     rs.insert(Map.of("foo", Map.of("bar", "bozo")));
-    assertTrue(rs.allSet());
+    assertFalse(rs.hasUnsetVariables());
     rs.clear("foo");
-    assertFalse(rs.allSet());
+    assertTrue(rs.hasUnsetVariables());
     rs.repeat("foo", 2);
     rs.setPath("foo.bar", i -> "bar" + i);
-    assertTrue(rs.allSet());
+    assertFalse(rs.hasUnsetVariables());
     rs.clear("foo");
-    assertFalse(rs.allSet());
+    assertTrue(rs.hasUnsetVariables());
   }
 
   @Test
@@ -591,14 +591,14 @@ public class SoloSessionTest {
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
     rs.in("foo0").populate("foo1", Map.of("bar", "bozo"));
-    assertFalse(rs.allSet());
-    assertFalse(rs.in("foo0").allSet());
-    assertTrue(rs.in("foo0.foo1").allSet());
+    assertTrue(rs.hasUnsetVariables());
+    assertTrue(rs.in("foo0").hasUnsetVariables());
+    assertFalse(rs.in("foo0.foo1").hasUnsetVariables());
     rs.in("foo0").in("foo2").set("bar", "bozo");
-    assertTrue(rs.allSet());
+    assertFalse(rs.hasUnsetVariables());
     rs.clear("foo0");
-    assertFalse(rs.in("foo0.foo1").allSet());
-    assertFalse(rs.in("foo0.foo2").allSet());
+    assertTrue(rs.in("foo0.foo1").hasUnsetVariables());
+    assertTrue(rs.in("foo0.foo2").hasUnsetVariables());
   }
 
   @Test
@@ -637,8 +637,8 @@ public class SoloSessionTest {
           """;
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
-    assertTrue(rs.allSet());
-    assertTrue(rs.enableRecursive("companies").allSet());
+    assertFalse(rs.hasUnsetVariables());
+    assertFalse(rs.enableRecursive("companies").hasUnsetVariables());
   }
 
   @Test
