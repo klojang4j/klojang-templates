@@ -602,6 +602,14 @@ public class SoloSessionTest {
   }
 
   @Test
+  public void disable00() throws ParseException {
+    String src = "A~%%begin:foo%This is Foo~%%end:foo%B";
+    Template tmpl = Template.fromString(src);
+    RenderSession rs = tmpl.newRenderSession();
+    assertEquals("AB", rs.render());
+  }
+
+  @Test
   public void getAllUnsetVariables00() throws ParseException {
     String src = """
           ~%%begin:companies%
@@ -651,8 +659,7 @@ public class SoloSessionTest {
   public record Person(String firstName, String lastName, int age) { }
 
 
-
-   private static String nospace(String s) {
+  private static String nospace(String s) {
     return s.replaceAll("\\s+", "");
   }
 

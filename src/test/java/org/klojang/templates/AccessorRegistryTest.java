@@ -201,7 +201,7 @@ public class AccessorRegistryTest {
           .jump("foo.teapot")
           .set("id", "10")
           .set("name", "John")
-          .createMap();
+          .build();
     rs.insert(map);
     String out = rs.render();
     out = out.replaceAll("\\s+", " ").strip();
@@ -231,7 +231,7 @@ public class AccessorRegistryTest {
           .jump("foo.teapot")
           .set("id", "10")
           .set("name", "John")
-          .createMap();
+          .build();
     rs.insert(map, null, List.of("bar.id"));
     String out = rs.render();
     out = out.replaceAll("\\s+", " ").strip();
@@ -261,7 +261,7 @@ public class AccessorRegistryTest {
           .jump("foo.teapot")
           .set("id", "10")
           .set("name", "John")
-          .createMap();
+          .build();
     rs.insert(map, null, List.of("foo", "teapot.id", "teapot.name"));
     String out = rs.render();
     out = out.replaceAll("\\s+", " ").strip();

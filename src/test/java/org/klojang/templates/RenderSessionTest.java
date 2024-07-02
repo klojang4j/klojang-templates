@@ -93,68 +93,68 @@ public class RenderSessionTest {
           """;
     //@formatter:off
     List<Map<String,Object>> companies = List.of(
-        new MapBuilder()
+        MapBuilder.begin()
             .set("name", "Shell")
             .set("profits", 5_029_872.80)
             .set("departments", List.of(
-                new MapBuilder()
+                MapBuilder.begin()
                     .set("name", "ICT")
                     .set("boss", "John")
                     .set("employees", List.of(
-                        new MapBuilder()
+                        MapBuilder.begin()
                             .set("name", "Pete")
                             .set("age", 27)
-                            .createMap(),
-                        new MapBuilder()
+                            .build(),
+                        MapBuilder.begin()
                             .set("name", "Jake")
                             .set("age", 52)
-                            .createMap()))
-                    .createMap(),
-                new MapBuilder()
+                            .build()))
+                    .build(),
+                MapBuilder.begin()
                     .set("name", "HR")
                     .set("boss", "Joanna")
                     .set("employees", List.of(
-                        new MapBuilder()
+                        MapBuilder.begin()
                             .set("name", "Mary")
                             .set("age", 27)
-                            .createMap(),
-                        new MapBuilder()
+                            .build(),
+                        MapBuilder.begin()
                             .set("name", "John")
                             .set("age", 52)
-                            .createMap()))
-                    .createMap()))
-            .createMap(),
-        new MapBuilder()
+                            .build()))
+                    .build()))
+            .build(),
+        MapBuilder.begin()
             .set("name", "Goggle")
             .set("profits", 386_325_345.78)
             .set("departments", List.of(
-                new MapBuilder()
+                MapBuilder.begin()
                     .set("name", "ICT")
                     .set("boss", "Jane")
                     .set("employees", List.of(
-                        new MapBuilder()
+                        MapBuilder.begin()
                             .set("name", "Capote")
                             .set("age", 66)
-                            .createMap(),
-                        new MapBuilder()
+                            .build(),
+                        MapBuilder.begin()
                             .set("name", "Joan")
                             .set("age", 51)
-                            .createMap()))
-                    .createMap(),
-                new MapBuilder()
+                            .build()))
+                    .build(),
+                MapBuilder.begin()
                     .set("name", "HR")
                     .set("boss", "Eric")
                     .set("employees", List.of(
-                        new MapBuilder()
+                        MapBuilder.begin()
                             .set("name", "Mary")
                             .set("age", 54)
-                            .createMap(),
-                        new MapBuilder()
+                            .build(),
+                        MapBuilder.begin()
                             .set("name", "John")
                             .set("age", 46)
-                            .createMap()))
-                    .createMap()))
-            .createMap()
+                            .build()))
+                    .build()))
+            .build()
     );
     //@formatter:on
     //System.out.println(companies);
@@ -552,10 +552,10 @@ public class RenderSessionTest {
           ~%%end:foo%
           </body></html>
           """;
-    Map<String, Object> data = new MapBuilder()
+    Map<String, Object> data = MapBuilder.begin()
           .set("message", "hello")
           .set("foo.bar", "teapot")
-          .createMap();
+          .build();
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
     rs.insert(data);
@@ -575,10 +575,10 @@ public class RenderSessionTest {
           ~%%end:foo%
           </body></html>
           """;
-    Map<String, Object> data = new MapBuilder()
+    Map<String, Object> data = MapBuilder.begin()
           .set("message", "1 < 2")
           .set("foo.bar", "teapot")
-          .createMap();
+          .build();
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
     rs.insert(data, VarGroup.HTML, null);
@@ -598,9 +598,9 @@ public class RenderSessionTest {
           ~%%end:foo%
           </body></html>
           """;
-    Map<String, Object> data = new MapBuilder()
+    Map<String, Object> data = MapBuilder.begin()
           .set("message", "hello")
-          .createMap();
+          .build();
     data.put("foo", List.of(Map.of("bar", "tea"), Map.of("bar", "pot")));
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
@@ -621,9 +621,9 @@ public class RenderSessionTest {
           ~%%end:foo%
           </body></html>
           """;
-    Map<String, Object> data = new MapBuilder()
+    Map<String, Object> data = MapBuilder.begin()
           .set("message", Accessor.UNDEFINED)
-          .createMap();
+          .build();
     data.put("foo", Accessor.UNDEFINED);
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
@@ -656,9 +656,9 @@ public class RenderSessionTest {
           ~%%end:foo%
           </body></html>
           """;
-    Map<String, Object> data = new MapBuilder()
+    Map<String, Object> data = MapBuilder.begin()
           .set("message", "hello")
-          .createMap();
+          .build();
     data.put("foo", List.of(Map.of("bar", "tea"), Map.of("bar", "pot")));
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
@@ -679,9 +679,9 @@ public class RenderSessionTest {
           ~%%end:foo%
           </body></html>
           """;
-    Map<String, Object> data = new MapBuilder()
+    Map<String, Object> data = MapBuilder.begin()
           .set("message", "hello")
-          .createMap();
+          .build();
     data.put("foo", List.of(Map.of("bar", "tea"), Map.of("bar", "pot")));
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
@@ -702,9 +702,9 @@ public class RenderSessionTest {
           ~%%end:foo%
           </body></html>
           """;
-    Map<String, Object> data = new MapBuilder()
+    Map<String, Object> data = MapBuilder.begin()
           .set("message", "hello")
-          .createMap();
+          .build();
     data.put("foo", List.of(Map.of("bar", "tea"), Map.of("bar", "pot")));
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
@@ -727,9 +727,9 @@ public class RenderSessionTest {
           ~%%end:foo%
           </body></html>
           """;
-    Map<String, Object> data = new MapBuilder()
+    Map<String, Object> data = MapBuilder.begin()
           .set("message", "hello")
-          .createMap();
+          .build();
     data.put("foo", List.of(Map.of("bar", "tea"), Map.of("bar", "pot")));
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();

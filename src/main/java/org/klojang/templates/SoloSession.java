@@ -261,7 +261,8 @@ final class SoloSession implements RenderSession {
   }
 
   @Override
-  public RenderSession enable(String separator, int repeats,
+  public RenderSession enable(String separator,
+        int repeats,
         String... nestedTemplateNames) {
     Check.that(repeats, MTag.REPEATS).is(gte(), 0);
     Check.notNull(nestedTemplateNames, Tag.VARARGS);

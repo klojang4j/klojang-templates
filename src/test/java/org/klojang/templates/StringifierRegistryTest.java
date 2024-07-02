@@ -3,7 +3,6 @@ package org.klojang.templates;
 import org.junit.jupiter.api.Test;
 import org.klojang.path.util.MapBuilder;
 
-import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.time.LocalDate;
 import java.util.Locale;
@@ -195,7 +194,7 @@ public class StringifierRegistryTest {
         .forName("averageSales", decimal2)
         .freeze();
     RenderSession rs = t.newRenderSession(reg);
-    Map<String, Object> map = new MapBuilder()
+    Map<String, Object> map = MapBuilder.begin()
         .set("foo", "bar")
         .set("averagePrice", 222)
         .set("averageSales", 7777)
@@ -203,7 +202,7 @@ public class StringifierRegistryTest {
         .set("t0.averageSales", 77)
         .set("t0.t1.averagePrice", 2)
         .set("t0.t1.averageSales", 7)
-        .createMap();
+        .build();
     rs.insert(map);
     String s = rs.render();
     s = s.replaceAll("\\s+", "|");
@@ -235,7 +234,7 @@ public class StringifierRegistryTest {
         .forName("averageSales", decimal2)
         .freeze();
     RenderSession rs = t.newRenderSession(reg);
-    Map<String, Object> map = new MapBuilder()
+    Map<String, Object> map = MapBuilder.begin()
         .set("foo", "bar")
         .set("averagePrice", 222)
         .set("averageSales", 7777)
@@ -243,7 +242,7 @@ public class StringifierRegistryTest {
         .set("t0.averageSales", 77)
         .set("t0.t1.averagePrice", 2)
         .set("t0.t1.averageSales", 7)
-        .createMap();
+        .build();
     rs.insert(map);
     String s = rs.render();
     s = s.replaceAll("\\s+", "|");
@@ -274,7 +273,7 @@ public class StringifierRegistryTest {
         .forName("*rage*", decimal2)
         .freeze();
     RenderSession rs = t.newRenderSession(reg);
-    Map<String, Object> map = new MapBuilder()
+    Map<String, Object> map = MapBuilder.begin()
         .set("foo", "bar")
         .set("averagePrice", 222)
         .set("averageSales", 7777)
@@ -282,7 +281,7 @@ public class StringifierRegistryTest {
         .set("t0.averageSales", 77)
         .set("t0.t1.averagePrice", 2)
         .set("t0.t1.averageSales", 7)
-        .createMap();
+        .build();
     rs.insert(map);
     String s = rs.render();
     s = s.replaceAll("\\s+", "|");
@@ -313,7 +312,7 @@ public class StringifierRegistryTest {
         .forName("*rage*", decimal1)
         .freeze();
     RenderSession rs = t.newRenderSession(reg);
-    Map<String, Object> map = new MapBuilder()
+    Map<String, Object> map = MapBuilder.begin()
         .set("foo", "bar")
         .set("averagePrice", 222)
         .set("averageSales", 7777)
@@ -321,7 +320,7 @@ public class StringifierRegistryTest {
         .set("t0.averageSales", 77)
         .set("t0.t1.averagePrice", 2)
         .set("t0.t1.averageSales", 7)
-        .createMap();
+        .build();
     rs.insert(map);
     String s = rs.render();
     s = s.replaceAll("\\s+", "|");
@@ -354,7 +353,7 @@ public class StringifierRegistryTest {
         .forTemplate(t, "t0.t1", typer)
         .freeze();
     RenderSession rs = t.newRenderSession(reg);
-    Map<String, Object> map = new MapBuilder()
+    Map<String, Object> map = MapBuilder.begin()
         .set("foo", "666")
         .set("averagePrice", 222)
         .set("averageSales", 777)
@@ -362,7 +361,7 @@ public class StringifierRegistryTest {
         .set("t0.averageSales", 77)
         .set("t0.t1.averagePrice", 2)
         .set("t0.t1.averageSales", 7)
-        .createMap();
+        .build();
     rs.insert(map);
     String s = rs.render();
     s = s.replaceAll("\\s+", "|");
@@ -409,7 +408,7 @@ public class StringifierRegistryTest {
         .forTemplate(t, "t0.t1", typer, "averagePrice")
         .freeze();
     RenderSession rs = t.newRenderSession(reg);
-    Map<String, Object> map = new MapBuilder()
+    Map<String, Object> map = MapBuilder.begin()
         .set("foo", "666")
         .set("averagePrice", 222)
         .set("averageSales", 777)
@@ -417,7 +416,7 @@ public class StringifierRegistryTest {
         .set("t0.averageSales", 77)
         .set("t0.t1.averagePrice", 2)
         .set("t0.t1.averageSales", 7)
-        .createMap();
+        .build();
     rs.insert(map);
     String s = rs.render();
     s = s.replaceAll("\\s+", "|");

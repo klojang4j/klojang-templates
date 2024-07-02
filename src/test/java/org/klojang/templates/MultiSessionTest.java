@@ -1235,6 +1235,25 @@ public class MultiSessionTest {
           rs.in("companies.departments").getAllUnsetVariables(true));
   }
 
+  @Test
+  public void disable00() throws ParseException {
+    String src = """
+          ~%%begin:foo%
+              A
+              ~%%begin:bar%
+              This is bar
+              ~%%end:bar%
+              B
+          ~%%end:foo%
+          """;
+    Template tmpl = Template.fromString(src);
+    RenderSession rs = tmpl.newRenderSession();
+    RenderSession foo = rs.repeat("foo", 3);
+    foo.disable("bar");
+    String out = rs.render();
+    assertEquals("ABABAB", nospace(out));
+  }
+
   private static String nospace(String s) {
     return s.replaceAll("\\s+", "");
   }

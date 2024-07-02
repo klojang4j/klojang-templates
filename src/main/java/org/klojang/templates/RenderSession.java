@@ -78,8 +78,7 @@ public sealed interface RenderSession permits SoloSession, MultiSession {
    * @param valueGenerator the supplier of the value
    * @return this {@code RenderSession}
    */
-  RenderSession setDelayed(
-        String varName,
+  RenderSession setDelayed(String varName,
         VarGroup varGroup,
         Supplier<Object> valueGenerator);
 
@@ -162,8 +161,7 @@ public sealed interface RenderSession permits SoloSession, MultiSession {
    * @see TemplateUtils#getFQN(Template, String)
    * @see org.klojang.path.Path
    */
-  RenderSession setPath(
-        String path,
+  RenderSession setPath(String path,
         VarGroup varGroup,
         boolean force,
         IntFunction<Object> valueGenerator);
@@ -272,8 +270,7 @@ public sealed interface RenderSession permits SoloSession, MultiSession {
    *       or {@code Collection} containing less than two elements
    * @return this {@code RenderSession}
    */
-  default RenderSession populate(
-        String nestedTemplateName,
+  default RenderSession populate(String nestedTemplateName,
         Object data,
         String separator) {
     return populate(nestedTemplateName, data, separator, null, null);
@@ -406,14 +403,13 @@ public sealed interface RenderSession permits SoloSession, MultiSession {
   RenderSession repeat(String nestedTemplateName, String separator, int times);
 
   /**
-   * <p>
-   * Returns a {@code RenderSession} for the specified nested template. If the template
-   * has not been instantiated yet, this method behaves as though calling
+   * <p>Returns a {@code RenderSession} for the specified nested template. If the
+   * template has not been instantiated yet, this method behaves as though calling
    * {@code repeat(nestedTemplateName, 1)}. Otherwise it returns a {@code RenderSession}
    * that works on all instances (repetitions) of the nested template. So, like the
    * {@link #repeat(String, int) repeat()} method, this method does not return <i>this</i>
    * {@code RenderSession}; it is not part of the fluent interface.
-   * </p>
+   *
    * <blockquote><pre>{@code
    * Template template = Template.fromString("""
    * ~%%begin:employees%
@@ -423,9 +419,9 @@ public sealed interface RenderSession permits SoloSession, MultiSession {
    * RenderSession session = template.newRenderSession();
    * session.in("employees").set("firstName", "john").set("lastName", "Smith");
    * }</pre></blockquote>
-   * <p>
-   * The argument is allowed to be a fully-qualified name to a deeply nested template:
-   * </p>
+   *
+   * <p>The argument is allowed to be a fully-qualified name to a deeply nested template:
+   *
    * <blockquote><pre>{@code
    * String src = """
    * ~%%begin:companies%
@@ -440,9 +436,9 @@ public sealed interface RenderSession permits SoloSession, MultiSession {
    * RenderSession rs = tmpl.newRenderSession();
    * rs.in("companies.departments.employees").set("firstName", "John");
    * }</pre></blockquote>
-   * <p>
-   * The last statement in the above example is equivalent to:
-   * </p>
+   *
+   * <p>The last statement in the above example is equivalent to:
+   *
    * <blockquote><pre>{@code
    * rs.in("companies").in("departments").in("employees").set("firstName", "John");
    * }</pre></blockquote>
@@ -455,8 +451,10 @@ public sealed interface RenderSession permits SoloSession, MultiSession {
   RenderSession in(String nestedTemplateName);
 
   /**
-   * Convenience method for rendering one or more nested text-only templates. Equivalent
-   * to {@link #enable(int, String...) enable(1, nestedTemplateNames)}.
+   * Enables one or more nested text-only templates. That is, their contents will be
+   * present in the output of the {@link #render()} method. Text-only templates are
+   * templates that do not contain template variables or (doubly) nested templates.
+   * Equivalent to {@link #enable(int, String...) enable(1, nestedTemplateNames)}.
    *
    * @param nestedTemplateNames the names of the nested templates to be rendered.
    * @return this {@code RenderSession}
@@ -466,19 +464,19 @@ public sealed interface RenderSession permits SoloSession, MultiSession {
   }
 
   /**
-   * Convenience method for rendering one or more nested text-only templates. A text-only
-   * template is a template that does not contain any variables or doubly-nested
-   * templates.
+   * Enables one or more nested text-only templates. That is, their contents will be
+   * present in the output of the {@link #render()} method. Text-only templates are
+   * templates that do not contain template variables or (doubly) nested templates.
    *
-   * <p>To explicitly disable the rendering of a text-only template, you can call
-   * this method and specify 0 (zero) for the {@code repeats} argument. Note, however,
-   * that by default template variables and nested templates are not rendered in the first
-   * place.
+   * <p>You can also use this method to explicitly <i>prevent</i> a nested text-only
+   * template from being rendered by specifying {@code 0} (zero) for the {@code repeats}
+   * argument. Note, however, that by default template variables and nested templates are
+   * not rendered in the first place. You must "do" something to make that happen.
    *
-   * <p>Specify an empty {@code String} array to enable <i>all</i> text-only
+   * <p>Specify an empty {@code String} array to enable or disable <i>all</i> text-only
    * templates that have not been explicitly enabled or disabled yet. In that case, of
-   * course, it <i>does</i> make sense to first explicitly disable the text-only templates
-   * that should <i>not</i> be rendered.
+   * course, it <i>does</i> make sense to first disable any text-only templates that
+   * should <i>not</i> be rendered.
    *
    * @param repeats the number of times the nested template(s) must be repeated
    * @param nestedTemplateNames the names of the nested text-only templates to be
@@ -491,19 +489,12 @@ public sealed interface RenderSession permits SoloSession, MultiSession {
   }
 
   /**
-   * Convenience method for rendering one or more nested text-only templates. A text-only
-   * template is a template that does not contain any variables or doubly-nested
-   * templates.
-   *
-   * <p>To explicitly disable the rendering of a text-only template, you can call
-   * this method and specify 0 (zero) for the {@code repeats} argument. Note, however,
-   * that by default template variables and nested templates are not rendered in the first
-   * place.
+   * Enables one or more nested text-only templates. That is, their contents will be
+   * present in the output of the {@link #render()} method. Text-only templates are
+   * templates that do not contain template variables or (doubly) nested templates.
    *
    * <p>Specify an empty {@code String} array to enable <i>all</i> text-only
-   * templates that have not been explicitly enabled or disabled yet. In that case, of
-   * course, it <i>does</i> make sense to first explicitly disable the text-only templates
-   * that should <i>not</i> be rendered.
+   * templates that have not been explicitly enabled or disabled yet.
    *
    * @param separator the separator to place between instances of the template. May
    *       be {@code null} (no separator). The argument is ignored (and may be anything)
@@ -517,9 +508,12 @@ public sealed interface RenderSession permits SoloSession, MultiSession {
   RenderSession enable(String separator, int repeats, String... nestedTemplateNames);
 
   /**
-   * Enables all nested text-only templates that have not been explicitly disabled yet.
-   * The nested templates may themselves contain nested templates, but they must not
-   * contain variables at any nesting level. A {@code RenderException} if they do.
+   * Recursively enables one or more nested text-only templates. That is, their contents
+   * will be present in the output of the {@link #render()} method. The nested templates
+   * may themselves again contain nested templates, but no template variables are allowed
+   * at any nesting level. You may specify an empty {@code String} array. This will enable
+   * all nested text-only templates (at any nesting level) that have not been explicitly
+   * disabled yet.
    *
    * @param nestedTemplateNames the names of the nested text-only templates to be
    *       rendered
@@ -528,11 +522,24 @@ public sealed interface RenderSession permits SoloSession, MultiSession {
   RenderSession enableRecursive(String... nestedTemplateNames);
 
   /**
+   * Explicitly suppresses the rendering of the specified nested text-only templates.
+   * Equivalent to
+   *
+   * @param nestedTemplateNames
+   * @param nestedTemplateNames the names of the nested text-only templates whose
+   *       contents to suppress when rendering the parent template
+   * @return this {@code RenderSession}
+   */
+  default RenderSession disable(String... nestedTemplateNames) {
+    return enable(null, 0, nestedTemplateNames);
+  }
+
+  /**
    * Convenience method for populating a nested template that contains exactly one
-   * variable. The variable may still occur multiple times within the template. The
-   * template is going to be repeated for each value in the provided list. In other words,
-   * if the list contains one value, the template will be rendered once, with its one and
-   * only variable being set to that value.
+   * variable. The variable may still occur multiple times within the template. The nested
+   * template will be repeated for each value in the provided list. In other words, if the
+   * list contains one element, the template will be rendered once, with its one and only
+   * variable being set to that element.
    *
    * @param nestedTemplateName the name of the nested template. <i>Must</i> contain
    *       exactly one variable
@@ -545,8 +552,8 @@ public sealed interface RenderSession permits SoloSession, MultiSession {
 
   /**
    * Convenience method for populating a nested template that contains exactly one
-   * variable. The variable may still occur multiple times within the template. The
-   * template is going to be repeated for each value in the provided list.
+   * variable. The variable may still occur multiple times within the template. The nested
+   * template will be repeated for each value in the provided list.
    *
    * @param nestedTemplateName the name of the nested template. <i>Must</i> contain
    *       exactly one variable
@@ -559,21 +566,20 @@ public sealed interface RenderSession permits SoloSession, MultiSession {
    *       with
    * @return this {@code RenderSession}
    */
-  RenderSession populateSolo(
-        String nestedTemplateName,
+  RenderSession populateSolo(String nestedTemplateName,
         String separator,
         VarGroup varGroup,
         List<?> values);
 
   /**
    * Convenience method for populating a nested template that contains exactly two
-   * variables. The provided varargs array must contain an even number of elements,
-   * alternating between a value for the first template variable and a value for the
-   * second one. The template is going to be repeated for each <i>pair</i> of values in
-   * the varargs array.
+   * variables. The provided list must contain an even number of elements, alternating
+   * between a value for the first template variable and a value for the second one. The
+   * nested template will be repeated for each consecutive <i>pair</i> of values in the
+   * list.
    *
    * @param nestedTemplateName the name of the nested template.
-   * @param values an array of values, alternating between a value for the first
+   * @param values a list of values, alternating between a value for the first
    *       template variable and a value for the second one
    * @return this {@code RenderSession}
    */
@@ -585,8 +591,8 @@ public sealed interface RenderSession permits SoloSession, MultiSession {
    * Convenience method for populating a nested template that contains exactly two
    * variables. The provided list of values must contain an even number of elements,
    * alternating between a value for the first template variable and a value for the
-   * second one. The template is going to be repeated for each <i>pair</i> of values in
-   * the varargs array.
+   * second one. The template will be repeated for each <i>pair</i> of values in
+   * the list.
    *
    * @param nestedTemplateName the name of the nested template
    * @param separator the separator to place between instances of the template. May
@@ -594,12 +600,11 @@ public sealed interface RenderSession permits SoloSession, MultiSession {
    *       if {@code values} contains zero or two elements.
    * @param varGroup the variable group to assign the variables to if they have no
    *       group name prefix
-   * @param values an array of values, alternating between a value for the first
+   * @param values a list of values, alternating between a value for the first
    *       template variable and a value for the second one
    * @return this {@code RenderSession}
    */
-  RenderSession populateDuo(
-        String nestedTemplateName,
+  RenderSession populateDuo(String nestedTemplateName,
         String separator,
         VarGroup varGroup,
         List<?> values);
@@ -684,8 +689,8 @@ public sealed interface RenderSession permits SoloSession, MultiSession {
    * managed by this {@code RenderSession} or any of the templates descending from it.
    * Note that you may not <i>want</i> the template to be fully populated.
    *
-   * @see
    * @return {@code true} if the template is fully populated
+   * @see
    */
   boolean hasUnsetVariables();
 

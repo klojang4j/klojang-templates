@@ -50,14 +50,14 @@ To get started with _Klojang Templates_, add the following dependency to you pro
 <dependency>
     <groupId>org.klojang</groupId>
     <artifactId>klojang-templates</artifactId>
-    <version>1.0.8</version>
+    <version>1.1.0</version>
 </dependency>
 ```
 
 **Gradle**:
 
 ```
-implementation group: 'org.klojang', name: 'klojang-templates', version: '1.0.8'
+implementation group: 'org.klojang', name: 'klojang-templates', version: '1.1.0'
 ```
 
 _Klojang Templates_ is agnostic about the web or application framework you use. It does
