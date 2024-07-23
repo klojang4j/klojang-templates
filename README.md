@@ -46,7 +46,6 @@ To get started with _Klojang Templates_, add the following dependency to you pro
 **Maven**:
 
 ```xml
-
 <dependency>
     <groupId>org.klojang</groupId>
     <artifactId>klojang-templates</artifactId>
