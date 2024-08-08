@@ -16,25 +16,15 @@ import static org.klojang.util.StringMethods.trim;
 public class CamelCaseToSnakeUpperCase implements NameMapper {
 
   /**
-   * Returns an instance of {@code CamelCaseToSnakeUpperCase}.
-   *
-   * @return an instance of {@code CamelCaseToSnakeUpperCase}
-   */
-  public static CamelCaseToSnakeUpperCase camelCaseToSnakeUpperCase() {
-    return new CamelCaseToSnakeUpperCase();
-  }
-
-  /**
-   * Maps a camel case name to an all-uppercase snake case name. Any leading and
-   * trailing underscores in the name are ignored.
+   * Maps a camel case name to an all-uppercase snake case name. Any leading and trailing
+   * underscores in the name are ignored.
    *
    * @param name a camel case name
    * @return an all-uppercase snake case name
    */
-  @Override
-  public String map(String name) {
+  public static String mapName(String name) {
     String in = Check.that(trim(name, "_\t\r\n"))
-        .isNot(emptyString(), "cannot map \"%s\"", name).ok();
+          .isNot(emptyString(), "cannot map \"%s\"", name).ok();
     int maxLen = (int) Math.ceil(in.length() * 1.5F);
     char[] out = new char[maxLen];
     out[0] = toUpperCase(in.charAt(0));
@@ -56,6 +46,27 @@ public class CamelCaseToSnakeUpperCase implements NameMapper {
       }
     }
     return new String(out, 0, j);
+  }
+
+  /**
+   * Returns an instance of {@code CamelCaseToSnakeUpperCase}.
+   *
+   * @return an instance of {@code CamelCaseToSnakeUpperCase}
+   */
+  public static CamelCaseToSnakeUpperCase camelCaseToSnakeUpperCase() {
+    return new CamelCaseToSnakeUpperCase();
+  }
+
+  /**
+   * Maps a camel case name to an all-uppercase snake case name. Any leading and trailing
+   * underscores in the name are ignored.
+   *
+   * @param name a camel case name
+   * @return an all-uppercase snake case name
+   */
+  @Override
+  public String map(String name) {
+    return mapName(name);
   }
 
 }

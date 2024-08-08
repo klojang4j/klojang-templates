@@ -32,6 +32,11 @@ public class WordCaseToSnakeUpperCaseTest {
     assertThrows(IllegalArgumentException.class, () -> map(""));
   }
 
+  @Test
+  public void test05() {
+    assertEquals("THIS_IS", WordCaseToSnakeUpperCase.mapName("_ThisIs"));
+  }
+
   private static String map(String name) {
     return new WordCaseToSnakeUpperCase().map(name);
   }

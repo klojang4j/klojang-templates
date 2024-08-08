@@ -13,6 +13,17 @@ import static org.klojang.templates.name.CamelCaseToSnakeUpperCase.camelCaseToSn
 public class WordCaseToSnakeUpperCase implements NameMapper {
 
   /**
+   * Maps a word case name to an all-uppercase snake case name. Any leading and trailing
+   * underscores in the name are ignored.
+   *
+   * @param name a word case name
+   * @return an all-uppercase snake case name
+   */
+  public static String mapName(String name) {
+    return camelCaseToSnakeUpperCase().map(name);
+  }
+
+  /**
    * Returns an instance of {@code WordCaseToSnakeUpperCase}.
    *
    * @return an instance of {@code WordCaseToSnakeUpperCase}
@@ -22,15 +33,15 @@ public class WordCaseToSnakeUpperCase implements NameMapper {
   }
 
   /**
-   * Maps a word case name to an all-uppercase snake case name. Any leading and
-   * trailing underscores in the name are ignored.
+   * Maps a word case name to an all-uppercase snake case name. Any leading and trailing
+   * underscores in the name are ignored.
    *
    * @param name a word case name
    * @return an all-uppercase snake case name
    */
   @Override
   public String map(String name) {
-    return camelCaseToSnakeUpperCase().map(name);
+    return mapName(name);
   }
 
 }

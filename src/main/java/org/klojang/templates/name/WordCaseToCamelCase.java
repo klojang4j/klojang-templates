@@ -16,6 +16,17 @@ import static org.klojang.check.CommonChecks.emptyString;
 public class WordCaseToCamelCase implements NameMapper {
 
   /**
+   * Maps a word case name to a camel case name.
+   *
+   * @param name a word case name
+   * @return a camel case name
+   */
+  public static String mapName(String name) {
+    Check.that(name, Tag.NAME).isNot(emptyString());
+    return toLowerCase(name.charAt(0)) + name.substring(1);
+  }
+
+  /**
    * Returns an instance of {@code WordCaseToCameCase}.
    *
    * @return an instance of {@code WordCaseToCameCase}
@@ -32,8 +43,7 @@ public class WordCaseToCamelCase implements NameMapper {
    */
   @Override
   public String map(String name) {
-    Check.that(name, Tag.NAME).isNot(emptyString());
-    return toLowerCase(name.charAt(0)) + name.substring(1);
+    return mapName(name);
   }
 
 }

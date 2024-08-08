@@ -32,6 +32,11 @@ public class WordCaseToCamelCaseTest {
     assertThrows(IllegalArgumentException.class, () -> map(""));
   }
 
+  @Test
+  public void test05() {
+    assertEquals("_ThisIs", WordCaseToCamelCase.mapName("_ThisIs"));
+  }
+
   private static String map(String name) {
     return new WordCaseToCamelCase().map(name);
   }

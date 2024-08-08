@@ -52,6 +52,10 @@ public class SnakeCaseToCamelCaseTest {
     assertThrows(IllegalArgumentException.class, () -> map(""));
   }
 
+  @Test
+  public void test09() {
+    assertEquals("thisIsAColumnName", SnakeCaseToCamelCase.mapName("This__Is_A_Column__Name"));
+  }
 
   private static String map(String name) {
     return new SnakeCaseToCamelCase().map(name);

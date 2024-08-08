@@ -32,6 +32,11 @@ public class WordCaseToSnakeLowerCaseTest {
     assertThrows(IllegalArgumentException.class, () -> map(""));
   }
 
+  @Test
+  public void test05() {
+    assertEquals("this_is", WordCaseToSnakeLowerCase.mapName("_ThisIs"));
+  }
+
   private static String map(String name) {
     return new WordCaseToSnakeLowerCase().map(name);
   }

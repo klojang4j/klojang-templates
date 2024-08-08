@@ -13,6 +13,17 @@ import static org.klojang.templates.name.CamelCaseToSnakeLowerCase.camelCaseToSn
 public class WordCaseToSnakeLowerCase implements NameMapper {
 
   /**
+   * Maps a word case name to an all-lowercase snake case name. Any leading and trailing
+   * underscores in the name are ignored.
+   *
+   * @param name a word case name
+   * @return an all-lowercase snake case name
+   */
+  public static String mapName(String name) {
+    return camelCaseToSnakeLowerCase().map(name);
+  }
+
+  /**
    * Returns an instance of {@code WordCaseToSnakeLowerCase}.
    *
    * @return an instance of {@code WordCaseToSnakeLowerCase}
@@ -22,15 +33,15 @@ public class WordCaseToSnakeLowerCase implements NameMapper {
   }
 
   /**
-   * Maps a word case name to an all-lowercase snake case name. Any leading and
-   * trailing underscores in the name are ignored.
+   * Maps a word case name to an all-lowercase snake case name. Any leading and trailing
+   * underscores in the name are ignored.
    *
    * @param name a word case name
    * @return an all-lowercase snake case name
    */
   @Override
   public String map(String name) {
-    return camelCaseToSnakeLowerCase().map(name);
+    return mapName(name);
   }
 
 }

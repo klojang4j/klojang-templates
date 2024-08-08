@@ -32,6 +32,11 @@ public class CamelCaseToSnakeUpperCaseTest {
     assertThrows(IllegalArgumentException.class, () -> map(""));
   }
 
+  @Test
+  public void test05() {
+    assertEquals("THIS_IS", CamelCaseToSnakeUpperCase.mapName("_thisIs"));
+  }
+
   private static String map(String name) {
     return new CamelCaseToSnakeUpperCase().map(name);
   }

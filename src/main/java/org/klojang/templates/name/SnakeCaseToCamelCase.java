@@ -20,6 +20,32 @@ import static org.klojang.util.StringMethods.trim;
 public class SnakeCaseToCamelCase implements NameMapper {
 
   /**
+   * Maps a snake case name to a camel case name. Any leading and trailing
+   * underscores in the name are ignored.
+   *
+   * @param name a snake case name
+   * @return a camel case name
+   */
+  public static String mapName(String name) {
+    String in = Check.that(trim(name, "_\t\r\n"))
+          .isNot(emptyString(), "cannot map \"%s\"", name).ok();
+    char[] out = new char[in.length()];
+    out[0] = toLowerCase(in.charAt(0));
+    boolean nextWord = false;
+    int j = 1;
+    for (int i = 1; i < in.length(); ++i) {
+      char c = in.charAt(i);
+      if (c == '_') {
+        nextWord = true;
+      } else {
+        out[j++] = nextWord ? toUpperCase(c) : toLowerCase(c);
+        nextWord = false;
+      }
+    }
+    return new String(out, 0, j);
+  }
+
+  /**
    * Returns an instance of {@code SnakeCaseToCamelCase}.
    *
    * @return an instance of {@code SnakeCaseToCamelCase}
@@ -37,22 +63,7 @@ public class SnakeCaseToCamelCase implements NameMapper {
    */
   @Override
   public String map(String name) {
-    String in = Check.that(trim(name, "_\t\r\n"))
-        .isNot(emptyString(), "cannot map \"%s\"", name).ok();
-    char[] out = new char[in.length()];
-    out[0] = toLowerCase(in.charAt(0));
-    boolean nextWord = false;
-    int j = 1;
-    for (int i = 1; i < in.length(); ++i) {
-      char c = in.charAt(i);
-      if (c == '_') {
-        nextWord = true;
-      } else {
-        out[j++] = nextWord ? toUpperCase(c) : toLowerCase(c);
-        nextWord = false;
-      }
-    }
-    return new String(out, 0, j);
+    return mapName(name);
   }
 
 }

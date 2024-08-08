@@ -52,6 +52,11 @@ public class SnakeCaseToWordCaseTest {
     assertThrows(IllegalArgumentException.class, () -> map(""));
   }
 
+  @Test
+  public void test09() {
+    assertEquals("ThisIsAColumnName",
+          SnakeCaseToWordCase.mapName("This__Is_A_Column__Name"));
+  }
 
   private static String map(String name) {
     return new SnakeCaseToWordCase().map(name);
