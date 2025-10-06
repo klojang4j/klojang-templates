@@ -33,11 +33,9 @@ efficient and concise when it comes to populating the templates.
 ## Other Documentation
 
 - The **javadocs** for _Klojang Templates_ can be
-  found [here](https://klojang4j.github.io/klojang-templates/api).
-- The latest **vulnerabilities report** can be
-  found [here](https://klojang4j.github.io/klojang-templates/vulnerabilities/dependency-check-report.html).
+  found [here](https://klojang4j.github.io/klojang-templates/24/api).
 - The latest **code coverage reports** can be
-  found [here](https://klojang4j.github.io/klojang-templates/coverage).
+  found [here](https://klojang4j.github.io/klojang-templates/24/coverage).
 
 ## Getting Started
 
@@ -49,14 +47,14 @@ To get started with _Klojang Templates_, add the following dependency to you pro
 <dependency>
     <groupId>org.klojang</groupId>
     <artifactId>klojang-templates</artifactId>
-    <version>1.1.0</version>
+    <version>24.2.0</version>
 </dependency>
 ```
 
 **Gradle**:
 
 ```
-implementation group: 'org.klojang', name: 'klojang-templates', version: '1.1.0'
+implementation group: 'org.klojang', name: 'klojang-templates', version: '24.2.0'
 ```
 
 _Klojang Templates_ is agnostic about the web or application framework you use. It does
