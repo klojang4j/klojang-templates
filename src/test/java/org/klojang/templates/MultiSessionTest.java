@@ -73,7 +73,7 @@ public class MultiSessionTest {
     RenderSession rs = tmpl.newRenderSession();
     MutableInt mi = new MutableInt();
     String out = rs.repeat("companies", 2)
-          .setDelayed("name", () -> "foo" + mi.pp())
+          .setDelayed("name", () -> "foo" + mi.increment())
           .render();
     // System.out.println(out);
     assertEquals("foo0foo1foo2foo3", out);
@@ -86,7 +86,7 @@ public class MultiSessionTest {
     RenderSession rs = tmpl.newRenderSession();
     MutableInt mi = new MutableInt();
     String out = rs.repeat("companies", 2)
-          .setDelayed("name", VarGroup.HTML, () -> ">" + mi.pp())
+          .setDelayed("name", VarGroup.HTML, () -> ">" + mi.increment())
           .render();
     // System.out.println(out);
     assertEquals("&gt;0&gt;1&gt;2&gt;3", out);

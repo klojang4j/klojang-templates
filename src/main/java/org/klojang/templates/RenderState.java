@@ -1,7 +1,7 @@
 package org.klojang.templates;
 
 import org.klojang.check.Check;
-import org.klojang.path.Path;
+import org.klojang.util.Path;
 import org.klojang.util.collection.IntList;
 
 import java.util.*;
@@ -11,7 +11,9 @@ import static org.klojang.check.CommonChecks.*;
 import static org.klojang.templates.RenderErrorCode.*;
 import static org.klojang.templates.TemplateUtils.getFQN;
 import static org.klojang.util.ObjectMethods.ifNotNull;
-import static org.klojang.util.ObjectMethods.n2e;
+import static org.klojang.util.ObjectMethods.nullToEmpty;
+
+
 
 final class RenderState {
 
@@ -57,7 +59,7 @@ final class RenderState {
         sessions[i] = config.newChildSession(t);
       }
     }
-    this.children.put(t, new SessionData(sessions, n2e(separator)));
+    this.children.put(t, new SessionData(sessions, nullToEmpty(separator)));
     return sessions;
   }
 

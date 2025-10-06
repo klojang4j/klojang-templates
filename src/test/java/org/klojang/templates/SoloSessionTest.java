@@ -466,7 +466,7 @@ public class SoloSessionTest {
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
     MutableInt mi = new MutableInt();
-    rs.setDelayed("name", () -> "John" + mi.pp());
+    rs.setDelayed("name", () -> "John" + mi.increment());
     assertEquals("Hello John0", rs.render());
     assertEquals("Hello John1", rs.render());
     assertEquals("Hello John2", rs.render());
@@ -478,7 +478,7 @@ public class SoloSessionTest {
     Template tmpl = Template.fromString(src);
     RenderSession rs = tmpl.newRenderSession();
     MutableInt mi = new MutableInt();
-    rs.setDelayed("name", VarGroup.HTML, () -> "> John" + mi.pp());
+    rs.setDelayed("name", VarGroup.HTML, () -> "> John" + mi.increment());
     assertEquals("Hello &gt; John0", rs.render());
     assertEquals("Hello &gt; John1", rs.render());
     assertEquals("Hello &gt; John2", rs.render());

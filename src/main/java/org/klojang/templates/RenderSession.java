@@ -159,7 +159,7 @@ public sealed interface RenderSession permits SoloSession, MultiSession {
    *       instance for which to produce a value
    * @return this {@code RenderSession}
    * @see TemplateUtils#getFQN(Template, String)
-   * @see org.klojang.path.Path
+   * @see org.klojang.util.Path
    */
   RenderSession setPath(String path,
         VarGroup varGroup,

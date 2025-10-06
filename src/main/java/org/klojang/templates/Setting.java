@@ -2,8 +2,7 @@ package org.klojang.templates;
 
 import org.klojang.check.Check;
 import org.klojang.convert.Bool;
-
-import static org.klojang.check.CommonChecks.numerical;
+import org.klojang.convert.NumberMethods;
 
 /**
  * Specifies all system properties and/or environment variables that will be picked
@@ -81,7 +80,7 @@ public enum Setting {
   }
 
   int getInt() {
-    return Check.that(get()).is(numerical(), int.class).ok(Integer::parseInt);
+    return Check.that(get()).is(NumberMethods::isInt).ok(Integer::parseInt);
   }
 
   boolean getBoolean() {

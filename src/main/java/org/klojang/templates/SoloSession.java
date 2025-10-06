@@ -2,9 +2,11 @@ package org.klojang.templates;
 
 import org.klojang.check.Check;
 import org.klojang.check.Tag;
-import org.klojang.path.Path;
+import org.klojang.check.extra.Result;
 import org.klojang.templates.x.Lazy;
 import org.klojang.templates.x.MTag;
+import org.klojang.util.CollectionMethods;
+import org.klojang.util.Path;
 import org.klojang.util.collection.IntList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,8 +29,7 @@ import static org.klojang.templates.TemplateUtils.getFQN;
 import static org.klojang.templates.x.MTag.VALUE_GENERATOR;
 import static org.klojang.templates.x.MTag.VAR_NAME;
 import static org.klojang.util.ClassMethods.simpleClassName;
-import static org.klojang.util.CollectionMethods.initializeMap;
-import static org.klojang.util.CollectionMethods.listify;
+import static org.klojang.util.CollectionMethods.initializedMap;
 import static org.klojang.util.ObjectMethods.isEmpty;
 
 final class SoloSession implements RenderSession {
@@ -221,7 +222,7 @@ final class SoloSession implements RenderSession {
       }
       return this;
     }
-    List<?> list = listify(data);
+    List<?> list = CollectionMethods.asList(data);
     if (tmpl.isTextOnly()) {
       return enable(list.size(), separator, tmpl);
     }
@@ -338,7 +339,7 @@ final class SoloSession implements RenderSession {
     String[] vars = t.getVariables().toArray(String[]::new);
     List<Map<String, Object>> data = new ArrayList<>(values.size() / 2);
     for (int i = 0; i < values.size(); i += 2) {
-      data.add(initializeMap(vars[0], values.get(i), vars[1], values.get(i + 1)));
+      data.add(initializedMap(vars[0], values.get(i), vars[1], values.get(i + 1)));
     }
     return doPopulate(t, data, varGroup, separator, null);
   }

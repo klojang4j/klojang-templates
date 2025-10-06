@@ -34,7 +34,7 @@
  * RenderSession.insert()} or
  * {@link org.klojang.templates.RenderSession#populate(String, Object)
  * RenderSession.populate()}, a variable name may be a
- * {@linkplain org.klojang.path.Path path} through the source data object passed to
+ * {@linkplain org.klojang.util.Path path} through the source data object passed to
  * these methods. For example: {@code ~%employee.address.city%}. Since you may be
  * populating your templates with hash maps, in which case variable names would
  * correspond to map keys, there are hardly any constraints on what constitutes a

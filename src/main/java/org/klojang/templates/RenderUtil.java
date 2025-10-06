@@ -1,6 +1,6 @@
 package org.klojang.templates;
 
-import org.klojang.path.Path;
+import org.klojang.util.Path;
 
 import java.util.Set;
 import java.util.function.IntFunction;

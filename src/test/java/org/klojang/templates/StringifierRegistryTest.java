@@ -1,7 +1,7 @@
 package org.klojang.templates;
 
 import org.junit.jupiter.api.Test;
-import org.klojang.path.util.MapBuilder;
+import org.klojang.util.JSONObject;
 
 import java.text.NumberFormat;
 import java.time.LocalDate;
@@ -194,7 +194,7 @@ public class StringifierRegistryTest {
         .forName("averageSales", decimal2)
         .freeze();
     RenderSession rs = t.newRenderSession(reg);
-    Map<String, Object> map = MapBuilder.begin()
+    Map<String, Object> map = JSONObject.empty()
         .set("foo", "bar")
         .set("averagePrice", 222)
         .set("averageSales", 7777)
@@ -234,7 +234,7 @@ public class StringifierRegistryTest {
         .forName("averageSales", decimal2)
         .freeze();
     RenderSession rs = t.newRenderSession(reg);
-    Map<String, Object> map = MapBuilder.begin()
+    Map<String, Object> map = JSONObject.empty()
         .set("foo", "bar")
         .set("averagePrice", 222)
         .set("averageSales", 7777)
@@ -273,7 +273,7 @@ public class StringifierRegistryTest {
         .forName("*rage*", decimal2)
         .freeze();
     RenderSession rs = t.newRenderSession(reg);
-    Map<String, Object> map = MapBuilder.begin()
+    Map<String, Object> map = JSONObject.empty()
         .set("foo", "bar")
         .set("averagePrice", 222)
         .set("averageSales", 7777)
@@ -312,7 +312,7 @@ public class StringifierRegistryTest {
         .forName("*rage*", decimal1)
         .freeze();
     RenderSession rs = t.newRenderSession(reg);
-    Map<String, Object> map = MapBuilder.begin()
+    Map<String, Object> map = JSONObject.empty()
         .set("foo", "bar")
         .set("averagePrice", 222)
         .set("averageSales", 7777)
@@ -353,7 +353,7 @@ public class StringifierRegistryTest {
         .forTemplate(t, "t0.t1", typer)
         .freeze();
     RenderSession rs = t.newRenderSession(reg);
-    Map<String, Object> map = MapBuilder.begin()
+    Map<String, Object> map = JSONObject.empty()
         .set("foo", "666")
         .set("averagePrice", 222)
         .set("averageSales", 777)
@@ -408,7 +408,7 @@ public class StringifierRegistryTest {
         .forTemplate(t, "t0.t1", typer, "averagePrice")
         .freeze();
     RenderSession rs = t.newRenderSession(reg);
-    Map<String, Object> map = MapBuilder.begin()
+    Map<String, Object> map = JSONObject.empty()
         .set("foo", "666")
         .set("averagePrice", 222)
         .set("averageSales", 777)

@@ -48,7 +48,7 @@ public final class Regex {
    * {@link #REGEX_INCLUDE_PATH})</b>. The latter is used for included templates, in which
    * you specify a path to a file system or classpath resource.
    *
-   * @see org.klojang.path.Path
+   * @see org.klojang.util.Path
    */
   public static final String REGEX_PATH
       = "("

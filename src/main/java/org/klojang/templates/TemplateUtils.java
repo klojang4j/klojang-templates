@@ -3,7 +3,7 @@ package org.klojang.templates;
 import org.klojang.check.Check;
 import org.klojang.check.Tag;
 import org.klojang.collections.WiredList;
-import org.klojang.path.Path;
+import org.klojang.util.Path;
 import org.klojang.templates.x.MTag;
 import org.klojang.util.Tuple2;
 
@@ -36,7 +36,7 @@ public final class TemplateUtils {
    * Returns the fully-qualified name of the specified template, relative to the root
    * template. If the template <i>is</i> the root template,
    * {@link Template#ROOT_TEMPLATE_NAME} is returned. Otherwise the fully-qualified name
-   * is the {@linkplain org.klojang.path.Path path} from the specified template to the
+   * is the {@linkplain org.klojang.util.Path path} from the specified template to the
    * root template, in reverse direction.
    *
    * <blockquote><pre>{@code

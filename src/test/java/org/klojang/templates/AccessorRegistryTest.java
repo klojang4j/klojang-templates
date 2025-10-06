@@ -2,7 +2,7 @@ package org.klojang.templates;
 
 import org.junit.jupiter.api.Test;
 import org.klojang.invoke.BeanReader;
-import org.klojang.path.util.MapBuilder;
+import org.klojang.util.JSONObject;
 
 import java.util.List;
 import java.util.Map;
@@ -194,7 +194,7 @@ public class AccessorRegistryTest {
           .register(br)
           .freeze();
     RenderSession rs = t.newRenderSession(ar);
-    Map<String, Object> map = MapBuilder.begin()
+    Map<String, Object> map = JSONObject.empty()
           .in("bar")
           .set("id", 9)
           .set("name", "Mary")
@@ -224,7 +224,7 @@ public class AccessorRegistryTest {
           .register(br)
           .freeze();
     RenderSession rs = t.newRenderSession(ar);
-    Map<String, Object> map = MapBuilder.begin()
+    Map<String, Object> map = JSONObject.empty()
           .in("bar")
           .set("id", 9)
           .set("name", "Mary")
@@ -254,7 +254,7 @@ public class AccessorRegistryTest {
           .register(br, t)
           .freeze();
     RenderSession rs = t.newRenderSession(ar);
-    Map<String, Object> map = MapBuilder.begin()
+    Map<String, Object> map = JSONObject.empty()
           .in("bar")
           .set("id", 9)
           .set("name", "Mary")

@@ -1,7 +1,7 @@
 package org.klojang.templates;
 
 import org.junit.jupiter.api.Test;
-import org.klojang.path.Path;
+import org.klojang.util.Path;
 
 import java.util.List;
 

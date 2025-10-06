@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AbstractPart.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Klojang Templates</a> &gt; <a href="index.source.html" class="el_package">org.klojang.templates</a> &gt; <span class="el_source">AbstractPart.java</span></div><h1>AbstractPart.java</h1><pre class="source lang-java linenums">package org.klojang.templates;
+
+abstract sealed class AbstractPart implements Part permits
+    NestedTemplatePart, TextPart, UnparsedPart, VariablePart {
+
+  private final int start;
+
+  private Template parent;
+
+<span class="fc" id="L10">  AbstractPart(int start) {</span>
+<span class="fc" id="L11">    this.start = start;</span>
+<span class="fc" id="L12">  }</span>
+
+  @Override
+  public int start() {
+<span class="fc" id="L16">    return start;</span>
+  }
+
+  @Override
+  public Template getParentTemplate() {
+<span class="fc" id="L21">    return parent;</span>
+  }
+
+  @Override
+  public void setParentTemplate(Template parent) {
+<span class="fc" id="L26">    this.parent = parent;</span>
+<span class="fc" id="L27">  }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PathAccessor.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Klojang Templates</a> &gt; <a href="index.source.html" class="el_package">org.klojang.templates</a> &gt; <span class="el_source">PathAccessor.java</span></div><h1>PathAccessor.java</h1><pre class="source lang-java linenums">package org.klojang.templates;
+
+import org.klojang.check.extra.Result;
+import org.klojang.util.Path;
+import org.klojang.path.PathWalker;
+import org.klojang.path.DeadEndException;
+
+import static java.util.Collections.singletonList;
+//import static org.klojang.templates.RenderErrorCode.ACCESS_EXCEPTION;
+
+final class PathAccessor implements Accessor&lt;Object&gt; {
+
+  private final NameMapper nm;
+
+<span class="fc" id="L15">  PathAccessor(NameMapper nm) {</span>
+<span class="fc" id="L16">    this.nm = nm;</span>
+<span class="fc" id="L17">  }</span>
+
+  @Override
+  public Object access(Object data, String name) {
+<span class="pc bpc" id="L21" title="1 of 2 branches missed.">    String path = nm == null ? name : nm.map(name);</span>
+<span class="fc" id="L22">    PathWalker pw = new PathWalker(singletonList(Path.from(path)));</span>
+    try {
+<span class="fc" id="L24">      Result&lt;Object&gt; result = pw.read(data);</span>
+<span class="fc" id="L25">      return result.orElse(UNDEFINED);</span>
+<span class="nc" id="L26">    } catch (DeadEndException e) {</span>
+<span class="nc" id="L27">      return UNDEFINED;</span>
+// Maybe we should re-introduce DeadEndException::getErrorCode())
+//      return switch (e.getErrorCode()) {
+//        case NO_SUCH_KEY, NO_SUCH_PROPERTY -&gt; UNDEFINED;
+//        default -&gt; throw ACCESS_EXCEPTION.getException(name, e.getMessage());
+//      };
+    }
+  }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

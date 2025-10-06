@@ -1,7 +1,7 @@
 package org.klojang.templates;
 
 import org.junit.jupiter.api.Test;
-import org.klojang.path.util.MapBuilder;
+import org.klojang.util.JSONObject;
 
 import java.util.List;
 import java.util.Map;
@@ -93,63 +93,63 @@ public class RenderSessionTest {
           """;
     //@formatter:off
     List<Map<String,Object>> companies = List.of(
-        MapBuilder.begin()
+        JSONObject.empty()
             .set("name", "Shell")
             .set("profits", 5_029_872.80)
             .set("departments", List.of(
-                MapBuilder.begin()
+                JSONObject.empty()
                     .set("name", "ICT")
                     .set("boss", "John")
                     .set("employees", List.of(
-                        MapBuilder.begin()
+                        JSONObject.empty()
                             .set("name", "Pete")
                             .set("age", 27)
                             .build(),
-                        MapBuilder.begin()
+                        JSONObject.empty()
                             .set("name", "Jake")
                             .set("age", 52)
                             .build()))
                     .build(),
-                MapBuilder.begin()
+                JSONObject.empty()
                     .set("name", "HR")
                     .set("boss", "Joanna")
                     .set("employees", List.of(
-                        MapBuilder.begin()
+                        JSONObject.empty()
                             .set("name", "Mary")
                             .set("age", 27)
                             .build(),
-                        MapBuilder.begin()
+                        JSONObject.empty()
                             .set("name", "John")
                             .set("age", 52)
                             .build()))
                     .build()))
             .build(),
-        MapBuilder.begin()
+        JSONObject.empty()
             .set("name", "Goggle")
             .set("profits", 386_325_345.78)
             .set("departments", List.of(
-                MapBuilder.begin()
+                JSONObject.empty()
                     .set("name", "ICT")
                     .set("boss", "Jane")
                     .set("employees", List.of(
-                        MapBuilder.begin()
+                        JSONObject.empty()
                             .set("name", "Capote")
                             .set("age", 66)
                             .build(),
-                        MapBuilder.begin()
+                        JSONObject.empty()
                             .set("name", "Joan")
                             .set("age", 51)
                             .build()))
                     .build(),
-                MapBuilder.begin()
+                JSONObject.empty()
                     .set("name", "HR")
                     .set("boss", "Eric")
                     .set("employees", List.of(
-                        MapBuilder.begin()
+                        JSONObject.empty()
                             .set("name", "Mary")
                             .set("age", 54)
                             .build(),
-                        MapBuilder.begin()
+                        JSONObject.empty()
                             .set("name", "John")
                             .set("age", 46)
                             .build()))
@@ -552,7 +552,7 @@ public class RenderSessionTest {
           ~%%end:foo%
           </body></html>
           """;
-    Map<String, Object> data = MapBuilder.begin()
+    Map<String, Object> data = JSONObject.empty()
           .set("message", "hello")
           .set("foo.bar", "teapot")
           .build();
@@ -575,7 +575,7 @@ public class RenderSessionTest {
           ~%%end:foo%
           </body></html>
           """;
-    Map<String, Object> data = MapBuilder.begin()
+    Map<String, Object> data = JSONObject.empty()
           .set("message", "1 < 2")
           .set("foo.bar", "teapot")
           .build();
@@ -598,7 +598,7 @@ public class RenderSessionTest {
           ~%%end:foo%
           </body></html>
           """;
-    Map<String, Object> data = MapBuilder.begin()
+    Map<String, Object> data = JSONObject.empty()
           .set("message", "hello")
           .build();
     data.put("foo", List.of(Map.of("bar", "tea"), Map.of("bar", "pot")));
@@ -621,7 +621,7 @@ public class RenderSessionTest {
           ~%%end:foo%
           </body></html>
           """;
-    Map<String, Object> data = MapBuilder.begin()
+    Map<String, Object> data = JSONObject.empty()
           .set("message", Accessor.UNDEFINED)
           .build();
     data.put("foo", Accessor.UNDEFINED);
@@ -656,7 +656,7 @@ public class RenderSessionTest {
           ~%%end:foo%
           </body></html>
           """;
-    Map<String, Object> data = MapBuilder.begin()
+    Map<String, Object> data = JSONObject.empty()
           .set("message", "hello")
           .build();
     data.put("foo", List.of(Map.of("bar", "tea"), Map.of("bar", "pot")));
@@ -679,7 +679,7 @@ public class RenderSessionTest {
           ~%%end:foo%
           </body></html>
           """;
-    Map<String, Object> data = MapBuilder.begin()
+    Map<String, Object> data = JSONObject.empty()
           .set("message", "hello")
           .build();
     data.put("foo", List.of(Map.of("bar", "tea"), Map.of("bar", "pot")));
@@ -702,7 +702,7 @@ public class RenderSessionTest {
           ~%%end:foo%
           </body></html>
           """;
-    Map<String, Object> data = MapBuilder.begin()
+    Map<String, Object> data = JSONObject.empty()
           .set("message", "hello")
           .build();
     data.put("foo", List.of(Map.of("bar", "tea"), Map.of("bar", "pot")));
@@ -727,7 +727,7 @@ public class RenderSessionTest {
           ~%%end:foo%
           </body></html>
           """;
-    Map<String, Object> data = MapBuilder.begin()
+    Map<String, Object> data = JSONObject.empty()
           .set("message", "hello")
           .build();
     data.put("foo", List.of(Map.of("bar", "tea"), Map.of("bar", "pot")));

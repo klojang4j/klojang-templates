@@ -113,7 +113,7 @@ public final class Template {
      * @throws ParseException if the template source contains a syntax error
      */
     public static Template fromFile(String path) throws ParseException {
-        Check.notNull(path).has(File::new, regularFile());
+        Check.notNull(path).has(File::new, file());
         TemplateLocation location = new TemplateLocation(path, new FilePathResolver());
         return TemplateCache.INSTANCE.get(location, ROOT_TEMPLATE_NAME);
     }

@@ -1,6 +1,6 @@
 package org.klojang.templates;
 
-import static org.klojang.util.StringMethods.substrAfter;
+import static org.klojang.util.StringMethods.substringAfter;
 import static org.klojang.util.StringMethods.substringBefore;
 
 /**
@@ -11,7 +11,7 @@ import static org.klojang.util.StringMethods.substringBefore;
 final class IncludedTemplatePart extends NestedTemplatePart {
 
   static String basename(String path) {
-    return substringBefore(substrAfter(path, "/", -1), ".", -1);
+    return substringBefore(substringAfter(path, "/", -1), ".", -1);
   }
 
   private final boolean tagOnSeparateLine;

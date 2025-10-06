@@ -2,7 +2,7 @@ package org.klojang.templates;
 
 import org.klojang.check.Check;
 import org.klojang.check.Tag;
-import org.klojang.path.Path;
+import org.klojang.util.Path;
 
 import java.io.OutputStream;
 import java.util.ArrayList;
